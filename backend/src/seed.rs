@@ -77,11 +77,6 @@ pub fn get_seed_data() -> SeedData {
         "Quantitative Reasoning: Elementary Statistics",
         CORE_DEPT_ID
     );
-    new_meeting!((Tues, Thurs), (570, 645), "Wayne Uy");
-    new_meeting!((Tues, Thurs), (t1230, 825), "Selin Kalaycioglu");
-    new_meeting!((Tues, Thurs), (1015, 1090), "N/A");
-    new_meeting!((Mon, Wed), (840, 915), "Sia Charmaine");
-    new_meeting!((Mon, Wed), (t1230, 825), "Hesam Oveys");
 
     SeedData { meetings, courses }
 }

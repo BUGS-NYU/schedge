@@ -2,10 +2,7 @@ use crate::models::meeting::Meeting;
 use std::collections::HashMap;
 
 /// Compute a schedule based on the given meeting times
-pub fn compute_schedule(
-    meetings: &HashMap<u32, Vec<Meeting>>,
-    idx_list: Vec<u32>,
-) -> Option<Vec<Meeting>> {
+pub fn compute_schedule(meetings: &Vec<Meeting>, idx_list: Vec<usize>) -> Option<Vec<Meeting>> {
     let mut progress = Vec::new();
     if compute_schedule_rec(meetings, &idx_list, 0, &mut progress) {
         Some(progress.into_iter().map(|course| course.clone()).collect())
@@ -15,19 +12,16 @@ pub fn compute_schedule(
 }
 
 /// Recursive subroutine of `compute_schedule`
-fn compute_schedule_rec<'a, 'b>(
-    meetings: &'a HashMap<u32, Vec<Meeting>>,
-    meeting_keys: &Vec<u32>,
+fn compute_schedule_rec<'a>(
+    meetings: &'a Vec<Meeting>,
+    meeting_keys: &Vec<usize>,
     idx: usize,
-    progress: &'b mut Vec<&'a Meeting>,
-) -> bool
-where
-    'a: 'b,
-{
+    progress: &'a mut Vec<&'a Meeting>,
+) -> bool {
     if idx >= meeting_keys.len() {
         true
     } else {
-        for course in &meetings[&meeting_keys[idx]] {
+        for course in &meetings[meeting_keys[idx]] {
             let mut iter = progress.iter();
             let valid = loop {
                 if let Some(prev) = iter.next() {

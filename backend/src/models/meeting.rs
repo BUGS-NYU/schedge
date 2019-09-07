@@ -6,7 +6,7 @@ pub struct MeetingOutput {
     /// Course name
     pub course_name: &'static str,
     /// Course registration number. Uniquely identifies this meeting.
-    pub crn: u32,
+    pub crn: usize,
     /// The days this meeting happens.
     pub days: (Day, Day),
     /// The start time of this meeting.
@@ -27,7 +27,7 @@ pub struct Meeting {
     /// The end time of this meeting.
     pub end_time: Time,
     /// The course id.
-    pub course_id: u32,
+    pub course_id: usize,
     /// The professor.
     pub professor: &'static str,
 }

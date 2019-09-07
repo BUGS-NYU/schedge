@@ -1,7 +1,13 @@
-#[derive(Clone, Debug)]
+use super::chrono::{Day, Time};
+
+#[derive(Clone, Debug, Copy)]
 pub struct Meeting {
-    pub days: (u8, u8),
-    pub start_time: u16,
-    pub end_time: u16,
-    pub professor: String,
+    /// Course registration number. Uniquely identifies this meeting.
+    pub crn: u32,
+    /// The days this meeting happens.
+    pub days: (Day, Day),
+    /// The start time of this meeting.
+    pub start_time: Time,
+    /// The end time of this meeting.
+    pub end_time: Time,
 }

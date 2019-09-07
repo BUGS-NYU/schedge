@@ -1,7 +1,6 @@
 use crate::models::chrono::{Day, Time};
 use crate::models::course::Course;
 use crate::models::meeting::Meeting;
-use std::collections::HashMap;
 
 /// Data is a vector of tuples where the first element is an identifier of the course,
 /// and the second is a list of meetings that that course contains.

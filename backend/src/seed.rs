@@ -7,8 +7,8 @@ use std::collections::HashMap;
 /// and the second is a list of meetings that that course contains.
 #[derive(Debug)]
 pub struct SeedData {
-    /// Course numbers -> Lists of meetings/sections
-    pub meetings: HashMap<u32, Vec<Meeting>>,
+    /// Meeting numbers -> Lists of meetings/sections
+    pub meetings: HashMap<u32, Meeting>,
     /// Course numbers -> Course metadata
     pub courses: HashMap<u32, Course>,
     /// Department codes -> Course Numbers
@@ -40,71 +40,90 @@ pub fn get_seed_data() -> SeedData {
     let mut meetings = HashMap::new();
 
     meetings.insert(
-        0,
-        vec![
-            Meeting {
-                crn: 1,
-                days: (Tues, Thurs),
-                start_time: Time(750),
-                end_time: Time(825),
-                professor: "Joseph Califf".into(), // This guy is awesome!
-            },
-            Meeting {
-                crn: 2,
-                days: (Mon, Wed),
-                start_time: Time(750),
-                end_time: Time(825),
-                professor: "Noelle Liston".into(),
-            },
-            Meeting {
-                crn: 3,
-                days: (Tues, Thurs),
-                start_time: Time(660),
-                end_time: Time(735),
-                professor: "Matthew McClelland".into(),
-            },
-            Meeting {
-                crn: 4,
-                days: (Mon, Wed),
-                start_time: Time(660),
-                end_time: Time(735),
-                professor: "Noelle Liston".into(),
-            },
-        ],
+        2,
+        Meeting {
+            course_id: 0,
+            days: (Tues, Thurs),
+            start_time: Time(750),
+            end_time: Time(825),
+            professor: "Joseph Califf".into(), // This guy is awesome!
+        },
     );
 
     meetings.insert(
-        1,
-        vec![
-            Meeting {
-                crn: 5,
-                days: (Tues, Thurs),
-                start_time: Time(840),
-                end_time: Time(915),
-                professor: "Anasse Bari".into(),
-            },
-            Meeting {
-                crn: 6,
-                days: (Tues, Thurs),
-                start_time: Time(570),
-                end_time: Time(645),
-                professor: "Amos Bloomberg".into(),
-            },
-            Meeting {
-                crn: 7,
-                days: (Tues, Thurs),
-                start_time: Time(930),
-                end_time: Time(1005),
-                professor: "Teseo Schneider".into(),
-            },
-            Meeting {
-                crn: 8,
-                days: (Mon, Wed),
-                start_time: Time(930),
-                end_time: Time(1005),
-                professor: "Hilbert Locklear".into(),
-            },
-        ],
+        3,
+        Meeting {
+            course_id: 0,
+            days: (Mon, Wed),
+            start_time: Time(750),
+            end_time: Time(825),
+            professor: "Noelle Liston".into(),
+        },
+    );
+    meetings.insert(
+        4,
+        Meeting {
+            course_id: 0,
+            days: (Tues, Thurs),
+            start_time: Time(660),
+            end_time: Time(735),
+            professor: "Matthew McClelland".into(),
+        },
+    );
+
+    meetings.insert(
+        5,
+        Meeting {
+            course_id: 0,
+            days: (Mon, Wed),
+            start_time: Time(660),
+            end_time: Time(735),
+            professor: "Noelle Liston".into(),
+        },
+    );
+
+    meetings.insert(
+        6,
+        Meeting {
+            course_id: 1,
+            days: (Tues, Thurs),
+            start_time: Time(840),
+            end_time: Time(915),
+            professor: "Anasse Bari".into(),
+        },
+    );
+
+    meetings.insert(
+        7,
+        Meeting {
+            course_id: 1,
+            days: (Tues, Thurs),
+            start_time: Time(570),
+            end_time: Time(645),
+            professor: "Amos Bloomberg".into(),
+        },
+    );
+
+    meetings.insert(
+        8,
+        Meeting {
+            course_id: 1,
+            days: (Tues, Thurs),
+            start_time: Time(930),
+            end_time: Time(1005),
+            professor: "Teseo Schneider".into(),
+        },
+    );
+
+    meetings.insert(
+        9,
+        Meeting {
+            course_id: 1,
+            days: (Mon, Wed),
+            start_time: Time(930),
+            end_time: Time(1005),
+            professor: "Hilbert Locklear".into(),
+        },
     );
 
     let mut departments = HashMap::new();

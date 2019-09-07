@@ -1,6 +1,3 @@
-use crate::schema::departments;
-use diesel::RunQueryDsl;
-use rocket_contrib::databases::diesel;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Queryable, Serialize, Deserialize)]
@@ -10,8 +7,11 @@ pub struct Department {
     name: String,
 }
 
-pub fn get_departments(conn: &diesel::PgConnection) -> Vec<Department> {
-    departments::table
-        .load::<Department>(conn)
-        .expect("Cannot load departments")
+pub fn string_to_department_id(string: &str) -> Option<usize> {
+    match string {
+        "CORE-UA" => Some(0),
+        "CSCI-UA" => Some(1),
+        "MATH-UA" => Some(2),
+        _ => None,
+    }
 }

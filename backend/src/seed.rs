@@ -11,8 +11,6 @@ pub struct SeedData {
     pub meetings: Vec<Meeting>,
     /// Course numbers -> Course metadata
     pub courses: Vec<Course>,
-    /// Department codes -> Course Numbers
-    pub departments: HashMap<&'static str, Vec<u32>>,
 }
 
 #[inline(always)]
@@ -22,10 +20,17 @@ pub fn get_seed_data() -> SeedData {
     let courses = vec![
         Course {
             name: "Writing The Essay",
+            department_id: 0,
             prerequisites: Vec::new(),
         },
         Course {
-            name: "Introduction to Programming",
+            name: "Introduction to Computer Science",
+            department_id: 1,
+            prerequisites: Vec::new(),
+        },
+        Course {
+            name: "Calculus I",
+            department_id: 2,
             prerequisites: Vec::new(),
         },
     ];
@@ -87,16 +92,42 @@ pub fn get_seed_data() -> SeedData {
             end_time: Time(1005),
             professor: "Hilbert Locklear".into(),
         },
+        Meeting {
+            course_id: 2,
+            days: (Mon, Wed),
+            start_time: Time(570),
+            end_time: Time(645),
+            professor: "Wayne Uy".into(),
+        },
+        Meeting {
+            course_id: 2,
+            days: (Tues, Thurs),
+            start_time: Time(750),
+            end_time: Time(825),
+            professor: "Selin Kalaycioglu".into(),
+        },
+        Meeting {
+            course_id: 2,
+            days: (Tues, Thurs),
+            start_time: Time(1015),
+            end_time: Time(1090),
+            professor: "N/A".into(),
+        },
+        Meeting {
+            course_id: 2,
+            days: (Mon, Wed),
+            start_time: Time(840),
+            end_time: Time(915),
+            professor: "Sia Charmaine".into(),
+        },
+        Meeting {
+            course_id: 2,
+            days: (Mon, Wed),
+            start_time: Time(750),
+            end_time: Time(825),
+            professor: "Hesam Oveys".into(),
+        },
     ];
 
-    let mut departments = HashMap::new();
-
-    departments.insert("CORE-UA", vec![0 as usize]);
-    departments.insert("CSCI-UA", vec![1 as usize]);
-
-    SeedData {
-        meetings,
-        courses,
-        departments,
-    }
+    SeedData { meetings, courses }
 }

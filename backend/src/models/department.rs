@@ -7,11 +7,17 @@ pub struct Department {
     name: String,
 }
 
+pub static EXPOS_DEPT_ID: usize = 0;
+pub static CSCI_DEPT_ID: usize = 1;
+pub static MATH_DEPT_ID: usize = 2;
+pub static CORE_DEPT_ID: usize = 2;
+
 pub fn string_to_department_id(string: &str) -> Option<usize> {
     match string {
-        "CORE-UA" => Some(0),
-        "CSCI-UA" => Some(1),
-        "MATH-UA" => Some(2),
+        "EXPOS-UA" => Some(EXPOS_DEPT_ID),
+        "CSCI-UA" => Some(CSCI_DEPT_ID),
+        "MATH-UA" => Some(MATH_DEPT_ID),
+        "CORE-UA" => Some(CORE_DEPT_ID),
         _ => None,
     }
 }

@@ -13,12 +13,10 @@ pub fn schedule_using_department(
                                              // TODO Move core out of seed data, into core seed data
 
     department.make_ascii_uppercase();
-    let core_id = string_to_department_id("CORE-UA".into()).unwrap();
-    let math_id = string_to_department_id("MATH-UA".into()).unwrap();
+    let expos_id = string_to_department_id("EXPOS-UA".into()).unwrap();
     let major_dept_id = string_to_department_id(&department);
     if let Some(major_id) = major_dept_id {
-        let schedule =
-            compute_schedule(&data, vec![core_id, math_id, major_id]).unwrap_or(Vec::new());
+        let schedule = compute_schedule(&data, vec![expos_id, major_id]).unwrap_or(Vec::new());
         Ok(Json(schedule))
     } else {
         Err(Custom(

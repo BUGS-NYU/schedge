@@ -1,10 +1,22 @@
 use crate::models::chrono::{Day, Time};
 use crate::models::meeting::Meeting;
+use std::collections::HashMap;
 
 /// Data is a vector of tuples where the first element is an identifier of the course,
 /// and the second is a list of meetings that that course contains.
 #[derive(Debug)]
 pub struct SeedData(pub Vec<(String, Vec<Meeting>)>);
+
+/// Data is a HashMap where the keys are identifiers of a course, and the values
+/// are a list of meetings that that course contains.
+#[allow(dead_code)]
+#[derive(Debug)]
+pub struct CSVData(pub HashMap<String, Vec<Meeting>>);
+
+#[allow(dead_code)]
+pub fn get_csv_data() -> CSVData {
+    CSVData(HashMap::new())
+}
 
 pub fn get_seed_data() -> SeedData {
     use Day::*;

@@ -48,6 +48,7 @@ fn compute_schedule(meetings: Vec<(String, Vec<Meeting>)>) -> Option<Vec<Meeting
     }
 }
 
+/// Recursive subroutine of `compute_schedule`
 fn compute_schedule_rec(
     meetings: &Vec<(String, Vec<Meeting>)>,
     idx: usize,
@@ -64,6 +65,7 @@ fn compute_schedule_rec(
                         break false;
                     }
                 } else {
+                    // We've gone through them all; we're done, and there's no conflict!
                     break true;
                 }
             };
@@ -76,6 +78,7 @@ fn compute_schedule_rec(
                 progress.pop();
             }
         }
+
         false
     }
 }

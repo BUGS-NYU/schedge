@@ -10,6 +10,7 @@ pub enum Day {
 }
 
 impl Day {
+    #[allow(dead_code)]
     pub fn as_num(self) -> u8 {
         self as u8
     }

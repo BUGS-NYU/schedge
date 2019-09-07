@@ -5,8 +5,6 @@ use super::chrono::{Day, Time};
 pub struct MeetingOutput {
     /// Course name
     pub course_name: &'static str,
-    /// Course registration number. Uniquely identifies this meeting.
-    pub crn: u32,
     /// The days this meeting happens.
     pub days: (Day, Day),
     /// The start time of this meeting.
@@ -30,4 +28,16 @@ pub struct Meeting {
     pub course_id: u32,
     /// The professor.
     pub professor: &'static str,
+}
+
+impl Meeting {
+    pub fn to_output(&self, course_name: &'static str) -> MeetingOutput {
+        MeetingOutput {
+            course_name,
+            days: self.days,
+            start_time: self.start_time,
+            end_time: self.end_time,
+            professor: self.professor,
+        }
+    }
 }

@@ -9,10 +9,12 @@ pub fn schedule_using_department(mut department: String) -> Json<Vec<Meeting>> {
 
     department.make_ascii_uppercase();
     let core = &data.departments["CORE-UA"];
-    let schedule = compute_schedule(
-        &data.meetings,
-        vec![core[0], data.departments[&*department][0]],
-    )
-    .unwrap_or(Vec::new());
-    Json(schedule)
+    let dept_data = data.departments.get(&*department);
+    if let Some(dept_data) = dept_data {
+        let schedule =
+            compute_schedule(&data.meetings, vec![core[0], dept_data[0]]).unwrap_or(Vec::new());
+        Json(schedule)
+    } else {
+        Json(Vec::new())
+    }
 }

@@ -47,31 +47,41 @@ pub fn get_seed_data() -> SeedData {
             meetings.push(Meeting {
                 course_id: course_id as usize,
                 days: $days,
-                start_time: Time($time1),
-                end_time: Time($time2),
+                start_time: Time(($time1 % 100) + ($time1 / 100 * 60)),
+                end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
                 professor: $prof,
             })
         };
     }
 
     new_course!("Writing The Essay", EXPOS_DEPT_ID);
-    new_meeting!((Tues, Thurs), (750, 825), "Joseph Califf");
-    new_meeting!((Mon, Wed), (750, 825), "Noelle Liston");
-    new_meeting!((Tues, Thurs), (660, 735), "Matthew McClelland");
-    new_meeting!((Mon, Wed), (660, 735), "Noelle Liston");
+    new_meeting!((Tues, Thurs), (1230, t1345), "Joseph Califf");
+    new_meeting!((Mon, Wed), (1230, t1345), "Noelle Liston");
+    new_meeting!((Tues, Thurs), (1100, t1215), "Matthew McClelland");
+    new_meeting!((Mon, Wed), (1100, t1215), "Noelle Liston");
 
     new_course!("Introduction to Computer Science", CSCI_DEPT_ID);
-    new_meeting!((Tues, Thurs), (840, 915), "Anasse Bari");
-    new_meeting!((Tues, Thurs), (570, 645), "Amos Bloomberg");
-    new_meeting!((Tues, Thurs), (930, 1005), "Teseo Schneider");
-    new_meeting!((Mon, Wed), (930, 1005), "Hilbert Locklear");
+    new_meeting!((Tues, Thurs), (1400, t1515), "Anasse Bari");
+    new_meeting!((Tues, Thurs), (930, t1045), "Amos Bloomberg");
+    new_meeting!((Tues, Thurs), (1530, t1645), "Teseo Schneider");
+    new_meeting!((Mon, Wed), (1530, t1645), "Hilbert Locklear");
 
     new_course!("Calculus I", MATH_DEPT_ID);
-    new_meeting!((Mon, Wed), (570, 645), "Wayne Uy");
-    new_meeting!((Tues, Thurs), (750, 825), "Selin Kalaycioglu");
+    new_meeting!((Mon, Wed), (930, t1045), "Wayne Uy");
+    new_meeting!((Tues, Thurs), (1230, t1345), "Selin Kalaycioglu");
+    new_meeting!((Tues, Thurs), (1655, t1810), "N/A");
+    new_meeting!((Mon, Wed), (1400, t1515), "Sia Charmaine");
+    new_meeting!((Mon, Wed), (1230, t1345), "Hesam Oveys");
+
+    new_course!(
+        "Quantitative Reasoning: Elementary Statistics",
+        CORE_DEPT_ID
+    );
+    new_meeting!((Tues, Thurs), (570, 645), "Wayne Uy");
+    new_meeting!((Tues, Thurs), (t1230, 825), "Selin Kalaycioglu");
     new_meeting!((Tues, Thurs), (1015, 1090), "N/A");
     new_meeting!((Mon, Wed), (840, 915), "Sia Charmaine");
-    new_meeting!((Mon, Wed), (750, 825), "Hesam Oveys");
+    new_meeting!((Mon, Wed), (t1230, 825), "Hesam Oveys");
 
     SeedData { meetings, courses }
 }

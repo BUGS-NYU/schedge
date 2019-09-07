@@ -25,6 +25,6 @@ struct DbConn(diesel::PgConnection);
 
 fn main() {
     rocket::ignite()
-        .mount("/schedule", routes![response::schedule_using_department])
+        .mount("/freshman", routes![response::schedule_using_department])
         .launch();
 }

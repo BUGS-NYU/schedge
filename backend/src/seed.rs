@@ -7,10 +7,15 @@ use std::collections::HashMap;
 /// and the second is a list of meetings that that course contains.
 #[derive(Debug)]
 pub struct SeedData {
+    /// Course numbers -> Lists of meetings/sections
     pub meetings: HashMap<u32, Vec<Meeting>>,
+    /// Course numbers -> Course metadata
     pub courses: HashMap<u32, Course>,
+    /// Department codes -> Course Numbers
+    pub departments: HashMap<&'static str, Vec<u32>>,
 }
 
+#[inline(always)]
 pub fn get_seed_data() -> SeedData {
     use Day::*;
 
@@ -19,7 +24,7 @@ pub fn get_seed_data() -> SeedData {
     courses.insert(
         0,
         Course {
-            name: "Writing The Essay".into(),
+            name: "Writing The Essay",
             prerequisites: Vec::new(),
         },
     );
@@ -27,7 +32,7 @@ pub fn get_seed_data() -> SeedData {
     courses.insert(
         1,
         Course {
-            name: "Introduction to Programming".into(),
+            name: "Introduction to Programming",
             prerequisites: Vec::new(),
         },
     );
@@ -102,5 +107,14 @@ pub fn get_seed_data() -> SeedData {
         ],
     );
 
-    SeedData { meetings, courses }
+    let mut departments = HashMap::new();
+
+    departments.insert("CORE-UA", vec![0]);
+    departments.insert("CSCI-UA", vec![1]);
+
+    SeedData {
+        meetings,
+        courses,
+        departments,
+    }
 }

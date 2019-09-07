@@ -18,6 +18,7 @@ mod seed;
 
 use crate::models::meeting::Meeting;
 use rocket_contrib::json::Json;
+use std::collections::HashMap;
 
 #[database("schedge")]
 struct DbConn(diesel::PgConnection);
@@ -26,7 +27,7 @@ struct DbConn(diesel::PgConnection);
 fn schedule_using_department(_department: String) -> Json<Vec<Meeting>> {
     let data = seed::get_seed_data(); // TODO make this into a fairing
                                       // TODO Move core out of seed data, into core seed data
-    let schedule = compute_schedule(data.0).unwrap_or(Vec::new());
+    let schedule = compute_schedule(&data.meetings).unwrap_or(Vec::new());
     Json(schedule)
 }
 
@@ -37,25 +38,34 @@ fn main() {
 }
 
 /// Compute a schedule based on the given meeting times
-fn compute_schedule(meetings: Vec<(String, Vec<Meeting>)>) -> Option<Vec<Meeting>> {
+fn compute_schedule(meetings: &HashMap<u32, Vec<Meeting>>) -> Option<Vec<Meeting>> {
     let mut progress = Vec::new();
-    if compute_schedule_rec(&meetings, 0, &mut progress) {
-        Some(progress)
+    if compute_schedule_rec(
+        meetings,
+        &meetings.keys().map(|n| *n).collect(),
+        0,
+        &mut progress,
+    ) {
+        Some(progress.into_iter().map(|course| course.clone()).collect())
     } else {
         None
     }
 }
 
 /// Recursive subroutine of `compute_schedule`
-fn compute_schedule_rec(
-    meetings: &Vec<(String, Vec<Meeting>)>,
+fn compute_schedule_rec<'a, 'b>(
+    meetings: &'a HashMap<u32, Vec<Meeting>>,
+    meeting_keys: &Vec<u32>,
     idx: usize,
-    progress: &mut Vec<Meeting>,
-) -> bool {
-    if idx >= meetings.len() {
+    progress: &'b mut Vec<&'a Meeting>,
+) -> bool
+where
+    'a: 'b,
+{
+    if idx >= meeting_keys.len() {
         true
     } else {
-        for course in &meetings[idx].1 {
+        for course in &meetings[&meeting_keys[idx]] {
             let mut iter = progress.iter();
             let valid = loop {
                 if let Some(prev) = iter.next() {
@@ -69,8 +79,8 @@ fn compute_schedule_rec(
             };
 
             if valid {
-                progress.push(*course);
-                if compute_schedule_rec(meetings, idx + 1, progress) {
+                progress.push(course);
+                if compute_schedule_rec(meetings, meeting_keys, idx + 1, progress) {
                     return true;
                 }
                 progress.pop();

@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
 import withStyles, { WithStyles } from "react-jss";
 import { Link } from "@reach/router";
-import {PaletteColor} from "@material-ui/core/styles/createPalette";
 const styles = {
   SectionLink: {
     width: "300px",

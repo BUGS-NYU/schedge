@@ -20,11 +20,16 @@ mod schema;
 /// Seed ata to initialize the server with
 mod seed;
 
+use rocket_cors::CorsOptions;
+
 #[database("schedge")]
 struct DbConn(diesel::PgConnection);
 
 fn main() {
+    let default = CorsOptions::default();
+    let cors = CorsOptions::to_cors(&default).unwrap();
     rocket::ignite()
         .mount("/freshmen", routes![response::schedule_using_department])
+        .attach(cors)
         .launch();
 }

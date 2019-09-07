@@ -1,6 +1,7 @@
 use super::chrono::{Day, Time};
 
 #[derive(Clone, Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Meeting {
     /// Course registration number. Uniquely identifies this meeting.
     pub crn: u32,

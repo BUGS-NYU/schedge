@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 
 /// Represents a day of the week
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Serialize)]
 pub enum Day {
     Mon = 0,
     Tues,
@@ -17,7 +17,7 @@ impl Day {
 }
 
 /// Represents a time of day
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Serialize)]
 pub struct Time(pub u16);
 
 impl PartialEq for Time {

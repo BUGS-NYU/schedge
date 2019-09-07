@@ -1,6 +1,6 @@
 use super::chrono::{Day, Time};
 
-#[derive(Clone, Debug, Copy)]
+#[derive(Clone, Debug, Copy, Serialize)]
 pub struct Meeting {
     /// Course registration number. Uniquely identifies this meeting.
     pub crn: u32,

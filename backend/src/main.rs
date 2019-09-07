@@ -1,9 +1,10 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-// #[macro_use]
+#[macro_use]
 extern crate rocket;
 #[macro_use]
 extern crate rocket_contrib;
+#[macro_use]
 extern crate serde;
 #[macro_use]
 extern crate diesel;
@@ -17,7 +18,7 @@ mod seed;
 
 // use crate::models::department::{get_departments, Department};
 use crate::models::meeting::Meeting;
-// use rocket_contrib::json::Json;
+use rocket_contrib::json::Json;
 
 #[database("schedge")]
 struct DbConn(diesel::PgConnection);
@@ -27,15 +28,19 @@ struct DbConn(diesel::PgConnection);
 //     Json(get_departments(&conn))
 // }
 
-fn main() {
-    // rocket::ignite()
-    //     .mount("/departments", routes![departments_index])
-    //     .attach(DbConn::fairing())
-    //     .launch();
+#[get("/<_department>")]
+fn schedule_using_department(_department: String) -> Json<Vec<Meeting>> {
+    let data = seed::get_seed_data(); // TODO make this into a fairing
+                                      // TODO Move core out of seed data, into core seed data
+    let schedule = compute_schedule(data.0).unwrap_or(Vec::new());
+    Json(schedule)
+}
 
-    let data = seed::get_seed_data();
-    let schedule = compute_schedule(data.0);
-    println!("{:?}", schedule);
+fn main() {
+    rocket::ignite()
+        .mount("/schedule", routes![schedule_using_department])
+        // .attach(DbConn::fairing())
+        .launch();
 }
 
 /// Compute a schedule based on the given meeting times

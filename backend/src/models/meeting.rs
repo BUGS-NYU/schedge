@@ -1,6 +1,6 @@
 use super::chrono::{Day, Time};
 
-#[derive(Clone, Debug, Copy, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Meeting {
     /// Course registration number. Uniquely identifies this meeting.
     pub crn: u32,
@@ -12,6 +12,6 @@ pub struct Meeting {
     pub end_time: Time,
     /// The professor
     pub professor: String,
-    /// The course id
-    pub course_id: u32,
+    // /// The course id
+    // pub course_id: u32,
 }

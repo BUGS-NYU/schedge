@@ -1,4 +1,5 @@
+#[derive(Debug, Clone)]
 pub struct Course {
-    prerequisites: Vec<u32>,
-    name: String,
+    pub prerequisites: Vec<u32>,
+    pub name: &'static str,
 }

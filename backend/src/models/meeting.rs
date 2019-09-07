@@ -10,4 +10,8 @@ pub struct Meeting {
     pub start_time: Time,
     /// The end time of this meeting.
     pub end_time: Time,
+    /// The professor
+    pub professor: String,
+    /// The course id
+    pub course_id: u32,
 }

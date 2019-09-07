@@ -16,17 +16,11 @@ mod schema;
 /// Seed ata to initialize the server with
 mod seed;
 
-// use crate::models::department::{get_departments, Department};
 use crate::models::meeting::Meeting;
 use rocket_contrib::json::Json;
 
 #[database("schedge")]
 struct DbConn(diesel::PgConnection);
-
-// #[get("/")]
-// fn departments_index(conn: DbConn) -> Json<Vec<Department>> {
-//     Json(get_departments(&conn))
-// }
 
 #[get("/<_department>")]
 fn schedule_using_department(_department: String) -> Json<Vec<Meeting>> {
@@ -39,7 +33,6 @@ fn schedule_using_department(_department: String) -> Json<Vec<Meeting>> {
 fn main() {
     rocket::ignite()
         .mount("/schedule", routes![schedule_using_department])
-        // .attach(DbConn::fairing())
         .launch();
 }
 

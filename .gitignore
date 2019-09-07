@@ -1,0 +1,11 @@
+/backend/target
+**/*.rs.bk
+/backend/.env
+/backend/Rocket.toml
+/backend/seed.sql
+\#*\#
+.\#*
+/backend/tmp
+/backend/.idea/
+/frontend/.idea
+public

@@ -1,4 +1,4 @@
-import React, { Dispatch, useEffect, useReducer } from "react";
+import React, { Dispatch, useReducer } from "react";
 import withStyles, { WithStyles } from "react-jss";
 import { blue, red } from "@material-ui/core/colors";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
@@ -8,6 +8,8 @@ import { Link, Router } from "@reach/router";
 import Typography from "@material-ui/core/Typography";
 import SchedulePage from "./SchedulePage";
 import { APIMeeting, Meeting } from "./types";
+import LoadingScreen from "./LoadingScreen";
+import SophomoresForm from "./SophomoresForm";
 
 const styles = {
   App: {
@@ -71,16 +73,20 @@ const addSchedule = (dispatch: Dispatch<ActionTypes>) => (
   scheduleResponse: Array<APIMeeting>
 ) => {
   const schedule = scheduleResponse.flatMap(
-    ({ startTime, endTime, days, courseName }) => [
+    ({ startTime, endTime, days, courseName, professor, location }) => [
       {
         title: courseName,
         startDate: totalMinutesToDateTime(startTime, dayOffsets[days[0]]),
-        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]])
+        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]]),
+        professor,
+        location
       },
       {
         title: courseName,
         startDate: totalMinutesToDateTime(startTime, dayOffsets[days[1]]),
-        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[1]])
+        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[1]]),
+        professor,
+        location
       }
     ]
   );
@@ -105,12 +111,17 @@ const App: React.FC<WithStyles<typeof styles>> = ({ classes }) => {
         </div>
         <Router>
           <HomePage path="/" />
+          <LoadingScreen path="/loading" />
           {state.schedule ? (
             <SchedulePage schedule={state.schedule} path="/schedule" />
           ) : (
             <HomePage path="/schedule" />
           )}
           <FreshmenForm addSchedule={addSchedule(dispatch)} path="/freshmen" />
+          <SophomoresForm
+            addSchedule={addSchedule(dispatch)}
+            path="/sophomores"
+          />
         </Router>
       </div>
     </MuiThemeProvider>

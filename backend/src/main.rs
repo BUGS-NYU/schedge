@@ -18,7 +18,7 @@ mod models;
 mod response;
 /// Schema data. Deprecated (?)
 mod schema;
-/// Seed ata to initialize the server with
+/// Seed data to initialize the server with
 mod seed;
 
 use rocket_cors::CorsOptions;
@@ -31,7 +31,7 @@ fn main() {
     let cors = CorsOptions::to_cors(&default).unwrap();
     rocket::ignite()
         .mount(
-            "/schedule-by-deparments",
+            "/schedule-by-departments",
             routes![response::schedule_using_department],
         )
         .mount(

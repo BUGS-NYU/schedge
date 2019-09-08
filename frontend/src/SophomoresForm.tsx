@@ -1,5 +1,5 @@
-import React, { useReducer } from "react";
-import { Paper, Typography } from "@material-ui/core";
+import React, { useEffect, useReducer } from "react";
+import { createStyles, Paper, Theme, Typography } from "@material-ui/core";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import { navigate, RouteComponentProps } from "@reach/router";
@@ -8,9 +8,12 @@ import withStyles, { WithStyles } from "react-jss";
 import { API_URL } from "./constants";
 import axios from "axios";
 import { APIMeeting } from "./types";
+import Grid from "@material-ui/core/Grid";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const styles = {
-  FreshmanForm: {
+  SophomoresForm: {
     display: "flex",
     flexDirection: "column",
     padding: "40px"
@@ -36,6 +39,7 @@ const styles = {
 
 interface State {
   department: string;
+  isLoading: boolean;
   error: string | undefined;
 }
 
@@ -56,17 +60,46 @@ function reducer(state: State, action: ActionTypes) {
 
 const initialState = {
   department: "",
+  isLoading: true,
   error: undefined
 };
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    progress: {
+      margin: theme.spacing(2)
+    }
+  })
+);
 
 interface Props extends RouteComponentProps, WithStyles<typeof styles> {
   addSchedule: (s: Array<APIMeeting>) => void;
 }
 
-const FreshmenForm: React.FC<Props> = ({ addSchedule, classes }) => {
+const SophomoresForm: React.FC<Props> = ({ addSchedule, classes }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const muiClasses = useStyles();
+  useEffect(() => {}, []);
+  if (state.isLoading) {
+    return (
+      <Paper>
+        <Grid
+          container
+          spacing={10}
+          direction="column"
+          alignItems="center"
+          style={{ minHeight: "100vh", padding: "100px" }}
+        >
+          <Typography variant="h4" component="h4">
+            Fetching courses...
+          </Typography>
+          <CircularProgress className={muiClasses.progress} />
+        </Grid>
+      </Paper>
+    );
+  }
   return (
-    <Paper className={classes.FreshmanForm}>
+    <Paper className={classes.SophomoresForm}>
       <form
         className={classes.form}
         onSubmit={e => {
@@ -124,4 +157,4 @@ const FreshmenForm: React.FC<Props> = ({ addSchedule, classes }) => {
   );
 };
 
-export default withStyles(styles)(FreshmenForm);
+export default withStyles(styles)(SophomoresForm);

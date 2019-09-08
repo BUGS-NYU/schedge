@@ -14,9 +14,11 @@ pub fn schedule_using_department(
 
     department.make_ascii_uppercase();
     let expos_id = str_to_department_id("EXPOS-UA").unwrap();
+    let core_id = str_to_department_id("CORE-UA").unwrap();
     let major_dept_id = str_to_department_id(&department);
     if let Some(major_id) = major_dept_id {
-        let schedule = compute_schedule(&data, vec![expos_id, major_id]).unwrap_or(Vec::new());
+        let schedule =
+            compute_schedule(&data, vec![expos_id, core_id, major_id]).unwrap_or(Vec::new());
         let schedule = schedule
             .into_iter()
             .map(|raw_meeting| raw_meeting.to_output(&data.courses[raw_meeting.course_id].name))

@@ -29,12 +29,14 @@ const styles = {
       background: (props: Props) => props.color,
       "-webkit-transform": "scaleX(0)",
       transform: "scaleX(0)",
-      "-webkit-transform-origin": "0 50%",
-      transformOrigin: "0 50%",
+      "-webkit-transform-origin": (props: Props) =>
+        `${props.direction === "left" ? "0" : "100%"} 50%`,
+      transformOrigin: (props: Props) =>
+        `${props.direction === "left" ? "0" : "100%"} 50%`,
       "-webkit-transition-property": "transform",
       transitionProperty: "transform",
-      "-webkit-transition-duration": "0.3s",
-      transitionDuration: "0.3s",
+      "-webkit-transition-duration": "0.4s",
+      transitionDuration: "0.4s",
       "-webkit-transition-timing-function": "ease-out",
       transitionTimingFunction: "ease-out"
     },
@@ -59,6 +61,7 @@ interface Props extends WithStyles<typeof styles> {
   to: string;
   children: ReactNode;
   color: string;
+  direction: string;
 }
 const SectionLink: React.FC<Props> = ({ classes, to, children }) => {
   return (

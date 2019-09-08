@@ -7,10 +7,13 @@ export interface APIMeeting {
   startTime: number;
   professor: string;
   courseName: string;
+  location: string;
 }
 
 export interface Meeting {
   title: string;
   startDate: Date;
   endDate: Date;
+  location: string;
+  professor: string;
 }

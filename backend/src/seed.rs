@@ -79,10 +79,30 @@ pub fn get_seed_data() -> SeedData {
     new_meeting!((Mon, Wed), (1100, 1215), "Noelle Liston", "N/A");
 
     new_course!("Introduction to Computer Science", CSCI_DEPT_ID);
-    new_meeting!((Tues, Thurs), (1400, 1515), "Anasse Bari", "N/A");
-    new_meeting!((Tues, Thurs), (930, 1045), "Amos Bloomberg", "N/A");
-    new_meeting!((Tues, Thurs), (1530, 1645), "Teseo Schneider", "N/A");
-    new_meeting!((Mon, Wed), (1530, 1645), "Hilbert Locklear", "N/A");
+    new_meeting!(
+        (Tues, Thurs),
+        (1400, 1515),
+        "Anasse Bari",
+        "Warren Weaver Hall: Room 101"
+    );
+    new_meeting!(
+        (Tues, Thurs),
+        (930, 1045),
+        "Amos Bloomberg",
+        "60 5th Avenue: Room 110"
+    );
+    new_meeting!(
+        (Tues, Thurs),
+        (1530, 1645),
+        "Teseo Schneider",
+        "25 W 4th St: Room C-20"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1530, 1645),
+        "Hilbert Locklear",
+        "Warren Weaver Hall: Room 102"
+    );
 
     new_course!("Calculus I", MATH_DEPT_ID);
     new_meeting!(

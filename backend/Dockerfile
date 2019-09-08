@@ -28,7 +28,7 @@ FROM rustlang/rust:nightly
 
 # copy the build artifact from the build stage
 COPY --from=build /backend/target/release/backend .
-COPY ./.env ./.env
+
 
 # set the startup command to run your binary
 CMD ["./backend"]

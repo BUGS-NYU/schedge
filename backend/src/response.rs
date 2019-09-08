@@ -22,6 +22,7 @@ pub fn schedule_using_department(
     if let Some(major_id) = major_dept_id {
         let schedule = algorithm::schedule_by_department(&data, vec![expos_id, core_id, major_id])
             .unwrap_or(Vec::new());
+        println!("SCHEDULE: {:?}", schedule);
         let schedule = schedule
             .into_iter()
             .map(|raw_meeting| raw_meeting.to_output(&data.courses[raw_meeting.course_id].name))

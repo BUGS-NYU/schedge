@@ -9,14 +9,13 @@ pub fn schedule_by_department(
     mut department_ids: Vec<usize>,
 ) -> Option<Vec<Meeting>> {
     let mut rng = rand::thread_rng();
-    let mut departments_added = 0;
     for _ in 0..10 {
+        let mut departments_added = 0;
         let rand_index = rng.gen::<usize>() % department_ids.len();
         department_ids.rotate_right(rand_index);
         let mut schedule = Vec::new();
         for dept_id in &department_ids {
             let mut course = get_course_from_dept(&schedule, seed_data, *dept_id);
-            println!("COURSE: {:?}", course);
             if course.len() > 0 {
                 schedule.append(&mut course);
                 departments_added += 1;
@@ -77,7 +76,6 @@ fn get_course_from_dept(
         .iter()
         .filter(|meeting| courses_in_dept.contains(&meeting.course_id))
         .collect();
-
     get_course(schedule, &mut meetings_in_course)
 }
 
@@ -96,12 +94,10 @@ fn get_course(schedule: &Vec<Meeting>, meetings_in_course: &mut Vec<&Meeting>) -
                     .all(|sched_meeting| !does_overlap(sched_meeting, recit))
             });
 
-            let res = match recitation {
+            return match recitation {
                 Some(recit) => vec![recit.clone(), meeting.clone()],
                 None => vec![meeting.clone()],
             };
-
-            return res;
         }
     }
     Vec::new()

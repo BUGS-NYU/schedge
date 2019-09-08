@@ -25,7 +25,7 @@ const SchedulePage: React.FC<Props> = ({ classes, schedule }) => {
     <Paper className={classes.SchedulePage}>
       <Scheduler height={650} data={schedule}>
         <ViewState currentDate="2019-09-09" />
-        <WeekView startDayHour={9} endDayHour={19} />
+        <WeekView startDayHour={8} endDayHour={18} />
         <Appointments />
       </Scheduler>
     </Paper>

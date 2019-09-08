@@ -17,7 +17,7 @@ pub struct SeedData {
 pub fn get_seed_data() -> SeedData {
     use Day::*;
 
-    let mut course_id = 0;
+    let mut course_id = 1;
     let mut courses = Vec::new();
     let mut meetings = Vec::new();
 

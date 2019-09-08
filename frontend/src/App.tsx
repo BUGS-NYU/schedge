@@ -73,22 +73,35 @@ const addSchedule = (dispatch: Dispatch<ActionTypes>) => (
   scheduleResponse: Array<APIMeeting>
 ) => {
   const schedule = scheduleResponse.flatMap(
-    ({ startTime, endTime, days, courseName, professor, location }) => [
-      {
-        title: courseName,
-        startDate: totalMinutesToDateTime(startTime, dayOffsets[days[0]]),
-        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]]),
-        professor,
-        location
-      },
-      {
-        title: courseName,
-        startDate: totalMinutesToDateTime(startTime, dayOffsets[days[1]]),
-        endDate: totalMinutesToDateTime(endTime, dayOffsets[days[1]]),
-        professor,
-        location
+    ({ startTime, endTime, days, courseName, professor, location }) => {
+      if (days[0] === days[1]) {
+        return [
+          {
+            title: courseName,
+            startDate: totalMinutesToDateTime(startTime, dayOffsets[days[0]]),
+            endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]]),
+            professor,
+            location
+          }
+        ];
       }
-    ]
+      return [
+        {
+          title: courseName,
+          startDate: totalMinutesToDateTime(startTime, dayOffsets[days[0]]),
+          endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]]),
+          professor,
+          location
+        },
+        {
+          title: courseName,
+          startDate: totalMinutesToDateTime(startTime, dayOffsets[days[1]]),
+          endDate: totalMinutesToDateTime(endTime, dayOffsets[days[1]]),
+          professor,
+          location
+        }
+      ];
+    }
   );
   dispatch({ type: "ADD_SCHEDULE", schedule });
 };

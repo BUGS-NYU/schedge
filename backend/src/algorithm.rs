@@ -10,12 +10,13 @@ pub fn schedule_by_department(
 ) -> Option<Vec<Meeting>> {
     let mut rng = rand::thread_rng();
     let mut departments_added = 0;
-    for _ in 0..3 {
+    for _ in 0..10 {
         let rand_index = rng.gen::<usize>() % department_ids.len();
         department_ids.rotate_right(rand_index);
         let mut schedule = Vec::new();
         for dept_id in &department_ids {
             let mut course = get_course_from_dept(&schedule, seed_data, *dept_id);
+            println!("COURSE: {:?}", course);
             if course.len() > 0 {
                 schedule.append(&mut course);
                 departments_added += 1;

@@ -17,7 +17,8 @@ const styles = {
   },
   form: {
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    height: "100vh"
   },
   menuItem: {
     margin: "20px",
@@ -80,13 +81,18 @@ const FreshmenForm: React.FC<Props> = ({ addSchedule, classes }) => {
           axios
             .get(`${API_URL}/schedule-by-departments/${state.department}`)
             .then(res => {
+              console.log(res);
               addSchedule(res.data);
               navigate(`/loading`);
+            })
+            .catch(err => {
+              console.log(err);
+              dispatch({ type: "SUBMIT_FORM_FAILED", error: err.toString() });
             });
         }}
       >
         <Typography variant="h3" component="h3">
-          Intro Course
+          Select A Major
         </Typography>
         <Select
           className={classes.select}
@@ -110,8 +116,14 @@ const FreshmenForm: React.FC<Props> = ({ addSchedule, classes }) => {
             {" "}
             Math{" "}
           </MenuItem>
+          <MenuItem className={classes.menuItem} value="CRWRI-UA">
+            {" "}
+            Creative Writing{" "}
+          </MenuItem>
         </Select>
-        {state.error && <FormLabel error>state.error</FormLabel>}
+        {state.error && (
+          <FormLabel error>Couldn't load data, try again</FormLabel>
+        )}
         {state.department && (
           <div className={classes.button}>
             <Button type="submit" color="primary">

@@ -14,6 +14,7 @@ import { APICourse } from "./types";
 import Grid from "@material-ui/core/Grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import Button from "@material-ui/core/Button";
 
 const styles = {
   SophomoresForm: {
@@ -128,7 +129,13 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
         className={classes.form}
         onSubmit={e => {
           e.preventDefault();
-          console.log("SUBMITTING");
+          axios
+            .post(
+              `${API_URL}/available-by-completed`,
+              Array.from(state.checkboxes)
+            )
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
         }}
       >
         <Typography variant="h3" component="h3">
@@ -150,6 +157,12 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
               {course.name}
             </Typography>
           ))}
+        <div className={classes.button}>
+          <Button type="submit" color="primary">
+            {" "}
+            Create Schedule
+          </Button>
+        </div>
       </form>
     </Paper>
   );

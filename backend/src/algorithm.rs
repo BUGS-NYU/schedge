@@ -1,5 +1,6 @@
 use crate::models::meeting::Meeting;
 use crate::seed::SeedData;
+use rand::prelude::*;
 
 /// Compute a schedule based on the given meeting times
 pub fn compute_schedule(
@@ -33,10 +34,13 @@ fn get_course_from_dept(
         .enumerate()
         .find(|(_, course)| course.department_id == dept_id)
         .unwrap();
-    let meetings_in_course = seed_data
+    let mut meetings_in_course: Vec<&Meeting> = seed_data
         .meetings
         .iter()
-        .filter(|meeting| meeting.course_id == course_id);
+        .filter(|meeting| meeting.course_id == course_id)
+        .collect();
+    let mut rng = rand::thread_rng();
+    meetings_in_course.shuffle(&mut rng);
     for meeting in meetings_in_course {
         // Checks if given meeting fits into schedule
         if schedule

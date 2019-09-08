@@ -49,14 +49,7 @@ function reducer(state: State, action: ActionTypes) {
   }
 }
 
-function bind<T, U>(ma: T | null | undefined, f: (t: T) => U) {
-  if (ma) {
-    return f(ma);
-  }
-  return undefined;
-}
-
-const initialState = bind(localStorage.getItem("state"), JSON.parse) || {
+const initialState = {
   schedule: undefined
 };
 
@@ -78,14 +71,14 @@ const addSchedule = (dispatch: Dispatch<ActionTypes>) => (
   scheduleResponse: Array<APIMeeting>
 ) => {
   const schedule = scheduleResponse.flatMap(
-    ({ startTime, endTime, days, professor }) => [
+    ({ startTime, endTime, days, courseName }) => [
       {
-        title: professor,
+        title: courseName,
         startDate: totalMinutesToDateTime(startTime, dayOffsets[days[0]]),
         endDate: totalMinutesToDateTime(endTime, dayOffsets[days[0]])
       },
       {
-        title: professor,
+        title: courseName,
         startDate: totalMinutesToDateTime(startTime, dayOffsets[days[1]]),
         endDate: totalMinutesToDateTime(endTime, dayOffsets[days[1]])
       }
@@ -96,9 +89,6 @@ const addSchedule = (dispatch: Dispatch<ActionTypes>) => (
 
 const App: React.FC<WithStyles<typeof styles>> = ({ classes }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  useEffect(() => {
-    localStorage.setItem("state", JSON.stringify(state));
-  }, [state]);
   return (
     <MuiThemeProvider theme={theme}>
       <div className={classes.App}>

@@ -23,7 +23,6 @@ impl Course {
         }
     }
 
-    #[allow(dead_code)]
     pub fn to_output(&self, id: usize) -> CourseOutput {
         CourseOutput {
             id,

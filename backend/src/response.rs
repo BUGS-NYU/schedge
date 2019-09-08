@@ -34,11 +34,18 @@ pub fn schedule_using_department(
     }
 }
 
-// #[derive(Deserialize, Clone, Debug)]
-// pub struct {
-//     course_requests: Vec<u32>,
-//     completed_courses: Vec<u32>,
-// }
+#[get("/")]
+pub fn all_courses() -> Json<Vec<CourseOutput>> {
+    let seed = get_seed_data();
+
+    let courses = seed
+        .courses
+        .into_iter()
+        .enumerate()
+        .map(|(id, course)| course.to_output(id))
+        .collect();
+    Json(courses)
+}
 
 #[post("/", data = "<completed_courses>")]
 pub fn legal_courses_from_completed_courses(

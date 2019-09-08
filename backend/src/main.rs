@@ -8,6 +8,7 @@ extern crate rocket_contrib;
 extern crate serde;
 #[macro_use]
 extern crate diesel;
+extern crate rand;
 
 /// Code that handles building a schedule
 mod algorithm;

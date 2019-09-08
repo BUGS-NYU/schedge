@@ -36,9 +36,10 @@ pub struct FormInput {
     completed_courses: Vec<u32>,
 }
 
-#[post("/sophomores", data = "<form>")]
+#[post("/", data = "<form>")]
 pub fn schedule_using_course_list(
     form: Json<FormInput>,
 ) -> Result<Json<Vec<MeetingOutput>>, Custom<String>> {
+    form.course_requests
     Err(Custom(Status::BadRequest, "Ooooooof".into()))
 }

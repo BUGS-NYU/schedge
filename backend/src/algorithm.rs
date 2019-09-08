@@ -7,7 +7,10 @@ pub fn schedule_by_department(
     seed_data: &SeedData,
     mut department_ids: Vec<usize>,
 ) -> Option<Vec<Meeting>> {
+    let mut rng = rand::thread_rng();
+
     for _ in 0..3 {
+        department_ids.rotate_right(rng.gen());
         let mut schedule = Vec::new();
         for dept_id in &department_ids {
             match get_course_from_dept(&schedule, seed_data, *dept_id) {
@@ -18,7 +21,6 @@ pub fn schedule_by_department(
         if schedule.len() == department_ids.len() {
             return Some(schedule);
         }
-        department_ids.rotate_right(1);
     }
     None
 }

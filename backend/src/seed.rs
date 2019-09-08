@@ -17,7 +17,7 @@ pub struct SeedData {
 pub fn get_seed_data() -> SeedData {
     use Day::*;
 
-    let mut course_id = -1;
+    let mut course_id = 0;
     let mut courses = Vec::new();
     let mut meetings = Vec::new();
 
@@ -27,7 +27,7 @@ pub fn get_seed_data() -> SeedData {
     */
     macro_rules! new_course {
         ($string:expr, $id:ident) => {
-            new_course!(expr, ident, Vec::new())
+            new_course!($string, $id, Vec::new())
         };
         ($string:expr, $id:ident, $prerequisites:expr) => {
             courses.push(Course {
@@ -173,7 +173,7 @@ pub fn get_seed_data() -> SeedData {
     new_course!("Calculus II", MATH_DEPT_ID, vec![course_id]);
     new_meeting!((Mon, Wed), (1400, 1550), "Richard Kleeman", vec![], "N/A");
     new_meeting!((Mon, Wed), (1400, 1550), "Matthew Novack", vec![], "N/A");
-    new_meeting!((Tue, Thurs), (1400, 1550), "Vindya Bhat", vec![], "N/A");
+    new_meeting!((Tues, Thurs), (1400, 1550), "Vindya Bhat", vec![], "N/A");
 
     new_course!(
         "Quantitative Reasoning: Elementary Statistics",

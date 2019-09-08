@@ -6,7 +6,6 @@ use crate::seed::get_seed_data;
 use rocket::http::Status;
 use rocket::response::status::Custom;
 use rocket_contrib::json::Json;
-use std::collections::HashMap;
 
 #[get("/<department>")]
 pub fn schedule_using_department(
@@ -43,8 +42,8 @@ pub fn all_intro_courses() -> Json<Vec<CourseOutput>> {
     let courses = seed
         .courses
         .into_iter()
-        .filter(|course| course.prerequisites.len() == 0)
         .enumerate()
+        .filter(|(id, course)| course.prerequisites.len() == 0)
         .map(|(id, course)| course.to_output(id))
         .collect();
     Json(courses)
@@ -55,21 +54,20 @@ pub fn legal_courses_from_completed_courses(
     completed_courses: Json<Vec<usize>>,
 ) -> Json<Vec<CourseOutput>> {
     let seed = get_seed_data();
-    println!("COURSES: {:#?}", seed.courses);
     let eligible_courses = seed
         .courses
-        .into_iter()
+        .iter()
         .enumerate()
         .filter(|(_id, course)| {
             completed_courses
                 .iter()
                 .any(|completed_id| course.prerequisites.contains(completed_id))
         })
-        .collect::<Vec<(usize, Course)>>();
-    println!("ELIGIBLE COURSES: {:#?}", eligible_courses);
+        .collect::<Vec<(usize, &Course)>>();
+
     let courses = eligible_courses
         .iter()
-        .map(|(id, course)| course.clone().as_output(*id))
+        .map(|(id, course)| course.to_output(*id))
         .collect();
 
     Json(courses)

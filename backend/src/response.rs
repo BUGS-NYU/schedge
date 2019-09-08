@@ -71,9 +71,23 @@ pub fn legal_courses_from_completed_courses(
     Json(courses)
 }
 
-// #[post("/", data = "<form>")]
-// pub fn schedule_using_course_list(
-//     form: Json<FormInput>,
-// ) -> Result<Json<Vec<MeetingOutput>>, Custom<String>> {
-//     Err(Custom(Status::BadRequest, "Ooooooof".into()))
-// }
+#[post("/", data = "<form>")]
+pub fn schedule_using_course_list(
+    form: Json<Vec<usize>>,
+) -> Result<Json<Vec<MeetingOutput>>, Custom<String>> {
+    let seed_data = get_seed_data();
+    let schedule =
+        algorithm::schedule_by_course_list(&seed_data, form.to_vec()).unwrap_or(Vec::new());
+    if schedule.len() > 0 {
+        Ok(Json(
+            schedule
+                .into_iter()
+                .map(|raw_meeting| {
+                    raw_meeting.to_output(&seed_data.courses[raw_meeting.course_id].name)
+                })
+                .collect(),
+        ))
+    } else {
+        Err(Custom(Status::BadRequest, "Ooooooof".into()))
+    }
+}

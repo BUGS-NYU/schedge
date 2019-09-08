@@ -28,6 +28,37 @@ pub fn schedule_by_department(
     None
 }
 
+pub fn schedule_by_course_list(
+    seed_data: &SeedData,
+    mut course_ids: Vec<usize>,
+) -> Option<Vec<Meeting>> {
+    let mut rng = rand::thread_rng();
+
+    let mut courses_added = 0;
+    for _ in 0..3 {
+        let rand_index = rng.gen::<usize>() % course_ids.len();
+        course_ids.rotate_right(rand_index);
+        let mut schedule = Vec::new();
+        for id in &course_ids {
+            let mut meetings_in_course: Vec<&Meeting> = seed_data
+                .meetings
+                .iter()
+                .filter(|meeting| meeting.course_id == *id)
+                .collect();
+
+            let mut course = get_course(&schedule, &mut meetings_in_course);
+            if course.len() > 0 {
+                schedule.append(&mut course);
+                courses_added += 1;
+            }
+        }
+        if courses_added == course_ids.len() {
+            return Some(schedule);
+        }
+    }
+    None
+}
+
 fn get_course_from_dept(
     schedule: &Vec<Meeting>,
     seed_data: &SeedData,
@@ -46,6 +77,10 @@ fn get_course_from_dept(
         .filter(|meeting| courses_in_dept.contains(&meeting.course_id))
         .collect();
 
+    get_course(schedule, &mut meetings_in_course)
+}
+
+fn get_course(schedule: &Vec<Meeting>, meetings_in_course: &mut Vec<&Meeting>) -> Vec<Meeting> {
     let mut rng = rand::thread_rng();
     meetings_in_course.shuffle(&mut rng);
     for meeting in meetings_in_course {
@@ -59,10 +94,12 @@ fn get_course_from_dept(
                     .iter()
                     .all(|sched_meeting| !does_overlap(sched_meeting, recit))
             });
+
             let res = match recitation {
                 Some(recit) => vec![recit.clone(), meeting.clone()],
                 None => vec![meeting.clone()],
             };
+
             return res;
         }
     }

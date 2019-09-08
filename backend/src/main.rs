@@ -35,8 +35,8 @@ fn main() {
             routes![response::schedule_using_department],
         )
         .mount(
-            "/schedule-by-completed",
-            routes![response::schedule_using_course_list],
+            "/avaiable-by-completed",
+            routes![response::legal_courses_from_completed_courses],
         )
         .attach(cors)
         .launch();

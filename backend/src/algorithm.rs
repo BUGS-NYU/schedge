@@ -3,7 +3,7 @@ use crate::seed::SeedData;
 use rand::prelude::*;
 
 /// Compute a schedule based on the given meeting times
-pub fn compute_schedule(
+pub fn schedule_by_department(
     seed_data: &SeedData,
     mut department_ids: Vec<usize>,
 ) -> Option<Vec<Meeting>> {

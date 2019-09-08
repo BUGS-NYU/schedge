@@ -46,13 +46,15 @@ interface State {
   isLoading: boolean;
   error: string | undefined;
   checkboxes: Set<number>;
+  recommendedCourses: Array<APICourse> | undefined;
 }
 
 type ActionTypes =
   | { type: "SELECT_DEPARTMENT"; department: string }
   | { type: "SUBMIT_FORM_FAILED"; error: string }
   | { type: "ADD_COURSES"; courses: APICourse[] }
-  | { type: "UPDATE_CHECKBOXES"; checked: boolean; id: number };
+  | { type: "UPDATE_CHECKBOXES"; checked: boolean; id: number }
+  | { type: "SUBMIT_FORM_SUCCEEDED"; recommendedCourses: APICourse[] };
 
 function reducer(state: State, action: ActionTypes): State {
   switch (action.type) {
@@ -67,6 +69,8 @@ function reducer(state: State, action: ActionTypes): State {
       return { ...state, checkboxes: state.checkboxes };
     case "SUBMIT_FORM_FAILED":
       return { ...state, error: action.error };
+    case "SUBMIT_FORM_SUCCEEDED":
+      return { ...state, recommendedCourses: action.recommendedCourses };
     default:
       return state;
   }
@@ -76,7 +80,8 @@ const initialState = {
   isLoading: true,
   courses: undefined,
   error: undefined,
-  checkboxes: new Set() as Set<number>
+  checkboxes: new Set() as Set<number>,
+  recommendedCourses: undefined
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -105,6 +110,7 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
     }
     f();
   }, []);
+  console.log(state);
   if (state.isLoading) {
     return (
       <Paper>
@@ -132,9 +138,14 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
           axios
             .post(
               `${API_URL}/available-by-completed`,
-              Array.from(state.checkboxes)
+              Array.from(state.checkboxes).map(c => c + 1)
             )
-            .then(res => console.log(res))
+            .then(res => {
+              dispatch({
+                type: "SUBMIT_FORM_SUCCEEDED",
+                recommendedCourses: res.data
+              });
+            })
             .catch(err => console.log(err));
         }}
       >
@@ -163,6 +174,17 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
             Create Schedule
           </Button>
         </div>
+        {state.recommendedCourses && (
+          <Typography>
+            {" "}
+            We can recommend the following courses:
+            <ul>
+              {state.recommendedCourses.map(course => (
+                <li> {course.name} </li>
+              ))}
+            </ul>
+          </Typography>
+        )}
       </form>
     </Paper>
   );

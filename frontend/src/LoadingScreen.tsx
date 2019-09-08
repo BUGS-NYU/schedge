@@ -38,7 +38,7 @@ const LoadingScreen: React.FC<RouteComponentProps> = () => {
       }
       setProgress(oldProgress =>
         oldProgress.percent >= 100
-          ? { percent: 0, iteration: oldProgress.iteration + 1 }
+          ? { percent: 0, iteration: oldProgress.iteration + 1.5 }
           : {
               percent: oldProgress.percent + 1,
               iteration: oldProgress.iteration

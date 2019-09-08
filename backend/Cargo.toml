@@ -17,4 +17,4 @@ rand = "0.7.0"
 [dependencies.rocket_contrib]
 version = "0.4.2"
 default-features = false
-features = ["diesel_postgres_pool", "json"]
+features = ["diesel_postgres_pool", "json", "serve"]

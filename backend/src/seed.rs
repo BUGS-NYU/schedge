@@ -17,7 +17,7 @@ pub struct SeedData {
 pub fn get_seed_data() -> SeedData {
     use Day::*;
 
-    let mut course_id = -1;
+    let mut course_id: i32 = -1;
     let mut courses = Vec::new();
     let mut meetings = Vec::new();
 
@@ -27,10 +27,13 @@ pub fn get_seed_data() -> SeedData {
     */
     macro_rules! new_course {
         ($string:expr, $id:ident) => {
+            new_course!($string, $id, Vec::new())
+        };
+        ($string:expr, $id:ident, $prerequisites:expr) => {
             courses.push(Course {
                 name: $string,
                 department_id: $id,
-                prerequisites: Vec::new(),
+                prerequisites: $prerequisites,
             });
             course_id += 1
         };
@@ -106,19 +109,19 @@ pub fn get_seed_data() -> SeedData {
     );
     new_meeting!((Mon, Wed), (1230, 1345), "Deena Engel", "Meyer Hall: 122");
     new_meeting!(
-        (Tue, Thu),
+        (Tues, Thurs),
         (930, 1045),
         "Shaheer Haroon",
         "Warren Weaver Hall: 317"
     );
     new_meeting!(
-        (Tue, Thu),
+        (Tues, Thurs),
         (1530, 1645),
         "Saadia Lgarch",
         "Warren Weaver Hall: 517"
     );
     new_meeting!(
-        (Tue, Thu),
+        (Tues, Thurs),
         (800, 915),
         "Na''im Tyson",
         "Warren Weaver Hall: 201"
@@ -130,7 +133,7 @@ pub fn get_seed_data() -> SeedData {
         "Warren Weaver Hall: 201"
     );
     new_meeting!(
-        (Tue, Thu),
+        (Tues, Thurs),
         (800, 915),
         "Michell Cardona",
         "Warren Weaver Hall: 312"
@@ -139,7 +142,7 @@ pub fn get_seed_data() -> SeedData {
     new_course!(
         "Introduction to Computer Science",
         CSCI_DEPT_ID,
-        vec![course_id]
+        vec![course_id as usize]
     );
     new_meeting!(
         (Mon, Wed),
@@ -227,6 +230,10 @@ pub fn get_seed_data() -> SeedData {
         ],
         "N/A"
     );
+
+    new_course!("Calculus II", MATH_DEPT_ID, vec![course_id as usize]);
+    new_meeting!((Mon, Wed), (1400, 1550), "Richard Kleeman", vec![], "N/A");
+    new_meeting!((Mon, Wed), (1400, 1550), "Matthew Novack", vec![], "N/A");
 
     new_course!(
         "Quantitative Reasoning: Elementary Statistics",

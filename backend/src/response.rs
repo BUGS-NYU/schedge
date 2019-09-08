@@ -1,5 +1,5 @@
 use crate::algorithm;
-use crate::models::course::CourseOutput;
+use crate::models::course::{Course, CourseOutput};
 use crate::models::department::str_to_department_id;
 use crate::models::meeting::MeetingOutput;
 use crate::seed::get_seed_data;
@@ -37,12 +37,13 @@ pub fn schedule_using_department(
 }
 
 #[get("/")]
-pub fn all_courses() -> Json<Vec<CourseOutput>> {
+pub fn all_intro_courses() -> Json<Vec<CourseOutput>> {
     let seed = get_seed_data();
 
     let courses = seed
         .courses
         .into_iter()
+        .filter(|course| course.prerequisites.len() == 0)
         .enumerate()
         .map(|(id, course)| course.to_output(id))
         .collect();
@@ -54,19 +55,21 @@ pub fn legal_courses_from_completed_courses(
     completed_courses: Json<Vec<usize>>,
 ) -> Json<Vec<CourseOutput>> {
     let seed = get_seed_data();
-
-    let mut eligible_courses: HashMap<_, _> = seed.courses.into_iter().enumerate().collect();
-
-    for i in &*completed_courses {
-        eligible_courses = eligible_courses
-            .into_iter()
-            .filter(|(id, course)| course.prerequisites.contains(i) && id != i)
-            .collect();
-    }
-
-    let courses = eligible_courses
+    println!("COURSES: {:#?}", seed.courses);
+    let eligible_courses = seed
+        .courses
         .into_iter()
-        .map(|(id, course)| course.as_output(id))
+        .enumerate()
+        .filter(|(_id, course)| {
+            completed_courses
+                .iter()
+                .any(|completed_id| course.prerequisites.contains(completed_id))
+        })
+        .collect::<Vec<(usize, Course)>>();
+    println!("ELIGIBLE COURSES: {:#?}", eligible_courses);
+    let courses = eligible_courses
+        .iter()
+        .map(|(id, course)| course.clone().as_output(*id))
         .collect();
 
     Json(courses)

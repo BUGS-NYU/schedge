@@ -21,6 +21,7 @@ mod schema;
 /// Seed data to initialize the server with
 mod seed;
 
+use rocket_contrib::serve::StaticFiles;
 use rocket_cors::CorsOptions;
 
 #[database("schedge")]
@@ -42,7 +43,8 @@ fn main() {
             "/schedule-by-course-list",
             routes![response::schedule_using_course_list],
         )
-        .mount("/courses", routes![response::all_courses])
+        .mount("/courses", routes![response::all_intro_courses])
+        .mount("/", StaticFiles::from("static"))
         .attach(cors)
         .launch();
 }

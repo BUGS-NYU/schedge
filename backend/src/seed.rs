@@ -2,7 +2,6 @@ use crate::models::chrono::{Day, Time};
 use crate::models::course::Course;
 use crate::models::department::*;
 use crate::models::meeting::Meeting;
-use crate::models::recitation::Recitation;
 
 /// Data is a vector of tuples where the first element is an identifier of the course,
 /// and the second is a list of meetings that that course contains.
@@ -28,10 +27,13 @@ pub fn get_seed_data() -> SeedData {
     */
     macro_rules! new_course {
         ($string:expr, $id:ident) => {
+            new_course!(expr, ident, Vec::new())
+        };
+        ($string:expr, $id:ident, $prerequisites:expr) => {
             courses.push(Course {
                 name: $string,
                 department_id: $id,
-                prerequisites: Vec::new(),
+                prerequisites: $prerequisites,
             });
             course_id += 1
         };
@@ -62,12 +64,14 @@ pub fn get_seed_data() -> SeedData {
             new_recitation!($day, ($time1, $time2), $professor, "N/A")
         };
         ($day:expr, ($time1:expr, $time2:expr), $professor:expr, $location:expr) => {
-            Recitation {
-                day: $day,
+            Meeting {
+                days: ($day, $day),
                 start_time: Time(($time1 % 100) + ($time1 / 100 * 60)),
                 end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
                 professor: $professor,
+                recitations: Vec::new(),
                 location: $location,
+                course_id: course_id as usize,
             }
         };
     }
@@ -166,6 +170,11 @@ pub fn get_seed_data() -> SeedData {
         "N/A"
     );
 
+    new_course!("Calculus II", MATH_DEPT_ID, vec![course_id]);
+    new_meeting!((Mon, Wed), (1400, 1550), "Richard Kleeman", vec![], "N/A");
+    new_meeting!((Mon, Wed), (1400, 1550), "Matthew Novack", vec![], "N/A");
+    new_meeting!((Tue, Thurs), (1400, 1550), "Vindya Bhat", vec![], "N/A");
+
     new_course!(
         "Quantitative Reasoning: Elementary Statistics",
         CORE_DEPT_ID
@@ -188,8 +197,36 @@ pub fn get_seed_data() -> SeedData {
         (Mon, Wed),
         (1100, 1215),
         "Rebecca Falkoff",
-        vec![],
+        vec![
+            new_recitation!(Fri, (800, 915), "Emily Antenucci"),
+            new_recitation!(Fri, (930, 1045), "Emily Antenucci"),
+            new_recitation!(Fri, (1100, 1215), "Emily Antenucci"),
+            new_recitation!(Fri, (1230, 1345), "Emily Antenucci"),
+        ],
         "Silver: Room 512"
+    );
+
+    new_course!("Creative Writing: Intro Fiction & Poetry", CRWRI_DEPT_ID);
+    new_meeting!(
+        (Mon, Wed),
+        (930, 1045),
+        "Michele Filgate",
+        vec![],
+        "Bobst LL148"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1655, 1810),
+        "Angelo Nikolopoulos",
+        vec![],
+        "Bobst LL140"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1230, 1345),
+        "Bernard Ferguson",
+        vec![],
+        "Bobst LL148"
     );
 
     SeedData { meetings, courses }

@@ -1,5 +1,4 @@
 use super::chrono::{Day, Time};
-use super::recitation::Recitation;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -32,7 +31,7 @@ pub struct Meeting {
     /// The professor.
     pub professor: &'static str,
     /// Recitations
-    pub recitations: Vec<Recitation>,
+    pub recitations: Vec<Meeting>,
     /// Location
     pub location: &'static str,
 }

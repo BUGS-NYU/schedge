@@ -37,10 +37,10 @@ pub fn get_seed_data() -> SeedData {
     }
 
     macro_rules! new_meeting {
-        ($days:expr, ($time1:expr, $time2:expr), $prof:expr) => {
-            new_meeting!($days, ($time1, $time2), $prof, Vec::new())
+        ($days:expr, ($time1:expr, $time2:expr), $prof:expr, $location:expr) => {
+            new_meeting!($days, ($time1, $time2), $prof, Vec::new(), location)
         };
-        ($days:expr, ($time1:expr, $time2:expr), $prof:expr, $recitations:expr) => {
+        ($days:expr, ($time1:expr, $time2:expr), $prof:expr, $recitations:expr, $location:expr) => {
             meetings.push(Meeting {
                 course_id: course_id as usize,
                 days: $days,
@@ -48,6 +48,7 @@ pub fn get_seed_data() -> SeedData {
                 end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
                 recitations: $recitations,
                 professor: $prof,
+                location: $location,
             });
         };
     }

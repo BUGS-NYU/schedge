@@ -38,6 +38,10 @@ fn main() {
             "/available-by-completed",
             routes![response::legal_courses_from_completed_courses],
         )
+        .mount(
+            "/schedule-by-course-list",
+            routes![response::schedule_using_course_list],
+        )
         .mount("/courses", routes![response::all_courses])
         .attach(cors)
         .launch();

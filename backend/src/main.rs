@@ -30,6 +30,7 @@ fn main() {
     let cors = CorsOptions::to_cors(&default).unwrap();
     rocket::ignite()
         .mount("/freshmen", routes![response::schedule_using_department])
+        .mount("/", routes![response::schedule_using_course_list])
         .attach(cors)
         .launch();
 }

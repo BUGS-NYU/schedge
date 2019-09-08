@@ -67,6 +67,7 @@ pub fn get_seed_data() -> SeedData {
         "Quantitative Reasoning: Elementary Statistics",
         CORE_DEPT_ID
     );
+    new_meeting!((Mon, Wed), (930, 1045), "Wayne Uy");
 
     SeedData { meetings, courses }
 }

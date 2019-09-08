@@ -28,6 +28,19 @@ pub struct Meeting {
     pub course_id: usize,
     /// The professor.
     pub professor: &'static str,
+    /// Recitations
+    pub recitation: Vec<Recitation>,
+}
+
+pub struct Recitation {
+    /// The days this meeting happens.
+    pub day: Day,
+    /// The start time of this meeting.
+    pub start_time: Time,
+    /// The end time of this meeting.
+    pub end_time: Time,
+    /// The id of the meeting
+    pub meeting_id: usize,
 }
 
 impl Meeting {

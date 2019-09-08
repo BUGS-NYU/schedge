@@ -21,6 +21,10 @@ pub fn get_seed_data() -> SeedData {
     let mut courses = Vec::new();
     let mut meetings = Vec::new();
 
+    /*
+     Careful on sequencing these. All meetings for the course should
+     follow new_course!
+    */
     macro_rules! new_course {
         ($string:expr, $id:ident) => {
             courses.push(Course {
@@ -34,20 +38,34 @@ pub fn get_seed_data() -> SeedData {
 
     macro_rules! new_meeting {
         ($days:expr, ($time1:expr, $time2:expr), $prof:expr) => {
+            new_meeting!($days, ($time1, $time2), $prof, Vec::new())
+        };
+        ($days:expr, ($time1:expr, $time2:expr), $prof:expr, $recitations:expr) => {
             meetings.push(Meeting {
                 course_id: course_id as usize,
                 days: $days,
                 start_time: Time(($time1 % 100) + ($time1 / 100 * 60)),
                 end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
+                recitations: $recitations,
                 professor: $prof,
-            })
+            });
+        };
+    }
+
+    macro_rules! new_recitation {
+        ($day:expr, ($time1:expr, $time2:expr)) => {
+            Recitation {
+                day: $day,
+                start_time: Time(($time1 % 100) + ($time1 / 100 * 60)),
+                end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
+            }
         };
     }
 
     new_course!("Writing The Essay", EXPOS_DEPT_ID);
     new_meeting!((Tues, Thurs), (1230, 1345), "Joseph Califf");
     new_meeting!((Mon, Wed), (1230, 1345), "Noelle Liston");
-    new_meeting!((Tues, Thurs), (1100, 1215), "Matthew McClelland");
+    new_meeting!((Tues, Thurs), (1100, 1215), "Matthew McClelland",);
     new_meeting!((Mon, Wed), (1100, 1215), "Noelle Liston");
 
     new_course!("Introduction to Computer Science", CSCI_DEPT_ID);
@@ -57,15 +75,76 @@ pub fn get_seed_data() -> SeedData {
     new_meeting!((Mon, Wed), (1530, 1645), "Hilbert Locklear");
 
     new_course!("Calculus I", MATH_DEPT_ID);
-    new_meeting!((Mon, Wed), (930, 1045), "Wayne Uy");
-    new_meeting!((Tues, Thurs), (1230, 1345), "Selin Kalaycioglu");
-    new_meeting!((Tues, Thurs), (1655, 1810), "N/A");
-    new_meeting!((Mon, Wed), (1400, 1515), "Sia Charmaine");
-    new_meeting!((Mon, Wed), (1230, 1345), "Hesam Oveys");
+    new_meeting!(
+        (Mon, Wed),
+        (930, 1045),
+        "Wayne Uy",
+        vec![
+            new_recitation!(Fri, (800, 915), "Yue Huang"),
+            new_recitation!(Fri, (930, 1045), "Yue Huang"),
+            new_recitation!(Fri, (800, 915), "Zhimeng Wang"),
+            new_recitation!(Fri, (930, 1045), "Zhimeng Wang"),
+        ]
+    );
+    new_meeting!(
+        (Tues, Thurs),
+        (1230, 1345),
+        "Selin Kalaycioglu",
+        vec![
+            new_recitation!(Fri, (1100, 1215), "Damilola Dauda"),
+            new_recitation!(Fri, (1230, 1345), "Damilola Dauda"),
+            new_recitation!(Fri, (1100, 1215), "Haoyu Wang"),
+            new_recitation!(Fri, (1230, 1345), "Haoyu Wang")
+        ]
+    );
+    new_meeting!(
+        (Tues, Thurs),
+        (1655, 1810),
+        "N/A",
+        vec![
+            new_recitation!(Fri, (800, 915), "Masato Takigawa"),
+            new_recitation!(Fri, (930, 1045), "Masato Takigawa"),
+            new_recitation!(Fri, (800, 915), "Xiangjia Kong"),
+            new_recitation!(Fri, (930, 1045), "Xiangjia Kong"),
+        ]
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1400, 1515),
+        "Sia Charmaine",
+        vec![
+            new_recitation!(Fri, (1100, 1215), "Jun Hyuk"),
+            new_recitation!(Fri, (1230, 1345), "Jun Hyuk"),
+            new_recitation!(Fri, (1000, 1215), "Karl Dessenne"),
+            new_recitation!(Fri, (1230, 1345), "Karl Dessenne"),
+        ]
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1230, 1345),
+        "Hesam Oveys",
+        vec![
+            new_recitation!(Tue, (800, 915), "Dong Hyun Seo"),
+            new_recitation!(Thurs, (800, 1345), "Dong Hyun Seo"),
+            new_recitation!(Tue, (800, 915), "Yi Shan"),
+            new_recitation!(Thurs, (800, 915), "Yi Shan"),
+        ]
+    );
 
     new_course!(
         "Quantitative Reasoning: Elementary Statistics",
         CORE_DEPT_ID
+    );
+    new_meeting!(
+        (Tue, Thurs),
+        (1530, 1645),
+        "Charmaine Sia",
+        vec![
+            new_recitation!(Fri, (930, 1045), "Jialu Xie"),
+            new_recitation!(Fri, (1100, 1215), "Jialu Xie"),
+            new_recitation!(Fri, (800, 915), "Gabriel Jose Labrousse"),
+            new_recitation!(Fri, (930, 1045), "Gabriel Jose Labrousse"),
+        ]
     );
 
     SeedData { meetings, courses }

@@ -6,6 +6,7 @@ export interface APIMeeting {
   endTime: number;
   startTime: number;
   professor: string;
+  courseName: string;
 }
 
 export interface Meeting {

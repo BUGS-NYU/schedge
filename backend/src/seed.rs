@@ -54,11 +54,12 @@ pub fn get_seed_data() -> SeedData {
     }
 
     macro_rules! new_recitation {
-        ($day:expr, ($time1:expr, $time2:expr)) => {
+        ($day:expr, ($time1:expr, $time2:expr), $location:expr) => {
             Recitation {
                 day: $day,
                 start_time: Time(($time1 % 100) + ($time1 / 100 * 60)),
                 end_time: Time(($time2 % 100) + ($time2 / 100 * 60)),
+                location: $location,
             }
         };
     }

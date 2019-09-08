@@ -30,6 +30,8 @@ pub struct Meeting {
     pub professor: &'static str,
     /// Recitations
     pub recitation: Vec<Recitation>,
+    /// Location
+    pub location: String,
 }
 
 pub struct Recitation {
@@ -41,6 +43,8 @@ pub struct Recitation {
     pub end_time: Time,
     /// The id of the meeting
     pub meeting_id: usize,
+    /// Location
+    pub location: String,
 }
 
 impl Meeting {

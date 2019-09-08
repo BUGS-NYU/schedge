@@ -1,6 +1,7 @@
 use crate::models::meeting::Meeting;
 use crate::seed::SeedData;
 use rand::prelude::*;
+use std::collections::HashSet;
 
 /// Compute a schedule based on the given meeting times
 pub fn schedule_by_department(
@@ -31,18 +32,19 @@ fn get_course_from_dept(
     seed_data: &SeedData,
     dept_id: usize,
 ) -> Option<Meeting> {
-    let (course_id, _course) = seed_data
-        .courses
-        .iter()
-        .enumerate()
-        .find(|(_, course)| course.department_id == dept_id)
-        .unwrap();
+    let mut courses_in_dept = HashSet::new();
+    for (course_id, course) in seed_data.courses.iter().enumerate() {
+        if course.department_id == dept_id {
+            courses_in_dept.insert(course_id);
+        }
+    }
 
     let mut meetings_in_course: Vec<&Meeting> = seed_data
         .meetings
         .iter()
-        .filter(|meeting| meeting.course_id == course_id)
+        .filter(|meeting| courses_in_dept.contains(&meeting.course_id))
         .collect();
+
     let mut rng = rand::thread_rng();
     meetings_in_course.shuffle(&mut rng);
     for meeting in meetings_in_course {
@@ -59,13 +61,13 @@ fn get_course_from_dept(
 
 fn does_overlap(m1: &Meeting, m2: &Meeting) -> bool {
     // If the days don't overlap at all (Mon/Wed and Tues/Thurs)
-    // Then we can just return true
+    // Then we can just return false
     if m1.days.0 != m2.days.0
         && m1.days.0 != m2.days.1
         && m1.days.1 != m2.days.0
         && m1.days.1 != m2.days.1
     {
-        return true;
+        return false;
     }
     m1.start_time <= m2.end_time && m2.start_time <= m1.end_time
 }

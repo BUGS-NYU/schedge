@@ -73,12 +73,18 @@ pub fn get_seed_data() -> SeedData {
     }
 
     new_course!("Writing The Essay", EXPOS_DEPT_ID);
-    new_meeting!((Tues, Thurs), (1230, 1345), "Joseph Califf", "N/A");
     new_meeting!((Mon, Wed), (1230, 1345), "Noelle Liston", "N/A");
+    new_meeting!((Tues, Thurs), (1230, 1345), "Joseph Califf", "N/A");
     new_meeting!((Tues, Thurs), (1100, 1215), "Matthew McClelland", "N/A");
     new_meeting!((Mon, Wed), (1100, 1215), "Noelle Liston", "N/A");
 
     new_course!("Introduction to Computer Science", CSCI_DEPT_ID);
+    new_meeting!(
+        (Mon, Wed),
+        (1530, 1645),
+        "Hilbert Locklear",
+        "Warren Weaver Hall: Room 102"
+    );
     new_meeting!(
         (Tues, Thurs),
         (1400, 1515),
@@ -96,12 +102,6 @@ pub fn get_seed_data() -> SeedData {
         (1530, 1645),
         "Teseo Schneider",
         "25 W 4th St: Room C-20"
-    );
-    new_meeting!(
-        (Mon, Wed),
-        (1530, 1645),
-        "Hilbert Locklear",
-        "Warren Weaver Hall: Room 102"
     );
 
     new_course!("Calculus I", MATH_DEPT_ID);
@@ -181,6 +181,15 @@ pub fn get_seed_data() -> SeedData {
             new_recitation!(Fri, (930, 1045), "Gabriel Jose Labrousse"),
         ],
         "N/A"
+    );
+
+    new_course!("Cultures & Contexts: Italy", CORE_DEPT_ID);
+    new_meeting!(
+        (Mon, Wed),
+        (1100, 1215),
+        "Rebecca Falkoff",
+        vec![],
+        "Silver: Room 512"
     );
 
     SeedData { meetings, courses }

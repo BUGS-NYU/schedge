@@ -29,3 +29,17 @@ pub fn schedule_using_department(
         ))
     }
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct FormInput {
+    course_requests: Vec<u32>,
+    completed_courses: Vec<u32>,
+}
+
+#[post("/", data = "<form>")]
+pub fn schedule_using_course_list(
+    form: Json<FormInput>,
+) -> Result<Json<Vec<MeetingOutput>>, Custom<String>> {
+    form.course_requests
+    Err(Custom(Status::BadRequest, "Ooooooof".into()))
+}

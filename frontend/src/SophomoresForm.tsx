@@ -138,7 +138,7 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
           axios
             .post(
               `${API_URL}/available-by-completed`,
-              Array.from(state.checkboxes).map(c => c + 1)
+              Array.from(state.checkboxes)
             )
             .then(res => {
               dispatch({

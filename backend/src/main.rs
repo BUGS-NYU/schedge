@@ -44,7 +44,7 @@ fn main() {
             routes![response::schedule_using_course_list],
         )
         .mount("/courses", routes![response::all_intro_courses])
-        .mount("/", StaticFiles::from("static"))
+        .mount("/public", StaticFiles::from("static"))
         .attach(cors)
         .launch();
 }

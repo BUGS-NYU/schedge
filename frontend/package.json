@@ -33,6 +33,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "homepage" : "http://localhost:8000/public",
   "browserslist": {
     "production": [
       ">0.2%",

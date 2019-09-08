@@ -12,7 +12,7 @@ pub static CSCI_DEPT_ID: usize = 1;
 pub static MATH_DEPT_ID: usize = 2;
 pub static CORE_DEPT_ID: usize = 2;
 
-pub fn string_to_department_id(string: &str) -> Option<usize> {
+pub fn str_to_department_id(string: &str) -> Option<usize> {
     match string {
         "EXPOS-UA" => Some(EXPOS_DEPT_ID),
         "CSCI-UA" => Some(CSCI_DEPT_ID),

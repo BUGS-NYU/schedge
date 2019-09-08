@@ -14,6 +14,8 @@ pub struct MeetingOutput {
     pub end_time: Time,
     /// The professor
     pub professor: &'static str,
+    /// Location
+    pub location: &'static str,
 }
 
 #[derive(Clone, Debug, Serialize)]
@@ -43,6 +45,7 @@ impl Meeting {
             start_time: self.start_time,
             end_time: self.end_time,
             professor: self.professor,
+            location: self.location,
         }
     }
 }

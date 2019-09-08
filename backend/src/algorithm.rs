@@ -37,6 +37,7 @@ fn get_course_from_dept(
         .enumerate()
         .find(|(_, course)| course.department_id == dept_id)
         .unwrap();
+
     let mut meetings_in_course: Vec<&Meeting> = seed_data
         .meetings
         .iter()

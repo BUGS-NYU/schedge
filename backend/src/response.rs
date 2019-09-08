@@ -40,6 +40,5 @@ pub struct FormInput {
 pub fn schedule_using_course_list(
     form: Json<FormInput>,
 ) -> Result<Json<Vec<MeetingOutput>>, Custom<String>> {
-    form.course_requests
     Err(Custom(Status::BadRequest, "Ooooooof".into()))
 }

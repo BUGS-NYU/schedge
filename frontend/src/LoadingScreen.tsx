@@ -20,9 +20,9 @@ interface Progress {
 }
 
 const getLoadingMessage = (iteration: number) => {
-  if (iteration == 0) {
+  if (iteration === 0) {
     return "Finding you a Writing The Essay course";
-  } else if (iteration == 1) {
+  } else if (iteration === 1) {
     return "Searching out a Core course";
   }
   return "Getting a major course just for you";

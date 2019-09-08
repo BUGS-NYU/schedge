@@ -8,7 +8,7 @@ import withStyles, { WithStyles } from "react-jss";
 import { API_URL } from "./constants";
 import axios from "axios";
 import { APIMeeting } from "./types";
-
+import FormLabel from "@material-ui/core/FormLabel";
 const styles = {
   FreshmanForm: {
     display: "flex",
@@ -111,6 +111,7 @@ const FreshmenForm: React.FC<Props> = ({ addSchedule, classes }) => {
             Math{" "}
           </MenuItem>
         </Select>
+        {state.error && <FormLabel error>state.error</FormLabel>}
         {state.department && (
           <div className={classes.button}>
             <Button type="submit" color="primary">

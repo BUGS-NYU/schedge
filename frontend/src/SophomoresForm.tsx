@@ -1,5 +1,11 @@
 import React, { Reducer, useEffect, useReducer } from "react";
-import { createStyles, Paper, Theme, Typography } from "@material-ui/core";
+import {
+  Checkbox,
+  createStyles,
+  Paper,
+  Theme,
+  Typography
+} from "@material-ui/core";
 import { navigate, RouteComponentProps } from "@reach/router";
 import withStyles, { WithStyles } from "react-jss";
 import { API_URL } from "./constants";
@@ -38,17 +44,26 @@ interface State {
   courses: Array<APICourse> | undefined;
   isLoading: boolean;
   error: string | undefined;
+  checkboxes: Set<number>;
 }
 
 type ActionTypes =
   | { type: "SELECT_DEPARTMENT"; department: string }
   | { type: "SUBMIT_FORM_FAILED"; error: string }
-  | { type: "ADD_COURSES"; courses: APICourse[] };
+  | { type: "ADD_COURSES"; courses: APICourse[] }
+  | { type: "UPDATE_CHECKBOXES"; checked: boolean; id: number };
 
 function reducer(state: State, action: ActionTypes): State {
   switch (action.type) {
     case "ADD_COURSES":
-      return { ...state, courses: action.courses };
+      return { ...state, courses: action.courses, isLoading: false };
+    case "UPDATE_CHECKBOXES":
+      if (action.checked) {
+        state.checkboxes.add(action.id);
+      } else {
+        state.checkboxes.delete(action.id);
+      }
+      return { ...state, checkboxes: state.checkboxes };
     case "SUBMIT_FORM_FAILED":
       return { ...state, error: action.error };
     default:
@@ -59,7 +74,8 @@ function reducer(state: State, action: ActionTypes): State {
 const initialState = {
   isLoading: true,
   courses: undefined,
-  error: undefined
+  error: undefined,
+  checkboxes: new Set() as Set<number>
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -76,9 +92,17 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const muiClasses = useStyles();
   useEffect(() => {
-    axios.get(`${API_URL}/courses`).then(res => {
-      dispatch({ type: "ADD_COURSES", courses: res.data });
-    });
+    async function f() {
+      for (let i = 0; i < 3; i++) {
+        let res;
+        try {
+          res = await axios.get(`${API_URL}/courses`);
+          dispatch({ type: "ADD_COURSES", courses: res.data });
+          break;
+        } catch {}
+      }
+    }
+    f();
   }, []);
   if (state.isLoading) {
     return (
@@ -110,6 +134,22 @@ const SophomoresForm: React.FC<Props> = ({ classes }) => {
         <Typography variant="h3" component="h3">
           Pick the courses you've taken already
         </Typography>
+        {state.courses &&
+          state.courses.map(course => (
+            <Typography>
+              <Checkbox
+                value={state.checkboxes.has(course.id)}
+                onChange={event =>
+                  dispatch({
+                    type: "UPDATE_CHECKBOXES",
+                    checked: event.target.checked,
+                    id: course.id
+                  })
+                }
+              />
+              {course.name}
+            </Typography>
+          ))}
       </form>
     </Paper>
   );

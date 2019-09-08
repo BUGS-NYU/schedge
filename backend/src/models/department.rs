@@ -10,7 +10,7 @@ pub struct Department {
 pub static EXPOS_DEPT_ID: usize = 0;
 pub static CSCI_DEPT_ID: usize = 1;
 pub static MATH_DEPT_ID: usize = 2;
-pub static CORE_DEPT_ID: usize = 2;
+pub static CORE_DEPT_ID: usize = 3;
 
 pub fn str_to_department_id(string: &str) -> Option<usize> {
     match string {

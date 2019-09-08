@@ -1,4 +1,5 @@
 use super::chrono::{Day, Time};
+use super::recitation::Recitation;
 
 #[derive(Clone, Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -29,22 +30,9 @@ pub struct Meeting {
     /// The professor.
     pub professor: &'static str,
     /// Recitations
-    pub recitation: Vec<Recitation>,
+    pub recitations: Vec<Recitation>,
     /// Location
-    pub location: String,
-}
-
-pub struct Recitation {
-    /// The days this meeting happens.
-    pub day: Day,
-    /// The start time of this meeting.
-    pub start_time: Time,
-    /// The end time of this meeting.
-    pub end_time: Time,
-    /// The id of the meeting
-    pub meeting_id: usize,
-    /// Location
-    pub location: String,
+    pub location: &'static str,
 }
 
 impl Meeting {

@@ -7,6 +7,7 @@ pub enum Day {
     Tues,
     Wed,
     Thurs,
+    Fri,
 }
 
 impl Day {

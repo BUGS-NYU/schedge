@@ -1,3 +1,6 @@
+use crate::models::chrono::{Day, Time};
+
+#[derive(Clone, Debug, Serialize)]
 pub struct Recitation {
     /// The days this meeting happens.
     pub day: Day,
@@ -6,5 +9,7 @@ pub struct Recitation {
     /// The end time of this meeting.
     pub end_time: Time,
     /// Professor
-    pub professor: String,
+    pub professor: &'static str,
+    /// Location
+    pub location: &'static str,
 }

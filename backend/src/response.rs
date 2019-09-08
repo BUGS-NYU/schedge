@@ -30,9 +30,10 @@ pub fn schedule_using_department(
     }
 }
 
-#[derive(Serialize, Deserialize, Copy, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct FormInput {
-    words: u8,
+    course_requests: Vec<u32>,
+    completed_courses: Vec<u32>,
 }
 
 #[post("/sophomores", data = "<form>")]

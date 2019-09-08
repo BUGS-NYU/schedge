@@ -10,7 +10,8 @@ pub fn schedule_by_department(
     let mut rng = rand::thread_rng();
 
     for _ in 0..3 {
-        department_ids.rotate_right(rng.gen());
+        let rand_index = rng.gen::<usize>() % department_ids.len();
+        department_ids.rotate_right(rand_index);
         let mut schedule = Vec::new();
         for dept_id in &department_ids {
             match get_course_from_dept(&schedule, seed_data, *dept_id) {

@@ -118,10 +118,7 @@ const App: React.FC<WithStyles<typeof styles>> = ({ classes }) => {
             <HomePage path="/schedule" />
           )}
           <FreshmenForm addSchedule={addSchedule(dispatch)} path="/freshmen" />
-          <SophomoresForm
-            addSchedule={addSchedule(dispatch)}
-            path="/sophomores"
-          />
+          <SophomoresForm path="/sophomores" />
         </Router>
       </div>
     </MuiThemeProvider>

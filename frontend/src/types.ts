@@ -17,3 +17,10 @@ export interface Meeting {
   location: string;
   professor: string;
 }
+
+export interface APICourse {
+  id: number;
+  departmentId: number;
+  name: string;
+  prerequisites: Array<APICourse>;
+}

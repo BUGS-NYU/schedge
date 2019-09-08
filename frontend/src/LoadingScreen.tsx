@@ -14,10 +14,15 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const getLoadingMessage = (progress: number) => {
-  if (progress < 33) {
+interface Progress {
+  percent: number;
+  iteration: number;
+}
+
+const getLoadingMessage = (iteration: number) => {
+  if (iteration == 0) {
     return "Finding you a Writing The Essay course";
-  } else if (progress < 66) {
+  } else if (iteration == 1) {
     return "Searching out a Core course";
   }
   return "Getting a major course just for you";
@@ -25,13 +30,20 @@ const getLoadingMessage = (progress: number) => {
 
 const LoadingScreen: React.FC<RouteComponentProps> = () => {
   const classes = useStyles();
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState({ percent: 0, iteration: 0 });
   useEffect(() => {
     function tick() {
-      if (progress >= 100) {
+      if (progress.iteration === 3) {
         navigate(`/schedule`);
       }
-      setProgress(oldProgress => oldProgress + 0.25);
+      setProgress(oldProgress =>
+        oldProgress.percent >= 100
+          ? { percent: 0, iteration: oldProgress.iteration + 1 }
+          : {
+              percent: oldProgress.percent + 1,
+              iteration: oldProgress.iteration
+            }
+      );
     }
     const timer = setInterval(tick, 20);
     return () => {
@@ -49,12 +61,12 @@ const LoadingScreen: React.FC<RouteComponentProps> = () => {
       >
         <Typography variant="h4" component="h4">
           {" "}
-          {getLoadingMessage(progress)}
+          {getLoadingMessage(progress.iteration)}
         </Typography>
         <CircularProgress
           className={classes.progress}
           variant="determinate"
-          value={progress}
+          value={progress.percent}
         />
       </Grid>
     </Paper>

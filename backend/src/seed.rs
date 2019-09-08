@@ -82,7 +82,68 @@ pub fn get_seed_data() -> SeedData {
     new_meeting!((Tues, Thurs), (1100, 1215), "Matthew McClelland", "N/A");
     new_meeting!((Mon, Wed), (1100, 1215), "Noelle Liston", "N/A");
 
-    new_course!("Introduction to Computer Science", CSCI_DEPT_ID);
+    new_course!("Introduction to Computer Programming", CSCI_DEPT_ID);
+    new_meeting!(
+        (Tues, Thurs),
+        (1230, 1345),
+        "Nathan Hull",
+        "Warren Weaver Hall: Room 202"
+    );
+    new_meeting!(
+        (Tues, Thurs),
+        (1100, 1215),
+        "Craig Kapp, Julie Lizardo",
+        "60 5th Ave: Room 150"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (930, 1045),
+        "David Gochfeld",
+        "Warren Weaver Hall: Room 317"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (330, 445),
+        "Dakota Hernandez",
+        "Warren Weaver Hall: Room 317"
+    );
+    new_meeting!((Mon, Wed), (1230, 1345), "Deena Engel", "Meyer Hall: 122");
+    new_meeting!(
+        (Tue, Thu),
+        (930, 1045),
+        "Shaheer Haroon",
+        "Warren Weaver Hall: 317"
+    );
+    new_meeting!(
+        (Tue, Thu),
+        (1530, 1645),
+        "Saadia Lgarch",
+        "Warren Weaver Hall: 517"
+    );
+    new_meeting!(
+        (Tue, Thu),
+        (800, 915),
+        "Na''im Tyson",
+        "Warren Weaver Hall: 201"
+    );
+    new_meeting!(
+        (Mon, Wed),
+        (1400, 1515),
+        "Adam Meyers",
+        "Warren Weaver Hall: 201"
+    );
+    new_meeting!(
+        (Tue, Thu),
+        (800, 915),
+        "Michell Cardona",
+        "Warren Weaver Hall: 312"
+    );
+
+    new_course!(
+        "Introduction to Computer Science",
+        CSCI_DEPT_ID,
+        vec![course_id]
+    );
     new_meeting!(
         (Mon, Wed),
         (1530, 1645),

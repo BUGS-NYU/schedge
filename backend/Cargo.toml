@@ -13,6 +13,7 @@ rocket = "0.4.2"
 serde = { version = "1.0.99", features = ["derive"] }
 rocket_cors = "0.5.0"
 rand = "0.7.0"
+reqwest = "0.9.20"
 
 [dependencies.rocket_contrib]
 version = "0.4.2"

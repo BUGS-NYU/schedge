@@ -25,7 +25,14 @@ class AlbertClient
 	end
 
 	def get_terms
-		get_drop_down_values 'term'
+		xml = request_html :get, ALBERT_ROOT
+		nodes = xml.css("term").css('option')
+		nodes[1..].map do |node|
+			{
+				shortname: node.attributes['value'].value,
+				longname: node.text
+			}
+		end
 	end
 
 	def get_schools
@@ -48,17 +55,6 @@ class AlbertClient
 			subject: subject
 		}
 		request_html :post, ALBERT_DATA, nil, form_body, { Referer: url }
-	end
-
-	def get_drop_down_values id
-		xml = request_html :get, ALBERT_ROOT
-		nodes = xml.css("##{id}").css('option')
-		nodes[1..].map do |node|
-			{
-				shortname: node.attributes['value'].value,
-				longname: node.text
-			}
-		end
 	end
 
 	def get_csrf_token

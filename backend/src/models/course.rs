@@ -14,6 +14,7 @@ pub struct Course {
 }
 
 impl Course {
+    #[allow(dead_code)]
     pub fn as_output(self, id: usize) -> CourseOutput {
         CourseOutput {
             id,

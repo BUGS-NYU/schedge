@@ -43,7 +43,7 @@ pub fn all_intro_courses() -> Json<Vec<CourseOutput>> {
         .courses
         .into_iter()
         .enumerate()
-        .filter(|(id, course)| course.prerequisites.len() == 0)
+        .filter(|(_id, course)| course.prerequisites.len() == 0)
         .map(|(id, course)| course.to_output(id))
         .collect();
     Json(courses)

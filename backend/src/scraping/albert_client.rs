@@ -7,6 +7,9 @@ static ALBERT_ROOT: &'static str = "https://m.albert.nyu.edu/app/catalog/classSe
 /// Root URL of mobile Albert website's data API
 static ALBERT_DATA: &'static str = "https://m.albert.nyu.edu/app/catalog/getClassSearch";
 
+/// Simple client for accessing NYU Albert.
+///
+/// Handles CSRF Token and accessing the correct website.
 pub struct AlbertClient {
     csrf_token: String,
 }

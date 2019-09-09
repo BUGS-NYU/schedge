@@ -2,6 +2,7 @@
 
 #[macro_use]
 extern crate rocket;
+extern crate reqwest;
 #[macro_use]
 extern crate rocket_contrib;
 #[macro_use]
@@ -18,6 +19,8 @@ mod models;
 mod response;
 /// Schema data. Deprecated (?)
 mod schema;
+/// Utilities for scraping Albert.
+mod scraping;
 /// Seed data to initialize the server with
 mod seed;
 

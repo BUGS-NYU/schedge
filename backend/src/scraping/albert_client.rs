@@ -1,33 +1,12 @@
 #![allow(dead_code)]
 
+use crate::models::nyu::*;
 use reqwest::Result;
 
 /// Root URL of mobile Albert website
 static ALBERT_ROOT: &'static str = "https://m.albert.nyu.edu/app/catalog/classSearch";
 /// Root URL of mobile Albert website's data API
 static ALBERT_DATA: &'static str = "https://m.albert.nyu.edu/app/catalog/getClassSearch";
-
-/// Term that a class can be taken in.
-pub enum Term {
-    January = 2,
-    Spring = 4,
-    Summer = 6,
-    Fall = 8,
-}
-
-/// TermID, used for interacting with NYU services.
-pub struct TermID {
-    /// Term
-    term: Term,
-    /// Year, expressed as the current year relative to the year 1900 (e.g. 2019 is 119)
-    year: u16,
-}
-
-impl TermID {
-    pub fn as_u16(self) -> u16 {
-        self.year * 10 + self.term as u16
-    }
-}
 
 /// Simple client for accessing NYU Albert.
 ///

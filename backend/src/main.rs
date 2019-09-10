@@ -10,6 +10,7 @@ extern crate serde;
 #[macro_use]
 extern crate diesel;
 extern crate rand;
+extern crate select;
 
 /// Code that handles building a schedule
 mod algorithm;

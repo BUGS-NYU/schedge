@@ -1,5 +1,0 @@
-CREATE TABLE departments (
-  id SERIAL PRIMARY KEY,
-  code VARCHAR NOT NULL,
-  name VARCHAR NOT NULL
-)

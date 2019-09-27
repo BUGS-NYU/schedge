@@ -1,10 +1,5 @@
 package schedge.models
 
-import schedge.models.TimeOfDay
-import schedge.models.Days
-import org.jsoup.nodes.Element
-// import org.jsoup.nodes.Elements
-
 /**
  * Course object, used both in the database and in memory.
  *

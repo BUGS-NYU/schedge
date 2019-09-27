@@ -5,18 +5,18 @@ import kotlin.experimental.and
 
 class TimeOfDay {
 
-  // Positive integer 
-  val hour: Int
-  val minutes: Int
-  val minutesLong: Int
+  // Positive integer
+  private val hour: Int
+  private val minutes: Int
+  private val minutesLong: Int
 
   constructor(hour: Int, minutes: Int, minutesLong: Int) {
-    if (hour < 0) throw IllegalArgumentException("Hour cannot be negative!")
-    if (minutes < 0) throw IllegalArgumentException("Minutes cannot be negative!")
-    if (minutesLong < 0) throw IllegalArgumentException("MinutesLong cannot be negative!")
+    require(hour >= 0) { "Hour cannot be negative!" }
+    require(minutes >= 0) { "Minutes cannot be negative!" }
+    require(minutesLong >= 0) { "MinutesLong cannot be negative!" }
 
-    if (hour > 23) throw IllegalArgumentException("Hour cannot be greater than 23!")
-    if (minutes > 59) throw IllegalArgumentException("Minutes cannot be greater than 59!")
+    require(hour <= 23) { "Hour cannot be greater than 23!" }
+    require(minutes <= 59) { "Minutes cannot be greater than 59!" }
 
     this.hour = hour
     this.minutes = minutes
@@ -24,10 +24,10 @@ class TimeOfDay {
   }
 }
 
-class Days {
-  val days : Byte
+class Days(vararg days: DayOfWeek) {
+  private val days : Byte
 
-  constructor(vararg days: DayOfWeek) {
+  init {
     this.days = days.map { it.toByte() }.reduce {
       daysByte, dayByte -> daysByte.or(dayByte)
     }
@@ -36,13 +36,13 @@ class Days {
   /**
    * Returns a list of the DayOfWeek objects that this Days object represents.
    */
-  public fun toDayOfWeekList(): List<DayOfWeek> {
+  private fun toDayOfWeekList(): List<DayOfWeek> {
     return DayOfWeek.values().filter {
       (it.toByte() and this.days) != 0.toByte()
     }
   }
 
-  public override fun toString(): String {
+  override fun toString(): String {
     return toDayOfWeekList().toString()
   }
 }
@@ -58,18 +58,18 @@ enum class DayOfWeek {
 
   fun toByte(): Byte {
     val ret = 1 shl when (this) {
-      DayOfWeek.Sunday -> 0
-      DayOfWeek.Monday -> 1
-      DayOfWeek.Tuesday -> 2
-      DayOfWeek.Wednesday -> 3
-      DayOfWeek.Thursday -> 4
-      DayOfWeek.Friday -> 5
-      DayOfWeek.Saturday -> 6
+      Sunday -> 0
+      Monday -> 1
+      Tuesday -> 2
+      Wednesday -> 3
+      Thursday -> 4
+      Friday -> 5
+      Saturday -> 6
     }
     return ret.toByte()
   }
 
-  fun toShortString(): String {
-    return this.toString().substring(0, 2)
-  }
+//  fun toShortString(): String {
+//    return this.toString().substring(0, 2)
+//  }
 }

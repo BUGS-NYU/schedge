@@ -1,7 +1,6 @@
 package schedge
 
 import schedge.models.Term
-import java.io.IOException
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.message.BasicNameValuePair as KVPair
 import org.apache.http.client.methods.HttpGet
@@ -12,34 +11,34 @@ import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.client.protocol.HttpClientContext
 
 
-public class Scraper {
+class Scraper {
     companion object {
-        val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch/"
-        val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
+        const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch/"
+        const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
     }
 
-    val http_client : CloseableHttpClient
-    val csrf_token : String
+    private val httpClient : CloseableHttpClient
+    private val csrfToken : String
 
     init {
       // Get a CSRF token for this scraper. This token allows us to get data straight
       // from NYU's internal web APIs.
-      val http_context = HttpClientContext.create()
-      http_context.setCookieStore(BasicCookieStore())
+      val httpContext = HttpClientContext.create()
+      httpContext.cookieStore = BasicCookieStore()
 
-      http_client = HttpClients.createDefault()
+      httpClient = HttpClients.createDefault()
 
-      val get_request = HttpGet(ROOT_URL)
-      val response = http_client.execute(get_request, http_context)
+      val getRequest = HttpGet(ROOT_URL)
+      val response = httpClient.execute(getRequest, httpContext)
       response.close()
 
-      val cookie = http_context.getCookieStore().cookies.find() {
+      val cookie = httpContext.cookieStore.cookies.find {
         cookie -> cookie.name == "CSRFCookie"
       }
 
       if (cookie == null)
         throw Exception("Couldn't get CSRF token from NYU.")
-      else csrf_token = cookie.value
+      else csrfToken = cookie.value
     }
 
     /**
@@ -49,7 +48,7 @@ public class Scraper {
      * TODO Return null when we get a bad response
      *
      */
-    public fun queryNyuAlbert(
+    fun queryNyuAlbert(
       term: Term,
       school: String,
       subject: String,
@@ -58,31 +57,48 @@ public class Scraper {
       classNumber: Int? = null,
       location: String? = null
     ): String {
+        val postRequest = getNyuAlbertQuery(
+            term=term,
+            school=school,
+            subject=subject,
+            catalogNumber=catalogNumber,
+            keyword=keyword,
+            classNumber=classNumber,
+            location=location
+        )
 
-      fun <T> T?.default(def: T): T {
-        if (this == null)
-          return def
-        else
-          return this
-      }
+        return queryNyuAlbert(postRequest)
+    }
 
+    private fun queryNyuAlbert(query: HttpPost): String {
+        val content = httpClient.execute(query)!!.entity.content
+        return content.bufferedReader().readText()
+    }
+
+    fun getNyuAlbertQuery(
+      term: Term,
+      school: String,
+      subject: String,
+      catalogNumber: Int?,
+      keyword: String?,
+      classNumber: Int?,
+      location: String?
+    ): HttpPost {
       val params = mutableListOf( // URL params
-        KVPair("CSRFToken", csrf_token),
+        KVPair("CSRFToken", csrfToken),
         KVPair("term", term.id.toString()),
-        KVPair("acad_group", school.toString()),
-        KVPair("subject", subject.toString()),
-        KVPair("catalog_nbr", catalogNumber?.toString().default("")),
-        KVPair("keyword", keyword?.toString().default("")),
-        KVPair("class_nbr", classNumber?.toString().default("")),
-        KVPair("nyu_location", location?.toString().default(""))
+        KVPair("acad_group", school),
+        KVPair("subject", subject),
+        KVPair("catalog_nbr", catalogNumber?.toString()?:""),
+        KVPair("keyword", keyword?:""),
+        KVPair("class_nbr", classNumber?.toString()?:""),
+        KVPair("nyu_location", location?:"")
       )
 
-      val post_request = HttpPost(DATA_URL).also {
-        it.setEntity(UrlEncodedFormEntity(params))
-        it.addHeader("Referrer", "${ROOT_URL}")
+      return HttpPost(DATA_URL).also {
+        it.entity = UrlEncodedFormEntity(params)
+        it.addHeader("Referrer", ROOT_URL)
       }
 
-      val content = http_client.execute(post_request)!!.getEntity().getContent()
-      return content.bufferedReader().readText()
     }
 }

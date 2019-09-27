@@ -12,7 +12,7 @@ import schedge.parsers.CourseParser;
 import schedge.parsers.SectionParser;
 import schedge.wrapper.KtPair;
 
-public class Parser {
+public class Parse {
 
   /**
    * Get formatted term data.

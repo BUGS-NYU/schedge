@@ -24,8 +24,14 @@ dependencies {
   // Web requests framework
   implementation("org.apache.httpcomponents:httpclient:4.5.10")
 
+  // HTML Parsing
+  implementation("org.jsoup:jsoup:1.10.3")
+
   // Database framework
   implementation("org.jetbrains.exposed:exposed:0.17.3")
+
+  // Web server framework
+  implementation("io.javalin:javalin:3.5.0")
 
   // Use the Kotlin test library.
   testImplementation("org.jetbrains.kotlin:kotlin-test")

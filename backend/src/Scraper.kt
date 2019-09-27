@@ -8,7 +8,10 @@ package schedge
 // import org.apache.http.HttpResponse
 // import org.apache.http.util.EntityUtils
 // import org.apache.http.client.CookieStore
+import org.jsoup.Jsoup
 import schedge.Term
+import java.io.IOException
+import org.jsoup.nodes.Element
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.message.BasicNameValuePair as KVPair
 import org.apache.http.client.methods.HttpGet
@@ -48,12 +51,35 @@ class Scraper {
       else csrf_token = cookie.value
     }
 
+    fun term_data(term: Term, school: String, subject: String): String {
+      val xml = Jsoup.parse(post_request_xml(term, school, subject))
+      if (xml == null) {
+        throw IOException("Jsoup.parse returned null")
+      }
+
+      val elements = xml.select("div.primary-head ~ *") // Get all siblings of the primary head
+      val block_indices = elements.withIndex().filter {
+        (_, element) -> element.tagName() == "div"
+      }.map {
+        (idx, _) -> idx
+      }.toMutableList().also {
+        it.add(elements.size)
+      }
+
+      val blocks = block_indices.windowed(2).map {
+        (from, to) -> CourseListingNode(elements.get(from), elements.subList(from + 1, to))
+      }
+
+      val boi = blocks.map(::parse)
+
+      return boi.toString()
+    }
+
     /**
      * Send a post request for a specific term, school, and subject, getting back
      * all relevant data for that triple in XML format.
      */
     fun post_request_xml(term: Term, school: String, subject: String): String {
-      val post_request = HttpPost(DATA_URL)
 
       val params = mutableListOf(
         KVPair("CSRFToken", csrf_token),
@@ -61,13 +87,20 @@ class Scraper {
         KVPair("acad_group", school.toString()),
         KVPair("subject", subject.toString())
       )
-      post_request.setEntity(UrlEncodedFormEntity(params))
 
-      val referrer_url = "${ROOT_URL}/${term.id}"
-      post_request.addHeader("Referrer", referrer_url)
+      val post_request = HttpPost(DATA_URL).also {
+        it.setEntity(UrlEncodedFormEntity(params))
+        it.addHeader("Referrer", "${ROOT_URL}/${term.id}")
+      }
 
       val content = http_client.execute(post_request).getEntity().getContent()
       return content.bufferedReader().readText()
     }
 
+}
+
+data class CourseListingNode(val heading: Element, val sections: List<Element>)
+
+fun parse(node: CourseListingNode): String {
+  return ""
 }

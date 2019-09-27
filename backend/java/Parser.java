@@ -14,6 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import schedge.models.Course;
 import schedge.models.Section;
+import schedge.parsers.CourseParser;
+import schedge.parsers.SectionParser;
 import schedge.wrapper.KtPair;
 
 public class Parser {
@@ -56,13 +58,13 @@ public class Parser {
    * Get formatted course data.
    */
   public static Course parseCourseData(Element data) {
-    throw new UnsupportedOperationException("");
+    return CourseParser.parseCourseData(data);
   }
 
   /**
    * Get formatted section data.
    */
   public static Section parseSectionData(Element data) {
-    throw new UnsupportedOperationException("");
+    return SectionParser.parseSectionData(data);
   }
 }

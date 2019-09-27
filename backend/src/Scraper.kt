@@ -21,7 +21,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.client.protocol.HttpClientContext;
 
-class Scraper {
+public class Scraper {
     companion object {
         val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch/"
         val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"

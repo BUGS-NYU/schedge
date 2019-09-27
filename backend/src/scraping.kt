@@ -1,17 +1,7 @@
 package schedge
 
-// import java.nio.charset.StandardCharsets.UTF_8
-// import org.apache.http.HttpEntity
-// import java.io.BufferedReader
-// import org.apache.http.client.ClientProtocolException
-// import org.apache.http.client.ResponseHandler
-// import org.apache.http.HttpResponse
-// import org.apache.http.util.EntityUtils
-// import org.apache.http.client.CookieStore
-import org.jsoup.Jsoup
 import schedge.models.Term
 import java.io.IOException
-import org.jsoup.nodes.Element
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.message.BasicNameValuePair as KVPair
 import org.apache.http.client.methods.HttpGet
@@ -19,7 +9,8 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.client.BasicCookieStore
-import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.protocol.HttpClientContext
+
 
 public class Scraper {
     companion object {
@@ -52,39 +43,15 @@ public class Scraper {
     }
 
     /**
-     * Get formatted term data.
-     */
-    fun termData(term: Term, school: String, subject: String): String {
-      val xml = Jsoup.parse(postRequestXml(term, school, subject))
-      if (xml == null) {
-        throw IOException("Jsoup.parse returned null")
-      }
-
-      val elements = xml.select("div.primary-head ~ *") // Get all siblings of the primary head
-      val block_indices = elements.withIndex().filter {
-        (_, element) -> element.tagName() == "div"
-      }.map {
-        (idx, _) -> idx
-      }.toMutableList().also {
-        it.add(elements.size)
-      }
-
-      val blocks = block_indices.windowed(2).map {
-        (from, to) -> CourseListingNode(elements.get(from), elements.subList(from + 1, to))
-      }
-
-      val boi = blocks.map(::parse)
-
-      return boi.toString()
-    }
-
-    /**
      * Send a post request for a specific term, school, and subject, getting back
      * all relevant data for that triple in XML format.
+     *
+     * TODO Return null when we get a bad response
+     *
      */
-    fun postRequestXml(term: Term, school: String, subject: String): String {
+    public fun postRequestXml(term: Term, school: String, subject: String): String {
 
-      val params = mutableListOf(
+      val params = mutableListOf( // URL params
         KVPair("CSRFToken", csrf_token),
         KVPair("term", term.id.toString()),
         KVPair("acad_group", school.toString()),
@@ -99,10 +66,4 @@ public class Scraper {
       val content = http_client.execute(post_request)!!.getEntity().getContent()
       return content.bufferedReader().readText()
     }
-}
-
-data class CourseListingNode(val heading: Element, val sections: List<Element>)
-
-fun parse(node: CourseListingNode): String {
-  return ""
 }

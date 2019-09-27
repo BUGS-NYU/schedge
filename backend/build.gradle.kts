@@ -24,6 +24,9 @@ dependencies {
   // Web requests framework
   implementation("org.apache.httpcomponents:httpclient:4.5.10")
 
+  // Logging
+  implementation("org.slf4j:slf4j-api:1.7.25")
+
   // HTML Parsing
   implementation("org.jsoup:jsoup:1.10.3")
 

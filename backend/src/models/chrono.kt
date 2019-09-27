@@ -5,6 +5,7 @@ import kotlin.experimental.and
 
 class TimeOfDay {
 
+  // Positive integer 
   val hour: Int
   val minutes: Int
   val minutesLong: Int
@@ -13,6 +14,9 @@ class TimeOfDay {
     if (hour < 0) throw IllegalArgumentException("Hour cannot be negative!")
     if (minutes < 0) throw IllegalArgumentException("Minutes cannot be negative!")
     if (minutesLong < 0) throw IllegalArgumentException("MinutesLong cannot be negative!")
+
+    if (hour > 23) throw IllegalArgumentException("Hour cannot be greater than 23!")
+    if (minutes > 59) throw IllegalArgumentException("Minutes cannot be greater than 59!")
 
     this.hour = hour
     this.minutes = minutes

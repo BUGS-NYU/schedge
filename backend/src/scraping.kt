@@ -49,18 +49,37 @@ public class Scraper {
      * TODO Return null when we get a bad response
      *
      */
-    public fun postRequestXml(term: Term, school: String, subject: String): String {
+    public fun queryNyuAlbert(
+      term: Term,
+      school: String,
+      subject: String,
+      catalogNumber: Int? = null,
+      keyword: String? = null,
+      classNumber: Int? = null,
+      location: String? = null
+    ): String {
+
+      fun <T> T?.default(def: T): T {
+        if (this == null)
+          return def
+        else
+          return this
+      }
 
       val params = mutableListOf( // URL params
         KVPair("CSRFToken", csrf_token),
         KVPair("term", term.id.toString()),
         KVPair("acad_group", school.toString()),
-        KVPair("subject", subject.toString())
+        KVPair("subject", subject.toString()),
+        KVPair("catalog_nbr", catalogNumber?.toString().default("")),
+        KVPair("keyword", keyword?.toString().default("")),
+        KVPair("class_nbr", classNumber?.toString().default("")),
+        KVPair("nyu_location", location?.toString().default(""))
       )
 
       val post_request = HttpPost(DATA_URL).also {
         it.setEntity(UrlEncodedFormEntity(params))
-        it.addHeader("Referrer", "${ROOT_URL}/${term.id}")
+        it.addHeader("Referrer", "${ROOT_URL}")
       }
 
       val content = http_client.execute(post_request)!!.getEntity().getContent()

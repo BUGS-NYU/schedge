@@ -1,13 +1,13 @@
-package schedge.parsers;
+package schedge.parse;
 
 import org.jsoup.nodes.Element;
 import schedge.models.Course;
 
-public class CourseParser {
+public class ParseCourse {
   /**
    * Get formatted course data.
    */
-  public static Course parseCourseData(Element data) {
+  public static Course parse(Element data) {
     throw new UnsupportedOperationException("");
   }
 }

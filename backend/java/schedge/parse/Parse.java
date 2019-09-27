@@ -1,4 +1,4 @@
-package schedge.parsers;
+package schedge.parse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,8 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import schedge.models.Course;
 import schedge.models.Section;
-import schedge.parsers.CourseParser;
-import schedge.parsers.SectionParser;
+import schedge.parse.ParseCourse;
+import schedge.parse.ParseSection;
 import schedge.wrapper.KtPair;
 
 public class Parse {
@@ -50,13 +50,13 @@ public class Parse {
    * Get formatted course data.
    */
   public static Course parseCourseData(Element data) {
-    return CourseParser.parseCourseData(data);
+    return ParseCourse.parse(data);
   }
 
   /**
    * Get formatted section data.
    */
   public static Section parseSectionData(Element data) {
-    return SectionParser.parseSectionData(data);
+    return ParseSection.parse(data);
   }
 }

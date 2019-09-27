@@ -1,4 +1,4 @@
-package schedge;
+package schedge.parsers;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import schedge.models.Course;
 import schedge.models.Section;
-import parsers.CourseParser;
+import schedge.parsers.CourseParser;
 import schedge.parsers.SectionParser;
 import schedge.wrapper.KtPair;
 

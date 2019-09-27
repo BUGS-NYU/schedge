@@ -1,8 +1,8 @@
 package schedge
 
 import schedge.Scraper
-import schedge.Term
-import schedge.Semester
+import schedge.models.Term
+import schedge.models.Semester
 
 
 fun main(args: Array<String>) {

@@ -9,7 +9,7 @@ package schedge
 // import org.apache.http.util.EntityUtils
 // import org.apache.http.client.CookieStore
 import org.jsoup.Jsoup
-import schedge.Term
+import schedge.models.Term
 import java.io.IOException
 import org.jsoup.nodes.Element
 import org.apache.http.client.entity.UrlEncodedFormEntity
@@ -51,6 +51,9 @@ public class Scraper {
       else csrf_token = cookie.value
     }
 
+    /**
+     * Get formatted term data.
+     */
     fun term_data(term: Term, school: String, subject: String): String {
       val xml = Jsoup.parse(post_request_xml(term, school, subject))
       if (xml == null) {
@@ -93,10 +96,9 @@ public class Scraper {
         it.addHeader("Referrer", "${ROOT_URL}/${term.id}")
       }
 
-      val content = http_client.execute(post_request).getEntity().getContent()
+      val content = http_client.execute(post_request)!!.getEntity().getContent()
       return content.bufferedReader().readText()
     }
-
 }
 
 data class CourseListingNode(val heading: Element, val sections: List<Element>)

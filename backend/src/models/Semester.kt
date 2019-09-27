@@ -7,7 +7,7 @@ enum class Semester {
   Summer;
 
   companion object {
-    fun from_int(id: Int): Semester {
+    fun fromInt(id: Int): Semester {
       return when (id) {
         2 -> Semester.January
         4 -> Semester.Spring
@@ -18,7 +18,7 @@ enum class Semester {
     }
   }
 
-  fun as_int(): Int {
+  fun toInt(): Int {
     return when (this) {
       Semester.January-> 2
       Semester.Spring -> 4
@@ -36,9 +36,9 @@ enum class Semester {
 class Term(val sem: Semester, val year: Int) {
 
   companion object {
-    fun from_id(id: Int): Term {
+    fun fromId(id: Int): Term {
       val year = id / 10
-      return Term(Semester.from_int(id - year), year)
+      return Term(Semester.fromInt(id - year), year)
     }
   }
 
@@ -49,7 +49,7 @@ class Term(val sem: Semester, val year: Int) {
 
   val id
     get(): Int {
-      return (year - 1900) * 10 + sem.as_int()
+      return (year - 1900) * 10 + sem.toInt()
     }
 
   override fun toString(): String {

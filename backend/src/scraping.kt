@@ -54,8 +54,8 @@ public class Scraper {
     /**
      * Get formatted term data.
      */
-    fun term_data(term: Term, school: String, subject: String): String {
-      val xml = Jsoup.parse(post_request_xml(term, school, subject))
+    fun termData(term: Term, school: String, subject: String): String {
+      val xml = Jsoup.parse(postRequestXml(term, school, subject))
       if (xml == null) {
         throw IOException("Jsoup.parse returned null")
       }
@@ -82,7 +82,7 @@ public class Scraper {
      * Send a post request for a specific term, school, and subject, getting back
      * all relevant data for that triple in XML format.
      */
-    fun post_request_xml(term: Term, school: String, subject: String): String {
+    fun postRequestXml(term: Term, school: String, subject: String): String {
 
       val params = mutableListOf(
         KVPair("CSRFToken", csrf_token),

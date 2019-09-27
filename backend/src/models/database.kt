@@ -1,7 +1,5 @@
 package schedge.models
 
-import kotlin.experimental.or
-import kotlin.experimental.and
 import schedge.models.TimeOfDay
 import schedge.models.Days
 

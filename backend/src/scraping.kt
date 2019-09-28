@@ -17,28 +17,28 @@ class Scraper {
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
     }
 
-    private val httpClient : CloseableHttpClient
-    private val csrfToken : String
+    private val httpClient: CloseableHttpClient
+    private val csrfToken: String
 
     init {
-      // Get a CSRF token for this scraper. This token allows us to get data straight
-      // from NYU's internal web APIs.
-      val httpContext = HttpClientContext.create()
-      httpContext.cookieStore = BasicCookieStore()
+        // Get a CSRF token for this scraper. This token allows us to get data straight
+        // from NYU's internal web APIs.
+        val httpContext = HttpClientContext.create()
+        httpContext.cookieStore = BasicCookieStore()
 
-      httpClient = HttpClients.createDefault()
+        httpClient = HttpClients.createDefault()
 
-      val getRequest = HttpGet(ROOT_URL)
-      val response = httpClient.execute(getRequest, httpContext)
-      response.close()
+        val getRequest = HttpGet(ROOT_URL)
+        val response = httpClient.execute(getRequest, httpContext)
+        response.close()
 
-      val cookie = httpContext.cookieStore.cookies.find {
-        cookie -> cookie.name == "CSRFCookie"
-      }
+        val cookie = httpContext.cookieStore.cookies.find { cookie ->
+            cookie.name == "CSRFCookie"
+        }
 
-      if (cookie == null)
-        throw Exception("Couldn't get CSRF token from NYU.")
-      else csrfToken = cookie.value
+        if (cookie == null)
+            throw Exception("Couldn't get CSRF token from NYU.")
+        else csrfToken = cookie.value
     }
 
     /**
@@ -49,22 +49,22 @@ class Scraper {
      *
      */
     fun queryNyuAlbert(
-      term: Term,
-      school: String,
-      subject: String,
-      catalogNumber: Int? = null,
-      keyword: String? = null,
-      classNumber: Int? = null,
-      location: String? = null
+            term: Term,
+            school: String,
+            subject: String,
+            catalogNumber: Int? = null,
+            keyword: String? = null,
+            classNumber: Int? = null,
+            location: String? = null
     ): String {
         val postRequest = getNyuAlbertQuery(
-            term=term,
-            school=school,
-            subject=subject,
-            catalogNumber=catalogNumber,
-            keyword=keyword,
-            classNumber=classNumber,
-            location=location
+                term = term,
+                school = school,
+                subject = subject,
+                catalogNumber = catalogNumber,
+                keyword = keyword,
+                classNumber = classNumber,
+                location = location
         )
 
         return queryNyuAlbert(postRequest)
@@ -76,29 +76,29 @@ class Scraper {
     }
 
     fun getNyuAlbertQuery(
-      term: Term,
-      school: String,
-      subject: String,
-      catalogNumber: Int?,
-      keyword: String?,
-      classNumber: Int?,
-      location: String?
+            term: Term,
+            school: String,
+            subject: String,
+            catalogNumber: Int?,
+            keyword: String?,
+            classNumber: Int?,
+            location: String?
     ): HttpPost {
-      val params = mutableListOf( // URL params
-        KVPair("CSRFToken", csrfToken),
-        KVPair("term", term.id.toString()),
-        KVPair("acad_group", school),
-        KVPair("subject", subject),
-        KVPair("catalog_nbr", catalogNumber?.toString()?:""),
-        KVPair("keyword", keyword?:""),
-        KVPair("class_nbr", classNumber?.toString()?:""),
-        KVPair("nyu_location", location?:"")
-      )
+        val params = mutableListOf( // URL params
+                KVPair("CSRFToken", csrfToken),
+                KVPair("term", term.id.toString()),
+                KVPair("acad_group", school),
+                KVPair("subject", subject),
+                KVPair("catalog_nbr", catalogNumber?.toString() ?: ""),
+                KVPair("keyword", keyword ?: ""),
+                KVPair("class_nbr", classNumber?.toString() ?: ""),
+                KVPair("nyu_location", location ?: "")
+        )
 
-      return HttpPost(DATA_URL).also {
-          it.entity = UrlEncodedFormEntity(params)
-          it.addHeader("Referrer", ROOT_URL)
-      }
+        return HttpPost(DATA_URL).also {
+            it.entity = UrlEncodedFormEntity(params)
+            it.addHeader("Referrer", ROOT_URL)
+        }
 
     }
 }

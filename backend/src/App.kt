@@ -9,19 +9,19 @@ fun main(args: Array<String>) {
     val s = Scraper()
 
     val query = s.getNyuAlbertQuery(
-      Term(Semester.Fall, 2019),
-      "UA",
-      "MATH-UA",
-      null,
-      null,
-      null,
-      null
+            Term(Semester.Fall, 2019),
+            "UA",
+            "MATH-UA",
+            null,
+            null,
+            null,
+            null
     )
 
     println(query)
     println(query.entity)
     val headers = query.allHeaders.map {
-      "${it.name}: ${it.value}"
+        "${it.name}: ${it.value}"
     }
     println(headers)
     println(query.requestLine)

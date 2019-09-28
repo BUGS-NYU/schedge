@@ -1,11 +1,15 @@
 package schedge.models
 
+/**
+ * One of the semesters in a year.
+ */
 enum class Semester {
   January,
   Spring,
   Fall,
   Summer;
 
+  // Turns enum into integer that conforms to NYU's conventions.
   fun toInt(): Int {
     return when (this) {
       January-> 2

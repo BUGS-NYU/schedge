@@ -6,7 +6,6 @@ import schedge.models.Semester
 import schedge.parse.Parse
 
 fun main(args: Array<String>) {
-    println(Term(Semester.Summer, 2019))
     val s = Scraper()
 
     val query = s.getNyuAlbertQuery(
@@ -20,7 +19,14 @@ fun main(args: Array<String>) {
     )
 
     println(query)
+    println(query.entity)
+    val headers = query.allHeaders.map {
+      "${it.name}: ${it.value}"
+    }
+    println(headers)
+    println(query.requestLine)
 
+    println("Trying to send request...")
     val response = s.queryNyuAlbert(
             Term(Semester.Fall, 2019),
             "UA",

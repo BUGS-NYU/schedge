@@ -13,7 +13,7 @@ import org.apache.http.client.protocol.HttpClientContext
 
 class Scraper {
     companion object {
-        const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch/"
+        const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
     }
 
@@ -96,8 +96,8 @@ class Scraper {
       )
 
       return HttpPost(DATA_URL).also {
-        it.entity = UrlEncodedFormEntity(params)
-        it.addHeader("Referrer", ROOT_URL)
+          it.entity = UrlEncodedFormEntity(params)
+          it.addHeader("Referrer", ROOT_URL)
       }
 
     }

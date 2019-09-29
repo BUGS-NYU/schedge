@@ -7,6 +7,8 @@ import schedge.parse.Parse
 
 fun main(args: Array<String>) {
     val s = Scraper()
+    print("CSRFToken: ")
+    println(s.csrfToken)
 
     val query = s.getNyuAlbertQuery(
             Term(Semester.Fall, 2019),
@@ -18,13 +20,15 @@ fun main(args: Array<String>) {
             null
     )
 
+    print("Query: ")
     println(query)
+    print("Entity: ")
     println(query.entity)
     val headers = query.allHeaders.map {
         "${it.name}: ${it.value}"
     }
+    print("Headers: ")
     println(headers)
-    println(query.requestLine)
 
     println("Trying to send request...")
     val response = s.queryNyuAlbert(

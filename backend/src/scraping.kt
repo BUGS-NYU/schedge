@@ -18,27 +18,30 @@ class Scraper {
     }
 
     private val httpClient: CloseableHttpClient
-    private val csrfToken: String
+    private val httpContext: HttpClientContext
+    val csrfToken: String
+        get() {
+            val cookie = httpContext.cookieStore.cookies.find { cookie ->
+                cookie.name == "CSRFCookie"
+            }
+
+            if (cookie == null)
+                throw Exception("Couldn't get CSRF token from NYU.")
+            else return cookie.value
+        }
 
     init {
         // Get a CSRF token for this scraper. This token allows us to get data straight
         // from NYU's internal web APIs.
-        val httpContext = HttpClientContext.create()
+        httpContext = HttpClientContext.create()
         httpContext.cookieStore = BasicCookieStore()
 
-        httpClient = HttpClients.createDefault()
+        httpClient = HttpClients.custom().useSystemProperties().build()
 
         val getRequest = HttpGet(ROOT_URL)
         val response = httpClient.execute(getRequest, httpContext)
         response.close()
 
-        val cookie = httpContext.cookieStore.cookies.find { cookie ->
-            cookie.name == "CSRFCookie"
-        }
-
-        if (cookie == null)
-            throw Exception("Couldn't get CSRF token from NYU.")
-        else csrfToken = cookie.value
     }
 
     /**
@@ -71,7 +74,7 @@ class Scraper {
     }
 
     private fun queryNyuAlbert(query: HttpPost): String {
-        val content = httpClient.execute(query)!!.entity.content
+        val content = httpClient.execute(query, httpContext)!!.entity.content
         return content.bufferedReader().readText()
     }
 
@@ -97,7 +100,10 @@ class Scraper {
 
         return HttpPost(DATA_URL).also {
             it.entity = UrlEncodedFormEntity(params)
-            it.addHeader("Referrer", ROOT_URL)
+            it.addHeader("Referrer", "${ROOT_URL}/${term.id.toString()}")
+            it.addHeader("Host", "m.albert.nyu.edu")
+            it.addHeader("Accept", "*/*")
+            it.addHeader("Accept-Encoding", "gzip, deflate, br")
         }
 
     }

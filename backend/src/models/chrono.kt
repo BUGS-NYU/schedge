@@ -3,24 +3,15 @@ package schedge.models
 import kotlin.experimental.or
 import kotlin.experimental.and
 
-class TimeOfDay {
+data class TimeOfDay(// Positive integer
+        val hour: Int, val minutes: Int, val minutesLong: Int) {
 
-    // Positive integer
-    private val hour: Int
-    private val minutes: Int
-    private val minutesLong: Int
-
-    constructor(hour: Int, minutes: Int, minutesLong: Int) {
+    init {
         require(hour >= 0) { "Hour cannot be negative!" }
         require(minutes >= 0) { "Minutes cannot be negative!" }
         require(minutesLong >= 0) { "MinutesLong cannot be negative!" }
-
         require(hour <= 23) { "Hour cannot be greater than 23!" }
         require(minutes <= 59) { "Minutes cannot be greater than 59!" }
-
-        this.hour = hour
-        this.minutes = minutes
-        this.minutesLong = minutesLong
     }
 }
 

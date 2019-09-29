@@ -17,8 +17,11 @@ class Scraper {
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
     }
 
-    private val httpClient: CloseableHttpClient
-    private val httpContext: HttpClientContext
+    private val httpClient: CloseableHttpClient = HttpClients.custom().useSystemProperties().build()
+    private val httpContext = HttpClientContext.create().apply {
+        cookieStore = BasicCookieStore()
+    }
+
     val csrfToken: String
         get() {
             val cookie = httpContext.cookieStore.cookies.find { cookie ->
@@ -33,13 +36,7 @@ class Scraper {
     init {
         // Get a CSRF token for this scraper. This token allows us to get data straight
         // from NYU's internal web APIs.
-        httpContext = HttpClientContext.create()
-        httpContext.cookieStore = BasicCookieStore()
-
-        httpClient = HttpClients.custom().useSystemProperties().build()
-
-        val getRequest = HttpGet(ROOT_URL)
-        val response = httpClient.execute(getRequest, httpContext)
+        val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
         response.close()
 
     }
@@ -51,7 +48,7 @@ class Scraper {
      * TODO Return null when we get a bad response
      *
      */
-    fun queryNyuAlbert(
+    fun queryCourses(
             term: Term,
             school: String,
             subject: String,
@@ -60,7 +57,7 @@ class Scraper {
             classNumber: Int? = null,
             location: String? = null
     ): String {
-        val postRequest = getNyuAlbertQuery(
+        val postRequest = getCourseQuery(
                 term = term,
                 school = school,
                 subject = subject,
@@ -70,15 +67,15 @@ class Scraper {
                 location = location
         )
 
-        return queryNyuAlbert(postRequest)
+        return queryCourses(postRequest)
     }
 
-    private fun queryNyuAlbert(query: HttpPost): String {
+    private fun queryCourses(query: HttpPost): String {
         val content = httpClient.execute(query, httpContext)!!.entity.content
         return content.bufferedReader().readText()
     }
 
-    fun getNyuAlbertQuery(
+    fun getCourseQuery(
             term: Term,
             school: String,
             subject: String,
@@ -100,10 +97,8 @@ class Scraper {
 
         return HttpPost(DATA_URL).also {
             it.entity = UrlEncodedFormEntity(params)
-            it.addHeader("Referrer", "${ROOT_URL}/${term.id.toString()}")
+            it.addHeader("Referrer", "${ROOT_URL}/${term.id}")
             it.addHeader("Host", "m.albert.nyu.edu")
-            it.addHeader("Accept", "*/*")
-            it.addHeader("Accept-Encoding", "gzip, deflate, br")
         }
 
     }

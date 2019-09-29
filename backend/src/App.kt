@@ -1,16 +1,14 @@
 package schedge
 
-import schedge.Scraper
 import schedge.models.Term
 import schedge.models.Semester
-import schedge.parse.Parse
 
-fun main(args: Array<String>) {
+fun main() {
     val s = Scraper()
     print("CSRFToken: ")
     println(s.csrfToken)
 
-    val query = s.getNyuAlbertQuery(
+    val query = s.getCourseQuery(
             Term(Semester.Fall, 2019),
             "UA",
             "MATH-UA",
@@ -31,12 +29,14 @@ fun main(args: Array<String>) {
     println(headers)
 
     println("Trying to send request...")
-    val response = s.queryNyuAlbert(
+    val response = s.queryCourses(
             Term(Semester.Fall, 2019),
             "UA",
             "MATH-UA"
     )
 
     println(response)
+
+    println(parseCourseData(response))
 
 }

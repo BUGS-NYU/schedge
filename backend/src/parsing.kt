@@ -10,22 +10,22 @@ import java.io.IOException
 fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
     val xml = Jsoup.parse(courseData) ?: throw IOException("Jsoup.parse returned null")
 
+    // Get all siblings of the primary head
     val elementList = xml.select("div.primary-head ~ *")
-        ?: throw IOException("xml.select returned null")
-        // Get all siblings of the primary head
+            ?: throw IOException("xml.select returned null")
 
-    val output : MutableList<Pair<Course, MutableList<Section>>> = mutableListOf()
+    val output: MutableList<Pair<Course, MutableList<Section>>> = mutableListOf(
+            Pair(ParseCourse.parse(elementList.first() ?: throw IOException("Course data is empty!")), mutableListOf())
+    )
+    var current = output.last()
 
-    for (i in elementList.indices) {
-        val element = elementList[i]
-
-        if (element.tagName() == "div") {
-            output.add(Pair(ParseCourse.parse(element), mutableListOf()))
-        } else {
-            // First element wasn't a `div` for some reason.
-            assert(!output.isEmpty())
-            output[output.size - 1]
-                    .component2()
+    elementList.asSequence().drop(1).forEach { element ->
+        when {
+            element.tagName() == "div" -> {
+                output += Pair(ParseCourse.parse(element), mutableListOf())
+                current = output.last()
+            }
+            else -> current.component2()
                     .add(ParseSection.parse(element))
         }
     }

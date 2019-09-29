@@ -8,12 +8,14 @@ package schedge.models
  * - name: Course name
  */
 data class Course(
+        val courseId: Long,
         val abbrev: String,
         val name: String
 )
 
 data class Section(
-        val courseId: Int,
+        val registrationNumber: Long,
+        val courseId: Long,
         val days: Days,
         val time: TimeOfDay,
         val days2: Days?,

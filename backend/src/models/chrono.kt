@@ -1,7 +1,7 @@
 package schedge.models
 
-import kotlin.experimental.or
 import kotlin.experimental.and
+import kotlin.experimental.or
 
 data class TimeOfDay(// Positive integer
         val hour: Int, val minutes: Int, val minutesLong: Int) {

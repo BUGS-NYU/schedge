@@ -1,20 +1,21 @@
 package schedge
 
-import schedge.models.Term
 import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.message.BasicNameValuePair as KVPair
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.protocol.HttpClientContext
+import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
-import org.apache.http.impl.client.BasicCookieStore
-import org.apache.http.client.protocol.HttpClientContext
+import schedge.models.Term
+import org.apache.http.message.BasicNameValuePair as KVPair
 
 
 class Scraper {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
+        const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
     }
 
     private val httpClient: CloseableHttpClient = HttpClients.custom().useSystemProperties().build()
@@ -67,22 +68,26 @@ class Scraper {
                 location = location
         )
 
-        return queryCourses(postRequest)
-    }
-
-    private fun queryCourses(query: HttpPost): String {
-        val content = httpClient.execute(query, httpContext)!!.entity.content
+        val content = httpClient.execute(postRequest, httpContext)!!.entity.content
         return content.bufferedReader().readText()
     }
+
+    fun querySection(term: Term, registrationNumber: Long): String {
+        val query = getSectionQuery(term = term, registrationNumber = registrationNumber)
+        val content = httpClient.execute(query)!!.entity.content
+        return content.bufferedReader().readText()
+
+    }
+
 
     fun getCourseQuery(
             term: Term,
             school: String,
             subject: String,
-            catalogNumber: Int?,
-            keyword: String?,
-            classNumber: Int?,
-            location: String?
+            catalogNumber: Int? = null,
+            keyword: String? = null,
+            classNumber: Int? = null,
+            location: String? = null
     ): HttpPost {
         val params = mutableListOf( // URL params
                 KVPair("CSRFToken", csrfToken),
@@ -101,5 +106,12 @@ class Scraper {
             it.addHeader("Host", "m.albert.nyu.edu")
         }
 
+    }
+
+    private fun getSectionQuery(
+            term: Term,
+            registrationNumber: Long
+    ): HttpGet {
+        return HttpGet("${CATALOG_URL}/${term.id}/${registrationNumber}")
     }
 }

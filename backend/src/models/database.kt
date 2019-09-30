@@ -22,3 +22,21 @@ data class Section(
         val time2: TimeOfDay?
 )
 
+data class CourseLong(
+        val courseId: Long,
+        val abbrev: String,
+        val name: String,
+        val description: String
+)
+
+data class SectionLong(
+        val registrationNumber: Long,
+        val courseId: Long,
+        val days: Days,
+        val time: TimeOfDay,
+        val instructor: String,
+        val days2: Days?,
+        val time2: TimeOfDay?,
+        val instructor2: String?
+)
+

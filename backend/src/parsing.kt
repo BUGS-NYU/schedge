@@ -3,6 +3,8 @@ package schedge
 import org.jsoup.Jsoup
 import schedge.models.Course
 import schedge.models.Section
+import schedge.models.CourseLong
+import schedge.models.SectionLong
 import schedge.parse.ParseCourse
 import schedge.parse.ParseSection
 import java.io.IOException
@@ -31,5 +33,9 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
     }
 
     return output
+}
+
+fun parseSectionData(sectionData: String): Pair<CourseLong, SectionLong> {
+  throw UnsupportedOperationException("")
 }
 

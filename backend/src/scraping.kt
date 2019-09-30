@@ -9,7 +9,7 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import schedge.models.Term
 import org.apache.http.message.BasicNameValuePair as KVPair
-
+import schedge.Logging
 
 class Scraper {
     companion object {
@@ -18,7 +18,7 @@ class Scraper {
         const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
     }
 
-    private val httpClient: CloseableHttpClient = HttpClients.custom().useSystemProperties().build()
+    private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {
         cookieStore = BasicCookieStore()
     }
@@ -29,16 +29,19 @@ class Scraper {
                 cookie.name == "CSRFCookie"
             }
 
-            if (cookie == null)
+            if (cookie == null) {
+                Logging.error("Couldn't find CSRF Token in `HttpContext.cookiesStore`.")
                 throw Exception("Couldn't get CSRF token from NYU.")
-            else return cookie.value
+            } else return cookie.value
         }
 
     init {
+        Logging.debug("Creating scraper instance...")
         // Get a CSRF token for this scraper. This token allows us to get data straight
         // from NYU's internal web APIs.
         val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
         response.close()
+        Logging.info("Scraper instance created with CSRF Token '${csrfToken}'.")
 
     }
 
@@ -76,7 +79,6 @@ class Scraper {
         val query = getSectionQuery(term = term, registrationNumber = registrationNumber)
         val content = httpClient.execute(query)!!.entity.content
         return content.bufferedReader().readText()
-
     }
 
 

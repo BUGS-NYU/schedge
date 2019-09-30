@@ -12,6 +12,7 @@ import schedge.Logging
 
 class App(): CliktCommand() {
     private val loggingLevel by option(help="The logging level of the application.").int().default(Logging.WARN).validate {
+        Logging.loggingLevel = it
         Logging.info("Logging level set to $it (${when (it) {
             1 -> "debug"
             2 -> "info"

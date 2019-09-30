@@ -1,6 +1,6 @@
 package schedge
 
-class Logging(val level : Int = 3) {
+class Logging(val level: Int = 3) {
     companion object {
         const val DEBUG = 1
         const val INFO = 2

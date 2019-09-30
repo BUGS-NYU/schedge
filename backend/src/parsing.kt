@@ -36,6 +36,6 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
 }
 
 fun parseSectionData(sectionData: String): Pair<CourseLong, SectionLong> {
-  throw UnsupportedOperationException("")
+    throw UnsupportedOperationException("")
 }
 

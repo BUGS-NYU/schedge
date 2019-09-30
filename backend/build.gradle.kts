@@ -24,11 +24,11 @@ dependencies {
     // Web requests framework
     implementation("org.apache.httpcomponents:httpclient:4.5.10")
 
-    // Logging
-    implementation("org.slf4j:slf4j-api:1.7.25")
-
     // HTML Parsing
     implementation("org.jsoup:jsoup:1.10.3")
+
+    // Command line args
+    implementation("com.github.ajalt:clikt:2.2.0")
 
     // Database framework
     implementation("org.jetbrains.exposed:exposed:0.17.3")

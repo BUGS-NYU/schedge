@@ -29,6 +29,9 @@ dependencies {
     // Command line args
     implementation "com.github.ajalt:clikt:2.2.0"
 
+    // Database driver
+    implementation 'org.postgresql:postgresql:42.2.8.jre7'
+
     // Database framework
     implementation "org.jetbrains.exposed:exposed:0.17.3"
 

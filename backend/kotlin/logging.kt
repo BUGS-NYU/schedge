@@ -5,32 +5,46 @@ class Logging(val level: Int = 3) {
         const val WARN = 3
         const val ERROR = 4
 
-        var loggingLevel = INFO
+        private const val loggingLevel = INFO
 
-        fun debug(value: Any?) {
-            if (loggingLevel <= DEBUG) {
-                System.err.println("DEBUG: ${(value ?: "").toString()}")
+        fun getLogger(level: Int = WARN): Logging {
+            val logger = Logging(level)
+            logger.info("Logger created with level '${levelToString(level)}' (${level}).")
+            return logger
+        }
+
+        private fun levelToString(level: Int): String {
+            return when (level) {
+                1 -> "debug"
+                2 -> "info"
+                3 -> "warn"
+                4 -> "error"
+                else -> throw Exception("Logging level set to invalid value (${level}).")
             }
         }
 
-        fun info(value: Any?) {
-            if (loggingLevel <= INFO) {
-                System.err.println("INFO: ${(value ?: "").toString()}")
+        fun log(message: String, level: Int) {
+            if (level >= loggingLevel) {
+                System.err.println("${levelToString(level).toUpperCase()}: $message")
             }
         }
-
-        fun warn(value: Any?) {
-            if (loggingLevel <= WARN) {
-                System.err.println("WARN: ${(value ?: "").toString()}")
+        fun logThrow(message: String, level: Int): Exception? {
+            if (level >= loggingLevel) {
+                System.err.println("${levelToString(level).toUpperCase()}: $message")
             }
-        }
-
-        fun error(value: Any?) {
-            if (loggingLevel <= ERROR) {
-                System.err.println("ERROR: ${(value ?: "").toString()}")
+            return when (level) {
+                ERROR -> Exception(message)
+                else -> null
             }
         }
     }
 
+    fun debug(value: Any?) = log(value.toString(), DEBUG)
+    fun info(value: Any?) = log(value.toString(), INFO)
+    fun warn(value: Any?) = log(value.toString(), WARN)
+    fun error(value: Any?): Exception {
+        log(value.toString(), ERROR)
+        return Exception(value.toString())
+    }
 }
 

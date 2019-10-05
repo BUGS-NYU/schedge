@@ -14,6 +14,7 @@ class Scraper {
         const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
     }
 
+    private val logger = Logging.getLogger(Logging.WARN)
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {
         cookieStore = BasicCookieStore()
@@ -26,18 +27,17 @@ class Scraper {
             }
 
             if (cookie == null) {
-                Logging.error("Couldn't find CSRF Token in `HttpContext.cookiesStore`.")
-                throw Exception("Couldn't get CSRF token from NYU.")
+                throw logger.error("Couldn't find CSRF Token in `HttpContext.cookiesStore`.")
             } else return cookie.value
         }
 
     init {
-        Logging.debug("Creating scraper instance...")
+        logger.debug("Creating scraper instance...")
         // Get a CSRF token for this scraper. This token allows us to get data straight
         // from NYU's internal web APIs.
         val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
         response.close()
-        Logging.info("Scraper instance created with CSRF Token '${csrfToken}'.")
+        logger.info("Scraper instance created with CSRF Token '${csrfToken}'.")
 
     }
 

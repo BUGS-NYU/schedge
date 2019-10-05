@@ -12,10 +12,13 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
 
     // Get all siblings of the primary head
     val elementList = xml.select("div.primary-head ~ *")
-            ?: throw IOException("xml.select returned null")
+        ?: throw IOException("xml.select returned null")
 
     val output: MutableList<Pair<Course, MutableList<Section>>> = mutableListOf(
-            Pair(ParseCourse.parse(elementList.first() ?: throw IOException("Course data is empty!")), mutableListOf())
+        Pair(
+            ParseCourse.parse(elementList.first() ?: throw IOException("Course data is empty!")),
+            mutableListOf()
+        )
     )
     var current = output.last()
 
@@ -26,7 +29,7 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
                 current = output.last()
             }
             else -> current.component2()
-                    .add(ParseSection.parse(element))
+                .add(ParseSection.parse(element))
         }
     }
 
@@ -34,6 +37,11 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
 }
 
 fun parseSectionData(sectionData: String): Pair<CourseLong, SectionLong> {
+    val xml = Jsoup.parse(sectionData).let {
+        it ?: throw IOException("Jsoup.parse returned null")
+    }.let {
+        it.select("section.main").first()
+            ?: throw IOException("Couldn't find data")
+    }
     throw UnsupportedOperationException("")
 }
-

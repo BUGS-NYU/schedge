@@ -4,8 +4,8 @@ import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
-import models.Term
 import org.apache.http.message.BasicNameValuePair as KVPair
+import models.Term
 
 class Scraper {
     companion object {

@@ -5,8 +5,6 @@ class Logging(val level: Int = 3) {
         const val WARN = 3
         const val ERROR = 4
 
-        private const val loggingLevel = INFO
-
         fun getLogger(level: Int = WARN): Logging {
             val logger = Logging(level)
             logger.info("Logger created with level '${levelToString(level)}' (${level}).")
@@ -24,14 +22,10 @@ class Logging(val level: Int = 3) {
         }
 
         fun log(message: String, level: Int) {
-            if (level >= loggingLevel) {
-                System.err.println("${levelToString(level).toUpperCase()}: $message")
-            }
+            System.err.println("${levelToString(level).toUpperCase()}: $message")
         }
         fun logThrow(message: String, level: Int): Exception? {
-            if (level >= loggingLevel) {
-                System.err.println("${levelToString(level).toUpperCase()}: $message")
-            }
+            System.err.println("${levelToString(level).toUpperCase()}: $message")
             return when (level) {
                 ERROR -> Exception(message)
                 else -> null

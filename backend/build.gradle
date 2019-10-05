@@ -29,6 +29,8 @@ dependencies {
     // Command line args
     implementation "com.github.ajalt:clikt:2.2.0"
 
+    implementation "com.zaxxer:HikariCP:3.4.1"
+
     // Database driver
     implementation 'org.postgresql:postgresql:42.2.8.jre7'
 

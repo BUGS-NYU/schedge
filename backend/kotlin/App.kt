@@ -8,9 +8,6 @@ import com.github.ajalt.clikt.parameters.options.validate
 import com.github.ajalt.clikt.parameters.types.int
 import java.io.IOException
 
-fun validateLoggingLevel(level: Int?) {
-}
-
 class App() : CliktCommand(invokeWithoutSubcommand = true) {
     private val logLevel by option(help = "Set the logging level.")
         .switch(

@@ -22,6 +22,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
       }
 
     override fun run() {
+        DatabaseManager.setupDatabase()
         throw logger.error("Nothing's been implemented!")
     }
 }

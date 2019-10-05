@@ -6,7 +6,8 @@ docker run \
   -e POSTGRES_PASSWORD=docker \
   -d -p 5432:5432 \
   -v postgres:/var/lib/postgresql/data postgres
-createuser schedge
+createuser schedge -s
+createdb schedge
 }
 
 docker start pg-docker 2>1 > /dev/null || setup_postgres

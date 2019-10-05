@@ -1,0 +1,3 @@
+#!/bin/sh
+
+psql -h localhost -U $1 -d postgres

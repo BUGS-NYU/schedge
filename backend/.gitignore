@@ -7,5 +7,6 @@
 # Ignore Gradle build output directory
 build
 
-!bin/.gitkeep
-bin/*
+!postgres/.gitkeep
+postgres/*
+

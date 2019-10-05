@@ -33,11 +33,15 @@ class Logging(val level: Int = 3) {
         }
     }
 
-    fun debug(value: Any?) = log(value.toString(), DEBUG)
-    fun info(value: Any?) = log(value.toString(), INFO)
-    fun warn(value: Any?) = log(value.toString(), WARN)
+    fun log(value: Any?, level: Int) {
+        if (level >= this.level)
+            Logging.log(value.toString(), level)
+    }
+    fun debug(value: Any?) = log(value, DEBUG)
+    fun info(value: Any?) = log(value, INFO)
+    fun warn(value: Any?) = log(value, WARN)
     fun error(value: Any?): Exception {
-        log(value.toString(), ERROR)
+        log(value, ERROR)
         return Exception(value.toString())
     }
 

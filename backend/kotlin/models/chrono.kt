@@ -1,4 +1,4 @@
-package schedge.models
+package models
 
 import kotlin.experimental.and
 import kotlin.experimental.or

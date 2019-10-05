@@ -1,15 +1,11 @@
-package schedge
-
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
-import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
-import schedge.models.Term
+import models.Term
 import org.apache.http.message.BasicNameValuePair as KVPair
-import schedge.Logging
 
 class Scraper {
     companion object {
@@ -53,13 +49,13 @@ class Scraper {
      *
      */
     fun queryCourses(
-            term: Term,
-            school: String,
-            subject: String,
-            catalogNumber: Int? = null,
-            keyword: String? = null,
-            classNumber: Int? = null,
-            location: String? = null
+        term: Term,
+        school: String,
+        subject: String,
+        catalogNumber: Int? = null,
+        keyword: String? = null,
+        classNumber: Int? = null,
+        location: String? = null
     ): String {
         val postRequest = getCourseQuery(
                 term = term,
@@ -83,13 +79,13 @@ class Scraper {
 
 
     fun getCourseQuery(
-            term: Term,
-            school: String,
-            subject: String,
-            catalogNumber: Int? = null,
-            keyword: String? = null,
-            classNumber: Int? = null,
-            location: String? = null
+        term: Term,
+        school: String,
+        subject: String,
+        catalogNumber: Int? = null,
+        keyword: String? = null,
+        classNumber: Int? = null,
+        location: String? = null
     ): HttpPost {
         val params = mutableListOf( // URL params
                 KVPair("CSRFToken", csrfToken),
@@ -104,16 +100,16 @@ class Scraper {
 
         return HttpPost(DATA_URL).also {
             it.entity = UrlEncodedFormEntity(params)
-            it.addHeader("Referrer", "${ROOT_URL}/${term.id}")
+            it.addHeader("Referrer", "$ROOT_URL/${term.id}")
             it.addHeader("Host", "m.albert.nyu.edu")
         }
 
     }
 
     private fun getSectionQuery(
-            term: Term,
-            registrationNumber: Long
+        term: Term,
+        registrationNumber: Long
     ): HttpGet {
-        return HttpGet("${CATALOG_URL}/${term.id}/${registrationNumber}")
+        return HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
     }
 }

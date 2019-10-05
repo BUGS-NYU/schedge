@@ -1,7 +1,7 @@
-package schedge.parse;
+package parse;
 
 import org.jsoup.nodes.Element;
-import schedge.models.Course;
+import models.Course;
 
 public class ParseCourse {
     /**

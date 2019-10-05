@@ -1,4 +1,4 @@
-package schedge.models
+package models
 
 /**
  * One of the semesters in a year.

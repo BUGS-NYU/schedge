@@ -1,12 +1,10 @@
-package schedge
-
 import org.jsoup.Jsoup
-import schedge.models.Course
-import schedge.models.Section
-import schedge.models.CourseLong
-import schedge.models.SectionLong
-import schedge.parse.ParseCourse
-import schedge.parse.ParseSection
+import models.Course
+import models.Section
+import models.CourseLong
+import models.SectionLong
+import parse.ParseCourse
+import parse.ParseSection
 import java.io.IOException
 
 fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {

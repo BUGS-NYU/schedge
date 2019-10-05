@@ -1,7 +1,7 @@
-package schedge.parse;
+package parse;
 
 import org.jsoup.nodes.Element;
-import schedge.models.Section;
+import models.Section;
 
 public class ParseSection {
     /**

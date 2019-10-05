@@ -6,6 +6,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.switch
 import com.github.ajalt.clikt.parameters.options.validate
 import com.github.ajalt.clikt.parameters.types.int
+import database.DatabaseManager
 import java.io.IOException
 
 class App() : CliktCommand(invokeWithoutSubcommand = true) {
@@ -16,6 +17,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
             "--warn" to Logging.WARN,
             "--error" to Logging.ERROR
         ).default(Logging.WARN)
+
     private val logger : Logging
       get() {
         return Logging.getLogger(logLevel)

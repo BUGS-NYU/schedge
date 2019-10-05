@@ -11,7 +11,7 @@ import java.io.IOException
 fun validateLoggingLevel(level: Int?) {
 }
 
-class App() : CliktCommand() {
+class App() : CliktCommand(invokeWithoutSubcommand = true) {
     private val logLevel by option(help = "Set the logging level.")
         .switch(
             "--debug" to Logging.DEBUG,
@@ -19,9 +19,13 @@ class App() : CliktCommand() {
             "--warn" to Logging.WARN,
             "--error" to Logging.ERROR
         ).default(Logging.WARN)
+    private val logger : Logging
+      get() {
+        return Logging.getLogger(logLevel)
+      }
 
     override fun run() {
-        throw Logging.logThrow("Nothing's been implemented!", Logging.ERROR)!!
+        throw logger.error("Nothing's been implemented!")
     }
 }
 

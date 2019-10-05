@@ -46,5 +46,9 @@ class Logging(val level: Int = 3) {
         log(value.toString(), ERROR)
         return Exception(value.toString())
     }
+
+    fun getLogger(level: Int) {
+      Logging.getLogger(kotlin.math.max(level, this.level))
+    }
 }
 

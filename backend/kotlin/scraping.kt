@@ -34,6 +34,7 @@ class Scraper {
                     }
                     "Couldn't find `CSRFCookie`. Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
                 }
+
                 logger.error(
                     "NYU servers did something unexpected.",
                     ::IOException
@@ -45,12 +46,13 @@ class Scraper {
 
     init {
         logger.debug("Creating scraper instance...")
-        // Get a CSRF token for this scraper. This token allows us to get data straight
-        // from NYU's internal web APIs.
+
+        // Get a CSRF token for this scraper. This token allows us to get
+        // data straight from NYU's internal web APIs.
         val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
         response.close()
-        logger.info("Scraper instance created with CSRF Token '${csrfToken}'.")
 
+        logger.info { "Scraper instance created with CSRF Token '${csrfToken}'." }
     }
 
     /**
@@ -78,14 +80,13 @@ class Scraper {
                 classNumber = classNumber,
                 location = location
         )
-
-        val content = httpClient.execute(postRequest, httpContext)!!.entity.content
+        val content = httpClient.execute(postRequest, httpContext).entity.content
         return content.bufferedReader().readText()
     }
 
     fun querySection(term: Term, registrationNumber: Long): String {
-        val query = getSectionQuery(term = term, registrationNumber = registrationNumber)
-        val content = httpClient.execute(query)!!.entity.content
+        val query = HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
+        val content = httpClient.execute(query, httpContext).entity.content
         return content.bufferedReader().readText()
     }
 
@@ -116,12 +117,5 @@ class Scraper {
             it.addHeader("Host", "m.albert.nyu.edu")
         }
 
-    }
-
-    private fun getSectionQuery(
-        term: Term,
-        registrationNumber: Long
-    ): HttpGet {
-        return HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
     }
 }

@@ -22,7 +22,7 @@ class DatabaseManager {
         fun setupDatabase() {
           Database.connect(DatabaseManager.dataSource)
           transaction {
-            SchemaUtils.create(Cities)
+            SchemaUtils.create(Courses)
           }
         }
     }

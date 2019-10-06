@@ -71,10 +71,5 @@ jar {
     manifest {
         attributes 'Main-Class': 'AppKt'
     }
-    from {
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
 }
 

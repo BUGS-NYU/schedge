@@ -6,6 +6,7 @@ import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair as KVPair
 import models.Term
+import java.io.IOException
 
 class Scraper {
     companion object {
@@ -27,8 +28,19 @@ class Scraper {
             }
 
             if (cookie == null) {
-                throw logger.error("Couldn't find CSRF Token in `HttpContext.cookiesStore`.")
-            } else return cookie.value
+                logger.info {
+                    val cookies = httpContext.cookieStore.cookies.map {
+                        "${it.name}: \"${it.value}\""
+                    }
+                    "Couldn't find `CSRFCookie`. Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
+                }
+                logger.error(
+                    "NYU servers did something unexpected.",
+                    ::IOException
+                )
+            } else {
+              return cookie.value
+            }
         }
 
     init {

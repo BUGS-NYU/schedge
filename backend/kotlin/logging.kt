@@ -1,52 +1,82 @@
-class Logging(val level: Int = 3) {
-    companion object {
-        const val DEBUG = 1
-        const val INFO = 2
-        const val WARN = 3
-        const val ERROR = 4
+class Logging(val level: LoggingLevel = LoggingLevel.Warn) {
+    enum class LoggingLevel {
+        Debug,
+        Info,
+        Warn,
+        Error;
 
-        fun getLogger(level: Int = WARN): Logging {
+        companion object {
+            fun max(level1: LoggingLevel, level2: LoggingLevel): LoggingLevel {
+                if (level1 == Error || level2 == Error)
+                    return Error
+                else if (level1 == Warn || level2 == Warn)
+                    return Warn
+                else if (level1 == Info || level2 == Info)
+                    return Info
+                else return Debug
+            }
+        }
+    }
+
+    companion object {
+        val DEBUG = LoggingLevel.Debug
+        val INFO = LoggingLevel.Info
+        val WARN = LoggingLevel.Warn
+        val ERROR = LoggingLevel.Error
+
+        fun getLogger(level: LoggingLevel = WARN): Logging {
             val logger = Logging(level)
             logger.info("Logger created with level '${levelToString(level)}' (${level}).")
             return logger
         }
 
-        private fun levelToString(level: Int): String {
-            return when (level) {
-                1 -> "debug"
-                2 -> "info"
-                3 -> "warn"
-                4 -> "error"
-                else -> throw Exception("Logging level set to invalid value (${level}).")
-            }
+        private fun levelToString(level: LoggingLevel): String {
+            return level.toString().toLowerCase()
         }
 
-        fun log(message: String, level: Int) {
-            System.err.println("${levelToString(level).toUpperCase()}: $message")
-        }
-        fun logThrow(message: String, level: Int): Exception? {
-            System.err.println("${levelToString(level).toUpperCase()}: $message")
-            return when (level) {
-                ERROR -> Exception(message)
-                else -> null
-            }
+        fun log(level: LoggingLevel, message: String) {
+            val levelString = levelToString(level).toUpperCase()
+            val formattedMessage = message.trim().replace("\n", "\n${levelString}: ")
+            System.err.println("${levelString}: $formattedMessage")
         }
     }
 
-    fun log(value: Any?, level: Int) {
+    fun log(level: LoggingLevel, value: Any?) {
         if (level >= this.level)
-            Logging.log(value.toString(), level)
-    }
-    fun debug(value: Any?) = log(value, DEBUG)
-    fun info(value: Any?) = log(value, INFO)
-    fun warn(value: Any?) = log(value, WARN)
-    fun error(value: Any?): Exception {
-        log(value, ERROR)
-        return Exception(value.toString())
+            Logging.log(level, value.toString())
     }
 
-    fun getLogger(level: Int) {
-      Logging.getLogger(kotlin.math.max(level, this.level))
+    fun log(level: LoggingLevel, value: () -> Any?) {
+        if (level >= this.level)
+            Logging.log(level, value().toString())
+    }
+
+    fun debug(value: Any?) = log(DEBUG, value)
+    fun info(value: Any?) = log(INFO, value)
+    fun warn(value: Any?) = log(WARN, value)
+
+    fun debug(value: () -> Any?) = log(DEBUG, value)
+    fun info(value: () -> Any?) = log(INFO, value)
+    fun warn(value: () -> Any?) = log(WARN, value)
+
+    fun error(value: Any?): Nothing {
+        val message = value.toString()
+        Logging.log(ERROR, message)
+        throw Exception(message).also {
+            it.stackTrace = it.stackTrace.copyOfRange(1, it.stackTrace.size)
+        }
+    }
+
+    fun error(value: Any?, newException: (String) -> Exception): Nothing {
+        val message = value.toString()
+        Logging.log(ERROR, message)
+        throw newException(message).also {
+            it.stackTrace = it.stackTrace.copyOfRange(1, it.stackTrace.size)
+        }
+    }
+
+    fun getLogger(level: LoggingLevel) {
+      Logging.getLogger(LoggingLevel.max(level, this.level))
     }
 }
 

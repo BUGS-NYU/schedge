@@ -7,24 +7,20 @@ import com.zaxxer.hikari.HikariConfig
 import java.io.IOException
 import javax.sql.DataSource
 
-class DatabaseManager {
+object DatabaseManager {
 
-    companion object {
-        val dataSource : DataSource = {
-            val config = HikariConfig().also {
-                it.jdbcUrl = "jdbc:postgresql://localhost:5432/"
-                it.driverClassName = "org.postgresql.Driver"
-                it.username = "schedge"
-                it.password = "docker"
-            }
-            HikariDataSource(config)
-        }()
-        fun setupDatabase() {
-          Database.connect(DatabaseManager.dataSource)
-          transaction {
-            SchemaUtils.create(Courses)
-          }
-        }
+    val dataSource: DataSource = HikariConfig().let {
+        it.jdbcUrl = "jdbc:postgresql://localhost:5432/schedge"
+        it.driverClassName = "org.postgresql.Driver"
+        it.username = "schedge"
+        it.password = "docker"
+        HikariDataSource(it)
+    }
+
+    fun setupDatabase() {
+        Database.connect(DatabaseManager.dataSource)
+        SchemaUtils.createMissingTablesAndColumns(Migrations)
+        SchemaUtils.createMissingTablesAndColumns(Courses, Times, Sections)
     }
 
 }

@@ -4,15 +4,19 @@ import kotlin.experimental.and
 import kotlin.experimental.or
 
 data class TimeOfDay(// Positive integer
-        val hour: Int, val minutes: Int, val minutesLong: Int) {
+        val hour: Int, val minutes: Int, val duration: Int) {
 
     init {
         require(hour >= 0) { "Hour cannot be negative!" }
         require(minutes >= 0) { "Minutes cannot be negative!" }
-        require(minutesLong >= 0) { "MinutesLong cannot be negative!" }
+        require(duration >= 0) { "Duration cannot be negative!" }
         require(hour <= 23) { "Hour cannot be greater than 23!" }
         require(minutes <= 59) { "Minutes cannot be greater than 59!" }
     }
+
+    // override fun toString(): String {
+    //     return "${duration} minutes starting at ${hour}:${minutes}"
+    // }
 }
 
 class Days(vararg days: DayOfWeek) {

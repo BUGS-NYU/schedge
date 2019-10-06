@@ -1,13 +1,13 @@
 package parse;
 
 import org.jsoup.nodes.Element;
-import models.Course;
+import models.CourseAbbrev;
 
 public class ParseCourse {
     /**
      * Get formatted course data.
      */
-    public static Course parse(Element data) {
+    public static CourseAbbrev parse(Element data) {
         throw new UnsupportedOperationException("");
     }
 }

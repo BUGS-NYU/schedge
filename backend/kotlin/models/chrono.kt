@@ -1,7 +1,10 @@
 package models
 
+import org.joda.time.DateTime
 import kotlin.experimental.and
 import kotlin.experimental.or
+
+typealias DateTime = DateTime
 
 data class TimeOfDay(// Positive integer
         val hour: Int, val minutes: Int, val duration: Int) {

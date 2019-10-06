@@ -1,20 +1,20 @@
 import org.jsoup.Jsoup
-import models.Course
+import models.CourseAbbrev
+import models.SectionAbbrev
 import models.Section
-import models.CourseLong
-import models.SectionLong
+import models.Course
 import parse.ParseCourse
 import parse.ParseSection
 import java.io.IOException
 
-fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
+fun parseListing(courseData: String): List<Pair<CourseAbbrev, List<SectionAbbrev>>> {
     val xml = Jsoup.parse(courseData) ?: throw IOException("Jsoup.parse returned null")
 
     // Get all siblings of the primary head
     val elementList = xml.select("div.primary-head ~ *")
         ?: throw IOException("xml.select returned null")
 
-    val output: MutableList<Pair<Course, MutableList<Section>>> = mutableListOf(
+    val output: MutableList<Pair<CourseAbbrev, MutableList<SectionAbbrev>>> = mutableListOf(
         Pair(
             ParseCourse.parse(elementList.first() ?: throw IOException("Course data is empty!")),
             mutableListOf()
@@ -36,7 +36,7 @@ fun parseCourseData(courseData: String): List<Pair<Course, List<Section>>> {
     return output
 }
 
-fun parseSectionData(sectionData: String): Pair<CourseLong, SectionLong> {
+fun parseSection(sectionData: String): Pair<Course, Section> {
     val xml = Jsoup.parse(sectionData).let {
         it ?: throw IOException("Jsoup.parse returned null")
     }.let {

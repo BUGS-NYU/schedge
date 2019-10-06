@@ -1,13 +1,13 @@
 package parse;
 
 import org.jsoup.nodes.Element;
-import models.Section;
+import models.SectionAbbrev;
 
 public class ParseSection {
     /**
      * Get formatted course data.
      */
-    public static Section parse(Element data) {
+    public static SectionAbbrev parse(Element data) {
         throw new UnsupportedOperationException("");
     }
 }

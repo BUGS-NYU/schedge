@@ -8,6 +8,7 @@ import org.apache.http.message.BasicNameValuePair as KVPair
 import models.Term
 import java.io.IOException
 
+// Abstracts away HTTP Requests.
 class Scraper {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
@@ -91,7 +92,7 @@ class Scraper {
     }
 
 
-    fun getCourseQuery(
+    private fun getCourseQuery(
         term: Term,
         school: String,
         subject: String,
@@ -111,10 +112,10 @@ class Scraper {
                 KVPair("nyu_location", location ?: "")
         )
 
-        return HttpPost(DATA_URL).also {
-            it.entity = UrlEncodedFormEntity(params)
-            it.addHeader("Referrer", "$ROOT_URL/${term.id}")
-            it.addHeader("Host", "m.albert.nyu.edu")
+        return HttpPost(DATA_URL).apply {
+            entity = UrlEncodedFormEntity(params)
+            addHeader("Referrer", "$ROOT_URL/${term.id}")
+            addHeader("Host", "m.albert.nyu.edu")
         }
 
     }

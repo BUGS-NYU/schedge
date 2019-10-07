@@ -1,39 +1,44 @@
 package database
 
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.dao.*
 
-object Migrations : Table() {
-    val id = integer("id").autoIncrement().primaryKey() // Column<Int>
-    val dateAdded = datetime("date_added")
+// All migrations that have been applied to the table
+object Migrations : IntIdTable() {
+    val dateAdded = datetime("date_added").index()
     val description = text("description")
 }
 
-object Courses : Table() {
-    val id = integer("id").autoIncrement().primaryKey() // Column<Int>
-    val courseId = integer("courseId") // Column<Long>
+// All tables in the Schema
+val Tables = arrayOf(Courses, Sections, Locations, Meetings)
+
+// Courses that you can take at NYU
+// Contains information like "MATH-UA 120" and "Discrete Math"
+object Courses : IntIdTable() {
+    val nyuCourseId = integer("courseId").index() // Column<Long>
     val abbrev = varchar("abbreviation", length = 10) // Column<String>
     val name = varchar("name", length = 100) // Column<String>
     val description = text("description")
 }
 
-object Sections : Table() {
-    val id = integer("id").autoIncrement().primaryKey()
-    val registrationNumber = integer("registration_number")
-    val courseId = integer("courseId") references Courses.id
+// Sections that you can register for at NYU
+object Sections : IntIdTable() {
+    val registrationNumber = integer("registration_number").index()
+    val courseId = reference("courseId", Courses)
     val type = varchar("type", length = 3)
-    val associatedWith = (integer("associated_with") references id).nullable()
+    val associatedWith = reference("associated_with", Sections).nullable().index()
 }
 
-object Locations : Table() {
-    val id = integer("id").autoIncrement().primaryKey()
-    val abbrev = varchar("abbreviation", length = 10)
+// Locations you can take classes in at NYU
+object Locations : IntIdTable() {
+    val abbrev = varchar("abbreviation", length = 10).uniqueIndex()
     val name = varchar("name", length = 100)
 }
 
-object Meetings : Table() {
-    val id = integer("id").autoIncrement().primaryKey() // Column<Int>
-    val sectionId = integer("section_id") references Sections.id
-    val locationId = integer("location_id") references Locations.id
+// A class meeting
+object Meetings : IntIdTable() {
+    val sectionId = reference("section_id", Sections).index()
+    val locationId = reference("location_id", Locations)
     val instructor = varchar("instructor", length = 50)
     val date = datetime("start")
     val duration = integer("duration") // Duration of event in minutes

@@ -1,5 +1,30 @@
 package models
 
+enum class SectionType {
+    LEC, // Lecture
+    REC, // Recitation
+    LAB, // Lab
+    SEM, // Seminar
+}
+
+private fun String.asResourceLines(): List<String> {
+    val resource = object {}::class.java.getResource(this)
+    println(resource)
+    return resource.readText().lineSequence().filter { it.length > 0 }.toList()
+}
+
+val Subjects : List<String> = "/subjects.txt".asResourceLines()
+val Schools : List<School> = "/schools.txt".asResourceLines().map {
+    val (name, longName) = it.split(',')
+    School(name, longName)
+}
+
+data class School(
+    val abbrev: String,
+    val name: String
+)
+
+
 /**
  * One of the semesters in a year.
  */

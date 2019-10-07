@@ -35,8 +35,10 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
     override fun run() {
         Database.connect(dataSource)
         transaction {
+            // TODO Handle migrations instead of just adding missing tables and columns
             SchemaUtils.createMissingTablesAndColumns(Migrations)
-            SchemaUtils.createMissingTablesAndColumns(Courses, Meetings, Sections)
+
+            SchemaUtils.createMissingTablesAndColumns(*Tables)
         }
         println(models.Subjects)
         println(models.Schools)

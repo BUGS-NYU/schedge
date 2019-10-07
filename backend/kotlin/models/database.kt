@@ -3,10 +3,10 @@ package models
 import java.time.Duration
 
 enum class SectionType {
-    Lec, // Lecture
-    Rec, // Recitation
-    Lab, // Lab
-    Sem, // Seminar
+    LEC, // Lecture
+    REC, // Recitation
+    LAB, // Lab
+    SEM, // Seminar
 }
 
 data class CourseAbbrev( // Gotten from catalog
@@ -22,10 +22,14 @@ data class Course( // Gotten from course page
 )
 
 data class Section( // Gotten from course page
-    val course: Course
+    val course: Course,
+    val type: SectionType,
+    val meetings: List<Meeting>,
+    val associatedWith: Section?
 )
 
 data class Meeting(
+    val instructor: String,
     val date: DateTime,
     val duration: Duration,
     val repeat: Duration

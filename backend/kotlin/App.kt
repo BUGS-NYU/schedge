@@ -26,15 +26,15 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
         HikariDataSource(it)
     }
 
-    private val logger : Logging
-      get() {
-        return Logging.getLogger(logLevel)
-      }
+    private val logger: Logging
+        get() {
+            return Logging.getLogger(logLevel)
+        }
 
     override fun run() {
         Database.connect(dataSource)
         SchemaUtils.createMissingTablesAndColumns(Migrations)
-        SchemaUtils.createMissingTablesAndColumns(Courses, Times, Sections)
+        SchemaUtils.createMissingTablesAndColumns(Courses, Meetings, Sections)
         logger.error("Nothing's been implemented!")
     }
 }

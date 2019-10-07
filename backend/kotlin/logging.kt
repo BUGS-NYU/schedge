@@ -59,6 +59,14 @@ class Logging(val level: LoggingLevel = LoggingLevel.Warn) {
     fun info(value: () -> Any?) = log(INFO, value)
     fun warn(value: () -> Any?) = log(WARN, value)
 
+    fun unimplemented(value: Any?): Nothing {
+        val message = value.toString()
+        Logging.log(ERROR, message)
+        throw UnsupportedOperationException(message).also {
+            it.stackTrace = it.stackTrace.copyOfRange(1, it.stackTrace.size)
+        }
+    }
+
     fun error(value: Any?): Nothing {
         val message = value.toString()
         Logging.log(ERROR, message)

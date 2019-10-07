@@ -41,7 +41,7 @@ class Scraper {
                     ::IOException
                 )
             } else {
-              return cookie.value
+                return cookie.value
             }
         }
 
@@ -73,13 +73,13 @@ class Scraper {
         location: String? = null
     ): String {
         val postRequest = getCourseQuery(
-                term = term,
-                school = school,
-                subject = subject,
-                catalogNumber = catalogNumber,
-                keyword = keyword,
-                classNumber = classNumber,
-                location = location
+            term = term,
+            school = school,
+            subject = subject,
+            catalogNumber = catalogNumber,
+            keyword = keyword,
+            classNumber = classNumber,
+            location = location
         )
         val content = httpClient.execute(postRequest, httpContext).entity.content
         return content.bufferedReader().readText()
@@ -102,14 +102,14 @@ class Scraper {
         location: String? = null
     ): HttpPost {
         val params = mutableListOf( // URL params
-                KVPair("CSRFToken", csrfToken),
-                KVPair("term", term.id.toString()),
-                KVPair("acad_group", school),
-                KVPair("subject", subject),
-                KVPair("catalog_nbr", catalogNumber?.toString() ?: ""),
-                KVPair("keyword", keyword ?: ""),
-                KVPair("class_nbr", classNumber?.toString() ?: ""),
-                KVPair("nyu_location", location ?: "")
+            KVPair("CSRFToken", csrfToken),
+            KVPair("term", term.id.toString()),
+            KVPair("acad_group", school),
+            KVPair("subject", subject),
+            KVPair("catalog_nbr", catalogNumber?.toString() ?: ""),
+            KVPair("keyword", keyword ?: ""),
+            KVPair("class_nbr", classNumber?.toString() ?: ""),
+            KVPair("nyu_location", location ?: "")
         )
 
         return HttpPost(DATA_URL).apply {

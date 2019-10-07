@@ -34,6 +34,7 @@ object Meetings : Table() {
     val id = integer("id").autoIncrement().primaryKey() // Column<Int>
     val sectionId = integer("section_id") references Sections.id
     val locationId = integer("location_id") references Locations.id
+    val instructor = varchar("instructor", length = 50)
     val date = datetime("start")
     val duration = integer("duration") // Duration of event in minutes
     val repeat = integer("repeat")  // Repeat time, in minutes after the last

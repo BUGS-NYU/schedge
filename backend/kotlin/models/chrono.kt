@@ -7,7 +7,8 @@ import kotlin.experimental.or
 typealias DateTime = DateTime
 
 data class TimeOfDay(// Positive integer
-        val hour: Int, val minutes: Int, val duration: Int) {
+    val hour: Int, val minutes: Int, val duration: Int
+) {
 
     init {
         require(hour >= 0) { "Hour cannot be negative!" }

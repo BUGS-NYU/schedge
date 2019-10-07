@@ -6,8 +6,8 @@ package models
 enum class Semester {
     January,
     Spring,
-    Fall,
-    Summer;
+    Summer,
+    Fall;
 
     // Turns enum into integer that conforms to NYU's conventions.
     fun toInt(): Int {

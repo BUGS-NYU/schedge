@@ -2,7 +2,7 @@ package models
 
 enum class SectionType {
     LEC, // Lecture
-    REC, // Recitation
+    RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
 }
@@ -10,7 +10,7 @@ enum class SectionType {
 private fun String.asResourceLines(): List<String> {
     val resource = object {}::class.java.getResource(this)
     println(resource)
-    return resource.readText().lineSequence().filter { it.length > 0 }.toList()
+    return resource.readText(Charsets.UTF_8).lineSequence().filter { it.length > 0 }.toList()
 }
 
 val Subjects : List<String> = "/subjects.txt".asResourceLines()

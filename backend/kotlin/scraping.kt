@@ -9,14 +9,14 @@ import models.Term
 import java.io.IOException
 
 // Abstracts away HTTP Requests.
-class Scraper {
+class Scraper(loggingLevel: Logging.LoggingLevel = Logging.WARN) {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
         const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
     }
 
-    private val logger = Logging.getLogger(Logging.WARN)
+    private val logger = Logging.getLogger(loggingLevel)
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {
         cookieStore = BasicCookieStore()
@@ -72,6 +72,9 @@ class Scraper {
         classNumber: Int? = null,
         location: String? = null
     ): String {
+        logger.info {
+          "Querying courses for data with { term=${term}, school=${school}, subject=${subject} }"
+        }
         val postRequest = getCourseQuery(
             term = term,
             school = school,

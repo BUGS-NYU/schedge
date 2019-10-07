@@ -20,7 +20,6 @@ enum class Semester {
     }
 }
 
-
 /**
  * A term, like Summer 19. year is a positive number representing the year.
  * For example, 2019 represents the year 2019.

@@ -9,6 +9,13 @@ enum class SectionType {
     SEM, // Seminar
 }
 
+private fun String.asResourceLines(): List<String> {
+    return String::class.java.getResource(this).readText().split('\n')
+}
+
+val Subjects : List<String> = "subjects.txt".asResourceLines()
+val Schools : List<String> = "schools.txt".asResourceLines()
+
 data class CourseAbbrev( // Gotten from catalog
     val name: String
 )

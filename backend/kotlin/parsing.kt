@@ -8,11 +8,12 @@ import parse.ParseSectionListing
 import parse.ParseCourse
 import parse.ParseSection
 import java.io.IOException
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 
 class Parser(val logger: Logging = Logging.getLogger(Logging.WARN)) {
 
-
-    fun parseListing(courseData: String): List<Pair<CourseAbbrev, List<SectionAbbrev>>> {
+    fun parseCatalog(courseData: String): List<Pair<CourseAbbrev, List<SectionAbbrev>>> {
         val xml = Jsoup.parse(courseData) ?: throw IOException("Jsoup.parse returned null")
 
         // Get all siblings of the primary head
@@ -43,16 +44,21 @@ class Parser(val logger: Logging = Logging.getLogger(Logging.WARN)) {
 
     fun parseSection(sectionData: String): Pair<Course, Section> {
         val xml = Jsoup.parse(sectionData).let {
-            it ?: logger.error("Got a null value from Jsoup's parser!", ::IOException)
+            it ?: logger.error(
+                "Got a null value from Jsoup's parser!",
+                ::IOException
+            )
         }.let {
-            it.select("section.main").first()
-                ?: logger.error("Couldn't find Course or Section data.", ::IOException)
+            it.selectFirst("section.main") ?: logger.error(
+                "Couldn't find Course or Section data.",
+                ::IOException
+            )
         }
 
         return Pair(
             ParseCourse.parse(xml),
             ParseSection.parse(xml.let {
-                it.select("section").first()
+                it.selectFirst("section")
                     ?: logger.error("Couldn't find Section data.", ::IOException)
             })
         )

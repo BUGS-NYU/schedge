@@ -6,6 +6,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import database.*
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SchemaUtils
 import javax.sql.DataSource
 
@@ -33,8 +34,12 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
 
     override fun run() {
         Database.connect(dataSource)
-        SchemaUtils.createMissingTablesAndColumns(Migrations)
-        SchemaUtils.createMissingTablesAndColumns(Courses, Meetings, Sections)
+        transaction {
+            SchemaUtils.createMissingTablesAndColumns(Migrations)
+            SchemaUtils.createMissingTablesAndColumns(Courses, Meetings, Sections)
+        }
+        println(models.Subjects)
+        println(models.Schools)
         logger.error("Nothing's been implemented!")
     }
 }

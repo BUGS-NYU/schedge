@@ -1,30 +1,30 @@
-GS	Silver School of Social Work
-UN	Rory Meyers College of Nursing
-UT	Tisch School of the Arts
-UA	College of Arts and Science
-GE	Steinhardt School of Culture, Education, and Human Development - Graduate
-GT	Tisch School of the Arts
-UI	NYU Shanghai
-UE	Steinhardt School of Culture, Education, and Human Development - Undergraduate
-GA	Graduate School of Arts and Science
-UF	Liberal Studies
-GC	School of Professional Studies
-GU	College of Global Public Health
-GX	Center for Urban Science and Progress
-GY	Tandon School of Engineering
-UC	School of Professional Studies
-UY	Tandon School of Engineering
-UB	Leonard N. Stern School of Business
-GB	Leonard N. Stern School of Business
-UG	Gallatin School of Individualized Study
-GG	Gallatin School of Individualized Study
-GN	Rory Meyers College of Nursing
-GP	Robert F. Wagner Graduate School of Public Service
-DC	School of Professional Studies
-UD	College of Dentistry
-US	Silver School of Social Work
-UW	Robert F. Wagner Graduate School of Public Service
-UU	College of Global Public Health
-UH	NYU Abu Dhabi
-NT
-ND
+GS,Silver School of Social Work
+UN,Rory Meyers College of Nursing
+UT,Tisch School of the Arts
+UA,College of Arts and Science
+GE,Steinhardt School of Culture, Education, and Human Development - Graduate
+GT,Tisch School of the Arts
+UI,NYU Shanghai
+UE,Steinhardt School of Culture, Education, and Human Development - Undergraduate
+GA,Graduate School of Arts and Science
+UF,Liberal Studies
+GC,School of Professional Studies
+GU,College of Global Public Health
+GX,Center for Urban Science and Progress
+GY,Tandon School of Engineering
+UC,School of Professional Studies
+UY,Tandon School of Engineering
+UB,Leonard N. Stern School of Business
+GB,Leonard N. Stern School of Business
+UG,Gallatin School of Individualized Study
+GG,Gallatin School of Individualized Study
+GN,Rory Meyers College of Nursing
+GP,Robert F. Wagner Graduate School of Public Service
+DC,School of Professional Studies
+UD,College of Dentistry
+US,Silver School of Social Work
+UW,Robert F. Wagner Graduate School of Public Service
+UU,College of Global Public Health
+UH,NYU Abu Dhabi
+NT,
+ND,

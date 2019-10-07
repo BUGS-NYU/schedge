@@ -10,11 +10,21 @@ enum class SectionType {
 }
 
 private fun String.asResourceLines(): List<String> {
-    return String::class.java.getResource(this).readText().split('\n')
+    val resource = object {}::class.java.getResource(this)
+    println(resource)
+    return resource.readText().lineSequence().filter { it.length > 0 }.toList()
 }
 
-val Subjects : List<String> = "subjects.txt".asResourceLines()
-val Schools : List<String> = "schools.txt".asResourceLines()
+val Subjects : List<String> = "/subjects.txt".asResourceLines()
+val Schools : List<School> = "/schools.txt".asResourceLines().map {
+    val (name, longName) = it.split(',')
+    School(name, longName)
+}
+
+data class School(
+    val abbrev: String,
+    val name: String
+)
 
 data class CourseAbbrev( // Gotten from catalog
     val name: String

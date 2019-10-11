@@ -7,6 +7,6 @@
 # Ignore Gradle build output directory
 build
 
-postgres/*
+postgres
 
 

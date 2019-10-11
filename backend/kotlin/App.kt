@@ -28,7 +28,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
     }
 
     private val logger: Logging
-        get() {
+        get() { // TODO This is dumb and we shouldn't be doing it
             return Logging.getLogger(logLevel)
         }
 
@@ -40,6 +40,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
 
             SchemaUtils.createMissingTablesAndColumns(*Tables)
         }
+
         println(models.Subjects)
         println(models.Schools)
         logger.error("Nothing's been implemented!")
@@ -47,8 +48,5 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
 }
 
 fun main(args: Array<String>) {
-    for (str in args) {
-        println(str)
-    }
     App().main(args)
 }

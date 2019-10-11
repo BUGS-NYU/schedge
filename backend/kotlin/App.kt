@@ -20,7 +20,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
         ).default(Logging.WARN)
 
     private val dataSource: DataSource = HikariConfig().let {
-        it.jdbcUrl = "jdbc:postgresql://localhost:5432/schedge"
+        it.jdbcUrl = "jdbc:postgresql://db:5432/schedge"
         it.driverClassName = "org.postgresql.Driver"
         it.username = "schedge"
         it.password = "docker"

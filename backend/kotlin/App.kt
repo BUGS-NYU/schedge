@@ -37,7 +37,6 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
         transaction {
             // TODO Handle migrations instead of just adding missing tables and columns
             SchemaUtils.createMissingTablesAndColumns(Migrations)
-
             SchemaUtils.createMissingTablesAndColumns(*Tables)
         }
 

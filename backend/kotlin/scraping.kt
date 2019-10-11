@@ -33,7 +33,8 @@ class Scraper(loggingLevel: Logging.LoggingLevel = Logging.WARN) {
                     val cookies = httpContext.cookieStore.cookies.map {
                         "${it.name}: \"${it.value}\""
                     }
-                    "Couldn't find `CSRFCookie`. Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
+                    "Couldn't find `CSRFCookie`. " +
+                    "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
                 }
 
                 logger.error(

@@ -5,6 +5,10 @@ plugins {
     id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
+configurations {
+    standalone
+}
+
 group 'BUGS-NYU'
 mainClassName = 'AppKt'
 sourceCompatibility = 1.8
@@ -16,19 +20,24 @@ repositories {
 
 dependencies {
     implementation(
-      "org.jetbrains.kotlin:kotlin-stdlib-jdk8", // Standard library
-      "org.apache.httpcomponents:httpclient:4.5.10", // Web requests framework
-      "org.jsoup:jsoup:1.12.1", // HTML Parsing
-      "com.github.ajalt:clikt:2.2.0", // Command line args
-      "com.zaxxer:HikariCP:3.4.1", // Database connection pool
-      "org.postgresql:postgresql:42.2.8.jre7", // Database driver
-      "org.jetbrains.exposed:exposed:0.17.3", // Database framework
-      "io.javalin:javalin:3.5.0" // Web server framework
+            "org.jetbrains.kotlin:kotlin-stdlib-jdk8", // Standard library
+            "org.apache.httpcomponents:httpclient:4.5.10", // Web requests framework
+            "org.jsoup:jsoup:1.12.1", // HTML Parsing
+            "com.github.ajalt:clikt:2.2.0", // Command line args
+            "com.zaxxer:HikariCP:3.4.1", // Database connection pool
+            "org.postgresql:postgresql:42.2.8.jre7", // Database driver
+            "org.jetbrains.exposed:exposed:0.17.3", // Database framework
+            "io.javalin:javalin:3.5.0", // Web server framework
+            "io.github.microutils:kotlin-logging:1.7.6", // Logging
+            "org.slf4j:slf4j-api:1.7.25", // Logging
+            "ch.qos.logback:logback-core:1.2.3" // Logging
     )
 
     testImplementation(
-      'io.kotlintest:kotlintest-runner-junit5:3.3.2'
+            'io.kotlintest:kotlintest-runner-junit5:3.3.2'
     )
+
+    standalone 'org.junit.platform:junit-platform-console-standalone:1.5.2'
 }
 
 sourceSets {
@@ -36,12 +45,8 @@ sourceSets {
     main.resources.srcDirs = ['resources']
     main.kotlin.srcDirs = ['kotlin', 'java']
 
-    test.kotlin.srcDirs = ['tests']
-    test.java.srcDirs = ['tests']
-    test.resources.srcDirs = ['test_resources']
-}
-
-test {
-    useJUnitPlatform()
+    // test.kotlin.srcDirs = ['tests']
+    // test.java.srcDirs = ['tests']
+    // test.resources.srcDirs = ['test_resources']
 }
 

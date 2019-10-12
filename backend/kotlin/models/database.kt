@@ -1,6 +1,7 @@
 package models
 
 import java.time.Duration
+
 // import org.jetbrains.exposed.dao.*
 
 data class CourseAbbrev( // Gotten from catalog

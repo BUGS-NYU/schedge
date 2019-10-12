@@ -15,7 +15,7 @@ val Tables = arrayOf(Courses, Sections, Locations, Meetings)
 // Courses that you can take at NYU
 // Contains information like "MATH-UA 120" and "Discrete Math"
 object Courses : IntIdTable() {
-    val nyuCourseId = integer("courseId").index() // Column<Long>
+    val nyuCourseId = integer("course_id").index() // Column<Long>
     val abbrev = varchar("abbreviation", length = 10) // Column<String>
     val name = varchar("name", length = 100) // Column<String>
     val description = text("description")
@@ -24,9 +24,9 @@ object Courses : IntIdTable() {
 // Sections that you can register for at NYU
 object Sections : IntIdTable() {
     val registrationNumber = integer("registration_number").index()
-    val courseId = reference("courseId", Courses)
+    val courseId = reference("course_id", Courses.id)
     val type = varchar("type", length = 3)
-    val associatedWith = reference("associated_with", Sections).nullable().index()
+    val associatedWith = reference("associated_with", Sections.id).nullable().index()
 }
 
 // Locations you can take classes in at NYU
@@ -37,11 +37,12 @@ object Locations : IntIdTable() {
 
 // A class meeting
 object Meetings : IntIdTable() {
-    val sectionId = reference("section_id", Sections).index()
-    val locationId = reference("location_id", Locations)
+    val sectionId = reference("section_id", Sections.id).index()
+    val locationId = reference("location_id", Locations.id)
     val instructor = varchar("instructor", length = 50)
     val date = datetime("start")
     val duration = integer("duration") // Duration of event in minutes
-    val repeat = integer("repeat")  // Repeat time, in minutes after the last one ended. Non-positive values mean no repeat
+    val repeat =
+        integer("repeat")  // Repeat time, in minutes after the last one ended. Non-positive values mean no repeat
 }
 

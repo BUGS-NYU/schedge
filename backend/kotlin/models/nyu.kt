@@ -1,4 +1,5 @@
 package models
+
 import asResourceLines
 
 enum class SectionType {
@@ -8,8 +9,8 @@ enum class SectionType {
     SEM, // Seminar
 }
 
-val Subjects : List<String> = "/subjects.txt".asResourceLines()
-val Schools : List<School> = "/schools.txt".asResourceLines().map {
+val Subjects: List<String> = "/subjects.txt".asResourceLines()
+val Schools: List<School> = "/schools.txt".asResourceLines().map {
     val (name, longName) = it.split(',')
     School(name, longName)
 }

@@ -6,17 +6,19 @@ import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair as KVPair
 import models.Term
+import mu.KLogger
+import mu.KotlinLogging
+import org.slf4j.Logger
 import java.io.IOException
 
 // Abstracts away HTTP Requests.
-class Scraper(loggingLevel: Logging.LoggingLevel = Logging.WARN) {
+class Scraper(private val logger: KLogger = KotlinLogging.logger {}) {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
         const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
     }
 
-    private val logger = Logging.getLogger(loggingLevel)
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {
         cookieStore = BasicCookieStore()
@@ -34,13 +36,13 @@ class Scraper(loggingLevel: Logging.LoggingLevel = Logging.WARN) {
                         "${it.name}: \"${it.value}\""
                     }
                     "Couldn't find `CSRFCookie`. " +
-                    "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
+                            "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
                 }
 
-                logger.error(
-                    "NYU servers did something unexpected.",
-                    ::IOException
-                )
+                logger.error {
+                    "NYU servers did something unexpected."
+                }
+                throw IOException("NYU servers did something unexpected.")
             } else {
                 return cookie.value
             }
@@ -74,7 +76,7 @@ class Scraper(loggingLevel: Logging.LoggingLevel = Logging.WARN) {
         location: String? = null
     ): String {
         logger.info {
-          "Querying courses for data with { term=${term}, school=${school}, subject=${subject} }"
+            "Querying courses for data with { term=${term}, school=${school}, subject=${subject} }"
         }
         val postRequest = getCourseQuery(
             term = term,

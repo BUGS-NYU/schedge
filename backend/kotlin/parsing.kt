@@ -3,15 +3,15 @@ import models.CourseAbbrev
 import models.SectionAbbrev
 import models.Section
 import models.Course
+import mu.KLogger
+import mu.KotlinLogging
 import parse.ParseCourseListing
 import parse.ParseSectionListing
 import parse.ParseCourse
 import parse.ParseSection
 import java.io.IOException
-import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 
-class Parser(val logger: Logging = Logging.getLogger(Logging.WARN)) {
+class Parser(val logger: KLogger = KotlinLogging.logger {}) {
 
     fun parseCatalog(courseData: String): List<Pair<CourseAbbrev, List<SectionAbbrev>>> {
         val xml = Jsoup.parse(courseData) ?: throw IOException("Jsoup.parse returned null")
@@ -44,22 +44,32 @@ class Parser(val logger: Logging = Logging.getLogger(Logging.WARN)) {
 
     fun parseSection(sectionData: String): Pair<Course, Section> {
         val xml = Jsoup.parse(sectionData).let {
-            it ?: logger.error(
-                "Got a null value from Jsoup's parser!",
-                ::IOException
-            )
+            if (it == null) {
+                logger.error(IOException("Got a null value from Jsoup's parser!")) {
+                    "Got a null value from Jsoup's parser!"
+                }
+            }
+            it
+
         }.let {
-            it.selectFirst("section.main") ?: logger.error(
-                "Couldn't find Course or Section data.",
-                ::IOException
-            )
+            val first = it.selectFirst("section.main")
+            if (first == null) {
+                logger.error(IOException("Couldn't find Course or Section data.")) {
+                    "Got a null value from Jsoup's parser!"
+                }
+            }
+            first
         }
 
         return Pair(
             ParseCourse.parse(xml),
             ParseSection.parse(xml.let {
-                it.selectFirst("section")
-                    ?: logger.error("Couldn't find Section data.", ::IOException)
+                val first = it.selectFirst("section")
+                if (first == null) {
+                    logger.error("Couldn't find Section data.")
+                    throw IOException()
+                }
+                first
             })
         )
     }

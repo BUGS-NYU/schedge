@@ -6,8 +6,6 @@ plugins {
 }
 
 group 'BUGS-NYU'
-// version '1.0-SNAPSHOT'
-
 mainClassName = 'AppKt'
 sourceCompatibility = 1.8
 
@@ -17,68 +15,33 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    testImplementation "org.jetbrains.kotlin:kotlin-test"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit"
+    implementation(
+      "org.jetbrains.kotlin:kotlin-stdlib-jdk8", // Standard library
+      "org.apache.httpcomponents:httpclient:4.5.10", // Web requests framework
+      "org.jsoup:jsoup:1.12.1", // HTML Parsing
+      "com.github.ajalt:clikt:2.2.0", // Command line args
+      "com.zaxxer:HikariCP:3.4.1", // Database connection pool
+      "org.postgresql:postgresql:42.2.8.jre7", // Database driver
+      "org.jetbrains.exposed:exposed:0.17.3", // Database framework
+      "io.javalin:javalin:3.5.0" // Web server framework
+    )
 
-    // testImplementation(
-    //         'org.assertj:assertj-core:3.12.2',
-    //         'org.junit.jupiter:junit-jupiter-api:5.4.2'
-    // )
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
-
-    // Web requests framework
-    implementation "org.apache.httpcomponents:httpclient:4.5.10"
-
-    // HTML Parsing
-    implementation "org.jsoup:jsoup:1.12.1"
-
-    // Command line args
-    implementation "com.github.ajalt:clikt:2.2.0"
-
-    implementation "com.zaxxer:HikariCP:3.4.1"
-
-    // Database driver
-    implementation 'org.postgresql:postgresql:42.2.8.jre7'
-
-    // Database framework
-    implementation "org.jetbrains.exposed:exposed:0.17.3"
-
-    // Web server framework
-    implementation "io.javalin:javalin:3.5.0"
+    testImplementation(
+      'io.kotlintest:kotlintest-runner-junit5:3.3.2'
+    )
 }
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-// kotlin {
-//     sourceSets {
-//         main {
-//             kotlin.srcDir 'kotlin'
-//             resources.srcDir('resources')
-//         }
-//     }
-// }
 
 sourceSets {
     main.java.srcDirs = ['java']
     main.resources.srcDirs = ['resources']
     main.kotlin.srcDirs = ['kotlin', 'java']
+
     test.kotlin.srcDirs = ['tests']
+    test.java.srcDirs = ['tests']
+    test.resources.srcDirs = ['test_resources']
 }
 
 test {
     useJUnitPlatform()
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'AppKt'
-    }
 }
 

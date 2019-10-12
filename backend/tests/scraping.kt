@@ -1,14 +1,14 @@
-import kotlin.test.Test
+// import org.junit.jupiter.api.Test
 import models.Schools
 import models.Subjects
 import models.Term
 import models.Semester.*
-import Scraper
-import Parser
+import io.kotlintest.matchers.string.shouldBeLowerCase
+import io.kotlintest.matchers.string.shouldNotBeBlank
+import io.kotlintest.specs.FunSpec
 
-@Test fun parseCatalog() {
-  val scraper = Scraper()
-  val parser = Parser()
-  val catalog_data = scraper.queryCourses(Term(Summer, 2019), Schools[0].abbrev, Subjects[0])
-}
-
+class TestClass : FunSpec({
+  test("Scraper should be able to initialize.") {
+    Scraper()
+  }
+})

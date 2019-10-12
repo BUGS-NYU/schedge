@@ -7,14 +7,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class App() : CliktCommand(invokeWithoutSubcommand = true) {
-    // private val logLevel by option(help = "Set the logging level.")
-    //     .switch(
-    //         "--debug" to Logging.DEBUG,
-    //         "--info" to Logging.INFO,
-    //         "--warn" to Logging.WARN,
-    //         "--error" to Logging.ERROR
-    //     ).default(Logging.WARN)
-
     private val logger = KotlinLogging.logger {}
 
     override fun run() {
@@ -31,6 +23,4 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
     }
 }
 
-fun main(args: Array<String>) {
-    App().main(args)
-}
+fun main(args: Array<String>) = App().main(args)

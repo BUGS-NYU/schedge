@@ -35,10 +35,10 @@ dependencies {
     )
 
     testImplementation(
-            'io.kotlintest:kotlintest-runner-junit5:3.3.2'
+            "io.kotlintest:kotlintest-runner-junit5:3.3.2"
     )
 
-    standalone 'org.junit.platform:junit-platform-console-standalone:1.5.2'
+    standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
 }
 
 sourceSets {

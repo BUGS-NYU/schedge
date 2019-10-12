@@ -8,6 +8,7 @@ import mu.KLogger
 
 
 fun connectToDatabase(logger: KLogger) {
+    val exceptions = mutableListOf<Exception>()
     for (i in 0..5) {
         try {
             val dataSource = HikariDataSource(HikariConfig().also {
@@ -19,9 +20,12 @@ fun connectToDatabase(logger: KLogger) {
             Database.connect(dataSource)
             return;
         } catch (e: Exception) {
-            logger.info { "Received exception ${e.message}" }
-            Thread.sleep(2000L)
+            exceptions.add(e)
+            // logger.info { "Received exception ${e::class}" }
+            Thread.sleep(5000L)
         }
     }
-    throw IOException("Failed to connect to database.")
+    logger.error(IOException("Failed to connect to database.")) {
+      "Received following errors:\n[${exceptions}]"
+    }
 }

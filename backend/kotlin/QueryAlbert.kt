@@ -11,7 +11,7 @@ import java.io.IOException
 import org.apache.http.message.BasicNameValuePair as KVPair
 
 // Abstracts away HTTP Requests.
-class Scraper(private val logger: KLogger = KotlinLogging.logger {}) {
+class QueryAlbert(private val logger: KLogger = KotlinLogging.logger {}) {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
         const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
@@ -30,16 +30,12 @@ class Scraper(private val logger: KLogger = KotlinLogging.logger {}) {
             }
 
             if (cookie == null) {
-                logger.info {
+                logger.error {
                     val cookies = httpContext.cookieStore.cookies.map {
                         "${it.name}: \"${it.value}\""
                     }
                     "Couldn't find `CSRFCookie`. " +
                             "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
-                }
-
-                logger.error {
-                    "NYU servers did something unexpected."
                 }
                 throw IOException("NYU servers did something unexpected.")
             } else {

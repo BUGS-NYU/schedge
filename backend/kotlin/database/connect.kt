@@ -1,10 +1,8 @@
 package database
 
-import java.io.IOException
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import org.jetbrains.exposed.sql.Database
-import javax.sql.DataSource
 
 
 fun connectToDatabase() {

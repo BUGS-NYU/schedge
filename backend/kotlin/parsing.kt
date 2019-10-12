@@ -1,14 +1,14 @@
-import org.jsoup.Jsoup
-import models.CourseAbbrev
-import models.SectionAbbrev
-import models.Section
 import models.Course
+import models.CourseAbbrev
+import models.Section
+import models.SectionAbbrev
 import mu.KLogger
 import mu.KotlinLogging
-import parse.ParseCourseListing
-import parse.ParseSectionListing
+import org.jsoup.Jsoup
 import parse.ParseCourse
+import parse.ParseCourseListing
 import parse.ParseSection
+import parse.ParseSectionListing
 import java.io.IOException
 
 class Parser(val logger: KLogger = KotlinLogging.logger {}) {

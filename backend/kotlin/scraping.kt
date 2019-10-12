@@ -1,15 +1,14 @@
+import models.Term
+import mu.KLogger
+import mu.KotlinLogging
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair as KVPair
-import models.Term
-import mu.KLogger
-import mu.KotlinLogging
-import org.slf4j.Logger
 import java.io.IOException
+import org.apache.http.message.BasicNameValuePair as KVPair
 
 // Abstracts away HTTP Requests.
 class Scraper(private val logger: KLogger = KotlinLogging.logger {}) {

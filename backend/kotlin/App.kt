@@ -1,11 +1,10 @@
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.switch
-import database.*
+import database.Migrations
+import database.Tables
+import database.connectToDatabase
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class App() : CliktCommand(invokeWithoutSubcommand = true) {
     // private val logLevel by option(help = "Set the logging level.")

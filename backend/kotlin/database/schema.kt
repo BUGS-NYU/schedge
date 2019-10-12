@@ -1,7 +1,6 @@
 package database
 
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.dao.*
+import org.jetbrains.exposed.dao.IntIdTable
 
 // All migrations that have been applied to the table
 object Migrations : IntIdTable() {

@@ -18,7 +18,7 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
     private val logger = KotlinLogging.logger {}
 
     override fun run() {
-        connectToDatabase()
+        connectToDatabase(logger)
         transaction {
             // TODO Handle migrations instead of just adding missing tables and columns
             SchemaUtils.createMissingTablesAndColumns(Migrations)

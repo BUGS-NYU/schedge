@@ -30,7 +30,8 @@ dependencies {
             "io.javalin:javalin:3.5.0", // Web server framework
             "io.github.microutils:kotlin-logging:1.7.6", // Logging
             "org.slf4j:slf4j-api:1.7.25", // Logging
-            "ch.qos.logback:logback-core:1.2.3" // Logging
+            "ch.qos.logback:logback-core:1.2.3", // Logging
+            "ch.qos.logback:logback-classic:1.2.3" // Logging
     )
 
     testImplementation(

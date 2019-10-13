@@ -1,7 +1,7 @@
 package parse;
 
-import org.jsoup.nodes.Element;
 import models.SectionAbbrev;
+import org.jsoup.nodes.Element;
 
 public class ParseSectionListing {
     /**

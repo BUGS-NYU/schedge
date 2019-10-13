@@ -1,8 +1,6 @@
 package models
 
 import asResourceLines
-import java.io.IOException
-import java.lang.IllegalArgumentException
 
 enum class SectionType {
     LEC, // Lecture

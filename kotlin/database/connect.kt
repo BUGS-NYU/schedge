@@ -2,9 +2,9 @@ package database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import mu.KLogger
 import org.jetbrains.exposed.sql.Database
 import java.io.IOException
-import mu.KLogger
 
 
 fun connectToDatabase(logger: KLogger) {

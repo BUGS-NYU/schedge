@@ -2,18 +2,14 @@ package cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.groups.mutuallyExclusiveOptions
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
-import com.sun.tools.internal.xjc.model.Multiplicity.group
 import models.*
 import mu.KotlinLogging
-import org.apache.http.HttpRequest
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -21,8 +17,8 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicNameValuePair as KVPair
 import java.io.IOException
+import org.apache.http.message.BasicNameValuePair as KVPair
 
 // TODO Change this to package-level protected if that becomes a thing
 internal class Query : CliktCommand(name = "query") {
@@ -58,7 +54,6 @@ internal class Query : CliktCommand(name = "query") {
         private val classNumber: Int? by option("--class-number").int().restrictTo(0..Int.MAX_VALUE)
         private val location: String? by option("--location")
 
-        // TODO Add this from Parser.parseCourse
         override fun run() {
             val client = AlbertClient()
             logger.info { "Created client." }
@@ -86,10 +81,12 @@ internal class Query : CliktCommand(name = "query") {
 
     private class Section : CliktCommand(name = "section") {
         private val logger = KotlinLogging.logger("query.section")
-        private val term: Term = Term(Semester.Summer, 2019)
-        private val registrationNumber: Int = 12
+        private val term: Term by option("--term").convert {
+            Term.fromId(Integer.parseInt(it))
+        }.required()
+        private val registrationNumber: Int by option("--registration-number").int()
+            .restrictTo(0..Int.MAX_VALUE).required()
 
-        // TODO Add this from Parser.parseSection
         override fun run() {
             val client = AlbertClient()
             val request = HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")

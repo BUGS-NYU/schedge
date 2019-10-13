@@ -1,12 +1,14 @@
-plugins {
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.50'
-    id 'application'
-    id "com.github.johnrengelman.shadow" version "5.1.0"
+buildscript {
+  ext.kotlinVersion = "1.3.50"
 }
 
-configurations {
-    standalone
+plugins {
+    id "java"
+    id "org.jetbrains.kotlin.jvm" version "1.3.50"
+    id "application"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
+    // id "org.jetbrains.kotlin.multiplatform" version "1.3.50"
+    id "org.jetbrains.kotlin.plugin.serialization" version "1.3.50"
 }
 
 group 'BUGS-NYU'
@@ -32,14 +34,15 @@ dependencies {
             "io.github.microutils:kotlin-logging:1.7.6", // Logging
             "org.slf4j:slf4j-api:1.7.25", // Logging
             "ch.qos.logback:logback-core:1.2.3", // Logging
-            "ch.qos.logback:logback-classic:1.2.3" // Logging
+            "ch.qos.logback:logback-classic:1.2.3", // Logging
+            "org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.13.0" // Serialization
     )
 
     testImplementation(
             "io.kotlintest:kotlintest-runner-junit5:3.3.2"
     )
 
-    standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
+    //standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

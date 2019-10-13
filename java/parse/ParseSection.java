@@ -1,13 +1,17 @@
 package parse;
 
-import models.Section;
-import org.jsoup.nodes.Element;
+import models.SectionResult;
+import org.jsoup.nodes.Document;
 
 public class ParseSection {
   /**
    * Get formatted course data.
    */
-  public static Section parse(Element data) {
+  public static SectionResult parse(Document data) {
+    /*
+
+     */
+
     throw new UnsupportedOperationException("");
   }
 }

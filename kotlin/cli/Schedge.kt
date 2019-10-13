@@ -12,9 +12,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 internal class Schedge() : CliktCommand(name = "schedge") {
 
     init {
-        this.subcommands(Query())
+        this.subcommands(Query(), Parse())
     }
-    private val logger = KotlinLogging.logger {}
 
     override fun run() {
         // connectToDatabase(logger)

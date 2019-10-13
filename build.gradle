@@ -12,7 +12,7 @@ plugins {
 }
 
 group 'BUGS-NYU'
-mainClassName = 'AppKt'
+mainClassName = 'MainKt'
 sourceCompatibility = 1.8
 
 

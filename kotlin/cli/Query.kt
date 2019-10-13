@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
+import java.io.File
 import java.io.IOException
 import org.apache.http.message.BasicNameValuePair as KVPair
 
@@ -53,6 +54,7 @@ internal class Query : CliktCommand(name = "query") {
         private val keywords: String? by option("--keywords")
         private val classNumber: Int? by option("--class-number").int().restrictTo(0..Int.MAX_VALUE)
         private val location: String? by option("--location")
+        private val file : String? by option("--file")
 
         override fun run() {
             val client = AlbertClient()
@@ -75,7 +77,12 @@ internal class Query : CliktCommand(name = "query") {
                 addHeader("Referrer", "$ROOT_URL/${term.id}")
                 addHeader("Host", "m.albert.nyu.edu")
             }
-            println(client.execute(request))
+
+            if (file == null) {
+              println(client.execute(request))
+            } else {
+              File(file).writeText(client.execute(request))
+            }
         }
     }
 
@@ -86,11 +93,17 @@ internal class Query : CliktCommand(name = "query") {
         }.required()
         private val registrationNumber: Int by option("--registration-number").int()
             .restrictTo(0..Int.MAX_VALUE).required()
+        private val file : String? by option("--file")
 
         override fun run() {
             val client = AlbertClient()
             val request = HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
-            println(client.execute(request))
+
+            if (file == null) {
+              println(client.execute(request))
+            } else {
+              File(file).writeText(client.execute(request))
+            }
         }
     }
 

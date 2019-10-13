@@ -17,16 +17,16 @@ internal class Schedge() : CliktCommand(name = "schedge") {
     private val logger = KotlinLogging.logger {}
 
     override fun run() {
-        connectToDatabase(logger)
-        transaction {
-            // TODO Handle migrations instead of just adding missing tables and columns
-            SchemaUtils.createMissingTablesAndColumns(Migrations)
-            SchemaUtils.createMissingTablesAndColumns(*Tables)
-        }
+        // connectToDatabase(logger)
+        // transaction {
+        //     // TODO Handle migrations instead of just adding missing tables and columns
+        //     SchemaUtils.createMissingTablesAndColumns(Migrations)
+        //     SchemaUtils.createMissingTablesAndColumns(*Tables)
+        // }
 
-        println(models.Subjects)
-        println(models.Schools)
-        logger.error("Nothing's been implemented!")
+        // println(models.Subjects)
+        // println(models.Schools)
+        // logger.error("Nothing's been implemented!")
     }
 }
 

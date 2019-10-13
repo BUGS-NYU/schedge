@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 internal class Schedge() : CliktCommand(name = "schedge") {
 
     init {
-        this.subcommands(Parse(), Query())
+        this.subcommands(Query())
     }
     private val logger = KotlinLogging.logger {}
 

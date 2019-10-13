@@ -13,6 +13,7 @@ group 'BUGS-NYU'
 mainClassName = 'AppKt'
 sourceCompatibility = 1.8
 
+
 repositories {
     mavenCentral()
     jcenter()
@@ -40,6 +41,16 @@ dependencies {
 
     standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
 }
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 
 sourceSets {
     main.java.srcDirs = ['java']

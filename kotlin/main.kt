@@ -1,1 +1,1 @@
-fun main(args: Array<String>) = cli.App().main(args)
+fun main(args: Array<String>) = cli.Schedge().main(args)

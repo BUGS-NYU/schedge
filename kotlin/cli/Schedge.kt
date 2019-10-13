@@ -9,7 +9,7 @@ import mu.KotlinLogging
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-internal class App() : CliktCommand(invokeWithoutSubcommand = true) {
+internal class Schedge() : CliktCommand(name = "schedge") {
 
     init {
         this.subcommands(Parse(), Query())

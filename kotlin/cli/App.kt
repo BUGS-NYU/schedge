@@ -1,4 +1,7 @@
+package cli
+
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.subcommands
 import database.Migrations
 import database.Tables
 import database.connectToDatabase
@@ -6,7 +9,11 @@ import mu.KotlinLogging
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class App() : CliktCommand(invokeWithoutSubcommand = true) {
+internal class App() : CliktCommand(invokeWithoutSubcommand = true) {
+
+    init {
+        this.subcommands(Parse(), Query())
+    }
     private val logger = KotlinLogging.logger {}
 
     override fun run() {
@@ -23,4 +30,4 @@ class App() : CliktCommand(invokeWithoutSubcommand = true) {
     }
 }
 
-fun main(args: Array<String>) = App().main(args)
+

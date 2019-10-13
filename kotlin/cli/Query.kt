@@ -134,14 +134,14 @@ internal class Query : CliktCommand(name = "query") {
             }
 
         init {
-            logger.debug("Creating scraper instance...")
+            logger.debug("Creating client instance...")
 
-            // Get a CSRF token for this scraper. This token allows us to get
+            // Get a CSRF token for this client. This token allows us to get
             // data straight from NYU's internal web APIs.
             val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
             response.close()
 
-            logger.info { "Scraper instance created with CSRF Token '${csrfToken}'." }
+            logger.info { "Client instance created with CSRF Token '${csrfToken}'." }
         }
 
         fun execute(req: HttpUriRequest): String {

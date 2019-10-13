@@ -3,8 +3,12 @@ Schedge is an open source course schedule solver, geared at helping NYU students
 plan their courses.
 
 ### Setup
-Run `docker-compose build` and then `docker-compose up` to run the application.
+To check you work, run `gradle check`.
+
+To run the application, fist compile it with `gradle build`, then run
+`docker-compose build` to build a docker image, and `docker-compose up` to
+run the application.
 
 ### Code organization
-- Kotlin code generally handles IO and APIs
-- Java code handles business logic
+- Kotlin code handles IO
+- Java code handles business logic (right now just parsing)

@@ -7,7 +7,7 @@
 # Ignore Gradle build output directory
 build
 
-/backend/postgres/*
-!/backend/postgres/.gitkeep
+/postgres/*
+!/postgres/.gitkeep
 
 .kotlintest

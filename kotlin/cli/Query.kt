@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.protocol.HttpClientContext
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
+import writeToFileOrStdout
 import java.io.File
 import java.io.IOException
 import org.apache.http.message.BasicNameValuePair as KVPair
@@ -78,11 +79,7 @@ internal class Query : CliktCommand(name = "query") {
                 addHeader("Host", "m.albert.nyu.edu")
             }
 
-            if (file == null) {
-              println(client.execute(request))
-            } else {
-              File(file).writeText(client.execute(request))
-            }
+            file.writeToFileOrStdout(client.execute(request))
         }
     }
 
@@ -98,12 +95,7 @@ internal class Query : CliktCommand(name = "query") {
         override fun run() {
             val client = AlbertClient()
             val request = HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
-
-            if (file == null) {
-              println(client.execute(request))
-            } else {
-              File(file).writeText(client.execute(request))
-            }
+            file.writeToFileOrStdout(client.execute(request))
         }
     }
 

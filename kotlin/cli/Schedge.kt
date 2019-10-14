@@ -2,12 +2,6 @@ package cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import database.Migrations
-import database.Tables
-import database.connectToDatabase
-import mu.KotlinLogging
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 
 internal class Schedge() : CliktCommand(name = "schedge") {
 

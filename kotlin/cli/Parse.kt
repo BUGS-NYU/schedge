@@ -12,7 +12,6 @@ import parse.ParseCatalog
 import parse.ParseSection
 import readFromFileOrStdin
 import writeToFileOrStdout
-import java.io.File
 import java.io.IOException
 
 // TODO Change this to package-level protected if that becomes a thing

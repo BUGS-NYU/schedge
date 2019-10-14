@@ -9,12 +9,12 @@ enum class SectionType {
     SEM, // Seminar
 }
 
-// TODO Optimize this with a HashMap
-val Subjects: List<Subject> = "/subjects.txt".asResourceLines().map { Subject(it) }
-val Schools: List<School> = "/schools.txt".asResourceLines().map {
+val Subjects : Map<String, Subject> = "/subjects.txt".asResourceLines().map { Pair(it, Subject(it)) }.toMap()
+
+val Schools: Map<String, School> = "/schools.txt".asResourceLines().map {
     val (abbrev, name) = it.split(',')
-    School(abbrev, name)
-}
+    Pair(abbrev, School(abbrev, name))
+}.toMap()
 
 data class School(
     val abbrev: String,

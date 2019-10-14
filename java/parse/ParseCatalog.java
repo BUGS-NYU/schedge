@@ -6,10 +6,10 @@ import org.jsoup.nodes.Document;
 import java.util.List;
 
 public class ParseCatalog {
-  /**
-   * Get formatted course data from a catalog query result.
-   */
-  public static List<CatalogEntry> parse(Document data) {
+    /**
+     * Get formatted course data from a catalog query result.
+     */
+    public static List<CatalogEntry> parse(Document data) {
     /*
     val xml = Jsoup.parse(courseData) ?: throw IOException("Jsoup.parse returned null")
 
@@ -38,6 +38,6 @@ public class ParseCatalog {
 
         return output
      */
-    throw new UnsupportedOperationException("");
-  }
+        throw new UnsupportedOperationException("");
+    }
 }

@@ -26,6 +26,6 @@ fun connectToDatabase(logger: KLogger) {
         }
     }
     logger.error(IOException("Failed to connect to database.")) {
-      "Received following errors:\n[${exceptions}]"
+        "Received following errors:\n[${exceptions}]"
     }
 }

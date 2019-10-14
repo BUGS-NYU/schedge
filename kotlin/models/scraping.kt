@@ -10,8 +10,8 @@ data class CatalogEntry(
 )
 
 data class SectionResult(
-  val courseName: String,
-  val type: SectionType,
-  val associatedWith: Int?,
-  val meetings: List<Meeting>
+    val courseName: String,
+    val type: SectionType,
+    val associatedWith: Int?,
+    val meetings: List<Meeting>
 )

@@ -68,6 +68,7 @@ internal class Parse : CliktCommand(name = "parse") {
             "--output-file",
             help = "The file to write to. If not provided, writes to stdout."
         )
+
         // TODO Add this from Parser.parseSection
         override fun run() {
             val input = inputFile.readFromFileOrStdin()

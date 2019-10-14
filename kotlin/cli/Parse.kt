@@ -15,6 +15,11 @@ import writeToFileOrStdout
 import java.io.IOException
 
 // TODO Change this to package-level protected if that becomes a thing
+/**
+ * CLI for parsing information gotten from NYU Albert. Has two subcommands, `catalog`
+ * and `section`.
+ * @author Albert Liu
+ */
 internal class Parse : CliktCommand(name = "parse") {
 
     companion object {
@@ -37,6 +42,9 @@ internal class Parse : CliktCommand(name = "parse") {
 
     override fun run() = Unit
 
+    /**
+     * CLI for parsing data gotten from a single search query of NYU Albert.
+     */
     private class Catalog : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("parse.catalog")
         private val inputFile by argument(help = "The file to read from. If not provided, reads from stdin.")

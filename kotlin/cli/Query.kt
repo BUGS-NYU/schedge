@@ -23,6 +23,10 @@ import java.io.IOException
 import org.apache.http.message.BasicNameValuePair as KVPair
 
 // TODO Change this to package-level protected if that becomes a thing
+/**
+ * CLI for querying NYU Albert. Has two subcommands, `catalog` and `section`.
+ * @author Albert Liu
+ */
 internal class Query : CliktCommand(name = "query") {
     companion object {
         const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
@@ -36,6 +40,9 @@ internal class Query : CliktCommand(name = "query") {
 
     override fun run() = Unit
 
+    /**
+     * CLI for performing search queries of NYU Albert.
+     */
     private class Catalog() : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("query.catalog")
         private val term: Term by option("--term").convert {
@@ -83,8 +90,10 @@ internal class Query : CliktCommand(name = "query") {
         }
     }
 
+    /**
+     * CLI for querying specifics about a section from NYU Albert.
+     */
     private class Section : CliktCommand(name = "section") {
-        private val logger = KotlinLogging.logger("query.section")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()

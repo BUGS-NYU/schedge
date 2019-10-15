@@ -23,6 +23,7 @@ data class Course( // Gotten from course page
 data class Section( // Gotten from course page
     val course: Course,
     val type: SectionType,
+    val status: SectionStatus,
     val meetings: List<Meeting>,
     val associatedWith: Section?
 )

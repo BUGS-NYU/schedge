@@ -6,25 +6,34 @@ import java.util.List;
 import models.CatalogEntry;
 import models.CatalogSectionEntry;
 import models.SectionType;
+import mu.KLogger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParseCatalog {
+
+  static Logger logger = LoggerFactory.getLogger("parse.catalog");
+
   /**
    * Get formatted course data from a catalog query result.
    */
   public static List<CatalogEntry> parse(Document data) throws IOException {
     Elements elementList = data.select("div.primary-head ~ *");
-    if (elementList == null)
+    if (elementList == null) {
+      logger.error("CSS query `div.primary-head ~ *` returned a null value.");
       throw new IOException("xml.select returned null");
-    else if (elementList.size() == 0)
+    } else if (elementList.size() == 0) {
+      logger.error("CSS query `div.primary-head ~ *` returned an empty list.");
       throw new IOException("Course data is empty!");
-    if (!elementList.get(0).tagName().equals("div"))
+    } else if (!elementList.get(0).tagName().equals("div")) {
+      logger.error("CSS query `div.primary-head ~ *` returned a list whose first element was not a 'div'.");
       throw new IOException("NYU sent back data we weren't expecting.");
+    }
 
     ArrayList<CatalogEntry> output = new ArrayList<>();
-
     Course current = parseCourseNode(elementList.get(0));
     ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
 

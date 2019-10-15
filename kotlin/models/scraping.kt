@@ -5,13 +5,16 @@ data class CatalogEntry(
     val subject: String,
     val courseId: Int,
     val deptCourseNumber: Int,
-    val sectionRegistrationNumbers: List<Int>,
-    val sectionTypes: List<SectionType>
+    val sections: List<CatalogSectionEntry>
 )
 
-data class SectionResult(
-    val courseName: String,
+data class CatalogSectionEntry(
+    val registrationNumber: Int,
     val type: SectionType,
     val associatedWith: Int?,
     val meetings: List<Meeting>
+)
+
+data class SectionResult(
+  val description: String
 )

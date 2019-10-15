@@ -10,9 +10,9 @@ enum class SectionType {
 }
 
 enum class SectionStatus {
-  Open,
-  Closed,
-  Cancelled
+  Opn, // Open
+  Cls, // Closed
+  Cnc  // Cancelled
 }
 
 val Subjects : Map<String, Subject> = "/subjects.txt".asResourceLines().map { Pair(it, Subject(it)) }.toMap()

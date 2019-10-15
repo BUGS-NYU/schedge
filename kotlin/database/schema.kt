@@ -1,8 +1,11 @@
 package database
 
+import models.SectionType
+import models.SectionStatus
 import org.jetbrains.exposed.dao.IntIdTable
 
 // All migrations that have been applied to the table
+// insert only
 object Migrations : IntIdTable() {
     val dateAdded = datetime("date_added").index()
     val description = text("description")
@@ -24,7 +27,8 @@ object Courses : IntIdTable() {
 object Sections : IntIdTable() {
     val registrationNumber = integer("registration_number").index()
     val courseId = reference("course_id", Courses.id)
-    val type = varchar("type", length = 3)
+    val type = enumerationByName("type", length = 3, klass = SectionType::class)
+    val status = enumerationByName("status", length = 3, klass = SectionStatus::class)
     val associatedWith = reference("associated_with", Sections.id).nullable().index()
 }
 

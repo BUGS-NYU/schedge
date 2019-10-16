@@ -2,9 +2,11 @@ package parse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import models.CatalogEntry;
 import models.CatalogSectionEntry;
+import models.Meeting;
 import models.SectionType;
 import mu.KLogger;
 import org.jsoup.nodes.Document;
@@ -29,7 +31,8 @@ public class ParseCatalog {
       logger.error("CSS query `div.primary-head ~ *` returned an empty list.");
       throw new IOException("Course data is empty!");
     } else if (!elementList.get(0).tagName().equals("div")) {
-      logger.error("CSS query `div.primary-head ~ *` returned a list whose first element was not a 'div'.");
+      logger.error(
+          "CSS query `div.primary-head ~ *` returned a list whose first element was not a 'div'.");
       throw new IOException("NYU sent back data we weren't expecting.");
     }
 
@@ -74,7 +77,87 @@ public class ParseCatalog {
 
     return new Course(courseName, subject, courseId, deptCourseNumber);
   }
-  public static CatalogSectionEntry parseSectionNode(Element anchorTag) {
+
+  /*
+    <a href="https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/1198/8699">
+        <i class="ico-arrow-right pull-right right-icon"></i>
+        <div class="strong section-body">Section: 001-LEC (8699)</div> <div
+    class="section-body">Session: Regular Academic Session</div> <div
+    class="section-body">Days/Times: MoWe 9:30am
+      - 10:45am</div> <div class="section-body">Dates: 09/03/2019 -
+    12/13/2019</div> <div class="section-body">Instructor: Shizhu Liu</div> <div
+    class="section-body">Status: Open</div>
+    </div> </a>
+  */
+  public static CatalogSectionEntry parseSectionNode(Element anchorTag)
+      throws IOException {
+    String header, times, dates, instructor, status;
+
+    {
+      Elements dataDivChildren =
+          anchorTag.select("div.section-content > div.section-body");
+
+      // <div class="strong section-body">Section: 001-LEC (7953)</div>
+      header = getSectionFieldString(dataDivChildren.get(0).text(), "header");
+
+      // <div class="section-body"  >Days/Times:  MoWe 9:30am - 10:45am Fr
+      // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm</div>
+      times = getSectionFieldString(dataDivChildren.get(2).text(), "times");
+
+      // <div class="section-body"  >Dates:  09/03/2019 - 12/13/2019 10/11/2019
+      // - 10/11/2019 11/08/2019 - 11/08/2019</div>
+      dates = getSectionFieldString(dataDivChildren.get(3).text(), "dates");
+
+      // <div class="section-body"  >Instructor: David H A Fitch, Stephen J
+      // Small</div>
+      instructor =
+          getSectionFieldString(dataDivChildren.get(4).text(), "instructor");
+
+      // <div class="section-body"  >Status: Open</div>
+      status = getSectionFieldString(dataDivChildren.get(5).text(), "status");
+    }
+
+    int headerDashIdx = header.indexOf('-');
+
+    Integer registrationNumber = Integer.parseInt(
+        header.substring(header.indexOf('('), header.length() - 1));
+
+    Integer sectionNumber =
+        Integer.parseInt(header.substring(0, headerDashIdx));
+
+    SectionType type = SectionType.valueOf(
+        header.substring(headerDashIdx, header.indexOf(' ', headerDashIdx)));
+
+    List<Meeting> meetings = parseSectionTimesData(times, dates);
+
+    return new CatalogSectionEntry(registrationNumber, sectionNumber, type,
+                                   meetings);
+  }
+
+  public static String getSectionFieldString(String field, String fieldName)
+      throws IOException {
+    int splitIndex = field.indexOf(": ");
+    if (splitIndex < 0) {
+      logger.error("Failed to parse `" + fieldName +
+                   "` field: couldn't find substring ': '");
+      IOException except =
+          new IOException("Got a bad string parsing " + fieldName + " field.");
+      except.setStackTrace(Arrays.copyOfRange(except.getStackTrace(), 1,
+                                              except.getStackTrace().length));
+      throw except;
+    }
+
+    return field.substring(splitIndex);
+  }
+
+  public static List<Meeting> parseSectionTimesData(String times,
+                                                    String dates) {
+
+    // Days/Times:  MoWe 9:30am - 10:45am Fr
+    // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
+
+    // Dates:  09/03/2019 - 12/13/2019 10/11/2019
+    // - 10/11/2019 11/08/2019 - 11/08/2019
     return null;
   }
 

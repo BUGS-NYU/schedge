@@ -1,7 +1,5 @@
 package models
 
-import java.time.Duration
-
 // import org.jetbrains.exposed.dao.*
 
 data class CourseAbbrev( // Gotten from catalog
@@ -27,13 +25,4 @@ data class Section( // Gotten from course page
     val meetings: List<Meeting>,
     val associatedWith: Section?
 )
-
-data class Meeting(
-    val instructor: String,
-    val begin: DateTime, // Begin date; contains date and time of first event.
-    val duration: Duration, // Duration of meeting
-    val activeDuration: Duration, // How long after the begin that this event can start. Meetings implicitly meet weekly.
-    val days: Days // The days that this meeting happens on
-) {
-}
 

@@ -1,7 +1,7 @@
 package database
 
-import models.SectionType
 import models.SectionStatus
+import models.SectionType
 import org.jetbrains.exposed.dao.IntIdTable
 
 // All migrations that have been applied to the table

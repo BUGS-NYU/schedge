@@ -1,14 +1,18 @@
 package parse;
 
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import models.CatalogEntry;
-import models.CatalogSectionEntry;
-import models.Meeting;
-import models.SectionType;
-import mu.KLogger;
+import java.util.Locale;
+import kotlin.text.StringsKt;
+import models.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -18,6 +22,8 @@ import org.slf4j.LoggerFactory;
 public class ParseCatalog {
 
   static Logger logger = LoggerFactory.getLogger("parse.catalog");
+  static DateTimeFormatter timeParser =
+      DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mma", Locale.US);
 
   /**
    * Get formatted course data from a catalog query result.
@@ -117,21 +123,22 @@ public class ParseCatalog {
       status = getSectionFieldString(dataDivChildren.get(5).text(), "status");
     }
 
-    int headerDashIdx = header.indexOf('-');
+    Integer registrationNumber, sectionNumber;
+    SectionType type;
 
-    Integer registrationNumber = Integer.parseInt(
-        header.substring(header.indexOf('('), header.length() - 1));
-
-    Integer sectionNumber =
-        Integer.parseInt(header.substring(0, headerDashIdx));
-
-    SectionType type = SectionType.valueOf(
-        header.substring(headerDashIdx, header.indexOf(' ', headerDashIdx)));
+    {
+      int headerDashIdx = header.indexOf('-');
+      registrationNumber = Integer.parseInt(
+          header.substring(header.indexOf('('), header.length() - 1));
+      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
+      type = SectionType.valueOf(
+          header.substring(headerDashIdx, header.indexOf(' ', headerDashIdx)));
+    }
 
     List<Meeting> meetings = parseSectionTimesData(times, dates);
 
     return new CatalogSectionEntry(registrationNumber, sectionNumber, type,
-                                   meetings);
+                                   instructor, meetings);
   }
 
   public static String getSectionFieldString(String field, String fieldName)
@@ -150,15 +157,57 @@ public class ParseCatalog {
     return field.substring(splitIndex);
   }
 
-  public static List<Meeting> parseSectionTimesData(String times,
-                                                    String dates) {
-
-    // Days/Times:  MoWe 9:30am - 10:45am Fr
+  public static List<Meeting> parseSectionTimesData(String times, String dates)
+      throws IOException {
+    // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
-    // Dates:  09/03/2019 - 12/13/2019 10/11/2019
+    // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
-    return null;
+    // TODO Optimize this
+    List<String> timeStringTokens =
+        StringsKt.split(times, new char[] {' '}, false, 0);
+    timeStringTokens.removeIf((str) -> str.equals("-"));
+    List<String> dateStringTokens =
+        StringsKt.split(dates, new char[] {' '}, false, 0);
+    dateStringTokens.removeIf((str) -> str.equals("-"));
+
+    if (dateStringTokens.size() / 2 * 3 != timeStringTokens.size()) {
+      logger.error("Time/date was in unexpected format: time: '{}', date: '{}'",
+                   times, dates);
+      throw new IOException("Time/date was in unexpected format");
+    }
+
+    ArrayList<Meeting> meetings = new ArrayList<>();
+
+    for (int i = 0; i < timeStringTokens.size() / 3; i++) {
+      int timesIdx = i * 3, datesIdx = i * 2;
+      Days days = new Days(timeStringTokens.get(timesIdx));
+      LocalDateTime beginDate = LocalDateTime.from(
+          timeParser.parse(dateStringTokens.get(datesIdx) + ' ' +
+                           timeStringTokens.get(timesIdx + 1).toUpperCase()));
+      LocalDateTime endTime = LocalDateTime.from(
+          timeParser.parse(dateStringTokens.get(datesIdx) + ' ' +
+                           timeStringTokens.get(timesIdx + 2).toUpperCase()));
+      Duration duration = Duration.ofMinutes(
+          ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
+                                     endTime.toInstant(ZoneOffset.UTC)));
+      LocalDateTime endDate = LocalDateTime.from(
+          timeParser.parse(dateStringTokens.get(datesIdx + 1) + " 11:59PM"));
+
+      { // Make sure beginDate is actually on the first day
+        List<DayOfWeek> daysList = days.toDayOfWeekList();
+        while (!daysList.contains(beginDate.getDayOfWeek()))
+          beginDate.plusDays(1);
+      }
+
+      Duration activeDuration = Duration.ofMinutes(
+          ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
+                                     endDate.toInstant(ZoneOffset.UTC)));
+      meetings.add(new Meeting(beginDate, duration, activeDuration, days));
+    }
+
+    return meetings;
   }
 
   private static class Course {

@@ -1,10 +1,8 @@
 package models
 
-import org.joda.time.DateTime
+import java.time.DayOfWeek
 import kotlin.experimental.and
 import kotlin.experimental.or
-
-typealias DateTime = DateTime
 
 data class TimeOfDay(// Positive integer
     val hour: Int, val minutes: Int, val duration: Int
@@ -27,17 +25,30 @@ class Days(vararg days: DayOfWeek) {
     private val days: Byte
 
     init {
-        this.days = days.map { it.toByte() }.reduce { daysByte, dayByte ->
+        this.days = days.map { (1 shl it.value).toByte() }.reduce { daysByte, dayByte ->
             daysByte.or(dayByte)
         }
     }
 
+    constructor(days: String): this(*days.chunked(2).map {
+        when (it) {
+            "Mo" -> DayOfWeek.MONDAY
+            "Tu" -> DayOfWeek.TUESDAY
+            "We" -> DayOfWeek.WEDNESDAY
+            "Th" -> DayOfWeek.THURSDAY
+            "Fr" -> DayOfWeek.FRIDAY
+            "Sa" -> DayOfWeek.SATURDAY
+            "Su" -> DayOfWeek.SUNDAY
+            else -> DayOfWeek.valueOf(it)
+        }
+    }.toTypedArray())
+
     /**
      * Returns a list of the DayOfWeek objects that this Days object represents.
      */
-    private fun toDayOfWeekList(): List<DayOfWeek> {
+    fun toDayOfWeekList(): List<DayOfWeek> {
         return DayOfWeek.values().filter {
-            (it.toByte() and this.days) != 0.toByte()
+            (it.value.toByte() and this.days) != 0.toByte()
         }
     }
 
@@ -46,29 +57,3 @@ class Days(vararg days: DayOfWeek) {
     }
 }
 
-enum class DayOfWeek {
-    Sunday,
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday;
-
-    fun toByte(): Byte {
-        val ret = 1 shl when (this) {
-            Sunday -> 0
-            Monday -> 1
-            Tuesday -> 2
-            Wednesday -> 3
-            Thursday -> 4
-            Friday -> 5
-            Saturday -> 6
-        }
-        return ret.toByte()
-    }
-
-//  fun toShortString(): String {
-//    return this.toString().substring(0, 2)
-//  }
-}

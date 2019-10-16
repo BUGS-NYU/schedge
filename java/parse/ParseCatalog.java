@@ -131,7 +131,7 @@ public class ParseCatalog {
       throws IOException {
     int splitIndex = field.indexOf(": ");
     if (splitIndex < 0) {
-      logger.error("Failed to parse '" + field + "' as a section field.");
+      logger.info("Failed to parse '" + field + "' as a section field.");
       return false;
     }
 

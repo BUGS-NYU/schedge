@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 public class ParseCatalog {
 
-  static Logger logger = LoggerFactory.getLogger("parse.catalog");
-  static DateTimeFormatter timeParser =
+  private static Logger logger = LoggerFactory.getLogger("parse.catalog");
+  private static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.US);
   // 09/03/2019 3:15P
 
@@ -57,7 +57,7 @@ public class ParseCatalog {
     return output;
   }
 
-  public static Course parseCourseNode(Element divTag) throws IOException {
+  private static Course parseCourseNode(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
     int textIndex1 = text.indexOf(' '), textIndex2 = text.indexOf(" - ");
     if (textIndex1 < 0)
@@ -76,8 +76,7 @@ public class ParseCatalog {
     for (idIndex = 0; idIndex < idString.length(); idIndex++)
       if (idString.charAt(idIndex) <= '9' && idString.charAt(idIndex) >= '0')
         break;
-    Integer courseId =
-        Integer.parseInt(idString.substring(idIndex, idString.length()));
+    Integer courseId = Integer.parseInt(idString.substring(idIndex));
 
     return new Course(courseName, subject, courseId, deptCourseNumber);
   }
@@ -93,7 +92,7 @@ public class ParseCatalog {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  public static CatalogSectionEntry parseSectionNode(Element anchorTag)
+  private static CatalogSectionEntry parseSectionNode(Element anchorTag)
       throws IOException {
     HashMap<String, String> sectionData = new HashMap<>();
 
@@ -106,7 +105,7 @@ public class ParseCatalog {
       }
     }
 
-    Integer registrationNumber, sectionNumber;
+    int registrationNumber, sectionNumber;
     SectionType type;
 
     {
@@ -126,21 +125,21 @@ public class ParseCatalog {
                                    sectionData.get("Instructor"), meetings);
   }
 
-  public static boolean
-  addSectionFieldString(HashMap<String, String> sectionFieldData, String field)
-      throws IOException {
+  private static void
+  addSectionFieldString(HashMap<String, String> sectionFieldData,
+                        String field) {
     int splitIndex = field.indexOf(": ");
     if (splitIndex < 0) {
       logger.info("Failed to parse '" + field + "' as a section field.");
-      return false;
+      // return false;
     }
 
     sectionFieldData.put(field.substring(0, splitIndex),
                          field.substring(splitIndex + 2));
-    return true;
+    // return true;
   }
 
-  public static List<Meeting> parseSectionTimesData(String times, String dates)
+  private static List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
     logger.trace("Parsing section times data...");
     if (times.equals("TBA"))
@@ -216,7 +215,7 @@ public class ParseCatalog {
       this.deptCourseNumber = deptCourseNumber;
     }
 
-    public CatalogEntry
+    private CatalogEntry
     getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
       return new CatalogEntry(this.courseName, this.subject, this.courseId,
                               this.deptCourseNumber, sections);

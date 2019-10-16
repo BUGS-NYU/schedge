@@ -7,6 +7,7 @@ enum class SectionType {
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
+    IND  // independent study
 }
 
 enum class SectionStatus {

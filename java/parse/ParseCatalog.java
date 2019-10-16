@@ -7,10 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import kotlin.text.StringsKt;
 import models.*;
 import org.jsoup.nodes.Document;
@@ -23,7 +20,8 @@ public class ParseCatalog {
 
   static Logger logger = LoggerFactory.getLogger("parse.catalog");
   static DateTimeFormatter timeParser =
-      DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mma", Locale.US);
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.US);
+  // 09/03/2019 3:15P
 
   /**
    * Get formatted course data from a catalog query result.
@@ -69,7 +67,7 @@ public class ParseCatalog {
 
     String subject = text.substring(0, textIndex1);
     Integer deptCourseNumber =
-        Integer.parseInt(text.substring(textIndex1, textIndex2));
+        Integer.parseInt(text.substring(textIndex1 + 1, textIndex2));
     String courseName = text.substring(textIndex2 + 3);
 
     // <div class="secondary-head class-title-header" id=MATHUA9129903>
@@ -97,80 +95,72 @@ public class ParseCatalog {
   */
   public static CatalogSectionEntry parseSectionNode(Element anchorTag)
       throws IOException {
-    String header, times, dates, instructor, status;
+    HashMap<String, String> sectionData = new HashMap<>();
 
-    {
+    { // TODO Needs to be parsed using hashtable, not indices
       Elements dataDivChildren =
           anchorTag.select("div.section-content > div.section-body");
 
-      // <div class="strong section-body">Section: 001-LEC (7953)</div>
-      header = getSectionFieldString(dataDivChildren.get(0).text(), "header");
-
-      // <div class="section-body"  >Days/Times:  MoWe 9:30am - 10:45am Fr
-      // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm</div>
-      times = getSectionFieldString(dataDivChildren.get(2).text(), "times");
-
-      // <div class="section-body"  >Dates:  09/03/2019 - 12/13/2019 10/11/2019
-      // - 10/11/2019 11/08/2019 - 11/08/2019</div>
-      dates = getSectionFieldString(dataDivChildren.get(3).text(), "dates");
-
-      // <div class="section-body"  >Instructor: David H A Fitch, Stephen J
-      // Small</div>
-      instructor =
-          getSectionFieldString(dataDivChildren.get(4).text(), "instructor");
-
-      // <div class="section-body"  >Status: Open</div>
-      status = getSectionFieldString(dataDivChildren.get(5).text(), "status");
+      for (Element child : dataDivChildren) {
+        addSectionFieldString(sectionData, child.text());
+      }
     }
 
     Integer registrationNumber, sectionNumber;
     SectionType type;
 
     {
+      String header = sectionData.get("Section");
       int headerDashIdx = header.indexOf('-');
       registrationNumber = Integer.parseInt(
-          header.substring(header.indexOf('('), header.length() - 1));
+          header.substring(header.indexOf('(') + 1, header.length() - 1));
       sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
-      type = SectionType.valueOf(
-          header.substring(headerDashIdx, header.indexOf(' ', headerDashIdx)));
+      type = SectionType.valueOf(header.substring(
+          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
     }
 
-    List<Meeting> meetings = parseSectionTimesData(times, dates);
+    List<Meeting> meetings = parseSectionTimesData(
+        sectionData.get("Days/Times"), sectionData.get("Dates"));
 
     return new CatalogSectionEntry(registrationNumber, sectionNumber, type,
-                                   instructor, meetings);
+                                   sectionData.get("Instructor"), meetings);
   }
 
-  public static String getSectionFieldString(String field, String fieldName)
+  public static boolean
+  addSectionFieldString(HashMap<String, String> sectionFieldData, String field)
       throws IOException {
     int splitIndex = field.indexOf(": ");
     if (splitIndex < 0) {
-      logger.error("Failed to parse `" + fieldName +
-                   "` field: couldn't find substring ': '");
-      IOException except =
-          new IOException("Got a bad string parsing " + fieldName + " field.");
-      except.setStackTrace(Arrays.copyOfRange(except.getStackTrace(), 1,
-                                              except.getStackTrace().length));
-      throw except;
+      logger.error("Failed to parse '" + field + "' as a section field.");
+      return false;
     }
 
-    return field.substring(splitIndex);
+    sectionFieldData.put(field.substring(0, splitIndex),
+                         field.substring(splitIndex + 2));
+    return true;
   }
 
   public static List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
+    logger.trace("Parsing section times data...");
+    if (times.equals("TBA"))
+      return new ArrayList<>();
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
     // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
     // TODO Optimize this
-    List<String> timeStringTokens =
-        StringsKt.split(times, new char[] {' '}, false, 0);
-    timeStringTokens.removeIf((str) -> str.equals("-"));
-    List<String> dateStringTokens =
-        StringsKt.split(dates, new char[] {' '}, false, 0);
-    dateStringTokens.removeIf((str) -> str.equals("-"));
+    List<String> timeStringTokens = new ArrayList<>(), dateStringTokens =
+                                                           new ArrayList<>();
+    for (String s : StringsKt.split(times, new char[] {' '}, false, 0)) {
+      if (!s.equals("-"))
+        timeStringTokens.add(s);
+    }
+    for (String s : StringsKt.split(dates, new char[] {' '}, false, 0)) {
+      if (!s.equals("-"))
+        dateStringTokens.add(s);
+    }
 
     if (dateStringTokens.size() / 2 * 3 != timeStringTokens.size()) {
       logger.error("Time/date was in unexpected format: time: '{}', date: '{}'",
@@ -197,8 +187,9 @@ public class ParseCatalog {
 
       { // Make sure beginDate is actually on the first day
         List<DayOfWeek> daysList = days.toDayOfWeekList();
+        logger.info(daysList.toString());
         while (!daysList.contains(beginDate.getDayOfWeek()))
-          beginDate.plusDays(1);
+          beginDate = beginDate.plusDays(1);
       }
 
       Duration activeDuration = Duration.ofMinutes(
@@ -207,6 +198,7 @@ public class ParseCatalog {
       meetings.add(new Meeting(beginDate, duration, activeDuration, days));
     }
 
+    logger.trace(meetings.toString());
     return meetings;
   }
 

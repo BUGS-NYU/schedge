@@ -48,7 +48,7 @@ class Days(vararg days: DayOfWeek) {
      */
     fun toDayOfWeekList(): List<DayOfWeek> {
         return DayOfWeek.values().filter {
-            (it.value.toByte() and this.days) != 0.toByte()
+            ((1 shl it.value).toByte() and this.days) != 0.toByte()
         }
     }
 

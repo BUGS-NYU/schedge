@@ -43,6 +43,7 @@ public class ParseCatalog {
     ArrayList<CatalogEntry> output = new ArrayList<>();
     Course current = parseCourseNode(elementList.get(0));
     ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
+    CatalogSectionEntry lectureEntry = null;
 
     for (int i = 1; i < elementList.size(); i++) {
       Element e = elementList.get(i);
@@ -51,7 +52,11 @@ public class ParseCatalog {
         current = parseCourseNode(e);
         sections = new ArrayList<>();
       } else {
-        sections.add(parseSectionNode(e));
+        CatalogSectionEntry entry = parseSectionNode(e, lectureEntry);
+        if (entry.getType() == SectionType.LEC) {
+          lectureEntry = entry;
+        }
+        sections.add(entry);
       }
     }
     return output;
@@ -92,7 +97,8 @@ public class ParseCatalog {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  private static CatalogSectionEntry parseSectionNode(Element anchorTag)
+  private static CatalogSectionEntry
+  parseSectionNode(Element anchorTag, CatalogSectionEntry associatedWith)
       throws IOException {
     HashMap<String, String> sectionData = new HashMap<>();
 
@@ -121,8 +127,9 @@ public class ParseCatalog {
     List<Meeting> meetings = parseSectionTimesData(
         sectionData.get("Days/Times"), sectionData.get("Dates"));
 
-    return new CatalogSectionEntry(registrationNumber, sectionNumber, type,
-                                   sectionData.get("Instructor"), meetings);
+    return new CatalogSectionEntry(
+        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
+        type == SectionType.LEC ? null : associatedWith, meetings);
   }
 
   private static void
@@ -131,12 +138,10 @@ public class ParseCatalog {
     int splitIndex = field.indexOf(": ");
     if (splitIndex < 0) {
       logger.info("Failed to parse '" + field + "' as a section field.");
-      // return false;
+      return;
     }
-
     sectionFieldData.put(field.substring(0, splitIndex),
                          field.substring(splitIndex + 2));
-    // return true;
   }
 
   private static List<Meeting> parseSectionTimesData(String times, String dates)

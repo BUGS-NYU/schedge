@@ -16,8 +16,13 @@ data class CatalogSectionEntry(
     val sectionNumber: Int,
     val type: SectionType,
     val instructor: String,
+    val associatedWith: CatalogSectionEntry?,
     val meetings: List<Meeting>
-)
+) {
+    override fun toString(): String {
+        return "CatalogSectionEntry(registrationNumber=${registrationNumber}, sectionNumber=${sectionNumber}, type=${type}, instructor=${instructor}, associatedWith=${associatedWith?.registrationNumber}, meetings=${meetings})"
+    }
+}
 
 data class Meeting(
     val beginDate: LocalDateTime, // Begin date; contains date and time of first event.

@@ -17,7 +17,8 @@ val Tables = arrayOf(Courses, Sections, Locations, Meetings)
 // Courses that you can take at NYU
 // Contains information like "MATH-UA 120" and "Discrete Math"
 object Courses : IntIdTable() {
-    val nyuCourseId = integer("course_id").index() // Column<Long>
+    val nyuCourseId = integer("nyu_course_id").index() // Column<Long>
+    val courseId = integer("course_id").index() // Column<Long>
     val abbrev = varchar("abbreviation", length = 10) // Column<String>
     val name = varchar("name", length = 100) // Column<String>
     val description = text("description")

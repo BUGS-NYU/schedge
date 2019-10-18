@@ -198,15 +198,13 @@ public class ParseCatalog {
           ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
                                      endDate.toInstant(ZoneOffset.UTC)));
 
-      { // Make sure beginDate is actually on the first day
-        List<DayOfWeek> daysList = days.toDayOfWeekList();
-        logger.info(daysList.toString());
+      List<DayOfWeek> daysList = days.toDayOfWeekList();
+      logger.info(daysList.toString());
 
-        for (int day = 0; day < 7; day++, beginDate.plusDays(1)) {
-          if (daysList.contains(beginDate.getDayOfWeek()))
-            meetings.add(new Meeting(beginDate, duration,
-                                     activeDuration.minusDays(day)));
-        }
+      for (int day = 0; day < 7; day++, beginDate.plusDays(1)) {
+        if (daysList.contains(beginDate.getDayOfWeek()))
+          meetings.add(
+              new Meeting(beginDate, duration, activeDuration.minusDays(day)));
       }
     }
 

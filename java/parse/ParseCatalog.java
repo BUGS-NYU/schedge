@@ -156,18 +156,19 @@ public class ParseCatalog {
     // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
     // TODO Optimize this
-    List<String> timeStringTokens = new ArrayList<>(), dateStringTokens =
-                                                           new ArrayList<>();
+    List<String> timeTokens = new ArrayList<>(), dateTokens = new ArrayList<>();
+
     for (String s : StringsKt.split(times, new char[] {' '}, false, 0)) {
       if (!s.equals("-"))
-        timeStringTokens.add(s);
-    }
-    for (String s : StringsKt.split(dates, new char[] {' '}, false, 0)) {
-      if (!s.equals("-"))
-        dateStringTokens.add(s);
+        timeTokens.add(s);
     }
 
-    if (dateStringTokens.size() / 2 * 3 != timeStringTokens.size()) {
+    for (String s : StringsKt.split(dates, new char[] {' '}, false, 0)) {
+      if (!s.equals("-"))
+        dateTokens.add(s);
+    }
+
+    if (dateTokens.size() / 2 * 3 != timeTokens.size()) {
       logger.error("Time/date was in unexpected format: time: '{}', date: '{}'",
                    times, dates);
       throw new IOException("Time/date was in unexpected format");
@@ -175,20 +176,23 @@ public class ParseCatalog {
 
     ArrayList<Meeting> meetings = new ArrayList<>();
 
-    for (int i = 0; i < timeStringTokens.size() / 3; i++) {
-      int timesIdx = i * 3, datesIdx = i * 2;
-      Days days = new Days(timeStringTokens.get(timesIdx));
+    for (int idx = 0; idx < timeTokens.size() / 3; idx++) {
+      int timesIdx = idx * 3, datesIdx = idx * 2;
+      Days days = new Days(timeTokens.get(timesIdx));
       LocalDateTime beginDate = LocalDateTime.from(
-          timeParser.parse(dateStringTokens.get(datesIdx) + ' ' +
-                           timeStringTokens.get(timesIdx + 1).toUpperCase()));
+          timeParser.parse(dateTokens.get(datesIdx) + ' ' +
+                           timeTokens.get(timesIdx + 1).toUpperCase()));
+
       LocalDateTime endTime = LocalDateTime.from(
-          timeParser.parse(dateStringTokens.get(datesIdx) + ' ' +
-                           timeStringTokens.get(timesIdx + 2).toUpperCase()));
+          timeParser.parse(dateTokens.get(datesIdx) + ' ' +
+                           timeTokens.get(timesIdx + 2).toUpperCase()));
+
       Duration duration = Duration.ofMinutes(
           ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
                                      endTime.toInstant(ZoneOffset.UTC)));
+
       LocalDateTime endDate = LocalDateTime.from(
-          timeParser.parse(dateStringTokens.get(datesIdx + 1) + " 11:59PM"));
+          timeParser.parse(dateTokens.get(datesIdx + 1) + " 11:59PM"));
 
       Duration activeDuration = Duration.ofMinutes(
           ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
@@ -199,10 +203,9 @@ public class ParseCatalog {
         logger.info(daysList.toString());
 
         for (int day = 0; day < 7; day++, beginDate.plusDays(1)) {
-          if (daysList.contains(beginDate.getDayOfWeek())) {
+          if (daysList.contains(beginDate.getDayOfWeek()))
             meetings.add(new Meeting(beginDate, duration,
                                      activeDuration.minusDays(day)));
-          }
         }
       }
     }

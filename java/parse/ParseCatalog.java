@@ -129,7 +129,8 @@ public class ParseCatalog {
 
     return new CatalogSectionEntry(
         registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
-        type == SectionType.LEC ? null : associatedWith, meetings);
+        type == SectionType.LEC ? null : associatedWith,
+        SectionStatus.valueOf(sectionData.get("Status")), meetings);
   }
 
   private static void
@@ -189,17 +190,21 @@ public class ParseCatalog {
       LocalDateTime endDate = LocalDateTime.from(
           timeParser.parse(dateStringTokens.get(datesIdx + 1) + " 11:59PM"));
 
-      { // Make sure beginDate is actually on the first day
-        List<DayOfWeek> daysList = days.toDayOfWeekList();
-        logger.info(daysList.toString());
-        while (!daysList.contains(beginDate.getDayOfWeek()))
-          beginDate = beginDate.plusDays(1);
-      }
-
       Duration activeDuration = Duration.ofMinutes(
           ChronoUnit.MINUTES.between(beginDate.toInstant(ZoneOffset.UTC),
                                      endDate.toInstant(ZoneOffset.UTC)));
-      meetings.add(new Meeting(beginDate, duration, activeDuration, days));
+
+      { // Make sure beginDate is actually on the first day
+        List<DayOfWeek> daysList = days.toDayOfWeekList();
+        logger.info(daysList.toString());
+
+        for (int day = 0; day < 7; day++, beginDate.plusDays(1)) {
+          if (daysList.contains(beginDate.getDayOfWeek())) {
+            meetings.add(new Meeting(beginDate, duration,
+                                     activeDuration.minusDays(day)));
+          }
+        }
+      }
     }
 
     logger.trace(meetings.toString());

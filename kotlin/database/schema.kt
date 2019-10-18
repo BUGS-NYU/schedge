@@ -21,20 +21,22 @@ object Courses : IntIdTable() {
     val name = varchar("name", length = 100)
     val subject = varchar("subject", length = 8)
     val deptCourseNumber = integer("dept_course_number").index()
+    val termId = integer("term_id")
 }
 
 // Sections that you can register for at NYU
 object Sections : IntIdTable() {
     val registrationNumber = integer("registration_number").index()
-    val courseId = reference("course_id", Courses.id)
+    val courseId = reference("course_id", Courses).index()
     val sectionNumber = integer("section_number")
+    val termId = integer("term_id")
     val type = enumeration("type", klass = SectionType::class)
     val associatedWith = reference("associated_with", Sections.id).nullable().index()
 }
 
 // A class meeting
 object Meetings : IntIdTable() {
-    val sectionId = reference("section_id", Sections.id).index()
+    val sectionId = reference("section_id", Sections).index()
     val locationId = varchar("location", length = 5)
     val instructor = varchar("instructor", length = 50)
     val date = datetime("start")

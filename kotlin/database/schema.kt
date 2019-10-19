@@ -1,6 +1,5 @@
 package database
 
-import models.SectionStatus
 import models.SectionType
 import org.jetbrains.exposed.dao.IntIdTable
 

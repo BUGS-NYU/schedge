@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KLogger
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.IOException
 
 
@@ -25,7 +27,14 @@ fun connectToDatabase(logger: KLogger) {
             Thread.sleep(5000L)
         }
     }
+
     logger.error(IOException("Failed to connect to database.")) {
         "Received following errors:\n[${exceptions}]"
+    }
+
+    transaction {
+        // TODO Handle migrations instead of just adding missing tables and columns
+        SchemaUtils.createMissingTablesAndColumns(Migrations)
+        SchemaUtils.createMissingTablesAndColumns(*Tables)
     }
 }

@@ -1,4 +1,0 @@
-package services
-
-class ParseService {
-}

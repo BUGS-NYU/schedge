@@ -10,16 +10,8 @@ import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.clikt.parameters.types.restrictTo
 import models.*
 import mu.KotlinLogging
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.client.methods.HttpUriRequest
-import org.apache.http.client.protocol.HttpClientContext
-import org.apache.http.impl.client.BasicCookieStore
-import org.apache.http.impl.client.HttpClients
+import services.queryCatalog
 import writeToFileOrStdout
-import java.io.IOException
-import org.apache.http.message.BasicNameValuePair as KVPair
 
 // TODO Change this to package-level protected if that becomes a thing
 /**
@@ -27,14 +19,9 @@ import org.apache.http.message.BasicNameValuePair as KVPair
  * @author Albert Liu
  */
 internal class Query : CliktCommand(name = "query") {
-    companion object {
-        const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
-        const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
-        const val CATALOG_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV"
-    }
 
     init {
-        this.subcommands(Catalog(), Section())
+        this.subcommands(Catalog())
     }
 
     override fun run() = Unit
@@ -55,90 +42,18 @@ internal class Query : CliktCommand(name = "query") {
         private val location: String? by option("--location")
         private val file: String? by option("--file")
 
-        override fun run() {
-            val client = AlbertClient()
-            logger.info { "Created client." }
-            val params = mutableListOf( // URL params
-                KVPair("CSRFToken", client.csrfToken),
-                KVPair("term", term.id.toString()),
-                KVPair("acad_group", school.abbrev),
-                KVPair("subject", subject.abbrev),
-                KVPair("catalog_nbr", catalogNumber?.toString() ?: ""),
-                KVPair("keyword", keywords ?: ""),
-                KVPair("class_nbr", classNumber?.toString() ?: ""),
-                KVPair("nyu_location", location ?: "")
+        override fun run() =
+            file.writeToFileOrStdout(
+                queryCatalog(
+                    term = term,
+                    school = school,
+                    subject = subject,
+                    catalogNumber = catalogNumber,
+                    keywords = keywords,
+                    classNumber = classNumber,
+                    location = location
+                )
             )
-            logger.debug { "Params are ${params}." }
 
-
-            val request = HttpPost(DATA_URL).apply {
-                entity = UrlEncodedFormEntity(params)
-                addHeader("Referrer", "$ROOT_URL/${term.id}")
-                addHeader("Host", "m.albert.nyu.edu")
-            }
-
-            file.writeToFileOrStdout(client.execute(request))
-        }
-    }
-
-    /**
-     * CLI for querying specifics about a section from NYU Albert.
-     */
-    private class Section : CliktCommand(name = "section") {
-        private val term: Term by option("--term").convert {
-            Term.fromId(Integer.parseInt(it))
-        }.required()
-        private val registrationNumber: Int by option("--registration-number").int()
-            .restrictTo(0..Int.MAX_VALUE).required()
-        private val file: String? by option("--file")
-
-        override fun run() {
-            val client = AlbertClient()
-            val request = HttpGet("$CATALOG_URL/${term.id}/${registrationNumber}")
-            file.writeToFileOrStdout(client.execute(request))
-        }
-    }
-
-    private class AlbertClient() {
-        private val logger = KotlinLogging.logger {}
-        private val httpClient = HttpClients.custom().useSystemProperties().build()
-        private val httpContext = HttpClientContext.create().apply {
-            cookieStore = BasicCookieStore()
-        }
-        val csrfToken: String
-            get() {
-                val cookie = httpContext.cookieStore.cookies.find { cookie ->
-                    cookie.name == "CSRFCookie"
-                }
-
-                if (cookie == null) {
-                    logger.error {
-                        val cookies = httpContext.cookieStore.cookies.map {
-                            "${it.name}: \"${it.value}\""
-                        }
-                        "Couldn't find `CSRFCookie`. " +
-                                "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
-                    }
-                    throw IOException("NYU servers did something unexpected.")
-                } else {
-                    return cookie.value
-                }
-            }
-
-        init {
-            logger.debug("Creating client instance...")
-
-            // Get a CSRF token for this client. This token allows us to get
-            // data straight from NYU's internal web APIs.
-            val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
-            response.close()
-
-            logger.info { "Client instance created with CSRF Token '${csrfToken}'." }
-        }
-
-        fun execute(req: HttpUriRequest): String {
-            logger.info { "Executing ${req.method.toUpperCase()} request" }
-            return this.httpClient.execute(req, this.httpContext).entity.content.bufferedReader().readText()
-        }
     }
 }

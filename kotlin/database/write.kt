@@ -2,12 +2,8 @@ package database
 
 import models.CatalogEntry
 import models.Term
-import database.Courses
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -15,25 +11,29 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
     val entry = this
     val termIdInt = term.id
-    transaction {
-        val id = Courses.insertOrUpdate {
-            it[id] = EntityID(entry.courseId * 10000 + termIdInt, Courses)
+    val courseEntityId = EntityID(entry.courseId * 10000 + termIdInt, Courses)
+
+    val res = transaction {
+        Courses.insert {
+            it[id] = courseEntityId
             it[courseId] = entry.courseId
             it[termId] = termIdInt
             it[name] = entry.courseName
             it[subject] = entry.subject
             it[deptCourseNumber] = entry.deptCourseNumber
-        }
+        }.resultedValues
     }
+
+    println(res)
 }
 
 fun <T : Table> T.insertOrUpdate(
     vararg keys: Column<*>,
     body: T.(InsertStatement<Number>) -> Unit
 ) = InsertOrUpdate<Number>(keys, this).apply {
-        body(this)
-        execute(TransactionManager.current())
-    }
+    body(this)
+    execute(TransactionManager.current())
+}
 
 class InsertOrUpdate<Key : Any>(
     private val keys: Array<out Column<*>>,
@@ -42,7 +42,7 @@ class InsertOrUpdate<Key : Any>(
 ) : InsertStatement<Key>(table, isIgnore) {
     override fun prepareSQL(transaction: Transaction): String {
         val updateSetter = super.values.keys.joinToString {
-          "${it.name} = EXCLUDED.${it.name}"
+            "${it.name} = EXCLUDED.${it.name}"
         }
 
         val keyColumns = keys.joinToString(",") { it.name }

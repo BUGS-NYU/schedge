@@ -33,9 +33,7 @@ internal class Query : CliktCommand(name = "query") {
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()
-        private val school: School by option("--school").convert {
-            School(it)
-        }.required()
+        private val school: String by option("--school").required()
         private val subject: String by option("--subject").required()
         private val catalogNumber: Int? by option("--catalog-number").int().restrictTo(0..Int.MAX_VALUE)
         private val keywords: String? by option("--keywords")
@@ -47,7 +45,6 @@ internal class Query : CliktCommand(name = "query") {
             file.writeToFileOrStdout(
                 queryCatalog(
                     term = term,
-                    school = school,
                     subject = Subject(subject, school),
                     catalogNumber = catalogNumber,
                     keywords = keywords,

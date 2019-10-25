@@ -71,13 +71,17 @@ class School(
 
 class Subject(
     abbrevString: String,
-    school: School
+    schoolString: String
 ) {
 
     val abbrev = abbrevString.toUpperCase()
+    val school = schoolString.toUpperCase()
 
     init {
-        require((AvailableSubjects[school.abbrev] ?: error("School not present in subjects list")).contains(abbrev)) {
+        require(AvailableSubjects.containsKey(school)) {
+            "School must be valid"
+        }
+        require(AvailableSubjects[school]!!.contains(abbrev)) {
             "Subject must be valid!"
         }
     }

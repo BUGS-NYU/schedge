@@ -16,7 +16,6 @@ import java.io.IOException
 
 fun queryCatalog(
     term: Term,
-    school: School,
     subject: Subject,
     catalogNumber: Int? = null,
     keywords: String? = null,
@@ -28,7 +27,7 @@ fun queryCatalog(
     val params = mutableListOf( // URL params
         BasicNameValuePair("CSRFToken", client.csrfToken),
         BasicNameValuePair("term", term.id.toString()),
-        BasicNameValuePair("acad_group", school.abbrev),
+        BasicNameValuePair("acad_group", subject.school),
         BasicNameValuePair("subject", subject.abbrev),
         BasicNameValuePair("catalog_nbr", catalogNumber?.toString() ?: ""),
         BasicNameValuePair("keyword", keywords ?: ""),

@@ -16,12 +16,12 @@ enum class SectionStatus {
   Cancelled // Cancelled
 }
 
-val AvailableSchools : Map<String, String> = "/schools.txt".asResourceLines().map {
+private val AvailableSchools : Map<String, String> = "/schools.txt".asResourceLines().map {
     val (abbrev, name) = it.split(',')
     Pair(abbrev, name)
 }.toMap()
 
-val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
+private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
     Pair(subj, school)
 }.let {
@@ -34,23 +34,32 @@ val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLine
     availSubjects
 }
 
-val Subjects : Map<String, Subject> = "/subjects.txt".asResourceLines().map { Pair(it, Subject(it)) }.toMap()
-
-val Schools: Map<String, School> = "/schools.txt".asResourceLines().map {
-    val (abbrev, name) = it.split(',')
-    Pair(abbrev, School(abbrev, name))
-}.toMap()
-
-data class School(
-    val abbrev: String,
-    val name: String
+class School(
+    val abbrev: String
 ) {
+    init {
+        require(AvailableSchools.containsKey(abbrev)) {
+            "School must be valid!"
+        }
+    }
 
+    companion object {
+        fun availableSchools(): Set<String> {
+            return AvailableSchools.keys
+        }
+    }
 }
 
-data class Subject(
-    val abbrev: String
-)
+class Subject(
+    val abbrev: String,
+    school: School
+) {
+    init {
+        require((AvailableSubjects[school.abbrev] ?: error("School not present in subjects list")).contains(abbrev)) {
+            "Subject must be valid!"
+        }
+    }
+}
 
 /**
  * One of the semesters in a year.

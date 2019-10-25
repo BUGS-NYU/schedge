@@ -2,6 +2,7 @@ package database
 
 import models.SectionType
 import org.jetbrains.exposed.dao.IntIdTable
+import org.jetbrains.exposed.dao.LongIdTable
 
 // All migrations that have been applied to the table
 // insert only
@@ -15,7 +16,7 @@ val Tables = arrayOf(Courses, Sections, Meetings)
 
 // Courses that you can take at NYU
 // Contains information like "MATH-UA 120" and "Discrete Math"
-object Courses : IntIdTable() {
+object Courses : LongIdTable() {
     val courseId = integer("course_id").index()
     val name = varchar("name", length = 100)
     val subject = varchar("subject", length = 8)
@@ -24,7 +25,7 @@ object Courses : IntIdTable() {
 }
 
 // Sections that you can register for at NYU
-object Sections : IntIdTable() {
+object Sections : LongIdTable() {
     val registrationNumber = integer("registration_number").index()
     val courseId = reference("course_id", Courses).index()
     val sectionNumber = integer("section_number")
@@ -34,7 +35,7 @@ object Sections : IntIdTable() {
 }
 
 // A class meeting
-object Meetings : IntIdTable() {
+object Meetings : LongIdTable() {
     val sectionId = reference("section_id", Sections).index()
     val locationId = varchar("location", length = 5)
     val instructor = varchar("instructor", length = 50)

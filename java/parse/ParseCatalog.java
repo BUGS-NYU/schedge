@@ -1,13 +1,5 @@
 package parse;
 
-import kotlin.text.StringsKt;
-import models.*;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -19,6 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import kotlin.text.StringsKt;
+import models.*;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParseCatalog {
 
@@ -142,7 +141,7 @@ public class ParseCatalog {
                         String field) {
     int splitIndex = field.indexOf(": ");
     if (splitIndex < 0) {
-      logger.info("Failed to parse '" + field + "' as a section field.");
+      logger.debug("Failed to parse '" + field + "' as a section field.");
       return;
     }
     sectionFieldData.put(field.substring(0, splitIndex),
@@ -203,7 +202,7 @@ public class ParseCatalog {
                                      endDate.toInstant(ZoneOffset.UTC)));
 
       List<DayOfWeek> daysList = days.toDayOfWeekList();
-      logger.info(daysList.toString());
+      logger.debug(daysList.toString());
 
       for (int day = 0; day < 7; day++, beginDate.plusDays(1)) {
         if (daysList.contains(beginDate.getDayOfWeek()))
@@ -212,7 +211,7 @@ public class ParseCatalog {
       }
     }
 
-    logger.trace(meetings.toString());
+    // logger.trace(meetings.toString());
     return meetings;
   }
 

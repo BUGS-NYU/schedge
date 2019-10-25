@@ -5,6 +5,8 @@ services:
     container_name: "schedge"
   db:
     image: "postgres:11"
+    # ports:
+    #   - "5432:5432"
     container_name: "pg-docker"
     volumes:
       - ./postgres:/var/lib/postgresql/data

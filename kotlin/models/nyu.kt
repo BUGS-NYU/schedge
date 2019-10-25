@@ -16,6 +16,24 @@ enum class SectionStatus {
   Cancelled // Cancelled
 }
 
+val AvailableSchools : Map<String, String> = "/schools.txt".asResourceLines().map {
+    val (abbrev, name) = it.split(',')
+    Pair(abbrev, name)
+}.toMap()
+
+val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
+    val (subj, school) = it.split('-')
+    Pair(subj, school)
+}.let {
+    val availSubjects = mutableMapOf<String, MutableSet<String>>()
+    it.forEach { (subj, school) ->
+        availSubjects.getOrPut(school) {
+            mutableSetOf()
+        }.add(subj)
+    }
+    availSubjects
+}
+
 val Subjects : Map<String, Subject> = "/subjects.txt".asResourceLines().map { Pair(it, Subject(it)) }.toMap()
 
 val Schools: Map<String, School> = "/schools.txt".asResourceLines().map {
@@ -26,7 +44,9 @@ val Schools: Map<String, School> = "/schools.txt".asResourceLines().map {
 data class School(
     val abbrev: String,
     val name: String
-)
+) {
+
+}
 
 data class Subject(
     val abbrev: String

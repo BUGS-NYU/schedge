@@ -36,9 +36,10 @@ internal class Parse : CliktCommand(name = "parse") {
 
         // TODO Add this from Parser.parseCourse
         override fun run() {
+          println(inputFile)
             val input = inputFile.readFromFileOrStdin()
             val output = parseCatalog(input, logger)
-            outputFile.writeToFileOrStdout(output)
+            // outputFile.writeToFileOrStdout(output)
         }
     }
 

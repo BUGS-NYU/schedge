@@ -7,13 +7,31 @@ enum class SectionType {
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
-    IND  // independent study
+    IND;  // independent study
+
+    fun getName(): String {
+        return when (this) {
+            LEC -> "Lecture"
+            RCT -> "Recitation"
+            LAB -> "Lab"
+            SEM -> "Seminar"
+            IND -> "Independent Study"
+        }
+    }
 }
 
 enum class SectionStatus {
   Open, // Open
   Closed, // Closed
-  Cancelled // Cancelled
+  Cancelled; // Cancelled
+
+    fun isOpen(): Boolean {
+        return when (this) {
+            Open -> true
+            Closed -> false
+            Cancelled -> false
+        }
+    }
 }
 
 private val AvailableSchools : Map<String, String> = "/schools.txt".asResourceLines().map {
@@ -35,29 +53,37 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
 }
 
 class School(
-    val abbrev: String
+    abbrevString: String
 ) {
+
+    val abbrev = abbrevString.toUpperCase()
+
     init {
         require(AvailableSchools.containsKey(abbrev)) {
             "School must be valid!"
         }
     }
 
-    companion object {
-        fun availableSchools(): Set<String> {
-            return AvailableSchools.keys
-        }
+    override fun toString(): String {
+      return abbrev
     }
 }
 
 class Subject(
-    val abbrev: String,
+    abbrevString: String,
     school: School
 ) {
+
+    val abbrev = abbrevString.toUpperCase()
+
     init {
         require((AvailableSubjects[school.abbrev] ?: error("School not present in subjects list")).contains(abbrev)) {
             "Subject must be valid!"
         }
+    }
+
+    override fun toString(): String {
+      return abbrev
     }
 }
 
@@ -82,7 +108,6 @@ enum class Semester {
             }
         }
     }
-
 
     // Turns enum into integer that conforms to NYU's conventions.
     fun toInt(): Int {

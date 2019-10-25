@@ -1,6 +1,5 @@
 import database.Tables
 import database.writeToDb
-import models.School
 import models.Subject
 import models.Term
 import mu.KLogger
@@ -14,10 +13,12 @@ fun scrapeCatalog(term: Term, subjects: List<Subject>, logger: KLogger) {
         SchemaUtils.createMissingTablesAndColumns(*Tables)
     }
 
-    val rawData = queryCatalog(term, subjects[0])
-    val parsedData = parseCatalog(rawData, logger)
+    for (subject in subjects) {
+        val rawData = queryCatalog(term, subject)
+        val parsedData = parseCatalog(rawData, logger)
 
-    for (e in parsedData) {
-        e.writeToDb(term)
+        for (e in parsedData) {
+            e.writeToDb(term)
+        }
     }
 }

@@ -30,6 +30,7 @@ object Sections : LongIdTable() {
     val courseId = reference("course_id", Courses).index()
     val sectionNumber = integer("section_number")
     val termId = integer("term_id")
+    val instructor = Meetings.varchar("instructor", length = 50)
     val type = enumeration("type", klass = SectionType::class)
     val associatedWith = reference("associated_with", Sections.id).nullable().index()
 }
@@ -38,8 +39,8 @@ object Sections : LongIdTable() {
 object Meetings : LongIdTable() {
     val sectionId = reference("section_id", Sections).index()
     val locationId = varchar("location", length = 5)
-    val instructor = varchar("instructor", length = 50)
+    val activeDuration = long("active_duration")
     val date = datetime("start")
-    val duration = integer("duration") // Duration of event in minutes
+    val duration = long("duration") // Duration of event in minutes
 }
 

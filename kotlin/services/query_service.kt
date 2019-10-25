@@ -1,6 +1,5 @@
 package services
 
-import models.School
 import models.Subject
 import models.Term
 import mu.KotlinLogging

@@ -8,7 +8,9 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
+import java.time.temporal.TemporalUnit
 
 fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
     val entry = this
@@ -37,17 +39,30 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
                 )
             }
 
+            val meetings = entry.sections.map {
+                    section -> section.meetings.map { meeting -> Pair(getSectionId(section), meeting) }
+            }.flatten()
+
             Sections.batchInsert(entry.sections) { section ->
                 this[Sections.registrationNumber] = section.registrationNumber
                 this[Sections.courseId] = courseEntityId
                 this[Sections.id] = getSectionId(section)
                 this[Sections.termId] = termIdInt
                 this[Sections.sectionNumber] = section.sectionNumber
+                this[Sections.type] = section.type
+                this[Sections.instructor] = section.instructor
                 this[Sections.associatedWith] = if (section.associatedWith != null) {
                     getSectionId(section.associatedWith)
                 } else {
                     null
                 }
+            }
+
+            Meetings.batchInsert(meetings) {(section, meeting) ->
+                this[Meetings.date] = DateTime(meeting.beginDate)
+                this[Meetings.duration] = meeting.duration.toMinutes()
+                this[Meetings.activeDuration] = meeting.activeDuration.toMinutes()
+                this[Meetings.sectionId] = section
             }
 
         }

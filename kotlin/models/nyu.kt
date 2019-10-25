@@ -34,11 +34,6 @@ enum class SectionStatus {
     }
 }
 
-private val AvailableSchools : Map<String, String> = "/schools.txt".asResourceLines().map {
-    val (abbrev, name) = it.split(',')
-    Pair(abbrev, name)
-}.toMap()
-
 private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
     Pair(subj, school)
@@ -50,23 +45,6 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
         }.add(subj)
     }
     availSubjects
-}
-
-class School(
-    abbrevString: String
-) {
-
-    val abbrev = abbrevString.toUpperCase()
-
-    init {
-        require(AvailableSchools.containsKey(abbrev)) {
-            "School must be valid!"
-        }
-    }
-
-    override fun toString(): String {
-      return abbrev
-    }
 }
 
 class Subject(

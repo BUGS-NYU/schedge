@@ -2,7 +2,6 @@ package cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import database.connectToDatabase
-import models.School
 import models.Semester
 import models.Subject
 import models.Term

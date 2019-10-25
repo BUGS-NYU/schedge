@@ -7,7 +7,7 @@ import org.jsoup.nodes.Document
 import parse.ParseCatalog
 import java.io.IOException
 
-private fun parseHtml(text: String, logger: KLogger): Document {
+private fun parseHtml(logger: KLogger, text: String): Document {
     return Jsoup.parse(text).let {
         if (it == null) {
             logger.error {
@@ -19,6 +19,6 @@ private fun parseHtml(text: String, logger: KLogger): Document {
     }
 }
 
-fun parseCatalog(inputData: String, logger: KLogger): List<CatalogEntry> {
-    return ParseCatalog.parse(parseHtml(inputData, logger))
+fun parseCatalog(logger: KLogger, inputData: String): List<CatalogEntry> {
+    return ParseCatalog.parse(parseHtml(logger, inputData))
 }

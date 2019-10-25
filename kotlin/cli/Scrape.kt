@@ -14,6 +14,6 @@ class Scrape : CliktCommand(name = "scrape") {
         connectToDatabase(logger)
         val term = Term(Semester.Fall,2019)
         val subject = Subject("BIOL", "UA")
-        scrapeCatalog(term, listOf(subject), logger)
+        scrapeCatalog(logger, term, listOf(subject))
     }
 }

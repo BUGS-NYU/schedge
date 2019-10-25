@@ -44,6 +44,7 @@ internal class Query : CliktCommand(name = "query") {
         override fun run() =
             file.writeToFileOrStdout(
                 queryCatalog(
+                    KotlinLogging.logger("query.catalog"),
                     term = term,
                     subject = Subject(subject, school),
                     catalogNumber = catalogNumber,

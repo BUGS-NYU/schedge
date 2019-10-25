@@ -3,19 +3,19 @@ import database.writeToDb
 import models.Subject
 import models.Term
 import mu.KLogger
+import mu.KotlinLogging
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import services.parseCatalog
 import services.queryCatalog
 
-fun scrapeCatalog(term: Term, subjects: List<Subject>, logger: KLogger) {
+fun scrapeCatalog(logger: KLogger, term: Term, subjects: List<Subject>) {
     transaction {
         SchemaUtils.createMissingTablesAndColumns(*Tables)
     }
 
-    for (subject in subjects) {
-        val rawData = queryCatalog(term, subject)
-        val parsedData = parseCatalog(rawData, logger)
+    queryCatalog(logger, term, subjects.toTypedArray()).forEach {
+        val parsedData = parseCatalog(logger, it)
 
         for (e in parsedData) {
             e.writeToDb(term)

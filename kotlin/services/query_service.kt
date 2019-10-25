@@ -2,6 +2,7 @@ package services
 
 import models.Subject
 import models.Term
+import mu.KLogger
 import mu.KotlinLogging
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
@@ -13,7 +14,32 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
+fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequence<String> {
+    logger.trace { "querying catalog with multiple subjects..." }
+    val client = AlbertClient()
+
+    return sequenceOf(*subjects).map {subject ->
+        val params = mutableListOf( // URL params
+            BasicNameValuePair("CSRFToken", client.csrfToken),
+            BasicNameValuePair("term", term.id.toString()),
+            BasicNameValuePair("acad_group", subject.school),
+            BasicNameValuePair("subject", subject.abbrev)
+        )
+        logger.debug { "Params are ${params}." }
+
+
+        val request = HttpPost(DATA_URL).apply {
+            entity = UrlEncodedFormEntity(params)
+            addHeader("Referrer", "${ROOT_URL}/${term.id}")
+            addHeader("Host", "m.albert.nyu.edu")
+        }
+
+        client.execute(request)
+    }
+}
+
 fun queryCatalog(
+    logger: KLogger,
     term: Term,
     subject: Subject,
     catalogNumber: Int? = null,
@@ -21,8 +47,8 @@ fun queryCatalog(
     classNumber: Int? = null,
     location: String? = null
 ): String {
+    logger.trace { "querying catalog..." }
     val client = AlbertClient()
-    val logger = KotlinLogging.logger("query.catalog")
     val params = mutableListOf( // URL params
         BasicNameValuePair("CSRFToken", client.csrfToken),
         BasicNameValuePair("term", term.id.toString()),

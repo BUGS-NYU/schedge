@@ -30,9 +30,9 @@ object Sections : LongIdTable() {
     val courseId = reference("course_id", Courses).index()
     val sectionNumber = integer("section_number")
     val termId = integer("term_id")
-    val instructor = Meetings.varchar("instructor", length = 50)
+    val instructor = varchar("instructor", length = 50)
     val type = enumeration("type", klass = SectionType::class)
-    val associatedWith = reference("associated_with", Sections.id).nullable().index()
+    val associatedWith = (long("associated_with").references(id)).nullable().index()
 }
 
 // A class meeting

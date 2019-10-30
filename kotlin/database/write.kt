@@ -34,7 +34,7 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
         if (successful) {
             val getSectionId = { section: CatalogSectionEntry ->
                 EntityID(
-                    section.sectionNumber.toLong() * 10000 + termIdInt,
+                    section.registrationNumber.toLong() * 10000 + termIdInt,
                     Sections
                 )
             }
@@ -52,10 +52,11 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
                 this[Sections.type] = section.type
                 this[Sections.instructor] = section.instructor
                 this[Sections.associatedWith] = if (section.associatedWith != null) {
-                    getSectionId(section.associatedWith)
+                    section.associatedWith.registrationNumber.toLong() * 10000 + termIdInt
                 } else {
                     null
                 }
+
             }
 
             Meetings.batchInsert(meetings) {(section, meeting) ->

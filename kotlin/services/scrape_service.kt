@@ -14,11 +14,11 @@ fun scrapeCatalog(logger: KLogger, term: Term, subjects: List<Subject>) {
         SchemaUtils.createMissingTablesAndColumns(*Tables)
     }
 
-    queryCatalog(logger, term, subjects.toTypedArray()).forEach {
-        val parsedData = parseCatalog(logger, it)
+    queryCatalog(logger, term, subjects.toTypedArray()).forEach { rawData ->
+        val parsedData = parseCatalog(logger, rawData)
 
-        for (e in parsedData) {
-            e.writeToDb(term)
+        parsedData.forEach {
+            it.writeToDb(term)
         }
     }
 }

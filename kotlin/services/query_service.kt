@@ -34,7 +34,12 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequenc
             addHeader("Host", "m.albert.nyu.edu")
         }
 
-        client.execute(request)
+        val result = client.execute(request)
+        if (result == "No classes found matching your criteria.") {
+            throw IOException("No classes found matching criteria school=${subject.school}, subject=${subject.abbrev}")
+        } else {
+            result
+        }
     }
 }
 

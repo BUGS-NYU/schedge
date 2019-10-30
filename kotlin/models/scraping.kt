@@ -2,6 +2,7 @@ package models
 
 import java.time.Duration
 import java.time.LocalDateTime
+import org.joda.time.DateTime
 
 data class CatalogEntry(
     val courseName: String,
@@ -26,6 +27,7 @@ data class CatalogSectionEntry(
 }
 
 data class Meeting(
+    // TODO Convert this to org.joda.DateTime
     val beginDate: LocalDateTime, // Begin date; contains date and time of first event.
     val duration: Duration, // Duration of meeting
     val activeDuration: Duration // How long after the begin that this event can start. Meetings implicitly meet weekly.

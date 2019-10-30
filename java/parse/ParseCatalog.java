@@ -67,11 +67,16 @@ public class ParseCatalog {
 
   private static Course parseCourseNode(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
+
     int textIndex1 = text.indexOf(' '), textIndex2 = text.indexOf(" - ");
-    if (textIndex1 < 0)
+    if (textIndex1 < 0) {
+      logger.debug("Got text " + text);
       throw new IOException("Couldn't find character ' ' in divTag.text");
-    if (textIndex2 < 0)
+    }
+    if (textIndex2 < 0) {
+      logger.debug("Got text " + text);
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
+    }
 
     String subject = text.substring(0, textIndex1);
     Integer deptCourseNumber =

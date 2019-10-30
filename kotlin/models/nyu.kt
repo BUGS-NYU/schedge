@@ -52,14 +52,20 @@ class Subject(
     schoolString: String
 ) {
 
-    val abbrev = abbrevString.toUpperCase()
+    private val subject = abbrevString.toUpperCase()
     val school = schoolString.toUpperCase()
+    val abbrev: String
+      get() {
+        return "$subject-$school"
+      }
+
+
 
     init {
         require(AvailableSubjects.containsKey(school)) {
             "School must be valid"
         }
-        require(AvailableSubjects[school]!!.contains(abbrev)) {
+        require(AvailableSubjects[school]!!.contains(subject)) {
             "Subject must be valid!"
         }
     }

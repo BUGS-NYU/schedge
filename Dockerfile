@@ -4,4 +4,5 @@ RUN mkdir /app
 COPY ./build/libs/schedge-all.jar /app/schedge-all.jar
 WORKDIR /app
 
-CMD ["java","-jar","schedge-all.jar", "scrape"]
+CMD ["java", "-jar", "schedge-all.jar", "scrape", "--term", "1198", "BIOl-UA"]
+# CMD ["java", "-jar", "schedge-all.jar"]

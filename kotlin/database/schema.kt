@@ -38,7 +38,7 @@ object Sections : LongIdTable() {
 // A class meeting
 object Meetings : LongIdTable() {
     val sectionId = reference("section_id", Sections).index()
-    val locationId = varchar("location", length = 5)
+    val locationId = varchar("location", length = 5).nullable()
     val activeDuration = long("active_duration")
     val date = datetime("start")
     val duration = long("duration") // Duration of event in minutes

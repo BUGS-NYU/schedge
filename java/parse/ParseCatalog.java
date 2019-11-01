@@ -35,7 +35,7 @@ public class ParseCatalog {
       throw new IOException("xml.select returned null");
     } else if (elementList.size() == 0) {
       logger.error("CSS query `div.primary-head ~ *` returned an empty list.");
-      throw new IOException("Course data is empty!");
+      throw new IOException("models.Course data is empty!");
     } else if (!elementList.get(0).tagName().equals("div")) {
       logger.error(
           "CSS query `div.primary-head ~ *` returned a list whose first element was not a 'div'.");

@@ -47,32 +47,36 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
     availSubjects
 }
 
-class Subject(
-    abbrevString: String,
-    schoolString: String
-) {
+class Subject private constructor(abbrevString: String, schoolString: String, shouldCheck: Boolean) {
 
-    private val subject = abbrevString.toUpperCase()
+    companion object {
+        fun allSubjects(): Sequence<Subject> {
+            return AvailableSubjects.asSequence().map { pair ->
+                pair.value.asSequence().map {
+                    Subject(it, pair.key, shouldCheck = false)
+                }
+            }.flatten()
+        }
+    }
+
+    val subject = abbrevString.toUpperCase()
     val school = schoolString.toUpperCase()
     val abbrev: String
-      get() {
-        return "$subject-$school"
-      }
+        inline get() {
+            return "$subject-$school"
+        }
 
-
+    constructor(abbrevString: String, schoolString: String) : this(abbrevString, schoolString, true)
 
     init {
-        require(AvailableSubjects.containsKey(school)) {
-            "School must be valid"
-        }
-        require(AvailableSubjects[school]!!.contains(subject)) {
-            "Subject must be valid!"
+        if (shouldCheck) {
+            val subjects = AvailableSubjects[school]
+            require(subjects != null) { "School must be valid" }
+            require(subjects.contains(subject)) { "Subject must be valid!" }
         }
     }
 
-    override fun toString(): String {
-      return abbrev
-    }
+    override fun toString(): String = abbrev
 }
 
 /**

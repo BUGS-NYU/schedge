@@ -5,12 +5,16 @@ import models.CatalogSectionEntry
 import models.Term
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.statements.BatchInsertStatement
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 import org.postgresql.util.PSQLException
-import java.time.temporal.TemporalUnit
+
+fun Iterable<CatalogEntry>.writeToDb(term: Term) {
+    TODO()
+}
 
 fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
     val entry = this
@@ -61,8 +65,8 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
 
             Meetings.batchInsert(meetings) {(section, meeting) ->
                 this[Meetings.date] = DateTime(meeting.beginDate)
-                this[Meetings.duration] = meeting.duration.getMillis()
-                this[Meetings.activeDuration] = meeting.activeDuration.getMillis()
+                this[Meetings.duration] = meeting.duration.millis
+                this[Meetings.activeDuration] = meeting.activeDuration.millis
                 this[Meetings.sectionId] = section
             }
 
@@ -71,25 +75,39 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
 
 }
 
-fun <T : Table> T.insertOrUpdate(
-    vararg keys: Column<*>,
-    body: T.(InsertStatement<Number>) -> Unit
-) = InsertOrUpdate<Number>(keys, this).apply {
-    body(this)
-    execute(TransactionManager.current())
-}
+fun <T : Table> T.upsert(vararg keys: Column<*>, body: T.(InsertStatement<Number>) -> Unit) =
+    Upsert<Number>(keys, this).apply {
+        body(this)
+        execute(TransactionManager.current())
+    }
 
-class InsertOrUpdate<Key : Any>(
-    private val keys: Array<out Column<*>>,
+class Upsert<Key : Any>(
+    private val keys: Array< out Column<*>>,
     table: Table,
     isIgnore: Boolean = false
 ) : InsertStatement<Key>(table, isIgnore) {
     override fun prepareSQL(transaction: Transaction): String {
-        val updateSetter = super.values.keys.joinToString {
-            "${it.name} = EXCLUDED.${it.name}"
-        }
+        val updateSetter = super.values.keys.joinToString { "${it.name} = EXCLUDED.${it.name}" }
+        val keyColumns = keys.joinToString(","){it.name}
+        val onConflict = "ON CONFLICT ($keyColumns) DO UPDATE SET $updateSetter"
+        return "${super.prepareSQL(transaction)} $onConflict"
+    }
+}
 
-        val keyColumns = keys.joinToString(",") { it.name }
+fun <T : Table> T.batchUpsert(vararg keys: Column<*>, body: T.(BatchUpsert<Number>) -> Unit) =
+    BatchUpsert(keys, this).apply {
+        body(this)
+        execute(TransactionManager.current())
+    }
+
+class BatchUpsert(
+    private val keys: Array< out Column<*>>,
+    table: Table,
+    isIgnore: Boolean = false
+) : BatchInsertStatement(table, isIgnore) {
+    override fun prepareSQL(transaction: Transaction): String {
+        val updateSetter = super.values.keys.joinToString { "${it.name} = EXCLUDED.${it.name}" }
+        val keyColumns = keys.joinToString(","){it.name}
         val onConflict = "ON CONFLICT ($keyColumns) DO UPDATE SET $updateSetter"
         return "${super.prepareSQL(transaction)} $onConflict"
     }

@@ -11,7 +11,7 @@ import mu.KotlinLogging
 import services.scrapeAll
 import services.scrapeCatalog
 
-class DbAdd : CliktCommand(name = "add") {
+internal class DbAdd : CliktCommand(name = "add") {
     private val logger = KotlinLogging.logger("db.add")
     private val term by option("--term").convert { Term.fromId(it.toInt()) }.required()
     private val subjects by argument().multiple(required = false)

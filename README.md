@@ -22,7 +22,7 @@ schedge serve # TODO serves data to API
 
 ### Code organization
 - Kotlin code handles IO and defines most classes (`kotlin/`
-  - `models` contains class definitions
+  - `models` contains class definitions for modeling database contents
     - `chrono.kt` defines time-related classes
     - `api.kt` defines classes that are printed in the API
     - `nyu.kt` defines classes that describe NYU

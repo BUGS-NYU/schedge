@@ -21,6 +21,16 @@ data class TimeOfDay(// Positive integer
     // }
 }
 
+data class Duration(
+    val minutes: Long
+) {
+    init {
+        require(minutes >= 0) {
+            "Duration cannot be negative! (Given value was $minutes)"
+        }
+    }
+}
+
 class Days(vararg days: DayOfWeek) {
     private val days: Byte
 

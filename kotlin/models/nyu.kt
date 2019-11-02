@@ -56,39 +56,55 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
     availSubjects
 }
 
-class Subject private constructor(abbrevString: String, schoolString: String, shouldCheck: Boolean) {
+class Subject  {
 
     companion object {
         fun allSubjects(forSchool: String? = null): Sequence<Subject> {
             if (forSchool == null) {
                 return AvailableSubjects.asSequence().map { pair ->
                     pair.value.asSequence().map {
-                        Subject(it, pair.key, shouldCheck = false)
+                        Subject(it, pair.key, Unit)
                     }
                 }.flatten()
             } else {
                 val subjects = AvailableSubjects[forSchool.toUpperCase()]
                 require(subjects != null) { "Must provide a valid school code!" }
-                return subjects.asSequence().map { Subject(it, forSchool, shouldCheck = false) }
+                return subjects.asSequence().map { Subject(it, forSchool, Unit) }
             }
         }
     }
 
-    val subject = abbrevString.toUpperCase()
-    val school = schoolString.toUpperCase()
+    val subject : String
+    val school : String
     val abbrev: String
         inline get() {
             return "$subject-$school"
         }
 
-    constructor(abbrevString: String, schoolString: String) : this(abbrevString, schoolString, true)
+    // No constructor without checks
+    private constructor(abbrevString: String, schoolString: String, unused: Unit) {
+        subject = abbrevString.toUpperCase()
+        school = schoolString.toUpperCase()
+    }
+    constructor(abbrevString: String, schoolString: String){
+        subject = abbrevString.toUpperCase()
+        school = schoolString.toUpperCase()
+        val subjects = AvailableSubjects[school]
+        require(subjects != null) { "School must be valid" }
+        require(subjects.contains(subject)) { "Subject must be valid!" }
+    }
+
+    constructor(abbrevString: String) {
+        val (subject, school) = abbrevString.toUpperCase().split('-')
+        this.subject = subject
+        this.school = school
+        val subjects = AvailableSubjects[this.school]
+        require(subjects != null) { "School must be valid" }
+        require(subjects.contains(this.subject)) { "Subject must be valid!" }
+    }
 
     init {
-        if (shouldCheck) {
-            val subjects = AvailableSubjects[school]
-            require(subjects != null) { "School must be valid" }
-            require(subjects.contains(subject)) { "Subject must be valid!" }
-        }
+
     }
 
     override fun toString(): String = abbrev

@@ -1,7 +1,9 @@
 package models
 
 import database.Courses
+import database.Meetings
 import database.Sections
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,33 +15,7 @@ data class Course private constructor(
     val sections: Array<Section>
 ) {
 
-    companion object {
-        fun getSubjects(
-            term: Term,
-            school: String
-        ): Map<Subject, Array<Course>> {
-            return Subject.allSubjects(school).map {
-                Pair(it, getCourses(term, it))
-            }.toMap()
-        }
-
-        fun getCourses(term: Term, subject: Subject): Array<Course> {
-            transaction {
-                val courseResults = Courses.select {
-                    (Courses.termId eq term.id) and (Courses.subject eq subject.abbrev)
-                }
-
-                courseResults.map {
-                    val courseId = it[Courses.courseId]
-                    val deptCourseNumber = it[Courses.deptCourseNumber]
-                    val name = it[Courses.name]
-
-                }
-            }
-
-            return arrayOf()
-        }
-    }
+    companion object {}
 
     override fun equals(other: Any?): Boolean { // AUTO GENERATED
         if (this === other) return true
@@ -91,6 +67,23 @@ sealed class Section private constructor(
         registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
     )
 
+    class Lab(
+        registrationNumber: Int,
+        sectionNumber: Int,
+        instructor: String,
+        meetings: Array<Meeting>
+    ) : Section(
+        registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
+    )
+
+    class Other(
+        registrationNumber: Int,
+        sectionNumber: Int,
+        instructor: String,
+        meetings: Array<Meeting>
+    ) : Section(
+        registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
+    )
 }
 
 

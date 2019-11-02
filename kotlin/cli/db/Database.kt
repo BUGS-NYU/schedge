@@ -8,10 +8,10 @@ import mu.KotlinLogging
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class Database : CliktCommand(name = "db") {
+internal class Database : CliktCommand(name = "db") {
 
     init {
-        this.subcommands(DbAdd(), Serve())
+        this.subcommands(DbAdd(), DbGet(), Serve())
     }
 
     override fun run() {

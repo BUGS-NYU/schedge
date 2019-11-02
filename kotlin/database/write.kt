@@ -15,10 +15,10 @@ import org.postgresql.util.PSQLException
 
 val logger = KotlinLogging.logger("database.write")
 
-fun Iterable<CatalogEntry>.writeToDb(term: Term) {
-    term.id
-    TODO()
-}
+//fun Iterable<CatalogEntry>.writeToDb(term: Term) {
+//    term.id
+//    TODO()
+//}
 
 fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
     val entry = this

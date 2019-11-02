@@ -39,7 +39,7 @@ internal class Parse : CliktCommand(name = "parse") {
           println(inputFile)
             val input = inputFile.readFromFileOrStdin()
             val output = parseCatalog(logger, input)
-            // outputFile.writeToFileOrStdout(output)
+            outputFile.writeToFileOrStdout(output)
         }
     }
 

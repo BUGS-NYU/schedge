@@ -5,7 +5,7 @@ plan their courses.
 ### Setup
 To check you work, run `gradle check`.
 
-To run the application, fist compile it with `gradle build`, then run
+To run the application, first compile it with `gradle build`, then run
 `docker-compose build` to build a docker image, and `docker-compose up` to
 run the application.
 

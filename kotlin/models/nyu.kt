@@ -92,6 +92,9 @@ class Subject private constructor(abbrevString: String, schoolString: String, sh
     }
 
     override fun toString(): String = abbrev
+    override fun hashCode(): Int {
+      return abbrev.hashCode()
+    }
 }
 
 /**

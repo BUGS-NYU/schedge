@@ -1,34 +1,21 @@
 package models
 
-class Course {
+// Uses YACS API
 
-    val name: String
-    val deptCourseNumber: Int
+class YacsCourse(
+    val shortname: Int, // deptCourseNumber
+    val longname: String, // name
     val sections: Array<Section>
-
-    companion object {
-        fun getCourses(subject: Subject, term: Term): Array<Course> {
-            return arrayOf()
-        }
-    }
-
-    private constructor(
-        name: String,
-        deptCourseNumber: Int,
-        sections: Array<Section>
-    ) {
-        this.name = name
-        this.deptCourseNumber = deptCourseNumber
-        this.sections = sections
-    }
+){
 }
 
-class Section(
-    val registrationNumber: Int,
-    val sectionNumber: Int,
-    val instructor: String,
-    val type: SectionType,
-    val associatedWith: Section?,
-    val meetings: Array<Meeting>
+class YacsSection constructor(
+    val crn: Int, // registrationNumber
+    val shortname: Int, // sectionNumber
+    val instructors: String, // instructor
+    val type: SectionType, // Not part of YACS API
+    val periods: Array<YacsPeriod>
 )
+
+class YacsPeriod private constructor()
 

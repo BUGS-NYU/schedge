@@ -3,6 +3,8 @@ services:
   app:
     build: .
     container_name: "schedge"
+    ports:
+      - "8080:80"
   db:
     image: "postgres:11"
     # ports:

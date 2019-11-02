@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 public class ParseCatalog {
 
   private static Logger logger = LoggerFactory.getLogger("parse.catalog");
+  private static Logger meetingsLogger =
+      LoggerFactory.getLogger("parse.catalog.meetings");
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
   // 09/03/2019 3:15P
@@ -44,17 +46,26 @@ public class ParseCatalog {
 
     ArrayList<CatalogEntry> output = new ArrayList<>();
     Course current = parseCourseNode(elementList.get(0));
+    if (current == null) { // There were no classes
+      return output;
+    }
     ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
     CatalogSectionEntry lectureEntry = null;
 
     for (int i = 1; i < elementList.size(); i++) {
-      Element e = elementList.get(i);
-      if (e.tagName().equals("div")) {
+      Element element = elementList.get(i);
+      if (element.tagName().equals("div")) {
         output.add(current.getCatalogEntry(sections));
-        current = parseCourseNode(e);
+        current = parseCourseNode(element);
         sections = new ArrayList<>();
       } else {
-        CatalogSectionEntry entry = parseSectionNode(e, lectureEntry);
+        CatalogSectionEntry entry;
+        try {
+          entry = parseSectionNode(element, lectureEntry);
+        } catch (Exception e) {
+          logger.error("parseSectionNode threw with course={}", current);
+          throw e;
+        }
         if (entry.getType() == SectionType.LEC) {
           lectureEntry = entry;
         }
@@ -66,20 +77,22 @@ public class ParseCatalog {
 
   private static Course parseCourseNode(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
+    if (text.equals("No classes found matching your criteria."))
+      return null;
 
     int textIndex1 = text.indexOf(' '), textIndex2 = text.indexOf(" - ");
     if (textIndex1 < 0) {
-      logger.debug("Got text " + text);
+      logger.error("Couldn't parse course header '" + text + "'");
       throw new IOException("Couldn't find character ' ' in divTag.text");
     }
     if (textIndex2 < 0) {
-      logger.debug("Got text " + text);
+      logger.error("Couldn't parse course header '" + text + "'");
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
     }
 
     String subject = text.substring(0, textIndex1);
-    Integer deptCourseNumber =
-        Integer.parseInt(text.substring(textIndex1 + 1, textIndex2));
+    Long deptCourseNumber =
+        Long.parseLong(text.substring(textIndex1 + 1, textIndex2));
     String courseName = text.substring(textIndex2 + 3);
 
     // <div class="secondary-head class-title-header" id=MATHUA9129903>
@@ -88,7 +101,7 @@ public class ParseCatalog {
     for (idIndex = 0; idIndex < idString.length(); idIndex++)
       if (idString.charAt(idIndex) <= '9' && idString.charAt(idIndex) >= '0')
         break;
-    Integer courseId = Integer.parseInt(idString.substring(idIndex));
+    Long courseId = Long.parseLong(idString.substring(idIndex));
 
     return new Course(courseName, subject, courseId, deptCourseNumber);
   }
@@ -116,12 +129,13 @@ public class ParseCatalog {
       for (Element child : dataDivChildren) {
         addSectionFieldString(sectionData, child.text());
       }
+      logger.trace("Section field strings are: {}", sectionData);
     }
 
     int registrationNumber, sectionNumber;
     SectionType type;
 
-    {
+    try {
       String header = sectionData.get("Section");
       int headerDashIdx = header.indexOf('-');
       registrationNumber = Integer.parseInt(
@@ -129,6 +143,10 @@ public class ParseCatalog {
       sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
       type = SectionType.valueOf(header.substring(
           headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
+    } catch (Exception e) {
+      logger.error("parseSectionNode throwing with section data: {}",
+                   sectionData);
+      throw e;
     }
 
     List<Meeting> meetings = parseSectionTimesData(
@@ -154,7 +172,7 @@ public class ParseCatalog {
 
   private static List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
-    logger.trace("Parsing section times data...");
+    meetingsLogger.debug("Parsing section times data...");
     if (times.equals("TBA"))
       return new ArrayList<>();
     // MoWe 9:30am - 10:45am Fr
@@ -175,15 +193,17 @@ public class ParseCatalog {
         .forEach((s) -> dateTokens.add(s));
 
     if (dateTokens.size() / 2 * 3 != timeTokens.size()) {
-      logger.error("Time/date was in unexpected format: time='{}', date='{}'",
-                   times, dates);
+      meetingsLogger.error(
+          "Time/date was in unexpected format: time='{}', date='{}'", times,
+          dates);
       throw new IOException("Time/date was in unexpected format");
     }
 
     ArrayList<Meeting> meetings = new ArrayList<>();
 
     for (int idx = 0; idx < timeTokens.size() / 3; idx++) {
-      logger.debug("Tokens are: time='{}' date='{}'", timeTokens, dateTokens);
+      meetingsLogger.debug("Tokens are: time='{}' date='{}'", timeTokens,
+                           dateTokens);
       int timesIdx = idx * 3, datesIdx = idx * 2;
 
       DateTime beginDate =
@@ -195,31 +215,34 @@ public class ParseCatalog {
                                    timeTokens.get(timesIdx + 2).toUpperCase());
 
       long durationMillis = endTime.getMillis() - beginDate.getMillis();
-      logger.debug("Duration of meeting is {}", durationMillis);
+      meetingsLogger.debug("Duration of meeting is {}", durationMillis);
       Duration duration = Duration.millis(durationMillis);
 
       DateTime endDate =
           timeParser.parseDateTime(dateTokens.get(datesIdx + 1) + " 11:59PM");
 
       long activeDurationMillis = endDate.getMillis() - beginDate.getMillis();
-      if (activeDurationMillis < 0) throw new AssertionError("Active duration should be positive!");
-      logger.debug("Active duration of meeting is {}", activeDurationMillis);
+      if (activeDurationMillis < 0)
+        throw new AssertionError("Active duration should be positive!");
+      meetingsLogger.debug("Active duration of meeting is {}",
+                           activeDurationMillis);
       Duration activeDuration = Duration.millis(activeDurationMillis);
-
 
       List<DayOfWeek> daysList =
           (new Days(timeTokens.get(timesIdx))).toDayOfWeekList();
-      logger.debug("{}", daysList);
+      meetingsLogger.debug("{}", daysList);
 
-      for (int day = 0; day < 7; day++, beginDate = beginDate.plusDays(1)) { // TODO fix this code to do the right thing
+      for (int day = 0; day < 7;
+           day++, beginDate = beginDate.plusDays(
+                      1)) { // TODO fix this code to do the right thing
         if (daysList.contains(DayOfWeek.of(beginDate.getDayOfWeek()))) {
-          Duration dayAdjustedActiveDuration = activeDuration.minus(Duration.standardDays(day));
-          logger.debug("Day adjusted duration of meeting is {}", dayAdjustedActiveDuration);
+          Duration dayAdjustedActiveDuration =
+              activeDuration.minus(Duration.standardDays(day));
+          meetingsLogger.debug("Day adjusted duration of meeting is {}",
+                               dayAdjustedActiveDuration);
           meetings.add(
-                  new Meeting(beginDate, duration,
-                          dayAdjustedActiveDuration));
+              new Meeting(beginDate, duration, dayAdjustedActiveDuration));
         }
-
       }
     }
 
@@ -229,11 +252,11 @@ public class ParseCatalog {
   private static class Course {
     private String courseName;
     private String subject;
-    private Integer courseId;
-    private Integer deptCourseNumber;
+    private Long courseId;
+    private Long deptCourseNumber;
 
-    Course(String courseName, String subject, Integer courseId,
-           Integer deptCourseNumber) {
+    Course(String courseName, String subject, Long courseId,
+           Long deptCourseNumber) {
       this.courseName = courseName;
       this.subject = subject;
       this.courseId = courseId;
@@ -244,6 +267,13 @@ public class ParseCatalog {
     getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
       return new CatalogEntry(this.courseName, this.subject, this.courseId,
                               this.deptCourseNumber, sections);
+    }
+
+    @Override
+    public String toString() {
+      return "Course(courseName=" + courseName + ", subject=" + subject +
+          ", courseId=" + courseId + ", deptCourseNumber=" + deptCourseNumber +
+          ")";
     }
   }
 }

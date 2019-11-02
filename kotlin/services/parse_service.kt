@@ -19,6 +19,14 @@ private fun parseHtml(logger: KLogger, text: String): Document {
     }
 }
 
+/** Parses the HTML of the catalog and returns a list of catalog entries.
+ *
+ * @param logger The logger that this service should log to
+ * @param inputData The data that this service should parse
+ *
+ * @author Albert Liu
+ */
 fun parseCatalog(logger: KLogger, inputData: String): List<CatalogEntry> {
-    return ParseCatalog.parse(parseHtml(logger, inputData))
+    val parsedHtml = parseHtml(logger, inputData)
+    return ParseCatalog.parse(parsedHtml)
 }

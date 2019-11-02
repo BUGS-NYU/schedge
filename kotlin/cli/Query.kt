@@ -35,10 +35,10 @@ internal class Query : CliktCommand(name = "query") {
         }.required()
         private val school: String by option("--school").required()
         private val subject: String by option("--subject").required()
-        private val catalogNumber: Int? by option("--catalog-number").int().restrictTo(0..Int.MAX_VALUE)
-        private val keywords: String? by option("--keywords")
-        private val classNumber: Int? by option("--class-number").int().restrictTo(0..Int.MAX_VALUE)
-        private val location: String? by option("--location")
+        // private val catalogNumber: Int? by option("--catalog-number").int().restrictTo(0..Int.MAX_VALUE)
+        // private val keywords: String? by option("--keywords")
+        // private val classNumber: Int? by option("--class-number").int().restrictTo(0..Int.MAX_VALUE)
+        // private val location: String? by option("--location")
         private val file: String? by option("--file")
 
         override fun run() =
@@ -46,11 +46,11 @@ internal class Query : CliktCommand(name = "query") {
                 queryCatalog(
                     KotlinLogging.logger("query.catalog"),
                     term = term,
-                    subject = Subject(subject, school),
-                    catalogNumber = catalogNumber,
-                    keywords = keywords,
-                    classNumber = classNumber,
-                    location = location
+                    subjects = arrayOf(Subject(subject, school))
+                    // catalogNumber = catalogNumber,
+                    // keywords = keywords,
+                    // classNumber = classNumber,
+                    // location = location
                 )
             )
 

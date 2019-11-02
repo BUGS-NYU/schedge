@@ -7,6 +7,14 @@ enum class SectionType {
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
+    RSC, // Unknown
+    FLD, // Unknown
+    SIM, // Unknown
+    CLI, // Unknown
+    STU, // Unknown
+    STI, // Unknown
+    CLQ, // Unknown
+    WKS, // Unknown
     IND;  // independent study
 
     fun getName(): String {
@@ -16,6 +24,7 @@ enum class SectionType {
             LAB -> "Lab"
             SEM -> "Seminar"
             IND -> "Independent Study"
+            else -> "Unknown"
         }
     }
 }
@@ -50,12 +59,18 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
 class Subject private constructor(abbrevString: String, schoolString: String, shouldCheck: Boolean) {
 
     companion object {
-        fun allSubjects(): Sequence<Subject> {
-            return AvailableSubjects.asSequence().map { pair ->
-                pair.value.asSequence().map {
-                    Subject(it, pair.key, shouldCheck = false)
-                }
-            }.flatten()
+        fun allSubjects(forSchool: String? = null): Sequence<Subject> {
+            if (forSchool == null) {
+                return AvailableSubjects.asSequence().map { pair ->
+                    pair.value.asSequence().map {
+                        Subject(it, pair.key, shouldCheck = false)
+                    }
+                }.flatten()
+            } else {
+                val subjects = AvailableSubjects[forSchool.toUpperCase()]
+                require(subjects != null) { "Must provide a valid school code!" }
+                return subjects.asSequence().map { Subject(it, forSchool, shouldCheck = false) }
+            }
         }
     }
 

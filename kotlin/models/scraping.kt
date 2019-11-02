@@ -6,8 +6,8 @@ import org.joda.time.Duration
 data class CatalogEntry(
     val courseName: String,
     val subject: String,
-    val courseId: Int,
-    val deptCourseNumber: Int,
+    val courseId: Long,
+    val deptCourseNumber: Long,
     val sections: List<CatalogSectionEntry>
 )
 

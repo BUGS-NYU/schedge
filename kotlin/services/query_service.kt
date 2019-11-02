@@ -15,10 +15,11 @@ import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
 fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequence<String> {
-    logger.trace { "querying catalog with multiple subjects..." }
+    logger.info { "querying catalog for term=$term multiple subjects..." }
     val client = AlbertClient()
 
     return sequenceOf(*subjects).map {subject ->
+        logger.info { "Querying catalog with subject=$subject" }
         val params = mutableListOf( // URL params
             BasicNameValuePair("CSRFToken", client.csrfToken),
             BasicNameValuePair("term", term.id.toString()),
@@ -26,7 +27,6 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequenc
             BasicNameValuePair("subject", subject.abbrev)
         )
         logger.debug { "Params are ${params}." }
-
 
         val request = HttpPost(DATA_URL).apply {
             entity = UrlEncodedFormEntity(params)
@@ -43,37 +43,37 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequenc
     }
 }
 
-fun queryCatalog(
-    logger: KLogger,
-    term: Term,
-    subject: Subject,
-    catalogNumber: Int? = null,
-    keywords: String? = null,
-    classNumber: Int? = null,
-    location: String? = null
-): String {
-    logger.trace { "querying catalog..." }
-    val client = AlbertClient()
-    val params = mutableListOf( // URL params
-        BasicNameValuePair("CSRFToken", client.csrfToken),
-        BasicNameValuePair("term", term.id.toString()),
-        BasicNameValuePair("acad_group", subject.school),
-        BasicNameValuePair("subject", subject.abbrev),
-        BasicNameValuePair("catalog_nbr", catalogNumber?.toString() ?: ""),
-        BasicNameValuePair("keyword", keywords ?: ""),
-        BasicNameValuePair("class_nbr", classNumber?.toString() ?: ""),
-        BasicNameValuePair("nyu_location", location ?: "")
-    )
-    logger.debug { "Params are ${params}." }
-
-
-    val request = HttpPost(DATA_URL).apply {
-        entity = UrlEncodedFormEntity(params)
-        addHeader("Referrer", "${ROOT_URL}/${term.id}")
-        addHeader("Host", "m.albert.nyu.edu")
-    }
-    return client.execute(request)
-}
+// fun queryCatalog(
+//     logger: KLogger,
+//     term: Term,
+//     subject: Subject,
+//     catalogNumber: Int? = null,
+//     keywords: String? = null,
+//     classNumber: Int? = null,
+//     location: String? = null
+// ): String {
+//     logger.info { "querying catalog with term=$term and subject=$subject" }
+//     val client = AlbertClient()
+//     val params = mutableListOf( // URL params
+//         BasicNameValuePair("CSRFToken", client.csrfToken),
+//         BasicNameValuePair("term", term.id.toString()),
+//         BasicNameValuePair("acad_group", subject.school),
+//         BasicNameValuePair("subject", subject.abbrev),
+//         BasicNameValuePair("catalog_nbr", catalogNumber?.toString() ?: ""),
+//         BasicNameValuePair("keyword", keywords ?: ""),
+//         BasicNameValuePair("class_nbr", classNumber?.toString() ?: ""),
+//         BasicNameValuePair("nyu_location", location ?: "")
+//     )
+//     logger.debug { "Params are ${params}." }
+// 
+// 
+//     val request = HttpPost(DATA_URL).apply {
+//         entity = UrlEncodedFormEntity(params)
+//         addHeader("Referrer", "${ROOT_URL}/${term.id}")
+//         addHeader("Host", "m.albert.nyu.edu")
+//     }
+//     return client.execute(request)
+// }
 
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
@@ -116,7 +116,7 @@ private class AlbertClient() {
     }
 
     fun execute(req: HttpUriRequest): String {
-        logger.info { "Executing ${req.method.toUpperCase()} request" }
+        logger.trace { "Executing ${req.method.toUpperCase()} request" }
         return this.httpClient.execute(req, this.httpContext).entity.content.bufferedReader().readText()
     }
 }

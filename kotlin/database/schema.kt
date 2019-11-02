@@ -17,10 +17,10 @@ val Tables = arrayOf(Courses, Sections, Meetings)
 // Courses that you can take at NYU
 // Contains information like "MATH-UA 120" and "Discrete Math"
 object Courses : LongIdTable() {
-    val courseId = integer("course_id").index()
-    val name = varchar("name", length = 100)
+    val courseId = long("course_id").index()
+    val name = varchar("name", length = 128)
     val subject = varchar("subject", length = 8)
-    val deptCourseNumber = integer("dept_course_number").index()
+    val deptCourseNumber = long("dept_course_number").index()
     val termId = integer("term_id")
 }
 
@@ -30,7 +30,7 @@ object Sections : LongIdTable() {
     val courseId = reference("course_id", Courses).index()
     val sectionNumber = integer("section_number")
     val termId = integer("term_id")
-    val instructor = varchar("instructor", length = 50)
+    val instructor = text("instructor")
     val type = enumeration("type", klass = SectionType::class)
     val associatedWith = (long("associated_with").references(id)).nullable().index()
 }

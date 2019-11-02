@@ -1,5 +1,6 @@
 package cli
 
+import cli.db.Database
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 

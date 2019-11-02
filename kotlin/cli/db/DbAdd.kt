@@ -1,17 +1,13 @@
-package cli
+package cli.db
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.options.*
-import database.Tables
-import database.connectToDatabase
 import database.writeToDb
 import models.Subject
 import models.Term
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import services.scrapeAll
 import services.scrapeCatalog
 

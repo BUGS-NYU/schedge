@@ -1,4 +1,4 @@
-package cli
+package cli.db
 
 import io.javalin.Javalin
 import com.github.ajalt.clikt.core.CliktCommand

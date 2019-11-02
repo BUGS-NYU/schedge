@@ -13,13 +13,26 @@ run the application.
 The following commands are valid in Schedge:
 
 ```sh
-schedge parse catalog # TODO parse a catalog page
-schedge parse course # TODO parse a course page
-schedge query catalog # TODO query the catalog
-schedge query course # TODO query course information
-schedge run # TODO run the service
+schedge query catalog # Query the course catalog
+schedge parse catalog # Parse the course catalog
+schedge scrape # Scrape data from the course catalog
+schedge serve # TODO serves data to API
 ```
 
 ### Code organization
-- Kotlin code handles IO
-- Java code handles business logic (right now just parsing)
+- Kotlin code handles IO and defines most classes (`kotlin/`
+  - `models` contains class definitions
+    - `chrono.kt` defines time-related classes
+    - `api.kt` defines classes that are printed in the API
+    - `nyu.kt` defines classes that describe NYU
+    - `scraping.kt` defines classes that are returned from the scraper
+  - `cli` contains definitions for the command-line interface
+  - `database` contains functions and definitions related to the database
+    - `connect.kt` defines a function `connectToDatabase` which must be run
+      exactly once before doing any database-related actions
+    - `schema.kt` defines the schema of the database
+    - `write.kt` defines how the classes in `scraping.kt` can write to the database
+  - `services` defines high-level actions that Schedge can perform
+- Java code handles business logic
+  - Parsing
+  - Shell commands

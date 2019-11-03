@@ -17,10 +17,6 @@ public class App {
       // ctx.result(term.toString() + ' ' + subject.toString());
       ObjectMapper objectMapper = new ObjectMapper();
       Course[] courses = Course.getCourses(term, subject);
-      StringBuilder s = new StringBuilder();
-      for (Course course : courses) {
-        System.out.println(course.toString());
-      }
       ctx.result(objectMapper.writeValueAsString(courses));
     });
   }

@@ -26,7 +26,7 @@ private fun parseHtml(logger: KLogger, text: String): Document {
  *
  * @author Albert Liu
  */
-fun parseCatalog(logger: KLogger, inputData: String): List<CatalogEntry> {
+fun parseCatalog(logger: KLogger, inputData: String): Sequence<CatalogEntry> {
     val parsedHtml = parseHtml(logger, inputData)
-    return ParseCatalog.parse(parsedHtml)
+    return ParseCatalog.parse(parsedHtml).asSequence()
 }

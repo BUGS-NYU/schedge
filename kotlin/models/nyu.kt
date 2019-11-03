@@ -96,6 +96,7 @@ class Subject  {
     private constructor(abbrevString: String, schoolString: String, unused: Unit) {
         subject = abbrevString.toUpperCase()
         school = schoolString.toUpperCase()
+        unused.hashCode() // To silence errors
     }
     constructor(abbrevString: String, schoolString: String){
         subject = abbrevString.toUpperCase()

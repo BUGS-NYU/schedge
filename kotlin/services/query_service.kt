@@ -14,7 +14,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequence<String> {
+fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Sequence<String> {
     logger.info { "querying catalog for term=$term multiple subjects..." }
     val client = AlbertClient()
 

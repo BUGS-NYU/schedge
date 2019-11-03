@@ -1,12 +1,10 @@
 package parse;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import kotlin.text.StringsKt;
 import models.*;
+import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
@@ -30,6 +28,7 @@ public class ParseCatalog {
    * Get formatted course data from a catalog query result.
    */
   public static List<CatalogEntry> parse(Document data) throws IOException {
+    
     Elements elementList = data.select("div.primary-head ~ *");
     if (elementList == null) {
       logger.error("CSS query `div.primary-head ~ *` returned a null value.");
@@ -44,7 +43,7 @@ public class ParseCatalog {
     }
 
     ArrayList<CatalogEntry> output = new ArrayList<>();
-    CourseMetadata current = parseCourseNode(elementList.get(0));
+    CourseMetadata current = parseCourseHeader(elementList.get(0));
     if (current == null) { // There were no classes
       return output;
     }
@@ -55,7 +54,7 @@ public class ParseCatalog {
       Element element = elementList.get(i);
       if (element.tagName().equals("div")) {
         output.add(current.getCatalogEntry(sections));
-        current = parseCourseNode(element);
+        current = parseCourseHeader(element);
         sections = new ArrayList<>();
         lectureEntry = null;
       } else {
@@ -75,8 +74,7 @@ public class ParseCatalog {
     return output;
   }
 
-  private static CourseMetadata parseCourseNode(Element divTag)
-      throws IOException {
+  static CourseMetadata parseCourseHeader(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
     if (text.equals("No classes found matching your criteria."))
       return null;
@@ -118,7 +116,7 @@ public class ParseCatalog {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  private static CatalogSectionEntry
+  static CatalogSectionEntry
   parseSectionNode(Element anchorTag, CatalogSectionEntry associatedWith)
       throws IOException {
     HashMap<String, String> sectionData = new HashMap<>();
@@ -266,32 +264,106 @@ public class ParseCatalog {
       return Optional.empty();
     }
   }
+}
 
-  private static class CourseMetadata {
-    private String courseName;
-    private String subject;
-    private Long courseId;
-    private Long deptCourseNumber;
+/**
+ * Parses a catalog string in a stream.
+ *
+ * @author Albert Liu
+ */
+class CatalogParser implements Iterator<CatalogEntry> {
+  private Iterator<Element> elements;
+  private static Logger logger = LoggerFactory.getLogger("parse.catalog");
+  private Element currentElement;
 
-    CourseMetadata(String courseName, String subject, Long courseId,
-                   Long deptCourseNumber) {
-      this.courseName = courseName;
-      this.subject = subject;
-      this.courseId = courseId;
-      this.deptCourseNumber = deptCourseNumber;
+  CatalogParser(Document data) throws IOException {
+    elements = data.select("div.primary-head ~ *").iterator();
+    Element current = elements.next();
+    if (elements == null) {
+      logger.error("CSS query `div.primary-head ~ *` returned a null value.");
+      throw new IOException("xml.select returned null");
+    } else if (!elements.hasNext()) {
+      logger.error("CSS query `div.primary-head ~ *` returned no values.");
+      throw new IOException("models.Course data is empty!");
+    } else if (!current.tagName().equals("div")) {
+      logger.error("CSS query `div.primary-head ~ *` returned "
+                   + "a list whose first element was not a 'div'.");
+      throw new IOException("NYU sent back data we weren't expecting.");
+    }
+  }
+
+  @Override
+  public boolean hasNext() {
+    return currentElement != null;
+  }
+
+  @Override
+  @NotNull
+  public CatalogEntry next() {
+
+    if (!hasNext())
+      throw new NoSuchElementException("No more elements in the iterator!");
+
+    ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
+    CatalogSectionEntry lectureEntry = null;
+    CourseMetadata current = null;
+
+    try {
+      current = ParseCatalog.parseCourseHeader(currentElement);
+      logger.error("parseCourseNode threw with node={}", currentElement);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
 
-    private CatalogEntry
-    getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
-      return new CatalogEntry(this.courseName, this.subject, this.courseId,
-                              this.deptCourseNumber, sections);
+    if (!elements.hasNext())
+      throw new AssertionError(
+          "Should be at least one section after parsing course header.");
+
+    while (elements.hasNext() &&
+           !(currentElement = elements.next()).tagName().equals("div")) {
+      CatalogSectionEntry entry;
+      try {
+        entry = ParseCatalog.parseSectionNode(currentElement, lectureEntry);
+      } catch (Exception e) {
+        logger.error("parseSectionNode threw with course={}", current);
+        throw new RuntimeException(e);
+      }
+      if (entry.getType() == SectionType.LEC) {
+        lectureEntry = entry;
+      }
+      sections.add(entry);
     }
 
-    @Override
-    public String toString() {
-      return "Course(courseName=" + courseName + ", subject=" + subject +
-          ", courseId=" + courseId + ", deptCourseNumber=" + deptCourseNumber +
-          ")";
-    }
+    if (!elements.hasNext())
+      currentElement = null;
+
+    return current.getCatalogEntry(sections);
+  }
+}
+
+class CourseMetadata {
+  private String courseName;
+  private String subject;
+  private Long courseId;
+  private Long deptCourseNumber;
+
+  CourseMetadata(String courseName, String subject, Long courseId,
+                 Long deptCourseNumber) {
+    this.courseName = courseName;
+    this.subject = subject;
+    this.courseId = courseId;
+    this.deptCourseNumber = deptCourseNumber;
+  }
+
+  CatalogEntry getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
+    return new CatalogEntry(this.courseName, this.subject, this.courseId,
+                            this.deptCourseNumber, sections);
+  }
+
+  @Override
+  public String toString() {
+    return "Course(courseName=" + courseName + ", subject=" + subject +
+        ", courseId=" + courseId + ", deptCourseNumber=" + deptCourseNumber +
+        ")";
   }
 }

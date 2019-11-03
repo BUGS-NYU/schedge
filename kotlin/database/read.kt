@@ -115,8 +115,8 @@ data class LabelledCourseSectionRow(
             sectionNumber = sectionNumber,
             instructor = instructor,
             type = type,
-            meetings = meetings.toTypedArray(),
-            recitations = recitations?.toTypedArray()
+            meetings = meetings,
+            recitations = recitations
         )
     }
 
@@ -126,7 +126,7 @@ data class LabelledCourseSectionRow(
             sectionNumber = sectionNumber,
             instructor = instructor,
             type = type,
-            meetings = meetings.toTypedArray(),
+            meetings = meetings,
             recitations = null
         )
     }

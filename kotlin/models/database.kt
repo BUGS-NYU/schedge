@@ -1,5 +1,8 @@
 package models
 
+import org.joda.time.DateTime
+import org.joda.time.Duration
+
 data class Course(
     val nyuCourseId: Long,
     val name: String,
@@ -50,8 +53,8 @@ sealed class Section {
             sectionNumber: Int,
             instructor: String,
             type: SectionType,
-            meetings: Array<Meeting>,
-            recitations: Array<Section>?
+            meetings: List<Meeting>,
+            recitations: List<Section>?
         ): Section {
             return when (type) {
                 SectionType.LEC -> Lecture(registrationNumber, sectionNumber, instructor, meetings, recitations)
@@ -75,22 +78,22 @@ sealed class Section {
         val registrationNumber: Int,
         val sectionNumber: Int,
         val instructor: String,
-        val meetings: Array<Meeting>,
-        val recitations: Array<Section>?
+        val meetings: List<Meeting>,
+        val recitations: List<Section>?
     ) : Section()
 
     data class Recitation(
         val registrationNumber: Int,
         val sectionNumber: Int,
         val instructor: String,
-        val meetings: Array<Meeting>
+        val meetings: List<Meeting>
     ) : Section()
 
     data class Lab(
         val registrationNumber: Int,
         val sectionNumber: Int,
         val instructor: String,
-        val meetings: Array<Meeting>
+        val meetings: List<Meeting>
     ) : Section()
 
     data class Other(
@@ -98,8 +101,7 @@ sealed class Section {
         val sectionNumber: Int,
         val instructor: String,
         val type: SectionType,
-        val meetings: Array<Meeting>
+        val meetings: List<Meeting>
     ) : Section()
 }
-
 

@@ -78,7 +78,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<Subject>): Sequenc
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
 
-private class AlbertClient() {
+private class AlbertClient {
     private val logger = KotlinLogging.logger {}
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {

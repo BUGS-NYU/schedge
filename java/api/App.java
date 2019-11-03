@@ -5,6 +5,7 @@ import io.javalin.Javalin;
 import models.Course;
 import models.Subject;
 import models.Term;
+import services.JsonMapper;
 
 public class App {
   public static void run() {
@@ -14,10 +15,8 @@ public class App {
       Subject subject =
           new Subject(ctx.pathParam("subject"), ctx.pathParam("school"));
 
-      // ctx.result(term.toString() + ' ' + subject.toString());
-      ObjectMapper objectMapper = new ObjectMapper();
       Course[] courses = Course.getCourses(term, subject);
-      ctx.result(objectMapper.writeValueAsString(courses));
+      ctx.result(JsonMapper.toJson(courses));
     });
   }
 }

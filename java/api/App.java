@@ -1,5 +1,6 @@
 package api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
 import models.Course;
 import models.Subject;
@@ -14,12 +15,13 @@ public class App {
           new Subject(ctx.pathParam("subject"), ctx.pathParam("school"));
 
       // ctx.result(term.toString() + ' ' + subject.toString());
+      ObjectMapper objectMapper = new ObjectMapper();
+      Course[] courses = Course.getCourses(term, subject);
       StringBuilder s = new StringBuilder();
-      for (Course course : Course.getCourses(term, subject)) {
+      for (Course course : courses) {
         System.out.println(course.toString());
-        s.append(course.toString());
       }
-      ctx.result(s.toString());
+      ctx.result(objectMapper.writeValueAsString(courses));
     });
   }
 }

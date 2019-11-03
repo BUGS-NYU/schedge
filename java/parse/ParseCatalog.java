@@ -27,51 +27,8 @@ public class ParseCatalog {
   /**
    * Get formatted course data from a catalog query result.
    */
-  public static List<CatalogEntry> parse(Document data) throws IOException {
-    
-    Elements elementList = data.select("div.primary-head ~ *");
-    if (elementList == null) {
-      logger.error("CSS query `div.primary-head ~ *` returned a null value.");
-      throw new IOException("xml.select returned null");
-    } else if (elementList.size() == 0) {
-      logger.error("CSS query `div.primary-head ~ *` returned an empty list.");
-      throw new IOException("models.Course data is empty!");
-    } else if (!elementList.get(0).tagName().equals("div")) {
-      logger.error(
-          "CSS query `div.primary-head ~ *` returned a list whose first element was not a 'div'.");
-      throw new IOException("NYU sent back data we weren't expecting.");
-    }
-
-    ArrayList<CatalogEntry> output = new ArrayList<>();
-    CourseMetadata current = parseCourseHeader(elementList.get(0));
-    if (current == null) { // There were no classes
-      return output;
-    }
-    ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
-    CatalogSectionEntry lectureEntry = null;
-
-    for (int i = 1; i < elementList.size(); i++) {
-      Element element = elementList.get(i);
-      if (element.tagName().equals("div")) {
-        output.add(current.getCatalogEntry(sections));
-        current = parseCourseHeader(element);
-        sections = new ArrayList<>();
-        lectureEntry = null;
-      } else {
-        CatalogSectionEntry entry;
-        try {
-          entry = parseSectionNode(element, lectureEntry);
-        } catch (Exception e) {
-          logger.error("parseSectionNode threw with course={}", current);
-          throw e;
-        }
-        if (entry.getType() == SectionType.LEC) {
-          lectureEntry = entry;
-        }
-        sections.add(entry);
-      }
-    }
-    return output;
+  public static Iterator<CatalogEntry> parse(Document data) throws IOException {
+    return new CatalogParser(data);
   }
 
   static CourseMetadata parseCourseHeader(Element divTag) throws IOException {
@@ -306,7 +263,7 @@ class CatalogParser implements Iterator<CatalogEntry> {
 
     ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
     CatalogSectionEntry lectureEntry = null;
-    CourseMetadata current = null;
+    CourseMetadata current;
 
     try {
       current = ParseCatalog.parseCourseHeader(currentElement);
@@ -355,6 +312,7 @@ class CourseMetadata {
     this.deptCourseNumber = deptCourseNumber;
   }
 
+  @NotNull
   CatalogEntry getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
     return new CatalogEntry(this.courseName, this.subject, this.courseId,
                             this.deptCourseNumber, sections);

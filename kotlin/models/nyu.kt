@@ -163,6 +163,7 @@ enum class Semester {
  */
 class Term(private val sem: Semester, private val year: Int) {
     companion object {
+        @JvmStatic
         fun fromId(id: Int): Term {
             require(id >= 0) { "Can't create Term with negative ID" }
             return Term(Semester.fromInt(id % 10), (id / 10) + 1900)

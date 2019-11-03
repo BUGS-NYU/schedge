@@ -7,7 +7,17 @@ data class Course(
     val sections: Array<Section>
 ) {
 
-    companion object {}
+    companion object {
+
+        @JvmStatic
+        fun getSubjects(
+            term: Term,
+            school: String
+        ): Map<Subject, Array<Course>> = database.getSubjects(term, school)
+
+        @JvmStatic
+        fun getCourses(term: Term, subject: Subject): Array<Course> = database.getCourses(term ,subject)
+    }
 
     override fun equals(other: Any?): Boolean { // AUTO GENERATED
         if (this === other) return true
@@ -32,13 +42,7 @@ data class Course(
     }
 }
 
-sealed class Section constructor(
-    val registrationNumber: Int,
-    val sectionNumber: Int,
-    val instructor: String,
-    val type: SectionType,
-    val meetings: Array<Meeting>
-) {
+sealed class Section {
 
     companion object {
         fun getSection(
@@ -67,43 +71,35 @@ sealed class Section constructor(
         }
     }
 
-    class Lecture(
-        registrationNumber: Int,
-        sectionNumber: Int,
-        instructor: String,
-        meetings: Array<Meeting>,
+    data class Lecture(
+        val registrationNumber: Int,
+        val sectionNumber: Int,
+        val instructor: String,
+        val meetings: Array<Meeting>,
         val recitations: Array<Section>?
-    ) : Section(
-        registrationNumber, sectionNumber, instructor, SectionType.LEC, meetings
-    )
+    ) : Section()
 
-    class Recitation(
-        registrationNumber: Int,
-        sectionNumber: Int,
-        instructor: String,
-        meetings: Array<Meeting>
-    ) : Section(
-        registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
-    )
+    data class Recitation(
+        val registrationNumber: Int,
+        val sectionNumber: Int,
+        val instructor: String,
+        val meetings: Array<Meeting>
+    ) : Section()
 
-    class Lab(
-        registrationNumber: Int,
-        sectionNumber: Int,
-        instructor: String,
-        meetings: Array<Meeting>
-    ) : Section(
-        registrationNumber, sectionNumber, instructor, SectionType.LAB, meetings
-    )
+    data class Lab(
+        val registrationNumber: Int,
+        val sectionNumber: Int,
+        val instructor: String,
+        val meetings: Array<Meeting>
+    ) : Section()
 
-    class Other(
-        registrationNumber: Int,
-        sectionNumber: Int,
-        instructor: String,
-        type: SectionType,
-        meetings: Array<Meeting>
-    ) : Section(
-        registrationNumber, sectionNumber, instructor, type, meetings
-    )
+    data class Other(
+        val registrationNumber: Int,
+        val sectionNumber: Int,
+        val instructor: String,
+        val type: SectionType,
+        val meetings: Array<Meeting>
+    ) : Section()
 }
 
 

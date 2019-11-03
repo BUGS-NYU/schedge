@@ -6,9 +6,8 @@ import mapSecond
 import models.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Label
 
-fun Course.Companion.getSubjects(
+fun getSubjects(
     term: Term,
     school: String
 ): Map<Subject, Array<Course>> {
@@ -17,9 +16,7 @@ fun Course.Companion.getSubjects(
     }.toMap()
 }
 
-fun Course.Companion.getCourses(term: Term, subject: Subject): Array<Course> {
-    println(term.id)
-    println(subject.abbrev)
+fun getCourses(term: Term, subject: Subject): Array<Course> {
     val meetingGroupedResults = transaction {
         val results = Courses.join(Sections, joinType = JoinType.INNER) {
             Courses.id eq Sections.courseId

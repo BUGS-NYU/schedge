@@ -2,9 +2,9 @@ package parse;
 
 import java.io.IOException;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import kotlin.text.StringsKt;
 import models.*;
 import org.joda.time.DateTime;
@@ -174,80 +174,97 @@ public class ParseCatalog {
   private static List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
     meetingsLogger.debug("Parsing section times data...");
-    if (times.equals("TBA"))
-      return new ArrayList<>();
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
     // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
     // TODO Optimize this
-    List<String> timeTokens = new ArrayList<>(), dateTokens = new ArrayList<>();
-    StringsKt.split(times, new char[] {' '}, false, 0)
-        .stream()
-        .filter(s -> !s.equals("-"))
-        .forEach(s -> timeTokens.add(s));
+    Iterator<String> timeTokens =
+        StringsKt.split(times, new char[] {' '}, false, 0)
+            .stream()
+            .filter(s -> !s.equals("-"))
+            .iterator();
 
-    StringsKt.split(dates, new char[] {' '}, false, 0)
-        .stream()
-        .filter(s -> !s.equals("-"))
-        .forEach(s -> dateTokens.add(s));
-
-    if (dateTokens.size() / 2 * 3 != timeTokens.size()) {
-      meetingsLogger.error(
-          "Time/date was in unexpected format: time='{}', date='{}'", times,
-          dates);
-      throw new IOException("Time/date was in unexpected format");
-    }
+    Iterator<String> dateTokens =
+        StringsKt.split(dates, new char[] {' '}, false, 0)
+            .stream()
+            .filter(s -> !s.equals("-"))
+            .iterator();
 
     ArrayList<Meeting> meetings = new ArrayList<>();
+    for (; timeTokens.hasNext();) {
+      if (!dateTokens.hasNext()) {
+        meetingsLogger.error(
+            "Time/date was in unexpected format: time='{}', date='{}'", times,
+            dates);
+        throw new IOException("Time/date was in unexpected format");
+      }
 
-    for (int idx = 0; idx < timeTokens.size() / 3; idx++) {
-      meetingsLogger.debug("Tokens are: time='{}' date='{}'", timeTokens,
-                           dateTokens);
-      int timesIdx = idx * 3, datesIdx = idx * 2;
+      String beginDays = timeTokens.next();
 
-      DateTime beginDate =
-          timeParser.parseDateTime(dateTokens.get(datesIdx) + ' ' +
-                                   timeTokens.get(timesIdx + 1).toUpperCase());
+      if (beginDays.equals("TBA")) {
+        safeNext(dateTokens);
+        safeNext(dateTokens);
+        continue;
+      }
 
-      DateTime endTime =
-          timeParser.parseDateTime(dateTokens.get(datesIdx) + ' ' +
-                                   timeTokens.get(timesIdx + 2).toUpperCase());
+      DateTime beginDateTime;
+      Duration duration;
+      {
+        String beginDateString = dateTokens.next();
+        String beginDateTimeString =
+            beginDateString + ' ' + timeTokens.next().toUpperCase();
+        String endDateTimeString =
+            beginDateString + ' ' + timeTokens.next().toUpperCase();
 
-      long durationMillis = endTime.getMillis() - beginDate.getMillis();
-      meetingsLogger.debug("Duration of meeting is {}", durationMillis);
-      Duration duration = Duration.millis(durationMillis);
+        beginDateTime = timeParser.parseDateTime(beginDateTimeString);
+        long durationMillis =
+            timeParser.parseDateTime(endDateTimeString).getMillis() -
+            beginDateTime.getMillis();
+        meetingsLogger.debug("Duration of meeting is {}", durationMillis);
+        duration = Duration.millis(durationMillis);
+      }
 
-      DateTime endDate =
-          timeParser.parseDateTime(dateTokens.get(datesIdx + 1) + " 11:59PM");
+      Duration activeDuration;
+      {
+        DateTime endDate =
+            timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
+        long activeDurationMillis =
+            endDate.getMillis() - beginDateTime.getMillis();
+        if (activeDurationMillis < 0)
+          throw new AssertionError("Active duration should be positive!");
+        meetingsLogger.debug("Active duration of meeting is {}",
+                             activeDurationMillis);
+        activeDuration = Duration.millis(activeDurationMillis);
+      }
 
-      long activeDurationMillis = endDate.getMillis() - beginDate.getMillis();
-      if (activeDurationMillis < 0)
-        throw new AssertionError("Active duration should be positive!");
-      meetingsLogger.debug("Active duration of meeting is {}",
-                           activeDurationMillis);
-      Duration activeDuration = Duration.millis(activeDurationMillis);
-
-      List<DayOfWeek> daysList =
-          (new Days(timeTokens.get(timesIdx))).toDayOfWeekList();
-      meetingsLogger.debug("{}", daysList);
+      Boolean[] daysList = (new Days(beginDays)).toDayNumberArray();
+      meetingsLogger.debug("{}", (Object)daysList);
 
       for (int day = 0; day < 7;
-           day++, beginDate = beginDate.plusDays(
+           day++, beginDateTime = beginDateTime.plusDays(
                       1)) { // TODO fix this code to do the right thing
-        if (daysList.contains(DayOfWeek.of(beginDate.getDayOfWeek()))) {
+        if (daysList[beginDateTime.getDayOfWeek() - 1]) {
           Duration dayAdjustedActiveDuration =
               activeDuration.minus(Duration.standardDays(day));
           meetingsLogger.debug("Day adjusted duration of meeting is {}",
                                dayAdjustedActiveDuration);
           meetings.add(
-              new Meeting(beginDate, duration, dayAdjustedActiveDuration));
+              new Meeting(beginDateTime, duration, dayAdjustedActiveDuration));
         }
       }
     }
 
     return meetings;
+  }
+
+  private static <T> Optional<T> safeNext(Iterator<T> iter) {
+    if (iter.hasNext()) {
+      return Optional.of(iter.next());
+    } else {
+      return Optional.empty();
+    }
   }
 
   private static class CourseMetadata {

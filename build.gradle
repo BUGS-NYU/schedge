@@ -35,8 +35,10 @@ dependencies {
             "io.github.microutils:kotlin-logging:1.7.6", // Logging
             "org.slf4j:slf4j-api:1.7.25", // Logging
             "ch.qos.logback:logback-core:1.2.3", // Logging
-            "ch.qos.logback:logback-classic:1.2.3" // Logging
-
+            "ch.qos.logback:logback-classic:1.2.3", // Logging
+            "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
+            "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
+            "com.fasterxml.jackson.core:jackson-databind:2.4.1" // JSON
     )
 
     testImplementation(

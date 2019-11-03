@@ -11,7 +11,6 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import org.postgresql.util.PSQLException
 
 val logger = KotlinLogging.logger("database.write")
 
@@ -31,7 +30,7 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
     transaction {
         Courses.upsert(Courses.id) {
             it[id] = courseEntityId
-            it[courseId] = entry.courseId
+            it[nyuCourseId] = entry.courseId
             it[termId] = termIdInt
             it[name] = entry.courseName
             it[subject] = entry.subject

@@ -17,7 +17,7 @@ val Tables = arrayOf(Courses, Sections, Meetings)
 // Courses that you can take at NYU
 // Contains information like "MATH-UA 120" and "Discrete Math"
 object Courses : LongIdTable() {
-    val courseId = long("course_id")
+    val nyuCourseId = long("course_id")
     val name = varchar("name", length = 128)
     val subject = varchar("subject", length = 8).index()
     val deptCourseNumber = long("dept_course_number")

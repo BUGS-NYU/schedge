@@ -32,15 +32,26 @@ enum class SectionType {
 enum class SectionStatus {
   Open, // Open
   Closed, // Closed
+  WaitList, // Waitlist
   Cancelled; // Cancelled
 
-    fun isOpen(): Boolean {
-        return when (this) {
-            Open -> true
-            Closed -> false
-            Cancelled -> false
+    companion object {
+        @JvmStatic
+        fun parseStatus(status: String): SectionStatus {
+            return when (status) {
+                "Open" -> Open
+                "Closed" -> Closed
+                "Wait List" -> WaitList
+                "Cancelled" -> Cancelled
+                else -> valueOf(status)
+            }
         }
     }
+
+    fun isOpen(): Boolean {
+        return this == Open
+    }
+
 }
 
 private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {

@@ -26,11 +26,13 @@ data class CatalogSectionEntry(
 }
 
 data class Meeting(
-    // TODO Convert this to org.joda.DateTime
     val beginDate: DateTime, // Begin date; contains date and time of first event.
     val duration: Duration, // Duration of meeting
     val activeDuration: Duration // How long after the begin that this event can start. Meetings implicitly meet weekly.
-)
+) {
+    companion object {}
+    constructor(beginDate: DateTime, duration: Long, activeDuration: Long) : this(beginDate, Duration.millis(duration), Duration.millis(activeDuration))
+}
 
 data class SectionResult(
   val description: String

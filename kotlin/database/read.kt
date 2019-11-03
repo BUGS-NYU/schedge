@@ -1,13 +1,12 @@
 package database
 
-import models.Course
-import models.Subject
-import models.Term
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import Tuple
+import mapFirst
+import mapSecond
+import models.*
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.awt.Label
 
 fun Course.Companion.getSubjects(
     term: Term,
@@ -21,28 +20,149 @@ fun Course.Companion.getSubjects(
 fun Course.Companion.getCourses(term: Term, subject: Subject): Array<Course> {
     println(term.id)
     println(subject.abbrev)
-    transaction {
+    val meetingGroupedResults = transaction {
         val results = Courses.join(Sections, joinType = JoinType.INNER) {
             Courses.id eq Sections.courseId
         }.join(Meetings, joinType = JoinType.INNER) {
             Sections.id eq Meetings.sectionId
         }.select {
             (Courses.termId eq term.id) and (Courses.subject eq subject.abbrev)
-        }.orderBy(
-            Pair(Courses.courseId, SortOrder.ASC),
-            Pair(Sections.sectionNumber, SortOrder.ASC)
-        )
-
-        val sectionResults = results.asSequence().groupBy {
-            Triple(
-                it[Courses.courseId],
-                it[Courses.name],
-                it[Courses.deptCourseNumber]
-            )
         }
 
-        println(results)
+        // Turn it into Map<Pair<Long?, LabelledCourseSectionRow>, List<Meeting>>
+        results.asSequence().groupBy(
+            { Pair(it[Sections.associatedWith], LabelledCourseSectionRow.fromResultRow(it)) },
+            Meeting.Companion::fromResultRow
+        )
     }
 
-    return arrayOf()
+    val (unassociatedResults, associatedResults) = meetingGroupedResults.asSequence().partition {
+        it.key.first == null
+    }.mapFirst { first ->
+        first.map { Pair(it.key.second.sectionId, Pair(it.key.second, it.value)) }
+            .toMap() // Make first into Map<Long, Pair<LabelledCourseSectionRow, List<Meeting>>>
+    }.mapSecond { second ->
+        second.map {
+            val associatedWith = it.key.first
+            requireNotNull(associatedWith) { "Partition fucked up bro" }
+            val courseSectionRow = it.key.second
+            val meetings = it.value
+            Pair(associatedWith, courseSectionRow.toAssociatedSection(meetings))
+        }.groupBy(
+            { it.first },
+            { it.second }
+        ) // Make second into Map<Long, List<Section>>
+    }
+
+    return unassociatedResults.map {
+        val associatedSections = associatedResults[it.key]
+        val (courseSectionRow, meetings) = Pair(it.value.first, it.value.second)
+        Pair(courseSectionRow.getCourseRow(), courseSectionRow.toSection(meetings, associatedSections))
+    }.groupBy(
+        { it.first },
+        { it.second }
+    ).map {
+        val courseRow = it.key
+        val sections = it.value
+        Course(
+            nyuCourseId = courseRow.nyuCourseId,
+            name = courseRow.name,
+            deptCourseNumber = courseRow.deptCourseNumber,
+            sections = sections.toTypedArray()
+        )
+    }.toTypedArray()
+}
+
+data class CourseRow(
+    val nyuCourseId: Long,
+    val name: String,
+    val deptCourseNumber: Long
+)
+
+data class LabelledCourseSectionRow(
+    val sectionId: Long,
+    val nyuCourseId: Long,
+    val name: String,
+    val deptCourseNumber: Long,
+    val registrationNumber: Int,
+    val sectionNumber: Int,
+    val instructor: String,
+    val type: SectionType
+) {
+    companion object {
+        fun fromResultRow(row: ResultRow): LabelledCourseSectionRow {
+            return LabelledCourseSectionRow(
+                row[Sections.id].value,
+                row[Courses.nyuCourseId],
+                row[Courses.name],
+                row[Courses.deptCourseNumber],
+                row[Sections.registrationNumber],
+                row[Sections.sectionNumber],
+                row[Sections.instructor],
+                row[Sections.type]
+            )
+        }
+    }
+
+    fun getCourseRow(): CourseRow {
+        return CourseRow(
+            nyuCourseId = nyuCourseId,
+            name = name,
+            deptCourseNumber = deptCourseNumber
+        )
+    }
+
+    fun toSection(meetings: List<Meeting>, recitations: List<Section>?): Section {
+        return Section.getSection(
+            registrationNumber = registrationNumber,
+            sectionNumber = sectionNumber,
+            instructor = instructor,
+            type = type,
+            meetings = meetings.toTypedArray(),
+            recitations = recitations?.toTypedArray()
+        )
+    }
+
+    fun toAssociatedSection(meetings: List<Meeting>): Section {
+        return Section.getSection(
+            registrationNumber = registrationNumber,
+            sectionNumber = sectionNumber,
+            instructor = instructor,
+            type = type,
+            meetings = meetings.toTypedArray(),
+            recitations = null
+        )
+    }
+}
+
+data class AssociatedCourseSectionRow(
+    val nyuCourseId: Long,
+    val name: String,
+    val deptCourseNumber: Long,
+    val registrationNumber: Int,
+    val sectionNumber: Int,
+    val instructor: String,
+    val type: SectionType,
+    val associatedWith: Long
+) {
+    companion object {
+        fun fromResultRow(row: ResultRow): AssociatedCourseSectionRow {
+            val associatedWith = row[Sections.associatedWith]
+            requireNotNull(associatedWith)
+            return AssociatedCourseSectionRow(
+                row[Courses.nyuCourseId],
+                row[Courses.name],
+                row[Courses.deptCourseNumber],
+                row[Sections.registrationNumber],
+                row[Sections.sectionNumber],
+                row[Sections.instructor],
+                row[Sections.type],
+                associatedWith
+            )
+        }
+    }
+}
+
+fun Meeting.Companion.fromResultRow(row: ResultRow): Meeting {
+    return Meeting(row[Meetings.date], row[Meetings.duration], row[Meetings.activeDuration])
 }

@@ -1,17 +1,9 @@
 package models
 
-import database.Courses
-import database.Meetings
-import database.Sections
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-
-data class Course private constructor(
-    val courseId: Long,
+data class Course(
+    val nyuCourseId: Long,
     val name: String,
-    val deptCourseNumber: Int,
+    val deptCourseNumber: Long,
     val sections: Array<Section>
 ) {
 
@@ -23,7 +15,7 @@ data class Course private constructor(
 
         other as Course
 
-        if (courseId != other.courseId) return false
+        if (nyuCourseId != other.nyuCourseId) return false
         if (name != other.name) return false
         if (deptCourseNumber != other.deptCourseNumber) return false
         if (!sections.contentEquals(other.sections)) return false
@@ -32,15 +24,15 @@ data class Course private constructor(
     }
 
     override fun hashCode(): Int { // AUTO GENERATED
-        var result = courseId.hashCode()
+        var result = nyuCourseId.hashCode()
         result = 31 * result + name.hashCode()
-        result = 31 * result + deptCourseNumber
+        result = 31 * result + deptCourseNumber.toInt()
         result = 31 * result + sections.contentHashCode()
         return result
     }
 }
 
-sealed class Section private constructor(
+sealed class Section constructor(
     val registrationNumber: Int,
     val sectionNumber: Int,
     val instructor: String,
@@ -48,12 +40,39 @@ sealed class Section private constructor(
     val meetings: Array<Meeting>
 ) {
 
+    companion object {
+        fun getSection(
+            registrationNumber: Int,
+            sectionNumber: Int,
+            instructor: String,
+            type: SectionType,
+            meetings: Array<Meeting>,
+            recitations: Array<Section>?
+        ): Section {
+            return when (type) {
+                SectionType.LEC -> Lecture(registrationNumber, sectionNumber, instructor, meetings, recitations)
+                SectionType.RCT -> {
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    Recitation(registrationNumber, sectionNumber, instructor, meetings)
+                }
+                SectionType.LAB -> {
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    Lab(registrationNumber, sectionNumber, instructor, meetings)
+                }
+                else -> {
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    Other(registrationNumber, sectionNumber, instructor, type, meetings)
+                }
+            }
+        }
+    }
+
     class Lecture(
         registrationNumber: Int,
         sectionNumber: Int,
         instructor: String,
         meetings: Array<Meeting>,
-        val recitations: Array<Recitation>?
+        val recitations: Array<Section>?
     ) : Section(
         registrationNumber, sectionNumber, instructor, SectionType.LEC, meetings
     )
@@ -73,16 +92,17 @@ sealed class Section private constructor(
         instructor: String,
         meetings: Array<Meeting>
     ) : Section(
-        registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
+        registrationNumber, sectionNumber, instructor, SectionType.LAB, meetings
     )
 
     class Other(
         registrationNumber: Int,
         sectionNumber: Int,
         instructor: String,
+        type: SectionType,
         meetings: Array<Meeting>
     ) : Section(
-        registrationNumber, sectionNumber, instructor, SectionType.RCT, meetings
+        registrationNumber, sectionNumber, instructor, type, meetings
     )
 }
 

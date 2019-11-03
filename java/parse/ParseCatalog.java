@@ -5,7 +5,6 @@ import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
 import kotlin.text.StringsKt;
 import models.*;
 import org.joda.time.DateTime;
@@ -45,7 +44,7 @@ public class ParseCatalog {
     }
 
     ArrayList<CatalogEntry> output = new ArrayList<>();
-    Course current = parseCourseNode(elementList.get(0));
+    CourseMetadata current = parseCourseNode(elementList.get(0));
     if (current == null) { // There were no classes
       return output;
     }
@@ -58,6 +57,7 @@ public class ParseCatalog {
         output.add(current.getCatalogEntry(sections));
         current = parseCourseNode(element);
         sections = new ArrayList<>();
+        lectureEntry = null;
       } else {
         CatalogSectionEntry entry;
         try {
@@ -75,7 +75,8 @@ public class ParseCatalog {
     return output;
   }
 
-  private static Course parseCourseNode(Element divTag) throws IOException {
+  private static CourseMetadata parseCourseNode(Element divTag)
+      throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
     if (text.equals("No classes found matching your criteria."))
       return null;
@@ -99,11 +100,11 @@ public class ParseCatalog {
     int idIndex;
     String idString = divTag.attr("id");
     for (idIndex = 0; idIndex < idString.length(); idIndex++)
-      if (idString.charAt(idIndex) <= '9' && idString.charAt(idIndex) >= '0')
+      if (Character.isDigit(idString.charAt(idIndex)))
         break;
     Long courseId = Long.parseLong(idString.substring(idIndex));
 
-    return new Course(courseName, subject, courseId, deptCourseNumber);
+    return new CourseMetadata(courseName, subject, courseId, deptCourseNumber);
   }
 
   /*
@@ -155,7 +156,7 @@ public class ParseCatalog {
     return new CatalogSectionEntry(
         registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
         type == SectionType.LEC ? null : associatedWith,
-        SectionStatus.valueOf(sectionData.get("Status")), meetings);
+        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
   }
 
   private static void
@@ -184,13 +185,13 @@ public class ParseCatalog {
     List<String> timeTokens = new ArrayList<>(), dateTokens = new ArrayList<>();
     StringsKt.split(times, new char[] {' '}, false, 0)
         .stream()
-        .filter((s) -> !s.equals("-"))
-        .forEach((s) -> timeTokens.add(s));
+        .filter(s -> !s.equals("-"))
+        .forEach(s -> timeTokens.add(s));
 
     StringsKt.split(dates, new char[] {' '}, false, 0)
         .stream()
-        .filter((s) -> !s.equals("-"))
-        .forEach((s) -> dateTokens.add(s));
+        .filter(s -> !s.equals("-"))
+        .forEach(s -> dateTokens.add(s));
 
     if (dateTokens.size() / 2 * 3 != timeTokens.size()) {
       meetingsLogger.error(
@@ -249,14 +250,14 @@ public class ParseCatalog {
     return meetings;
   }
 
-  private static class Course {
+  private static class CourseMetadata {
     private String courseName;
     private String subject;
     private Long courseId;
     private Long deptCourseNumber;
 
-    Course(String courseName, String subject, Long courseId,
-           Long deptCourseNumber) {
+    CourseMetadata(String courseName, String subject, Long courseId,
+                   Long deptCourseNumber) {
       this.courseName = courseName;
       this.subject = subject;
       this.courseId = courseId;

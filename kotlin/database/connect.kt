@@ -14,7 +14,7 @@ fun connectToDatabase(logger: KLogger) {
     for (i in 0..5) {
         try {
             val dataSource = HikariDataSource(HikariConfig().also {
-                it.jdbcUrl = "jdbc:postgresql://db:5432/schedge"
+                it.jdbcUrl = "jdbc:postgresql://localhost:5432/schedge"
                 it.driverClassName = "org.postgresql.Driver"
                 it.username = "schedge"
                 it.password = "docker"

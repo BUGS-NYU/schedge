@@ -6,11 +6,9 @@ import models.Term
 import mu.KLogger
 
 fun scrapeCatalog(logger: KLogger, term: Term, vararg subjects: Subject): Sequence<Course> {
-    queryCatalog(logger, term, subjects).map { rawData ->
+    return queryCatalog(logger, term, subjects).map { rawData ->
         parseCatalog(logger, rawData)
-    }.flatten()
-
-    TODO()
+    }.flatten().map { it.toCourse() }
 }
 
 fun scrapeCatalog(logger: KLogger, term: Term, subjects: List<Subject>): Sequence<Course> {

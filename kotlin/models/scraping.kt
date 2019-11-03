@@ -10,7 +10,11 @@ data class CatalogEntry(
     val courseId: Long,
     val deptCourseNumber: Long,
     val sections: List<CatalogSectionEntry>
-)
+) {
+    fun toCourse(): Course {
+        TODO()
+    }
+}
 
 data class CatalogSectionEntry(
     val registrationNumber: Int,

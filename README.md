@@ -2,6 +2,8 @@
 Schedge is an open source course schedule solver, geared at helping NYU students
 plan their courses.
 
+API: http://schedge.a1liu.com
+
 ### Setup
 To check you work, run `gradle check`.
 

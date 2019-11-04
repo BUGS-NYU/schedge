@@ -59,8 +59,8 @@ fun CatalogEntry.writeToDb(term: Term) { // Perform an upsert
 
         Meetings.batchUpsert(meetings, Meetings.id) { (section, meeting) ->
             this[Meetings.date] = DateTime(meeting.beginDate)
-            this[Meetings.duration] = meeting.duration.millis
-            this[Meetings.activeDuration] = meeting.activeDuration.millis
+            this[Meetings.duration] = meeting.duration.minutes
+            this[Meetings.activeDuration] = meeting.activeDuration.minutes
             this[Meetings.sectionId] = section
         }
     }

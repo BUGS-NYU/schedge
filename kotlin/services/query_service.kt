@@ -21,7 +21,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Seq
     return sequenceOf(*subjects).map {subject ->
         logger.info { "Querying catalog with subject=$subject" }
         val params = mutableListOf( // URL params
-            BasicNameValuePair("CSRFToken", client.csrfToken),
+           BasicNameValuePair("CSRFToken", client.csrfToken),
             BasicNameValuePair("term", term.id.toString()),
             BasicNameValuePair("acad_group", subject.school),
             BasicNameValuePair("subject", subject.abbrev)

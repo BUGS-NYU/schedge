@@ -6,7 +6,6 @@ import kotlin.text.StringsKt;
 import models.*;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.nodes.Document;
@@ -177,7 +176,7 @@ public class ParseCatalog {
             timeParser.parseDateTime(endDateTimeString).getMillis() -
             beginDateTime.getMillis();
         meetingsLogger.debug("Duration of meeting is {}", durationMillis);
-        duration = Duration.millis(durationMillis);
+        duration = new Duration(durationMillis / 6000);
       }
 
       Duration activeDuration;
@@ -190,7 +189,7 @@ public class ParseCatalog {
           throw new AssertionError("Active duration should be positive!");
         meetingsLogger.debug("Active duration of meeting is {}",
                              activeDurationMillis);
-        activeDuration = Duration.millis(activeDurationMillis);
+        activeDuration = new Duration(activeDurationMillis / 6000);
       }
 
       Boolean[] daysList = (new Days(beginDays)).toDayNumberArray();

@@ -1,5 +1,6 @@
 package models
 
+import com.fasterxml.jackson.annotation.JsonValue
 import java.time.DayOfWeek
 import kotlin.experimental.and
 import kotlin.experimental.or
@@ -24,10 +25,24 @@ data class TimeOfDay(// Positive integer
 data class Duration(
     val minutes: Long
 ) {
+
+    companion object {
+        @JvmStatic
+        fun standardDays(days: Long): Duration {
+            return Duration(days * 1440) // 60 * 24
+        }
+    }
     init {
         require(minutes >= 0) {
             "Duration cannot be negative! (Given value was $minutes)"
         }
+    }
+
+    @JsonValue
+    fun toJson(): Long = this.minutes
+
+    fun minus(other: Duration): Duration {
+        return Duration(this.minutes - other.minutes)
     }
 }
 

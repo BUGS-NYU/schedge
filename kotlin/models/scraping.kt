@@ -2,7 +2,6 @@ package models
 
 import com.fasterxml.jackson.annotation.JsonValue
 import org.joda.time.DateTime
-import org.joda.time.Duration
 
 data class CatalogEntry(
     val courseName: String,
@@ -37,8 +36,8 @@ data class Meeting(
 ) {
     companion object {}
     constructor(beginDate: DateTime, duration: Long, activeDuration: Long) : this(beginDate,
-        Duration.millis(duration),
-        Duration.millis(activeDuration)
+        Duration(duration),
+        Duration(activeDuration)
     )
 
     @JsonValue

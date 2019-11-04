@@ -65,7 +65,7 @@ fun getCourses(term: Term, subject: Subject): Array<Course> {
             nyuCourseId = courseRow.nyuCourseId,
             name = courseRow.name,
             deptCourseNumber = courseRow.deptCourseNumber,
-            sections = sections.toTypedArray()
+            sections = sections
         )
     }.toTypedArray()
 }

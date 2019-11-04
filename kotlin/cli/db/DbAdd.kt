@@ -8,8 +8,8 @@ import database.writeToDb
 import models.Subject
 import models.Term
 import mu.KotlinLogging
-import services.dbAddAllFromCatalog
-import services.dbAddFromCatalog
+import services.scrapeAllFromCatalog
+import services.scrapeFromCatalog
 
 internal class DbAdd : CliktCommand(name = "add") {
     private val logger = KotlinLogging.logger("db.add")
@@ -23,12 +23,12 @@ internal class DbAdd : CliktCommand(name = "add") {
         if (allSubjects) {
             require(subjects.isEmpty()) { "Can't provide subjects if '--all-subjects' flag is passed" }
             require(school == null) { "Can't provide school if '--all-subjects' flag is passed" }
-            dbAddAllFromCatalog(logger, term, null).forEach {
+            scrapeAllFromCatalog(logger, term, null).forEach {
                 it.writeToDb(term)
             }
         } else if (school == null) {
             require(subjects.isNotEmpty()) { "Need to provide at least one argument" }
-            dbAddFromCatalog(logger, term, subjects.map { string ->
+            scrapeFromCatalog(logger, term, subjects.map { string ->
                 val (subject, school) = string.split('-')
                 Subject(subject, school)
             }).forEach {
@@ -36,7 +36,7 @@ internal class DbAdd : CliktCommand(name = "add") {
             }
         } else {
             require(subjects.isEmpty()) { "Can't provide subjects if '--school' flag is passed" }
-            dbAddAllFromCatalog(logger, term, school).forEach {
+            scrapeAllFromCatalog(logger, term, school).forEach {
                 it.writeToDb(term)
             }
         }

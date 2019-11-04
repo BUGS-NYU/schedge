@@ -31,10 +31,9 @@ public class ParseCatalog {
     return new CatalogParser(data);
   }
 
+  @NotNull
   static CourseMetadata parseCourseHeader(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
-    if (text.equals("No classes found matching your criteria."))
-      return null;
 
     int textIndex1 = text.indexOf(' '), textIndex2 = text.indexOf(" - ");
     if (textIndex1 < 0) {
@@ -235,17 +234,22 @@ class CatalogParser implements Iterator<CatalogEntry> {
 
   CatalogParser(Document data) throws IOException {
     elements = data.select("div.primary-head ~ *").iterator();
-    Element current = elements.next();
+
     if (elements == null) {
       logger.error("CSS query `div.primary-head ~ *` returned a null value.");
       throw new IOException("xml.select returned null");
     } else if (!elements.hasNext()) {
       logger.error("CSS query `div.primary-head ~ *` returned no values.");
       throw new IOException("models.Course data is empty!");
-    } else if (!current.tagName().equals("div")) {
+    } else if (!(currentElement = elements.next()).tagName().equals("div")) {
       logger.error("CSS query `div.primary-head ~ *` returned "
                    + "a list whose first element was not a 'div'.");
       throw new IOException("NYU sent back data we weren't expecting.");
+    } else if (currentElement.text().equals(
+                   "No classes found matching your criteria.")) { // We're done,
+                                                                  // nothing's
+                                                                  // here
+      currentElement = null;
     }
   }
 
@@ -258,8 +262,9 @@ class CatalogParser implements Iterator<CatalogEntry> {
   @NotNull
   public CatalogEntry next() {
 
-    if (!hasNext())
+    if (!hasNext()) {
       throw new NoSuchElementException("No more elements in the iterator!");
+    }
 
     ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
     CatalogSectionEntry lectureEntry = null;
@@ -267,8 +272,8 @@ class CatalogParser implements Iterator<CatalogEntry> {
 
     try {
       current = ParseCatalog.parseCourseHeader(currentElement);
-      logger.error("parseCourseNode threw with node={}", currentElement);
     } catch (IOException e) {
+      logger.error("parseCourseNode threw with node={}", currentElement);
       throw new RuntimeException(e);
     }
 
@@ -285,6 +290,7 @@ class CatalogParser implements Iterator<CatalogEntry> {
         logger.error("parseSectionNode threw with course={}", current);
         throw new RuntimeException(e);
       }
+
       if (entry.getType() == SectionType.LEC) {
         lectureEntry = entry;
       }

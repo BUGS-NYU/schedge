@@ -7,7 +7,6 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import models.*
 import mu.KotlinLogging
-import services.dbAddFromCatalog
 import writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing

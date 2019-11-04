@@ -1,8 +1,8 @@
 package database
 
-import Environment
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.github.cdimascio.dotenv.dotenv
 import mu.KLogger
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -15,10 +15,11 @@ fun connectToDatabase(logger: KLogger) {
     for (i in 0..5) {
         try {
             val dataSource = HikariDataSource(HikariConfig().also {
-                it.jdbcUrl = Environment["JDBC_URL"]
+                val env = dotenv()
+                it.jdbcUrl = env["JDBC_URL"]
                 it.driverClassName = "org.postgresql.Driver"
-                it.username = Environment["username"]
-                it.password = Environment["password"]
+                it.username = env["username"]
+                it.password = env["password"]
             })
             Database.connect(dataSource)
             return;

@@ -4,7 +4,7 @@ services:
     build: .
     container_name: "schedge"
     ports:
-      - "80:8080"
+      - "80:80"
   db:
     image: "postgres:11"
     # ports:

@@ -8,6 +8,7 @@
 build
 
 .env
+production.env
 
 /postgres/*
 !/postgres/.gitkeep

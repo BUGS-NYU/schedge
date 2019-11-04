@@ -9,7 +9,7 @@ import services.JsonMapper;
 
 public class App {
   public static void run() {
-    Javalin app = Javalin.create().start(8080);
+    Javalin app = Javalin.create().start(80);
     app.get("/:term/:school/:subject", ctx -> {
       Term term = Term.fromId(Integer.parseInt(ctx.pathParam("term")));
       Subject subject =

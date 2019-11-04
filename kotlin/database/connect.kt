@@ -1,5 +1,6 @@
 package database
 
+import Environment
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import mu.KLogger
@@ -14,10 +15,10 @@ fun connectToDatabase(logger: KLogger) {
     for (i in 0..5) {
         try {
             val dataSource = HikariDataSource(HikariConfig().also {
-                it.jdbcUrl = "jdbc:postgresql://localhost:5432/schedge"
+                it.jdbcUrl = Environment["JDBC_URL"]
                 it.driverClassName = "org.postgresql.Driver"
-                it.username = "schedge"
-                it.password = "docker"
+                it.username = Environment["username"]
+                it.password = Environment["password"]
             })
             Database.connect(dataSource)
             return;

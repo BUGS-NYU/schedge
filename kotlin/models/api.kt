@@ -12,14 +12,6 @@ data class Course(
 
     companion object {
 
-        @JvmStatic
-        fun getSubjects(
-            term: Term,
-            school: String
-        ): Map<Subject, Array<Course>> = database.getSubjects(term, school)
-
-        @JvmStatic
-        fun getCourses(term: Term, subject: Subject): Array<Course> = database.getCourses(term ,subject)
     }
 
     override fun equals(other: Any?): Boolean { // AUTO GENERATED

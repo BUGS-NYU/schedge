@@ -15,8 +15,6 @@ public class App {
       Subject subject =
           new Subject(ctx.pathParam("subject"), ctx.pathParam("school"));
 
-      Course[] courses = Course.getCourses(term, subject);
-      ctx.result(JsonMapper.toJson(courses));
     });
   }
 }

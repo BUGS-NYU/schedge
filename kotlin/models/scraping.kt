@@ -11,6 +11,7 @@ data class CatalogEntry(
     val sections: List<CatalogSectionEntry>
 ) {
     fun toCourse(): Course {
+
         TODO()
     }
 }

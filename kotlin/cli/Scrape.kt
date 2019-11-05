@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.required
 import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
+import services.JsonMapper
 import services.scrapeFromCatalog
 import writeToFileOrStdout
 
@@ -38,7 +39,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
         override fun run() =
             file.writeToFileOrStdout(
-                scrapeFromCatalog(logger, term, listOf(SubjectCode(subject, school)))
+                JsonMapper.toJson(scrapeFromCatalog(logger, term, listOf(SubjectCode(subject, school))))
             )
 
     }

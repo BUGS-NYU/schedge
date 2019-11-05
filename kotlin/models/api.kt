@@ -1,15 +1,14 @@
 package models
 
+import com.fasterxml.jackson.annotation.JsonValue
+import org.joda.time.DateTime
+
 data class Course(
     val nyuCourseId: Long,
     val name: String,
     val deptCourseNumber: Long,
     val sections: List<Section>
 ) {
-
-    companion object {
-
-    }
 }
 
 sealed class Section(val type: SectionType) {
@@ -79,3 +78,23 @@ sealed class Section(val type: SectionType) {
     ) : Section(type)
 }
 
+data class Meeting(
+    val beginDate: DateTime, // Begin date; contains date and time of first event.
+    val duration: Duration, // Duration of meeting
+    val activeDuration: Duration // How long after the begin that this event can start. Meetings implicitly meet weekly.
+) {
+    companion object {}
+
+    constructor(beginDate: DateTime, duration: Long, activeDuration: Long) : this(
+        beginDate,
+        Duration(duration),
+        Duration(activeDuration)
+    )
+
+    @JsonValue
+    fun toJson(): MeetingJson {
+        return MeetingJson(beginDate.toString(), duration.toString(), activeDuration.toString())
+    }
+}
+
+data class MeetingJson(val beginDate: String, val duration: String, val activeDuration: String)

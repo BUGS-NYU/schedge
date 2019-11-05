@@ -2,7 +2,7 @@ require 'pry'
 
 module ExtractListingData
 
-  # List of courses for a subject
+  # List of courses for a subjectCode
   def self.extract_listings html
     elements = html.css('div.primary-head ~ *')
     current = nil

@@ -1,6 +1,7 @@
 package services
 
-import models.Subject
+import kotlinx.coroutines.runBlocking
+import models.SubjectCode
 import models.Term
 import mu.KLogger
 import mu.KotlinLogging
@@ -14,32 +15,38 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Sequence<Pair<Subject, String>> {
-    logger.info { "querying catalog for term=$term multiple subjects..." }
+fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = runBlocking { queryCatalog(logger, term, subjectCode, AlbertClient()) }
+
+private suspend fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: AlbertClient): String {
+    logger.info { "querying catalog for term=$term and subject=$subjectCode..." }
+    val params = mutableListOf( // URL params
+        BasicNameValuePair("CSRFToken", client.csrfToken),
+        BasicNameValuePair("term", term.id.toString()),
+        BasicNameValuePair("acad_group", subjectCode.school),
+        BasicNameValuePair("subject", subjectCode.abbrev)
+    )
+    logger.debug { "Params are ${params}." }
+
+    val request = HttpPost(DATA_URL).apply {
+        entity = UrlEncodedFormEntity(params)
+        addHeader("Referrer", "${ROOT_URL}/${term.id}")
+        addHeader("Host", "m.albert.nyu.edu")
+    }
+
+    val result = client.execute(request)
+    return if (result == "No classes found matching your criteria.") {
+        throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
+    } else {
+        result
+    }
+}
+
+fun queryCatalog(logger: KLogger, term: Term, subjectCodes: Array<out SubjectCode>): Sequence<Pair<SubjectCode, String>> {
+    logger.info { "querying catalog for term=$term with multiple subjects..." }
     val client = AlbertClient()
 
-    return sequenceOf(*subjects).map { subject ->
-        logger.info { "Querying catalog with subject=$subject" }
-        val params = mutableListOf( // URL params
-            BasicNameValuePair("CSRFToken", client.csrfToken),
-            BasicNameValuePair("term", term.id.toString()),
-            BasicNameValuePair("acad_group", subject.school),
-            BasicNameValuePair("subject", subject.abbrev)
-        )
-        logger.debug { "Params are ${params}." }
-
-        val request = HttpPost(DATA_URL).apply {
-            entity = UrlEncodedFormEntity(params)
-            addHeader("Referrer", "${ROOT_URL}/${term.id}")
-            addHeader("Host", "m.albert.nyu.edu")
-        }
-
-        val result = client.execute(request)
-        if (result == "No classes found matching your criteria.") {
-            throw IOException("No classes found matching criteria school=${subject.school}, subject=${subject.abbrev}")
-        } else {
-            Pair(subject, result)
-        }
+    return sequenceOf(*subjectCodes).map { subject ->
+        Pair(subject, runBlocking { queryCatalog(logger, term, subject, client) })
     }
 }
 

@@ -64,20 +64,20 @@ private val AvailableSubjects: Map<String, Set<String>> = "subjects.txt".asResou
     availSubjects
 }
 
-class Subject {
+class SubjectCode {
 
     companion object {
-        fun allSubjects(forSchool: String? = null): Sequence<Subject> {
+        fun allSubjects(forSchool: String? = null): Sequence<SubjectCode> {
             return if (forSchool == null) {
                 AvailableSubjects.asSequence().map { pair ->
                     pair.value.asSequence().map {
-                        Subject(it, pair.key, Unit)
+                        SubjectCode(it, pair.key, Unit)
                     }
                 }.flatten()
             } else {
                 val subjects = AvailableSubjects[forSchool.toUpperCase()]
                 require(subjects != null) { "Must provide a valid school code!" }
-                subjects.asSequence().map { Subject(it, forSchool, Unit) }
+                subjects.asSequence().map { SubjectCode(it, forSchool, Unit) }
             }
         }
     }

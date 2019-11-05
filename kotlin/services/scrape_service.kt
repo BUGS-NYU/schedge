@@ -1,15 +1,21 @@
 package services
 
 import models.Course
-import models.Subject
+import models.SubjectCode
 import models.Term
 import mu.KLogger
 
-fun scrapeFromCatalog(logger: KLogger, term: Term, subjects: List<Subject>): Sequence<Course> {
-    return queryCatalog(logger, term, subjects.toTypedArray()).map { (subject, rawData) ->
-        parseCatalog(logger, rawData)
-    }.flatten()
+fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<Pair<SubjectCode, List<Course>>> {
+    return queryCatalog(logger, term, subjectCodes.toTypedArray()).map { (subject, rawData) ->
+        Pair(subject, ParseCatalog.parse(logger, rawData))
+    }
 }
 
-fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?): Sequence<Course> =
-    scrapeFromCatalog(logger, term, Subject.allSubjects(forSchool).toList())
+fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): List<Course> {
+    return queryCatalog(logger, term, subjectCode).let { rawData ->
+        ParseCatalog.parse(logger, rawData)
+    }
+}
+
+fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?): Sequence<Pair<SubjectCode, List<Course>>> =
+    scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList())

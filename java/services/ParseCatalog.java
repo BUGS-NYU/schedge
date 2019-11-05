@@ -1,4 +1,4 @@
-package parse;
+package services;
 
 import java.io.IOException;
 import java.util.*;
@@ -8,30 +8,110 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ParseCatalog {
-
-  private static Logger logger = LoggerFactory.getLogger("parse.catalog");
-  private static Logger meetingsLogger =
-      LoggerFactory.getLogger("parse.catalog.meetings");
+/**
+ * Parses a catalog string in a stream.
+ *
+ * @author Albert Liu
+ */
+public class ParseCatalog implements Iterator<Course> {
+  private Logger logger;
+  private Logger sectionsLogger;
+  private Logger meetingsLogger;
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
-  // 09/03/2019 3:15P
+  private Iterator<Element> elements;
+  private Element currentElement;
 
-  /**
-   * Get formatted course data from a catalog query result.
-   */
-  public static Iterator<Course> parse(Document data) throws IOException {
-    return new CatalogParser(data);
+  public static List<Course> parse(Logger logger, String data) throws IOException {
+    ArrayList<Course> courses = new ArrayList<>();
+    new ParseCatalog(logger, Jsoup.parse(data)).forEachRemaining(c -> courses.add(c));
+    return courses;
   }
 
-  @NotNull
-  static CourseMetadata parseCourseHeader(Element divTag) throws IOException {
+  ParseCatalog(Logger logger, Document data) throws IOException {
+    elements = data.select("div.primary-head ~ *").iterator();
+    this.logger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog");
+    this.meetingsLogger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog.sections");
+    this.meetingsLogger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog.meetings");
+
+    if (!elements.hasNext()) {
+      logger.error("CSS query `div.primary-head ~ *` returned no values.");
+      throw new IOException("models.Course data is empty!");
+    } else if (!(currentElement = elements.next()).tagName().equals("div")) {
+      logger.error("CSS query `div.primary-head ~ *` returned "
+                   + "a list whose first element was not a 'div'.");
+      throw new IOException("NYU sent back data we weren't expecting.");
+    } else if (currentElement.text().equals(
+                   "No classes found matching your criteria.")) {
+      currentElement = null; // We're done, nothing's here
+    }
+  }
+
+  /*
+    <a href="https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/1198/8699">
+        <i class="ico-arrow-right pull-right right-icon"></i>
+        <div class="strong section-body">Section: 001-LEC (8699)</div> <div
+    class="section-body">Session: Regular Academic Session</div> <div
+    class="section-body">Days/Times: MoWe 9:30am
+      - 10:45am</div> <div class="section-body">Dates: 09/03/2019 -
+    12/13/2019</div> <div class="section-body">Instructor: Shizhu Liu</div> <div
+    class="section-body">Status: Open</div>
+    </div> </a>
+  */
+  SectionMetadata parseSectionNode(Element anchorTag)
+      throws IOException {
+    HashMap<String, String> sectionData = sectionFieldTable(
+        anchorTag.select("div.section-content > div.section-body"));
+    sectionsLogger.debug("Section field strings are: {}", sectionData);
+
+    int registrationNumber, sectionNumber;
+    SectionType type;
+
+    try {
+      String header = sectionData.get("Section");
+      int headerDashIdx = header.indexOf('-');
+      registrationNumber = Integer.parseInt(
+          header.substring(header.indexOf('(') + 1, header.length() - 1));
+      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
+      type = SectionType.valueOf(header.substring(
+          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
+    } catch (Exception e) {
+      sectionsLogger.error("parseSectionNode throwing with section data: {}",
+                   sectionData);
+      throw e;
+    }
+
+    List<Meeting> meetings = parseSectionTimesData(
+        sectionData.get("Days/Times"), sectionData.get("Dates"));
+
+    return new SectionMetadata(
+        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
+        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
+  }
+
+  private HashMap<String, String> sectionFieldTable(Elements fields) {
+    HashMap<String, String> map = new HashMap<>();
+    for (Element child : fields) {
+      String field = child.text();
+      int splitIndex = field.indexOf(": ");
+      if (splitIndex < 0) {
+        logger.debug("Failed to parse '{}' as a section field.", field);
+      } else {
+        map.put(field.substring(0, splitIndex),
+                field.substring(splitIndex + 2));
+      }
+    }
+    return map;
+  }
+
+  CourseMetadata parseCourseHeader(Element divTag) throws IOException {
     String text = divTag.text(); // MATH-UA 9 - Algebra and Calculus
 
     int textIndex1 = text.indexOf(' '), textIndex2 = text.indexOf(" - ");
@@ -59,7 +139,7 @@ public class ParseCatalog {
     return new CourseMetadata(courseId, courseName, deptCourseNumber);
   }
 
-  static List<Meeting> parseSectionTimesData(String times, String dates)
+  List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
     meetingsLogger.debug("Parsing section times data...");
     // MoWe 9:30am - 10:45am Fr
@@ -146,101 +226,6 @@ public class ParseCatalog {
     return meetings;
   }
 
-  private static <T> Optional<T> safeNext(Iterator<T> iter) {
-    if (iter.hasNext()) {
-      return Optional.of(iter.next());
-    } else {
-      return Optional.empty();
-    }
-  }
-}
-
-/**
- * Parses a catalog string in a stream.
- *
- * @author Albert Liu
- */
-class CatalogParser implements Iterator<Course> {
-  private static Logger logger = LoggerFactory.getLogger("parse.catalog");
-  private Iterator<Element> elements;
-  private Element currentElement;
-
-  CatalogParser(Document data) throws IOException {
-    elements = data.select("div.primary-head ~ *").iterator();
-
-    if (elements == null) {
-      logger.error("CSS query `div.primary-head ~ *` returned a null value.");
-      throw new IOException("xml.select returned null");
-    } else if (!elements.hasNext()) {
-      logger.error("CSS query `div.primary-head ~ *` returned no values.");
-      throw new IOException("models.Course data is empty!");
-    } else if (!(currentElement = elements.next()).tagName().equals("div")) {
-      logger.error("CSS query `div.primary-head ~ *` returned "
-                   + "a list whose first element was not a 'div'.");
-      throw new IOException("NYU sent back data we weren't expecting.");
-    } else if (currentElement.text().equals(
-                   "No classes found matching your criteria.")) {
-      currentElement = null; // We're done, nothing's here
-    }
-  }
-
-  /*
-    <a href="https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/1198/8699">
-        <i class="ico-arrow-right pull-right right-icon"></i>
-        <div class="strong section-body">Section: 001-LEC (8699)</div> <div
-    class="section-body">Session: Regular Academic Session</div> <div
-    class="section-body">Days/Times: MoWe 9:30am
-      - 10:45am</div> <div class="section-body">Dates: 09/03/2019 -
-    12/13/2019</div> <div class="section-body">Instructor: Shizhu Liu</div> <div
-    class="section-body">Status: Open</div>
-    </div> </a>
-  */
-  static SectionMetadata parseSectionNode(Element anchorTag)
-      throws IOException {
-    HashMap<String, String> sectionData = sectionFieldTable(
-        anchorTag.select("div.section-content > div.section-body"));
-    logger.trace("Section field strings are: {}", sectionData);
-
-    int registrationNumber, sectionNumber;
-    SectionType type;
-
-    try {
-      String header = sectionData.get("Section");
-      int headerDashIdx = header.indexOf('-');
-      registrationNumber = Integer.parseInt(
-          header.substring(header.indexOf('(') + 1, header.length() - 1));
-      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
-      type = SectionType.valueOf(header.substring(
-          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
-    } catch (Exception e) {
-      logger.error("parseSectionNode throwing with section data: {}",
-                   sectionData);
-      throw e;
-    }
-
-    List<Meeting> meetings = ParseCatalog.parseSectionTimesData(
-        sectionData.get("Days/Times"), sectionData.get("Dates"));
-
-    return new SectionMetadata(
-        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
-        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
-  }
-
-  private static HashMap<String, String> sectionFieldTable(Elements fields) {
-    HashMap<String, String> map = new HashMap<>();
-    for (Element child : fields) {
-      String field = child.text();
-      int splitIndex = field.indexOf(": ");
-      if (splitIndex < 0) {
-        logger.debug("Failed to parse '{}' as a section field.", field);
-      } else {
-        map.put(field.substring(0, splitIndex),
-                field.substring(splitIndex + 2));
-      }
-    }
-    return map;
-  }
-
   @Override
   public boolean hasNext() {
     return currentElement != null;
@@ -250,15 +235,14 @@ class CatalogParser implements Iterator<Course> {
   @NotNull
   public Course next() {
 
-    if (!hasNext()) {
+    if (!hasNext())
       throw new NoSuchElementException("No more elements in the iterator!");
-    }
 
     ArrayList<SectionMetadata> sections = new ArrayList<>();
     CourseMetadata course;
 
     try {
-      course = ParseCatalog.parseCourseHeader(currentElement);
+      course = parseCourseHeader(currentElement);
     } catch (IOException e) {
       logger.error("parseCourseHeader threw with node={}", currentElement);
       throw new RuntimeException(e);
@@ -282,6 +266,14 @@ class CatalogParser implements Iterator<Course> {
       currentElement = null;
 
     return course.getCourse(sections);
+  }
+
+  private static <T> Optional<T> safeNext(Iterator<T> iterator) {
+    if (iterator.hasNext()) {
+      return Optional.of(iterator.next());
+    } else {
+      return Optional.empty();
+    }
   }
 }
 
@@ -349,13 +341,6 @@ class SectionMetadata {
     return Section.getSection(registrationNumber, sectionNumber, instructor,
                               type, status, meetings, null);
   }
-
-  int getRegistrationNumber() { return registrationNumber; }
-  int getSectionNumber() { return sectionNumber; }
-  SectionType getType() { return type; }
-  String getInstructor() { return instructor; }
-  SectionStatus getStatus() { return status; }
-  List<Meeting> getMeetings() { return meetings; }
 }
 
 /**
@@ -380,10 +365,6 @@ class CourseMetadata {
     return new Course(courseId, courseName, deptCourseNumber,
                       SectionMetadata.getSectionsFrom(sections));
   }
-
-  public String getCourseName() { return courseName; }
-  public Long getCourseId() { return courseId; }
-  public Long getDeptCourseNumber() { return deptCourseNumber; }
 
   @Override
   public String toString() {

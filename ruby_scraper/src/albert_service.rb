@@ -13,8 +13,8 @@ class AlbertListingsService
 
 	def start
 		schools.each do |school|
-			school[:subjects].each do |subject|
-				task = listings_task school[:shortname], subject[:shortname]
+			school[:subjectCodes].each do |subjectCode|
+				task = listings_task school[:shortname], subjectCode[:shortname]
 				tasks << task
 				task.execute
 			end
@@ -39,8 +39,8 @@ class AlbertListingsService
 	def build_listings_map schools
 		subjects_map = {}
 		schools.each do |school|
-			school[:subjects].each do |subject|
-				subjects_map[subject[:shortname]] = subject
+			school[:subjectCodes].each do |subjectCode|
+				subjects_map[subjectCode[:shortname]] = subjectCode
 			end
 		end
 	end

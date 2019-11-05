@@ -18,8 +18,8 @@ class AlbertClient
 
 	def schools term_shortname
 		get_schools.each do |school|
-			school[:subjects].each do |subject|
-				subject[:listings] = get_listings term_shortname, school[:shortname], subject[:shortname]
+			school[:subjectCodes].each do |subjectCode|
+				subjectCode[:listings] = get_listings term_shortname, school[:shortname], subjectCode[:shortname]
 			end
 		end
 	end
@@ -46,13 +46,13 @@ class AlbertClient
 
 	private
 
-	def post_request_xml term, school, subject
+	def post_request_xml term, school, subjectCode
 		url = URI::join ALBERT_ROOT, term.to_s
 		form_body = {
 			CSRFToken: @csrf_token,
 			term: term,
 			acad_group: school,
-			subject: subject
+			subjectCode: subjectCode
 		}
 		request_html :post, ALBERT_DATA, nil, form_body, { Referer: url }
 	end

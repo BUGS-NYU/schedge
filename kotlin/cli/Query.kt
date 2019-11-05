@@ -5,7 +5,7 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
-import models.Subject
+import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import services.queryCatalog
@@ -32,25 +32,13 @@ internal class Query : CliktCommand(name = "query") {
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()
-        private val school: String by option("--school").required()
-        private val subject: String by option("--subject").required()
-        // private val catalogNumber: Int? by option("--catalog-number").int().restrictTo(0..Int.MAX_VALUE)
-        // private val keywords: String? by option("--keywords")
-        // private val classNumber: Int? by option("--class-number").int().restrictTo(0..Int.MAX_VALUE)
-        // private val location: String? by option("--location")
-        private val file: String? by option("--file")
+        private val school: String by option("--school", help = "The school to use in the query.").required()
+        private val subject: String by option("--subject", help = "The subject to use in the query.").required()
+        private val outputFile: String? by option(help = "The file to output to. If none provided, prints to stdout.")
 
         override fun run() =
-            file.writeToFileOrStdout(
-                queryCatalog(
-                    KotlinLogging.logger("query.catalog"),
-                    term = term,
-                    subjects = arrayOf(Subject(subject, school))
-                    // catalogNumber = catalogNumber,
-                    // keywords = keywords,
-                    // classNumber = classNumber,
-                    // location = location
-                )
+            outputFile.writeToFileOrStdout(
+                queryCatalog(logger, term, SubjectCode(subject, school)).toList()
             )
 
     }

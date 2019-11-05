@@ -39,10 +39,7 @@ enum class SectionStatus {
         @JvmStatic
         fun parseStatus(status: String): SectionStatus {
             return when (status) {
-                "Open" -> Open
-                "Closed" -> Closed
                 "Wait List" -> WaitList
-                "Cancelled" -> Cancelled
                 else -> valueOf(status)
             }
         }
@@ -71,8 +68,8 @@ class Subject {
 
     companion object {
         fun allSubjects(forSchool: String? = null): Sequence<Subject> {
-            if (forSchool == null) {
-                return AvailableSubjects.asSequence().map { pair ->
+            return if (forSchool == null) {
+                AvailableSubjects.asSequence().map { pair ->
                     pair.value.asSequence().map {
                         Subject(it, pair.key, Unit)
                     }
@@ -80,7 +77,7 @@ class Subject {
             } else {
                 val subjects = AvailableSubjects[forSchool.toUpperCase()]
                 require(subjects != null) { "Must provide a valid school code!" }
-                return subjects.asSequence().map { Subject(it, forSchool, Unit) }
+                subjects.asSequence().map { Subject(it, forSchool, Unit) }
             }
         }
     }
@@ -114,10 +111,6 @@ class Subject {
         val subjects = AvailableSubjects[this.school]
         require(subjects != null) { "School must be valid" }
         require(subjects.contains(this.subject)) { "Subject must be valid!" }
-    }
-
-    init {
-
     }
 
     override fun toString(): String = abbrev

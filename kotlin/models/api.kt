@@ -83,7 +83,6 @@ data class Meeting(
     val duration: Duration, // Duration of meeting
     val activeDuration: Duration // How long after the begin that this event can start. Meetings implicitly meet weekly.
 ) {
-    companion object {}
 
     constructor(beginDate: DateTime, duration: Long, activeDuration: Long) : this(
         beginDate,

@@ -32,6 +32,7 @@ data class Duration(
             return Duration(days * 1440) // 60 * 24
         }
     }
+
     init {
         require(minutes >= 0) {
             "Duration cannot be negative! (Given value was $minutes)"
@@ -55,7 +56,7 @@ class Days(vararg days: DayOfWeek) {
         }
     }
 
-    constructor(days: String): this(*days.chunked(2).map {
+    constructor(days: String) : this(*days.chunked(2).map {
         when (it) {
             "Mo" -> DayOfWeek.MONDAY
             "Tu" -> DayOfWeek.TUESDAY

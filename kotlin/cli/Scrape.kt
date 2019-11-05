@@ -5,8 +5,11 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
-import models.*
+import models.SubjectCode
+import models.Term
 import mu.KotlinLogging
+import services.JsonMapper
+import services.scrapeFromCatalog
 import writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
@@ -36,7 +39,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
         override fun run() =
             file.writeToFileOrStdout(
-                TODO()
+                JsonMapper.toJson(scrapeFromCatalog(logger, term, listOf(SubjectCode(subject, school))))
             )
 
     }

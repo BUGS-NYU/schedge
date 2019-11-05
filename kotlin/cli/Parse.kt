@@ -6,7 +6,8 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import mu.KotlinLogging
 import readFromFileOrStdin
-import services.parseCatalog
+import services.JsonMapper
+import services.ParseCatalog
 import writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
@@ -37,8 +38,8 @@ internal class Parse : CliktCommand(name = "parse") {
         // TODO Add this from Parser.parseCourse
         override fun run() {
             val input = inputFile.readFromFileOrStdin()
-            val output = parseCatalog(logger, input)
-            outputFile.writeToFileOrStdout(output)
+            val output = ParseCatalog.parse(logger, input)
+            outputFile.writeToFileOrStdout(JsonMapper.toJson(output))
         }
     }
 

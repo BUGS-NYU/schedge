@@ -24,18 +24,11 @@ schedge serve # TODO serves data to API
 
 ### Code organization
 - Kotlin code handles IO and defines most classes (`kotlin/`
-  - `models` contains class definitions for modeling database contents
+  - `models` contains class definitions for modeling data
     - `chrono.kt` defines time-related classes
     - `api.kt` defines classes that are printed in the API
     - `nyu.kt` defines classes that describe NYU
-    - `scraping.kt` defines classes that are returned from the scraper
   - `cli` contains definitions for the command-line interface
-    - `Serve.kt` contains definitions of the API
-  - `database` contains functions and definitions related to the database
-    - `connect.kt` defines a function `connectToDatabase` which must be run
-      exactly once before doing any database-related actions
-    - `schema.kt` defines the schema of the database
-    - `write.kt` defines how the classes in `scraping.kt` can write to the database
   - `services` defines high-level actions that Schedge can perform
 - Java code handles business logic
   - Parsing

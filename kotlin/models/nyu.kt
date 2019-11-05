@@ -30,19 +30,16 @@ enum class SectionType {
 }
 
 enum class SectionStatus {
-  Open, // Open
-  Closed, // Closed
-  WaitList, // Waitlist
-  Cancelled; // Cancelled
+    Open, // Open
+    Closed, // Closed
+    WaitList, // Waitlist
+    Cancelled; // Cancelled
 
     companion object {
         @JvmStatic
         fun parseStatus(status: String): SectionStatus {
             return when (status) {
-                "Open" -> Open
-                "Closed" -> Closed
                 "Wait List" -> WaitList
-                "Cancelled" -> Cancelled
                 else -> valueOf(status)
             }
         }
@@ -54,7 +51,7 @@ enum class SectionStatus {
 
 }
 
-private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
+private val AvailableSubjects: Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
     Pair(subj, school)
 }.let {
@@ -67,26 +64,26 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
     availSubjects
 }
 
-class Subject  {
+class SubjectCode {
 
     companion object {
-        fun allSubjects(forSchool: String? = null): Sequence<Subject> {
-            if (forSchool == null) {
-                return AvailableSubjects.asSequence().map { pair ->
+        fun allSubjects(forSchool: String? = null): Sequence<SubjectCode> {
+            return if (forSchool == null) {
+                AvailableSubjects.asSequence().map { pair ->
                     pair.value.asSequence().map {
-                        Subject(it, pair.key, Unit)
+                        SubjectCode(it, pair.key, Unit)
                     }
                 }.flatten()
             } else {
                 val subjects = AvailableSubjects[forSchool.toUpperCase()]
                 require(subjects != null) { "Must provide a valid school code!" }
-                return subjects.asSequence().map { Subject(it, forSchool, Unit) }
+                subjects.asSequence().map { SubjectCode(it, forSchool, Unit) }
             }
         }
     }
 
-    val subject : String
-    val school : String
+    val subject: String
+    val school: String
     val abbrev: String
         inline get() {
             return "$subject-$school"
@@ -98,7 +95,8 @@ class Subject  {
         school = schoolString.toUpperCase()
         unused.hashCode() // To silence errors
     }
-    constructor(abbrevString: String, schoolString: String){
+
+    constructor(abbrevString: String, schoolString: String) {
         subject = abbrevString.toUpperCase()
         school = schoolString.toUpperCase()
         val subjects = AvailableSubjects[school]
@@ -115,13 +113,9 @@ class Subject  {
         require(subjects.contains(this.subject)) { "Subject must be valid!" }
     }
 
-    init {
-
-    }
-
     override fun toString(): String = abbrev
     override fun hashCode(): Int {
-      return abbrev.hashCode()
+        return abbrev.hashCode()
     }
 }
 

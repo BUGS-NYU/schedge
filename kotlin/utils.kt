@@ -1,5 +1,4 @@
 import java.io.File
-import java.util.*
 
 fun String.asResourceLines(): List<String> {
     val resource = object {}::class.java.getResource(this)
@@ -39,6 +38,7 @@ object Tuple {
     operator fun <A, B, C, D> invoke(_1: A, _2: B, _3: C, _4: D): T.T4<A, B, C, D> = T.T4(_1, _2, _3, _4)
 
 }
+
 sealed class T {
 
     data class T1<out A>(val _1: A) : T() {

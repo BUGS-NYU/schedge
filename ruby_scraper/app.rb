@@ -13,7 +13,7 @@ def pps data
 	"<pre>#{JSON.pretty_generate(data)}</pre>"
 end
 
-def get_data(term, school, subject)
+def get_data(term, school, subjectCode)
 	$albert_client.schools term
 end
 
@@ -34,11 +34,11 @@ get "/metadata/:keyword" do
 	pps $albert_client.send(params[:keyword])
 end
 
-get "/metadata/subjects/:school_shortname" do
+get "/metadata/subjectCodes/:school_shortname" do
 	pps nil
 end
 
 get "/test/:test_data" do
-	term, school, subject = params[:test_data].split(',')
-	get_data(term, school, subject)
+	term, school, subjectCode = params[:test_data].split(',')
+	get_data(term, school, subjectCode)
 end

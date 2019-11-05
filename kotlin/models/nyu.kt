@@ -30,10 +30,10 @@ enum class SectionType {
 }
 
 enum class SectionStatus {
-  Open, // Open
-  Closed, // Closed
-  WaitList, // Waitlist
-  Cancelled; // Cancelled
+    Open, // Open
+    Closed, // Closed
+    WaitList, // Waitlist
+    Cancelled; // Cancelled
 
     companion object {
         @JvmStatic
@@ -54,7 +54,7 @@ enum class SectionStatus {
 
 }
 
-private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
+private val AvailableSubjects: Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
     Pair(subj, school)
 }.let {
@@ -67,7 +67,7 @@ private val AvailableSubjects : Map<String, Set<String>> = "subjects.txt".asReso
     availSubjects
 }
 
-class Subject  {
+class Subject {
 
     companion object {
         fun allSubjects(forSchool: String? = null): Sequence<Subject> {
@@ -85,8 +85,8 @@ class Subject  {
         }
     }
 
-    val subject : String
-    val school : String
+    val subject: String
+    val school: String
     val abbrev: String
         inline get() {
             return "$subject-$school"
@@ -98,7 +98,8 @@ class Subject  {
         school = schoolString.toUpperCase()
         unused.hashCode() // To silence errors
     }
-    constructor(abbrevString: String, schoolString: String){
+
+    constructor(abbrevString: String, schoolString: String) {
         subject = abbrevString.toUpperCase()
         school = schoolString.toUpperCase()
         val subjects = AvailableSubjects[school]
@@ -121,7 +122,7 @@ class Subject  {
 
     override fun toString(): String = abbrev
     override fun hashCode(): Int {
-      return abbrev.hashCode()
+        return abbrev.hashCode()
     }
 }
 

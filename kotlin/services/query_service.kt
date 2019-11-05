@@ -14,14 +14,14 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Sequence<String> {
+fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Sequence<Pair<Subject, String>> {
     logger.info { "querying catalog for term=$term multiple subjects..." }
     val client = AlbertClient()
 
-    return sequenceOf(*subjects).map {subject ->
+    return sequenceOf(*subjects).map { subject ->
         logger.info { "Querying catalog with subject=$subject" }
         val params = mutableListOf( // URL params
-           BasicNameValuePair("CSRFToken", client.csrfToken),
+            BasicNameValuePair("CSRFToken", client.csrfToken),
             BasicNameValuePair("term", term.id.toString()),
             BasicNameValuePair("acad_group", subject.school),
             BasicNameValuePair("subject", subject.abbrev)
@@ -38,7 +38,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjects: Array<out Subject>): Seq
         if (result == "No classes found matching your criteria.") {
             throw IOException("No classes found matching criteria school=${subject.school}, subject=${subject.abbrev}")
         } else {
-            result
+            Pair(subject, result)
         }
     }
 }

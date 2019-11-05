@@ -7,23 +7,23 @@
     </appender>
 
     <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
     <logger name="com.zaxxer.hikari.HikariConfig" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
     <logger name="com.zaxxer.hikari.pool.PoolBase" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
 
     <logger name="parse.catalog" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
     <logger name="parse.catalog.meetings" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
     <logger name="Exposed" level="INFO" additivity="false">
-        <appender-ref ref="STDERR" />
+        <appender-ref ref="STDERR"/>
     </logger>
     <root level="INFO">
         <appender-ref ref="STDERR"/>

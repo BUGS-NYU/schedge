@@ -1,6 +1,6 @@
 package services
 
-import models.CatalogEntry
+import models.Course
 import mu.KLogger
 import org.jsoup.Jsoup
 import parse.ParseCatalog
@@ -13,12 +13,12 @@ import java.io.IOException
  *
  * @author Albert Liu
  */
-fun parseCatalog(logger: KLogger, inputData: String): Sequence<CatalogEntry> {
+fun parseCatalog(logger: KLogger, inputData: String): List<Course> {
     return Jsoup.parse(inputData).let {
         if (it == null) {
             logger.error { "Jsoup returned a null for provided input ${inputData}." }
             throw IOException("Couldn't parse input!")
         }
         it
-    }.let { ParseCatalog.parse(it).asSequence() }
+    }.let { ParseCatalog.parse(it).asSequence().toList() }
 }

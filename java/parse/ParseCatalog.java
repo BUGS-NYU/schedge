@@ -26,7 +26,7 @@ public class ParseCatalog {
   /**
    * Get formatted course data from a catalog query result.
    */
-  public static Iterator<CatalogEntry> parse(Document data) throws IOException {
+  public static Iterator<Course> parse(Document data) throws IOException {
     return new CatalogParser(data);
   }
 
@@ -44,7 +44,6 @@ public class ParseCatalog {
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
     }
 
-    String subject = text.substring(0, textIndex1);
     Long deptCourseNumber =
         Long.parseLong(text.substring(textIndex1 + 1, textIndex2));
     String courseName = text.substring(textIndex2 + 3);
@@ -57,74 +56,10 @@ public class ParseCatalog {
         break;
     Long courseId = Long.parseLong(idString.substring(idIndex));
 
-    return new CourseMetadata(courseName, subject, courseId, deptCourseNumber);
+    return new CourseMetadata(courseId, courseName, deptCourseNumber);
   }
 
-  /*
-    <a href="https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/1198/8699">
-        <i class="ico-arrow-right pull-right right-icon"></i>
-        <div class="strong section-body">Section: 001-LEC (8699)</div> <div
-    class="section-body">Session: Regular Academic Session</div> <div
-    class="section-body">Days/Times: MoWe 9:30am
-      - 10:45am</div> <div class="section-body">Dates: 09/03/2019 -
-    12/13/2019</div> <div class="section-body">Instructor: Shizhu Liu</div> <div
-    class="section-body">Status: Open</div>
-    </div> </a>
-  */
-  static CatalogSectionEntry
-  parseSectionNode(Element anchorTag, CatalogSectionEntry associatedWith)
-      throws IOException {
-    HashMap<String, String> sectionData = new HashMap<>();
-
-    { // TODO Needs to be parsed using hashtable, not indices
-      Elements dataDivChildren =
-          anchorTag.select("div.section-content > div.section-body");
-
-      for (Element child : dataDivChildren) {
-        addSectionFieldString(sectionData, child.text());
-      }
-      logger.trace("Section field strings are: {}", sectionData);
-    }
-
-    int registrationNumber, sectionNumber;
-    SectionType type;
-
-    try {
-      String header = sectionData.get("Section");
-      int headerDashIdx = header.indexOf('-');
-      registrationNumber = Integer.parseInt(
-          header.substring(header.indexOf('(') + 1, header.length() - 1));
-      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
-      type = SectionType.valueOf(header.substring(
-          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
-    } catch (Exception e) {
-      logger.error("parseSectionNode throwing with section data: {}",
-                   sectionData);
-      throw e;
-    }
-
-    List<Meeting> meetings = parseSectionTimesData(
-        sectionData.get("Days/Times"), sectionData.get("Dates"));
-
-    return new CatalogSectionEntry(
-        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
-        type == SectionType.LEC ? null : associatedWith,
-        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
-  }
-
-  private static void
-  addSectionFieldString(HashMap<String, String> sectionFieldData,
-                        String field) {
-    int splitIndex = field.indexOf(": ");
-    if (splitIndex < 0) {
-      logger.debug("Failed to parse '" + field + "' as a section field.");
-      return;
-    }
-    sectionFieldData.put(field.substring(0, splitIndex),
-                         field.substring(splitIndex + 2));
-  }
-
-  private static List<Meeting> parseSectionTimesData(String times, String dates)
+  static List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
     meetingsLogger.debug("Parsing section times data...");
     // MoWe 9:30am - 10:45am Fr
@@ -132,7 +67,6 @@ public class ParseCatalog {
 
     // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
-    // TODO Optimize this
     Iterator<String> timeTokens =
         StringsKt.split(times, new char[] {' '}, false, 0)
             .stream()
@@ -146,7 +80,7 @@ public class ParseCatalog {
             .iterator();
 
     ArrayList<Meeting> meetings = new ArrayList<>();
-    for (; timeTokens.hasNext();) {
+    while (timeTokens.hasNext()) {
       if (!dateTokens.hasNext()) {
         meetingsLogger.error(
             "Time/date was in unexpected format: time='{}', date='{}'", times,
@@ -166,14 +100,14 @@ public class ParseCatalog {
       Duration duration;
       {
         String beginDateString = dateTokens.next();
-        String beginDateTimeString =
-            beginDateString + ' ' + timeTokens.next().toUpperCase();
-        String endDateTimeString =
-            beginDateString + ' ' + timeTokens.next().toUpperCase();
 
-        beginDateTime = timeParser.parseDateTime(beginDateTimeString);
+        beginDateTime = timeParser.parseDateTime(
+            beginDateString + ' ' + timeTokens.next().toUpperCase());
         long durationMillis =
-            timeParser.parseDateTime(endDateTimeString).getMillis() -
+            timeParser
+                .parseDateTime(beginDateString + ' ' +
+                               timeTokens.next().toUpperCase())
+                .getMillis() -
             beginDateTime.getMillis();
         meetingsLogger.debug("Duration of meeting is {}", durationMillis);
         duration = new Duration(durationMillis / 6000);
@@ -226,9 +160,9 @@ public class ParseCatalog {
  *
  * @author Albert Liu
  */
-class CatalogParser implements Iterator<CatalogEntry> {
-  private Iterator<Element> elements;
+class CatalogParser implements Iterator<Course> {
   private static Logger logger = LoggerFactory.getLogger("parse.catalog");
+  private Iterator<Element> elements;
   private Element currentElement;
 
   CatalogParser(Document data) throws IOException {
@@ -245,11 +179,66 @@ class CatalogParser implements Iterator<CatalogEntry> {
                    + "a list whose first element was not a 'div'.");
       throw new IOException("NYU sent back data we weren't expecting.");
     } else if (currentElement.text().equals(
-                   "No classes found matching your criteria.")) { // We're done,
-                                                                  // nothing's
-                                                                  // here
-      currentElement = null;
+                   "No classes found matching your criteria.")) {
+      currentElement = null; // We're done, nothing's here
     }
+  }
+
+  /*
+    <a href="https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/1198/8699">
+        <i class="ico-arrow-right pull-right right-icon"></i>
+        <div class="strong section-body">Section: 001-LEC (8699)</div> <div
+    class="section-body">Session: Regular Academic Session</div> <div
+    class="section-body">Days/Times: MoWe 9:30am
+      - 10:45am</div> <div class="section-body">Dates: 09/03/2019 -
+    12/13/2019</div> <div class="section-body">Instructor: Shizhu Liu</div> <div
+    class="section-body">Status: Open</div>
+    </div> </a>
+  */
+  static SectionMetadata parseSectionNode(Element anchorTag)
+      throws IOException {
+    HashMap<String, String> sectionData = sectionFieldTable(
+        anchorTag.select("div.section-content > div.section-body"));
+    logger.trace("Section field strings are: {}", sectionData);
+
+    int registrationNumber, sectionNumber;
+    SectionType type;
+
+    try {
+      String header = sectionData.get("Section");
+      int headerDashIdx = header.indexOf('-');
+      registrationNumber = Integer.parseInt(
+          header.substring(header.indexOf('(') + 1, header.length() - 1));
+      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
+      type = SectionType.valueOf(header.substring(
+          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
+    } catch (Exception e) {
+      logger.error("parseSectionNode throwing with section data: {}",
+                   sectionData);
+      throw e;
+    }
+
+    List<Meeting> meetings = ParseCatalog.parseSectionTimesData(
+        sectionData.get("Days/Times"), sectionData.get("Dates"));
+
+    return new SectionMetadata(
+        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
+        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
+  }
+
+  private static HashMap<String, String> sectionFieldTable(Elements fields) {
+    HashMap<String, String> map = new HashMap<>();
+    for (Element child : fields) {
+      String field = child.text();
+      int splitIndex = field.indexOf(": ");
+      if (splitIndex < 0) {
+        logger.debug("Failed to parse '{}' as a section field.", field);
+      } else {
+        map.put(field.substring(0, splitIndex),
+                field.substring(splitIndex + 2));
+      }
+    }
+    return map;
   }
 
   @Override
@@ -259,20 +248,19 @@ class CatalogParser implements Iterator<CatalogEntry> {
 
   @Override
   @NotNull
-  public CatalogEntry next() {
+  public Course next() {
 
     if (!hasNext()) {
       throw new NoSuchElementException("No more elements in the iterator!");
     }
 
-    ArrayList<CatalogSectionEntry> sections = new ArrayList<>();
-    CatalogSectionEntry lectureEntry = null;
-    CourseMetadata current;
+    ArrayList<SectionMetadata> sections = new ArrayList<>();
+    CourseMetadata course;
 
     try {
-      current = ParseCatalog.parseCourseHeader(currentElement);
+      course = ParseCatalog.parseCourseHeader(currentElement);
     } catch (IOException e) {
-      logger.error("parseCourseNode threw with node={}", currentElement);
+      logger.error("parseCourseHeader threw with node={}", currentElement);
       throw new RuntimeException(e);
     }
 
@@ -282,51 +270,124 @@ class CatalogParser implements Iterator<CatalogEntry> {
 
     while (elements.hasNext() &&
            !(currentElement = elements.next()).tagName().equals("div")) {
-      CatalogSectionEntry entry;
       try {
-        entry = ParseCatalog.parseSectionNode(currentElement, lectureEntry);
+        sections.add(parseSectionNode(currentElement));
       } catch (Exception e) {
-        logger.error("parseSectionNode threw with course={}", current);
+        logger.error("parseSectionNode threw with course={}", course);
         throw new RuntimeException(e);
       }
-
-      if (entry.getType() == SectionType.LEC) {
-        lectureEntry = entry;
-      }
-      sections.add(entry);
     }
 
     if (!elements.hasNext())
       currentElement = null;
 
-    return current.getCatalogEntry(sections);
+    return course.getCourse(sections);
   }
 }
 
+/**
+ * Metadata for a single section, without nesting of sections.
+ *
+ * @author Albert Liu
+ */
+class SectionMetadata {
+  private int registrationNumber;
+  private int sectionNumber;
+  private SectionType type;
+  private String instructor;
+  private SectionStatus status;
+  private List<Meeting> meetings;
+
+  public SectionMetadata(int registrationNumber, int sectionNumber,
+                         SectionType type, String instructor,
+                         SectionStatus status, List<Meeting> meetings) {
+    this.registrationNumber = registrationNumber;
+    this.sectionNumber = sectionNumber;
+    this.type = type;
+    this.instructor = instructor;
+    this.status = status;
+    this.meetings = meetings;
+  }
+
+  @NotNull
+  static ArrayList<Section>
+  getSectionsFrom(ArrayList<SectionMetadata> sectionData) {
+    ArrayList<Section> sections = new ArrayList<>();
+
+    int size = sectionData.size();
+
+    for (int cursor = 0; cursor < size; cursor++) {
+      SectionMetadata current = sectionData.get(cursor);
+      if (current.type == SectionType.LEC) {
+        ArrayList<Section> recitations = new ArrayList<>();
+        for (int nestedCursor = cursor + 1;
+             nestedCursor < size &&
+             sectionData.get(nestedCursor).type != SectionType.LEC;
+             nestedCursor++) {
+          recitations.add(
+              sectionData.get(nestedCursor).toSectionWithoutRecitations());
+        }
+
+        if (recitations.size() > 0) {
+          sections.add(current.toLectureWithRecitations(recitations));
+          cursor += recitations.size();
+        }
+      } else {
+        sections.add(current.toSectionWithoutRecitations());
+      }
+    }
+
+    return sections;
+  }
+
+  Section toLectureWithRecitations(ArrayList<Section> recitations) {
+    return new Section.Lecture(registrationNumber, sectionNumber, instructor,
+                               status, meetings, recitations);
+  }
+
+  Section toSectionWithoutRecitations() {
+    return Section.getSection(registrationNumber, sectionNumber, instructor,
+                              type, status, meetings, null);
+  }
+
+  int getRegistrationNumber() { return registrationNumber; }
+  int getSectionNumber() { return sectionNumber; }
+  SectionType getType() { return type; }
+  String getInstructor() { return instructor; }
+  SectionStatus getStatus() { return status; }
+  List<Meeting> getMeetings() { return meetings; }
+}
+
+/**
+ * Metadata for a single course, without sections.
+ *
+ * @author Albert Liu
+ */
 class CourseMetadata {
+
   private String courseName;
-  private String subject;
   private Long courseId;
   private Long deptCourseNumber;
 
-  CourseMetadata(String courseName, String subject, Long courseId,
-                 Long deptCourseNumber) {
+  CourseMetadata(Long courseId, String courseName, Long deptCourseNumber) {
     this.courseName = courseName;
-    this.subject = subject;
     this.courseId = courseId;
     this.deptCourseNumber = deptCourseNumber;
   }
 
   @NotNull
-  CatalogEntry getCatalogEntry(ArrayList<CatalogSectionEntry> sections) {
-    return new CatalogEntry(this.courseName, this.subject, this.courseId,
-                            this.deptCourseNumber, sections);
+  Course getCourse(ArrayList<SectionMetadata> sections) {
+    return new Course(courseId, courseName, deptCourseNumber,
+                      SectionMetadata.getSectionsFrom(sections));
   }
+
+  public String getCourseName() { return courseName; }
+  public Long getCourseId() { return courseId; }
+  public Long getDeptCourseNumber() { return deptCourseNumber; }
 
   @Override
   public String toString() {
-    return "Course(courseName=" + courseName + ", subject=" + subject +
-        ", courseId=" + courseId + ", deptCourseNumber=" + deptCourseNumber +
-        ")";
+    return "CourseData(courseName=" + courseName + ", courseId=" + courseId +
+        ", deptCourseNumber=" + deptCourseNumber + ")";
   }
 }

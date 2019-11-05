@@ -1,2 +1,1 @@
-public class Yacs {
-}
+public class Yacs {}

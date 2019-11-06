@@ -1,6 +1,5 @@
 package services
 
-import kotlinx.coroutines.runBlocking
 import models.SubjectCode
 import models.Term
 import mu.KLogger

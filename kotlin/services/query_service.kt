@@ -15,9 +15,9 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = runBlocking { queryCatalog(logger, term, subjectCode, AlbertClient()) }
+fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = runBlocking { queryCatalog(logger, term, subjectCode, OldAlbertClient()) }
 
-private suspend fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: AlbertClient): String {
+private suspend fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: OldAlbertClient): String {
     logger.info { "querying catalog for term=$term and subject=$subjectCode..." }
     val params = mutableListOf( // URL params
         BasicNameValuePair("CSRFToken", client.csrfToken),
@@ -41,11 +41,11 @@ private suspend fun queryCatalog(logger: KLogger, term: Term, subjectCode: Subje
     }
 }
 
-fun queryCatalog(logger: KLogger, term: Term, subjectCodes: Array<out SubjectCode>): Sequence<Pair<SubjectCode, String>> {
+fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<Pair<SubjectCode, String>> {
     logger.info { "querying catalog for term=$term with multiple subjects..." }
-    val client = AlbertClient()
+    val client = OldAlbertClient()
 
-    return sequenceOf(*subjectCodes).map { subject ->
+    return subjectCodes.asSequence().map { subject ->
         Pair(subject, runBlocking { queryCatalog(logger, term, subject, client) })
     }
 }
@@ -85,7 +85,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjectCodes: Array<out SubjectCod
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
 
-private class AlbertClient {
+private class OldAlbertClient {
     private val logger = KotlinLogging.logger {}
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {

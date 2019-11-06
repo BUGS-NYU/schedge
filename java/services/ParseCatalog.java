@@ -22,24 +22,22 @@ import org.slf4j.LoggerFactory;
  */
 public class ParseCatalog implements Iterator<Course> {
   private Logger logger;
-  private Logger sectionsLogger;
-  private Logger meetingsLogger;
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
   private Iterator<Element> elements;
   private Element currentElement;
 
-  public static List<Course> parse(Logger logger, String data) throws IOException {
+  public static List<Course> parse(Logger logger, String data)
+      throws IOException {
     ArrayList<Course> courses = new ArrayList<>();
-    new ParseCatalog(logger, Jsoup.parse(data)).forEachRemaining(c -> courses.add(c));
+    new ParseCatalog(logger, Jsoup.parse(data))
+        .forEachRemaining(c -> courses.add(c));
     return courses;
   }
 
-  ParseCatalog(Logger logger, Document data) throws IOException {
+  private ParseCatalog(Logger logger, Document data) throws IOException {
     elements = data.select("div.primary-head ~ *").iterator();
-    this.logger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog");
-    this.meetingsLogger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog.sections");
-    this.meetingsLogger = LoggerFactory.getLogger(logger.getName() + "::parse.catalog.meetings");
+    this.logger = LoggerFactory.getLogger(logger.getName());
 
     if (!elements.hasNext()) {
       logger.error("CSS query `div.primary-head ~ *` returned no values.");
@@ -65,11 +63,12 @@ public class ParseCatalog implements Iterator<Course> {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  SectionMetadata parseSectionNode(Element anchorTag)
-      throws IOException {
+  SectionMetadata parseSectionNode(Element anchorTag) throws IOException {
     HashMap<String, String> sectionData = sectionFieldTable(
         anchorTag.select("div.section-content > div.section-body"));
-    sectionsLogger.debug("Section field strings are: {}", sectionData);
+    if (sectionData == null)
+      System.out.println("fuck me");
+    logger.debug("Section field strings are: {}", sectionData);
 
     int registrationNumber, sectionNumber;
     SectionType type;
@@ -83,7 +82,7 @@ public class ParseCatalog implements Iterator<Course> {
       type = SectionType.valueOf(header.substring(
           headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
     } catch (Exception e) {
-      sectionsLogger.error("parseSectionNode throwing with section data: {}",
+      logger.error("parseSectionNode throwing with section data: {}",
                    sectionData);
       throw e;
     }
@@ -141,7 +140,7 @@ public class ParseCatalog implements Iterator<Course> {
 
   List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
-    meetingsLogger.debug("Parsing section times data...");
+    logger.debug("Parsing section times data...");
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
@@ -162,9 +161,8 @@ public class ParseCatalog implements Iterator<Course> {
     ArrayList<Meeting> meetings = new ArrayList<>();
     while (timeTokens.hasNext()) {
       if (!dateTokens.hasNext()) {
-        meetingsLogger.error(
-            "Time/date was in unexpected format: time='{}', date='{}'", times,
-            dates);
+        logger.error("Time/date was in unexpected format: time='{}', date='{}'",
+                     times, dates);
         throw new IOException("Time/date was in unexpected format");
       }
 
@@ -189,7 +187,7 @@ public class ParseCatalog implements Iterator<Course> {
                                timeTokens.next().toUpperCase())
                 .getMillis() -
             beginDateTime.getMillis();
-        meetingsLogger.debug("Duration of meeting is {}", durationMillis);
+        logger.trace("Duration of meeting is {}", durationMillis);
         duration = new Duration(durationMillis / 6000);
       }
 
@@ -201,13 +199,12 @@ public class ParseCatalog implements Iterator<Course> {
             endDate.getMillis() - beginDateTime.getMillis();
         if (activeDurationMillis < 0)
           throw new AssertionError("Active duration should be positive!");
-        meetingsLogger.debug("Active duration of meeting is {}",
-                             activeDurationMillis);
+        logger.trace("Active duration of meeting is {}", activeDurationMillis);
         activeDuration = new Duration(activeDurationMillis / 6000);
       }
 
       Boolean[] daysList = (new Days(beginDays)).toDayNumberArray();
-      meetingsLogger.debug("{}", (Object)daysList);
+      logger.trace("{}", (Object)daysList);
 
       for (int day = 0; day < 7;
            day++, beginDateTime = beginDateTime.plusDays(
@@ -215,8 +212,8 @@ public class ParseCatalog implements Iterator<Course> {
         if (daysList[beginDateTime.getDayOfWeek() - 1]) {
           Duration dayAdjustedActiveDuration =
               activeDuration.minus(Duration.standardDays(day));
-          meetingsLogger.debug("Day adjusted duration of meeting is {}",
-                               dayAdjustedActiveDuration);
+          logger.trace("Day adjusted duration of meeting is {}",
+                       dayAdjustedActiveDuration);
           meetings.add(
               new Meeting(beginDateTime, duration, dayAdjustedActiveDuration));
         }

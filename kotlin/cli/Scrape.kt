@@ -34,13 +34,26 @@ internal class Scrape : CliktCommand(name = "scrape") {
             Term.fromId(Integer.parseInt(it))
         }.required()
         private val school: String by option("--school").required()
-        private val subject: String by option("--subject").required()
+        private val subject: String? by option("--subject")
         private val file: String? by option("--file")
 
-        override fun run() =
-            file.writeToFileOrStdout(
-                JsonMapper.toJson(scrapeFromCatalog(logger, term, listOf(SubjectCode(subject, school))))
-            )
+        override fun run() {
+            val startTime = System.nanoTime()
+            if (subject == null) {
+                file.writeToFileOrStdout(
+                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode.allSubjects(school).toList()).toList())
+                )
+            } else {
+                file.writeToFileOrStdout(
+                    JsonMapper.toJson(scrapeFromCatalog(logger, term, listOf(SubjectCode(subject!!, school))).toList())
+                )
+            }
+
+            val endTime = System.nanoTime()
+            val duration = (endTime - startTime) / 1000000000.0 //divide by 1000000 to get milliseconds.
+            println("$duration seconds")
+
+        }
 
     }
 }

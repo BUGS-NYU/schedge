@@ -9,7 +9,6 @@ import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import services.queryCatalog
-import services.QueryCatalog
 import writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
@@ -39,7 +38,7 @@ internal class Query : CliktCommand(name = "query") {
 
         override fun run() =
             outputFile.writeToFileOrStdout(
-                QueryCatalog.query(logger, term, SubjectCode(subject, school)).asSequence().toList()
+                queryCatalog(logger, term, SubjectCode(subject, school)).asSequence().toList()
             )
 
     }

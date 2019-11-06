@@ -15,9 +15,9 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = runBlocking { queryCatalog(logger, term, subjectCode, OldAlbertClient()) }
+fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = queryCatalog(logger, term, subjectCode, OldAlbertClient())
 
-private suspend fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: OldAlbertClient): String {
+private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: OldAlbertClient): String {
     logger.info { "querying catalog for term=$term and subject=$subjectCode..." }
     val params = mutableListOf( // URL params
         BasicNameValuePair("CSRFToken", client.csrfToken),

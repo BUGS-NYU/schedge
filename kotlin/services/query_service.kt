@@ -46,7 +46,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): 
     val client = AlbertClient()
 
     return subjectCodes.asSequence().map { subject ->
-        Pair(subject, runBlocking { queryCatalog(logger, term, subject, client) })
+        Pair(subject, queryCatalog(logger, term, subject, client))
     }
 }
 

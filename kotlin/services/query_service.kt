@@ -15,9 +15,9 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
 
-fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = queryCatalog(logger, term, subjectCode, OldAlbertClient())
+fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = queryCatalog(logger, term, subjectCode, AlbertClient())
 
-private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: OldAlbertClient): String {
+private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: AlbertClient): String {
     logger.info { "querying catalog for term=$term and subject=$subjectCode..." }
     val params = mutableListOf( // URL params
         BasicNameValuePair("CSRFToken", client.csrfToken),
@@ -43,7 +43,7 @@ private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, 
 
 fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<Pair<SubjectCode, String>> {
     logger.info { "querying catalog for term=$term with multiple subjects..." }
-    val client = OldAlbertClient()
+    val client = AlbertClient()
 
     return subjectCodes.asSequence().map { subject ->
         Pair(subject, runBlocking { queryCatalog(logger, term, subject, client) })
@@ -85,7 +85,7 @@ fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): 
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
 
-private class OldAlbertClient {
+private class AlbertClient {
     private val logger = KotlinLogging.logger {}
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {

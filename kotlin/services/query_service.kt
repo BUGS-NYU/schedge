@@ -40,12 +40,14 @@ private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, 
     }
 }
 
-fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<Pair<SubjectCode, String>> {
-    logger.info { "querying catalog for term=$term with multiple subjects..." }
+fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
+    if (subjectCodes.size > 1) {
+        logger.info { "querying catalog for term=$term with multiple subjects..." }
+    }
     val client = AlbertClient()
 
     return subjectCodes.asSequence().map { subject ->
-        Pair(subject, queryCatalog(logger, term, subject, client))
+        queryCatalog(logger, term, subject, client)
     }
 }
 

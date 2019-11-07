@@ -66,8 +66,6 @@ public class ParseCatalog implements Iterator<Course> {
   SectionMetadata parseSectionNode(Element anchorTag) throws IOException {
     HashMap<String, String> sectionData = sectionFieldTable(
         anchorTag.select("div.section-content > div.section-body"));
-    if (sectionData == null)
-      System.out.println("fuck me");
     logger.debug("Section field strings are: {}", sectionData);
 
     int registrationNumber, sectionNumber;
@@ -123,8 +121,10 @@ public class ParseCatalog implements Iterator<Course> {
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
     }
 
-    Long deptCourseNumber =
-        Long.parseLong(text.substring(textIndex1 + 1, textIndex2));
+    SubjectCode subject =
+        SubjectCode.getUnchecked(text.substring(0, textIndex1));
+    int deptCourseNumber =
+        Integer.parseInt(text.substring(textIndex1 + 1, textIndex2));
     String courseName = text.substring(textIndex2 + 3);
 
     // <div class="secondary-head class-title-header" id=MATHUA9129903>
@@ -135,7 +135,7 @@ public class ParseCatalog implements Iterator<Course> {
         break;
     Long courseId = Long.parseLong(idString.substring(idIndex));
 
-    return new CourseMetadata(courseId, courseName, deptCourseNumber);
+    return new CourseMetadata(courseId, courseName, deptCourseNumber, subject);
   }
 
   List<Meeting> parseSectionTimesData(String times, String dates)
@@ -348,18 +348,21 @@ class SectionMetadata {
 class CourseMetadata {
 
   private String courseName;
-  private Long courseId;
-  private Long deptCourseNumber;
+  private long courseId;
+  private int deptCourseNumber;
+  private SubjectCode subject;
 
-  CourseMetadata(Long courseId, String courseName, Long deptCourseNumber) {
+  CourseMetadata(long courseId, String courseName, int deptCourseNumber,
+                 SubjectCode subject) {
     this.courseName = courseName;
     this.courseId = courseId;
     this.deptCourseNumber = deptCourseNumber;
+    this.subject = subject;
   }
 
   @NotNull
   Course getCourse(ArrayList<SectionMetadata> sections) {
-    return new Course(courseId, courseName, deptCourseNumber,
+    return new Course(courseId, courseName, deptCourseNumber, subject,
                       SectionMetadata.getSectionsFrom(sections));
   }
 

@@ -1,20 +1,41 @@
 package models
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
 import org.joda.time.DateTime
 
 data class Course(
     val nyuCourseId: Long,
     val name: String,
-    val deptCourseNumber: Long,
+    val deptCourseNumber: Int,
+    private val subject: SubjectCode,
     val sections: List<Section>
 ) {
+
+    @JsonCreator
+    private constructor(
+        @JsonProperty("nyu_course_id") nyuCourseId: Long,
+        @JsonProperty("name") name: String,
+        @JsonProperty("dept_course_number") deptCourseNumber: Int,
+        @JsonProperty("subject") subject: String,
+        @JsonProperty("school") school: String,
+        @JsonProperty("sections") sections: List<Section>
+    ) : this(nyuCourseId, name, deptCourseNumber, SubjectCode.getUnchecked(subject, school), sections)
+
+    fun getSubject(): String {
+      return this.subject.subject
+    }
+
+    fun getSchool(): String {
+      return this.subject.school
+    }
+
 }
 
 sealed class Section(val type: SectionType) {
 
     companion object {
-
         @JvmStatic
         fun getSection(
             registrationNumber: Int,

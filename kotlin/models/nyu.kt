@@ -80,6 +80,17 @@ class SubjectCode {
                 subjects.asSequence().map { SubjectCode(it, forSchool, Unit) }
             }
         }
+
+        @JvmStatic
+        fun getUnchecked(subjectString: String): SubjectCode {
+          val (subject, school) = subjectString.split('-')
+          return SubjectCode(subject, school, Unit)
+        }
+
+        @JvmStatic
+        fun getUnchecked(subject: String, school: String): SubjectCode {
+          return SubjectCode(subject, school, Unit)
+        }
     }
 
     val subject: String

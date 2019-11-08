@@ -12,10 +12,27 @@ public class JsonMapper {
           PropertyNamingStrategy.CAMEL_CASE_TO_LOWER_CASE_WITH_UNDERSCORES);
 
   public static String toJson(Object o) throws JsonProcessingException {
-    return objMapper.writeValueAsString(o);
+    return toJson(o, false);
   }
 
   public static void toJsonFile(String fileName, Object o) throws IOException {
-    objMapper.writeValue(new File(fileName), o);
+    toJsonFile(fileName, o, false);
+  }
+
+  public static String toJson(Object o, boolean prettyPrint)
+      throws JsonProcessingException {
+    if (prettyPrint)
+      return objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+    else
+      return objMapper.writeValueAsString(o);
+  }
+
+  public static void toJsonFile(String fileName, Object o, boolean prettyPrint)
+      throws IOException {
+    if (prettyPrint)
+      objMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName),
+                                                            o);
+    else
+      objMapper.writeValue(new File(fileName), o);
   }
 }

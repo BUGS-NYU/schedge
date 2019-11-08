@@ -7,6 +7,8 @@ enum class SectionType {
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
+    PCT, // Unknown
+    INT, // Unknown
     RSC, // Unknown
     FLD, // Unknown
     SIM, // Unknown
@@ -17,6 +19,7 @@ enum class SectionType {
     WKS, // Unknown
     IND;  // independent study
 
+    // @HelpWanted Get names for all of these section types
     fun getName(): String {
         return when (this) {
             LEC -> "Lecture"

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonValue
 import org.joda.time.DateTime
 
 data class Course(
-    val nyuCourseId: Long,
     val name: String,
     val deptCourseNumber: Int,
     private val subject: SubjectCode,
@@ -15,13 +14,12 @@ data class Course(
 
     @JsonCreator
     private constructor(
-        @JsonProperty("nyu_course_id") nyuCourseId: Long,
         @JsonProperty("name") name: String,
         @JsonProperty("dept_course_number") deptCourseNumber: Int,
         @JsonProperty("subject") subject: String,
         @JsonProperty("school") school: String,
         @JsonProperty("sections") sections: List<Section>
-    ) : this(nyuCourseId, name, deptCourseNumber, SubjectCode.getUnchecked(subject, school), sections)
+    ) : this(name, deptCourseNumber, SubjectCode.getUnchecked(subject, school), sections)
 
     fun getSubject(): String {
       return this.subject.subject
@@ -39,7 +37,7 @@ sealed class Section(val type: SectionType) {
         @JvmStatic
         fun getSection(
             registrationNumber: Int,
-            sectionNumber: Int,
+            sectionCode: String,
             instructor: String,
             type: SectionType,
             status: SectionStatus,
@@ -47,18 +45,18 @@ sealed class Section(val type: SectionType) {
             recitations: List<Section>?
         ): Section {
             return when (type) {
-                SectionType.LEC -> Lecture(registrationNumber, sectionNumber, instructor, status, meetings, recitations)
+                SectionType.LEC -> Lecture(registrationNumber, sectionCode, instructor, status, meetings, recitations)
                 SectionType.RCT -> {
                     require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
-                    Recitation(registrationNumber, sectionNumber, instructor, status, meetings)
+                    Recitation(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.LAB -> {
                     require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
-                    Lab(registrationNumber, sectionNumber, instructor, status, meetings)
+                    Lab(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 else -> {
                     require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
-                    Other(registrationNumber, sectionNumber, instructor, status, type, meetings)
+                    Other(registrationNumber, sectionCode, instructor, status, type, meetings)
                 }
             }
         }
@@ -66,7 +64,7 @@ sealed class Section(val type: SectionType) {
 
     data class Lecture(
         val registrationNumber: Int,
-        val sectionNumber: Int,
+        val sectionCode: String,
         val instructor: String,
         val status: SectionStatus,
         val meetings: List<Meeting>,
@@ -75,7 +73,7 @@ sealed class Section(val type: SectionType) {
 
     data class Recitation(
         val registrationNumber: Int,
-        val sectionNumber: Int,
+        val sectionCode: String,
         val instructor: String,
         val status: SectionStatus,
         val meetings: List<Meeting>
@@ -83,7 +81,7 @@ sealed class Section(val type: SectionType) {
 
     data class Lab(
         val registrationNumber: Int,
-        val sectionNumber: Int,
+        val sectionCode: String,
         val instructor: String,
         val status: SectionStatus,
         val meetings: List<Meeting>
@@ -91,7 +89,7 @@ sealed class Section(val type: SectionType) {
 
     class Other(
         val registrationNumber: Int,
-        val sectionNumber: Int,
+        val sectionCode: String,
         val instructor: String,
         val status: SectionStatus,
         type: SectionType,

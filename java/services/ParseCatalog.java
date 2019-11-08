@@ -68,7 +68,8 @@ public class ParseCatalog implements Iterator<Course> {
         anchorTag.select("div.section-content > div.section-body"));
     logger.debug("Section field strings are: {}", sectionData);
 
-    int registrationNumber, sectionNumber;
+    int registrationNumber;
+    String sectionCode;
     SectionType type;
 
     try {
@@ -76,7 +77,7 @@ public class ParseCatalog implements Iterator<Course> {
       int headerDashIdx = header.indexOf('-');
       registrationNumber = Integer.parseInt(
           header.substring(header.indexOf('(') + 1, header.length() - 1));
-      sectionNumber = Integer.parseInt(header.substring(0, headerDashIdx));
+      sectionCode = header.substring(0, headerDashIdx);
       type = SectionType.valueOf(header.substring(
           headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
     } catch (Exception e) {
@@ -89,7 +90,7 @@ public class ParseCatalog implements Iterator<Course> {
         sectionData.get("Days/Times"), sectionData.get("Dates"));
 
     return new SectionMetadata(
-        registrationNumber, sectionNumber, type, sectionData.get("Instructor"),
+        registrationNumber, sectionCode, type, sectionData.get("Instructor"),
         SectionStatus.parseStatus(sectionData.get("Status")), meetings);
   }
 
@@ -133,9 +134,9 @@ public class ParseCatalog implements Iterator<Course> {
     for (idIndex = 0; idIndex < idString.length(); idIndex++)
       if (Character.isDigit(idString.charAt(idIndex)))
         break;
-    Long courseId = Long.parseLong(idString.substring(idIndex));
+    // Long courseId = Long.parseLong(idString.substring(idIndex));
 
-    return new CourseMetadata(courseId, courseName, deptCourseNumber, subject);
+    return new CourseMetadata(courseName, deptCourseNumber, subject);
   }
 
   List<Meeting> parseSectionTimesData(String times, String dates)
@@ -281,17 +282,17 @@ public class ParseCatalog implements Iterator<Course> {
  */
 class SectionMetadata {
   private int registrationNumber;
-  private int sectionNumber;
+  private String sectionCode;
   private SectionType type;
   private String instructor;
   private SectionStatus status;
   private List<Meeting> meetings;
 
-  public SectionMetadata(int registrationNumber, int sectionNumber,
+  public SectionMetadata(int registrationNumber, String sectionCode,
                          SectionType type, String instructor,
                          SectionStatus status, List<Meeting> meetings) {
     this.registrationNumber = registrationNumber;
-    this.sectionNumber = sectionNumber;
+    this.sectionCode = sectionCode;
     this.type = type;
     this.instructor = instructor;
     this.status = status;
@@ -330,13 +331,13 @@ class SectionMetadata {
   }
 
   Section toLectureWithRecitations(ArrayList<Section> recitations) {
-    return new Section.Lecture(registrationNumber, sectionNumber, instructor,
+    return new Section.Lecture(registrationNumber, sectionCode, instructor,
                                status, meetings, recitations);
   }
 
   Section toSectionWithoutRecitations() {
-    return Section.getSection(registrationNumber, sectionNumber, instructor,
-                              type, status, meetings, null);
+    return Section.getSection(registrationNumber, sectionCode, instructor, type,
+                              status, meetings, null);
   }
 }
 
@@ -348,27 +349,24 @@ class SectionMetadata {
 class CourseMetadata {
 
   private String courseName;
-  private long courseId;
   private int deptCourseNumber;
   private SubjectCode subject;
 
-  CourseMetadata(long courseId, String courseName, int deptCourseNumber,
-                 SubjectCode subject) {
+  CourseMetadata(String courseName, int deptCourseNumber, SubjectCode subject) {
     this.courseName = courseName;
-    this.courseId = courseId;
     this.deptCourseNumber = deptCourseNumber;
     this.subject = subject;
   }
 
   @NotNull
   Course getCourse(ArrayList<SectionMetadata> sections) {
-    return new Course(courseId, courseName, deptCourseNumber, subject,
+    return new Course(courseName, deptCourseNumber, subject,
                       SectionMetadata.getSectionsFrom(sections));
   }
 
   @Override
   public String toString() {
-    return "CourseData(courseName=" + courseName + ", courseId=" + courseId +
+    return "CourseData(courseName=" + courseName + // ", courseId=" + courseId +
         ", deptCourseNumber=" + deptCourseNumber + ")";
   }
 }

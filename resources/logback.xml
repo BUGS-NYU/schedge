@@ -25,7 +25,7 @@
     <logger name="Exposed" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
-    <root level="INFO">
+    <root level="TRACE">
         <appender-ref ref="STDERR"/>
     </root>
 </configuration>

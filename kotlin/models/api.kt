@@ -97,22 +97,21 @@ sealed class Section(val type: SectionType) {
     ) : Section(type)
 }
 
+// A time that people meet for a class
 data class Meeting(
     val beginDate: DateTime, // Begin date; contains date and time of first event.
     val duration: Duration, // Duration of meeting
-    val activeDuration: Duration // How long after the begin that this event can start. Meetings implicitly meet weekly.
+    val endDate: DateTime // When the meeting stops repeating
 ) {
 
-    constructor(beginDate: DateTime, duration: Long, activeDuration: Long) : this(
-        beginDate,
-        Duration(duration),
-        Duration(activeDuration)
+    constructor(beginDate: DateTime, duration: Long, endDate: DateTime) : this(
+        beginDate, Duration(duration), endDate
     )
 
     @JsonValue
     fun toJson(): MeetingJson {
-        return MeetingJson(beginDate.toString(), duration.toString(), activeDuration.toString())
+        return MeetingJson(beginDate.toString(), duration.toString(), endDate.toString())
     }
 }
 
-data class MeetingJson(val beginDate: String, val duration: String, val activeDuration: String)
+data class MeetingJson(val beginDate: String, val duration: String, val endDate: String)

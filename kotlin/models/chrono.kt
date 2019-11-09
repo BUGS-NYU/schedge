@@ -80,8 +80,8 @@ class Days(vararg days: DayOfWeek) {
 
     fun toDayNumberArray(): Array<Boolean> {
         val array = MutableList(7) { true }
-        for (i in 0..6) {
-            array[i] = ((1 shl i).toByte() and this.days) != 0.toByte()
+        for (i in 1..7) {
+            array[i % 7] = ((1 shl i).toByte() and this.days) != 0.toByte()
         }
         return array.toTypedArray()
     }

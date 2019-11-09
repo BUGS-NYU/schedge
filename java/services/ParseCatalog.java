@@ -192,34 +192,26 @@ public class ParseCatalog implements Iterator<Course> {
         duration = new Duration(durationMillis / 6000);
       }
 
-      Duration activeDuration;
-      {
-        DateTime endDate =
-            timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
-        long activeDurationMillis =
-            endDate.getMillis() - beginDateTime.getMillis();
-        if (activeDurationMillis < 0)
-          throw new AssertionError("Active duration should be positive!");
-        logger.trace("Active duration of meeting is {}", activeDurationMillis);
-        activeDuration = new Duration(activeDurationMillis / 6000);
-      }
+      DateTime endDate =
+          timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
 
-      Boolean[] daysList = (new Days(beginDays)).toDayNumberArray();
-      logger.trace("{}", (Object)daysList);
+      Boolean[] daysList;
+      {
+        Days days = new Days(beginDays);
+        daysList = days.toDayNumberArray();
+        logger.trace("{}", days);
+        logger.trace("{}", (Object)daysList);
+      }
 
       for (int day = 0; day < 7;
            day++, beginDateTime = beginDateTime.plusDays(
                       1)) { // TODO fix this code to do the right thing
-        if (daysList[beginDateTime.getDayOfWeek() - 1]) {
-          Duration dayAdjustedActiveDuration =
-              activeDuration.minus(Duration.standardDays(day));
-          logger.trace("Day adjusted duration of meeting is {}",
-                       dayAdjustedActiveDuration);
-          meetings.add(
-              new Meeting(beginDateTime, duration, dayAdjustedActiveDuration));
+        if (daysList[beginDateTime.getDayOfWeek() % 7]) {
+          meetings.add(new Meeting(beginDateTime, duration, endDate));
         }
       }
     }
+    logger.trace("{}", meetings);
 
     return meetings;
   }
@@ -299,9 +291,10 @@ class SectionMetadata {
     this.meetings = meetings;
   }
 
+  // @TODO Talk to registrar about what kinds of courses are available
   @NotNull
   static ArrayList<Section>
-  getSectionsFrom(ArrayList<SectionMetadata> sectionData) {
+  getSectionsFrom(ArrayList<SectionMetadata> sectionData, SubjectCode code) {
     ArrayList<Section> sections = new ArrayList<>();
 
     int size = sectionData.size();
@@ -361,7 +354,7 @@ class CourseMetadata {
   @NotNull
   Course getCourse(ArrayList<SectionMetadata> sections) {
     return new Course(courseName, deptCourseNumber, subject,
-                      SectionMetadata.getSectionsFrom(sections));
+                      SectionMetadata.getSectionsFrom(sections, subject));
   }
 
   @Override

@@ -9,7 +9,11 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.IOException
 
-
+/**
+Connect to Database using Postgres Driver
+@param Logger
+@return void
+ */
 fun connectToDatabase(logger: KLogger) {
     val exceptions = mutableListOf<Exception>()
     for (i in 0..5) {

@@ -1,25 +1,32 @@
 package models
 
 import asResourceLines
-
+/**
+Enum class that holds types of section component based on the
+class and the school
+ */
 enum class SectionType {
     LEC, // Lecture
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
     PCT, // Unknown
-    INT, // Unknown
-    RSC, // Unknown
-    FLD, // Unknown
-    SIM, // Unknown
-    CLI, // Unknown
-    STU, // Unknown
-    STI, // Unknown
-    CLQ, // Unknown
-    WKS, // Unknown
+    INT, // Internship
+    RSC, // Research Tandon's Code
+    FLD, // Field Instruction
+    SIM, // Simulation
+    CLI, // Clinic
+    STU, // Studio
+    STI, // Independent Instruction
+    STG, //Group Instruction
+    CLQ, // Colloquium
+    WKS, // Workshop
     IND;  // independent study
 
     // @HelpWanted Get names for all of these section types
+    /**
+     * Return the type of class component
+     */
     fun getName(): String {
         return when (this) {
             LEC -> "Lecture"
@@ -27,11 +34,25 @@ enum class SectionType {
             LAB -> "Lab"
             SEM -> "Seminar"
             IND -> "Independent Study"
+
+            SIM -> "Simulation"
+            CLI -> "Clinic"
+            FLD -> "Field Instruction"
+            WKS -> "Workshop"
+            STI -> "Independent Instruction"
+            STU -> "Studio"
+            STG -> "Group Instruction"
+            INT -> "Internship"
+            //RSC -> "Research"
+            CLQ -> "Colloquium"
             else -> "Unknown"
         }
     }
 }
 
+/**
+Enum class for status of the section based on the availability
+ */
 enum class SectionStatus {
     Open, // Open
     Closed, // Closed
@@ -67,9 +88,19 @@ private val AvailableSubjects: Map<String, Set<String>> = "subjects.txt".asResou
     availSubjects
 }
 
+/**
+subjectCode class
+- Companion Object
+- Subject (String)
+- School (String)
+- Abbrev (String)
+ */
 class SubjectCode {
 
     companion object {
+        /*
+        Get sequence of subject codes based on school
+         */
         fun allSubjects(forSchool: String? = null): Sequence<SubjectCode> {
             return if (forSchool == null) {
                 AvailableSubjects.asSequence().map { pair ->
@@ -86,13 +117,13 @@ class SubjectCode {
 
         @JvmStatic
         fun getUnchecked(subjectString: String): SubjectCode {
-          val (subject, school) = subjectString.split('-')
-          return SubjectCode(subject, school, Unit)
+            val (subject, school) = subjectString.split('-')
+            return SubjectCode(subject, school, Unit)
         }
 
         @JvmStatic
         fun getUnchecked(subject: String, school: String): SubjectCode {
-          return SubjectCode(subject, school, Unit)
+            return SubjectCode(subject, school, Unit)
         }
     }
 
@@ -169,6 +200,9 @@ enum class Semester {
 /**
  * A term, like Summer 19. year is a positive number representing the year.
  * For example, 2019 represents the year 2019.
+ * @param semester object
+ * @param int year
+ *
  */
 class Term(private val sem: Semester, private val year: Int) {
     companion object {

@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonValue
 import java.time.DayOfWeek
 import kotlin.experimental.and
 import kotlin.experimental.or
-
+/**
+Data class describing the time of the day
+ */
 data class TimeOfDay(// Positive integer
     val hour: Int, val minutes: Int, val duration: Int
 ) {
@@ -22,6 +24,9 @@ data class TimeOfDay(// Positive integer
     // }
 }
 
+/**
+Data class for the course's duration
+ */
 data class Duration(
     val minutes: Long
 ) {
@@ -46,7 +51,9 @@ data class Duration(
         return Duration(this.minutes - other.minutes)
     }
 }
-
+/**
+Days object
+ */
 class Days(vararg days: DayOfWeek) {
     private val days: Byte
 

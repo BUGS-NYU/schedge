@@ -13,9 +13,18 @@ import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.message.BasicNameValuePair
 import java.io.IOException
-
+/**
+Make Query Service
+ */
 fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String = queryCatalog(logger, term, subjectCode, AlbertClient())
-
+/**
+Querying the catalog given one subject code.
+@param Logger
+@param Term (class)
+@param SubjectCode (class)
+@param AlbertClient (class)
+@return String
+ */
 private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, client: AlbertClient): String {
     logger.info { "querying catalog for term=$term and subject=$subjectCode..." }
     val params = mutableListOf( // URL params
@@ -40,6 +49,13 @@ private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, 
     }
 }
 
+/**
+Querying Catalog given list of subject codes
+@param logger
+@param Term (class)
+@param subjectCodes (list of subjectcode)
+@return Sequence of String
+ */
 fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
     if (subjectCodes.size > 1) {
         logger.info { "querying catalog for term=$term with multiple subjects..." }
@@ -73,8 +89,8 @@ fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): 
 //         BasicNameValuePair("nyu_location", location ?: "")
 //     )
 //     logger.debug { "Params are ${params}." }
-// 
-// 
+//
+//
 //     val request = HttpPost(DATA_URL).apply {
 //         entity = UrlEncodedFormEntity(params)
 //         addHeader("Referrer", "${ROOT_URL}/${term.id}")
@@ -85,13 +101,18 @@ fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): 
 
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
-
+/**
+Albert Client class to handle HTTP Request
+ */
 private class AlbertClient {
     private val logger = KotlinLogging.logger {}
     private val httpClient = HttpClients.custom().useSystemProperties().build()
     private val httpContext = HttpClientContext.create().apply {
         cookieStore = BasicCookieStore()
     }
+    /**
+     * Retrieve the csrfToken for making HTTP request to Albert Mobile
+     */
     val csrfToken: String
         get() {
             val cookie = httpContext.cookieStore.cookies.find { cookie ->
@@ -122,7 +143,11 @@ private class AlbertClient {
 
         logger.info { "Client instance created with CSRF Token '${csrfToken}'." }
     }
-
+    /**
+    Making the HTTPRequest to Albert Mobile
+    @param HTTPUriRequest
+    @return String
+     */
     fun execute(req: HttpUriRequest): String {
         logger.trace { "Executing ${req.method.toUpperCase()} request" }
         return this.httpClient.execute(req, this.httpContext).entity.content.bufferedReader().readText()

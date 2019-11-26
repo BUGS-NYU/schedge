@@ -1,9 +1,9 @@
 package models
 
 import asResourceLines
+
 /**
-Enum class that holds types of section component based on the
-class and the school
+ * Enum class that holds types of section component based on the class and the school
  */
 enum class SectionType {
     LEC, // Lecture
@@ -18,10 +18,10 @@ enum class SectionType {
     CLI, // Clinic
     STU, // Studio
     STI, // Independent Instruction
-    STG, //Group Instruction
+    STG, // Group Instruction
     CLQ, // Colloquium
     WKS, // Workshop
-    IND;  // independent study
+    IND; // independent study
 
     /**
      * Return the type of class component
@@ -41,7 +41,7 @@ enum class SectionType {
             STU -> "Studio"
             STG -> "Group Instruction"
             INT -> "Internship"
-            RSC -> "Research"
+            RSC -> "Research (Tandon)"
             CLQ -> "Colloquium"
             else -> "Unknown"
         }

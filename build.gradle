@@ -42,6 +42,7 @@ dependencies {
             "org.jooq:jooq", // Database framework
             "org.jooq:jooq-meta", // Database framework
             "org.jooq:jooq-codegen", // Database framework
+            "javax.annotation:javax.annotation-api:1.2-b01",
             // "org.jooq:jool:0.9.14", // Database framework
     )
 

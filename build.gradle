@@ -8,6 +8,7 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.3.50"
     id "application"
     id "com.github.johnrengelman.shadow" version "5.1.0"
+    id 'nu.studer.jooq' version '3.0.3'
 }
 
 group 'BUGS-NYU'
@@ -17,7 +18,6 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
     jcenter()
-    maven { url "https://kotlin.bintray.com/kotlinx" }
 }
 
 dependencies {
@@ -39,17 +39,63 @@ dependencies {
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-databind:2.4.1", // JSON
             "io.github.cdimascio:java-dotenv:5.1.3", // Environment
-            "org.jooq:jooq:3.12.3", // Database framework
-            "org.jooq:jooq-meta:3.12.3", // Database framework
-            "org.jooq:jooq-codegen:3.12.3", // Database framework
-            "org.jooq:jool:0.9.14", // Database framework
+            "org.jooq:jooq", // Database framework
+            "org.jooq:jooq-meta", // Database framework
+            "org.jooq:jooq-codegen", // Database framework
+            // "org.jooq:jool:0.9.14", // Database framework
     )
+
+    jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'
 
     testImplementation(
             "io.kotlintest:kotlintest-runner-junit5:3.3.2"
     )
 
-    //standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
+    // standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
+}
+
+jooq {
+  version = '3.11.9'
+  edition = 'OSS'
+  ext.getenv = { env_val, default_val ->
+    ext.val = System.getenv(env_val)
+    if (ext.val == null) {
+      return default_val
+    } else return ext.val
+  }
+
+    ext.dbUsername = ext.getenv("DB_USERNAME", "schedge")
+    ext.dbPassword = ext.getenv("DB_PASSWORD", "docker")
+    ext.dbUrl = ext.getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
+  sample(sourceSets.main) {
+    jdbc {
+      driver = 'org.postgresql.Driver'
+      url = ext.dbUrl
+      user = ext.dbUsername
+      password = ext.dbPassword
+    }
+    generator {
+      database {
+        name = 'org.jooq.meta.postgres.PostgresDatabase'
+        includes = '.*'
+        excludes = ''
+        inputSchema = 'public'
+      }
+
+      generate {
+        relations = true
+        deprecated = false
+        records = true
+        immutablePojos = true
+        fluentSetters = true
+      }
+
+      target {
+        packageName = 'database.generated'
+        directory = 'java'
+      }
+    }
+  }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

@@ -4,13 +4,6 @@ plan their courses.
 
 API: http://schedge.a1liu.com
 
-### Setup
-To check you work, run `gradle check`.
-
-To run the application, first compile it with `gradle build`, then run
-`docker-compose build` to build a docker image, and `docker-compose up` to
-run the application.
-
 ### CLI Interface
 The following commands are valid in Schedge:
 
@@ -21,15 +14,3 @@ schedge scrape catalog # TODO scrape the catalog
 schedge db add # Scrape data from the catalog and add it to the database
 schedge serve # TODO serves data to API
 ```
-
-### Code organization
-- Kotlin code handles IO and defines most classes (`kotlin/`
-  - `models` contains class definitions for modeling data
-    - `chrono.kt` defines time-related classes
-    - `api.kt` defines classes that are printed in the API
-    - `nyu.kt` defines classes that describe NYU
-  - `cli` contains definitions for the command-line interface
-  - `services` defines high-level actions that Schedge can perform
-- Java code handles business logic
-  - Parsing
-  - Shell commands

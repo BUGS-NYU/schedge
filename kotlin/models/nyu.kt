@@ -23,7 +23,6 @@ enum class SectionType {
     WKS, // Workshop
     IND;  // independent study
 
-    // @HelpWanted Get names for all of these section types
     /**
      * Return the type of class component
      */
@@ -34,7 +33,6 @@ enum class SectionType {
             LAB -> "Lab"
             SEM -> "Seminar"
             IND -> "Independent Study"
-
             SIM -> "Simulation"
             CLI -> "Clinic"
             FLD -> "Field Instruction"
@@ -43,7 +41,7 @@ enum class SectionType {
             STU -> "Studio"
             STG -> "Group Instruction"
             INT -> "Internship"
-            //RSC -> "Research"
+            RSC -> "Research"
             CLQ -> "Colloquium"
             else -> "Unknown"
         }

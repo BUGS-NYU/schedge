@@ -23,45 +23,45 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Meetings implements Serializable {
 
-    private static final long serialVersionUID = 1104601590;
+    private static final long serialVersionUID = 801039992;
 
-    private final Long      id;
-    private final Long      sectionId;
+    private final Integer   id;
+    private final Integer   sectionId;
     private final String    location;
-    private final Long      activeDuration;
-    private final Timestamp start;
+    private final Timestamp beginDate;
+    private final Timestamp endDate;
     private final Long      duration;
 
     public Meetings(Meetings value) {
         this.id = value.id;
         this.sectionId = value.sectionId;
         this.location = value.location;
-        this.activeDuration = value.activeDuration;
-        this.start = value.start;
+        this.beginDate = value.beginDate;
+        this.endDate = value.endDate;
         this.duration = value.duration;
     }
 
     public Meetings(
-        Long      id,
-        Long      sectionId,
+        Integer   id,
+        Integer   sectionId,
         String    location,
-        Long      activeDuration,
-        Timestamp start,
+        Timestamp beginDate,
+        Timestamp endDate,
         Long      duration
     ) {
         this.id = id;
         this.sectionId = sectionId;
         this.location = location;
-        this.activeDuration = activeDuration;
-        this.start = start;
+        this.beginDate = beginDate;
+        this.endDate = endDate;
         this.duration = duration;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public Long getSectionId() {
+    public Integer getSectionId() {
         return this.sectionId;
     }
 
@@ -69,12 +69,12 @@ public class Meetings implements Serializable {
         return this.location;
     }
 
-    public Long getActiveDuration() {
-        return this.activeDuration;
+    public Timestamp getBeginDate() {
+        return this.beginDate;
     }
 
-    public Timestamp getStart() {
-        return this.start;
+    public Timestamp getEndDate() {
+        return this.endDate;
     }
 
     public Long getDuration() {
@@ -88,8 +88,8 @@ public class Meetings implements Serializable {
         sb.append(id);
         sb.append(", ").append(sectionId);
         sb.append(", ").append(location);
-        sb.append(", ").append(activeDuration);
-        sb.append(", ").append(start);
+        sb.append(", ").append(beginDate);
+        sb.append(", ").append(endDate);
         sb.append(", ").append(duration);
 
         sb.append(")");

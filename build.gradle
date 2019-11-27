@@ -9,11 +9,24 @@ plugins {
     id "application"
     id "com.github.johnrengelman.shadow" version "5.1.0"
     id 'nu.studer.jooq' version '3.0.3'
+    id "org.flywaydb.flyway" version "6.1.0"
 }
 
 group 'BUGS-NYU'
 mainClassName = 'MainKt'
 sourceCompatibility = 1.8
+
+def getenv = { env_val, default_val ->
+  ext.val = System.getenv(env_val)
+  if (ext.val == null) {
+    return default_val
+  } else return ext.val
+}
+
+def dbUsername = getenv("DB_USERNAME", "schedge")
+def dbPassword = getenv("DB_PASSWORD", "docker")
+def dbUrl = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
+def dbDriver = 'org.postgresql.Driver'
 
 repositories {
     mavenCentral()
@@ -42,7 +55,7 @@ dependencies {
             "org.jooq:jooq", // Database framework
             "org.jooq:jooq-meta", // Database framework
             "org.jooq:jooq-codegen", // Database framework
-            "javax.annotation:javax.annotation-api:1.2-b01",
+            "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
             // "org.jooq:jool:0.9.14", // Database framework
     )
 
@@ -55,25 +68,24 @@ dependencies {
     // standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
 }
 
+flyway {
+  driver = dbDriver
+  url = dbUrl
+  user = dbUsername
+  password = dbPassword
+  locations = ['filesystem:migrations']
+}
+
 jooq {
   version = '3.11.9'
   edition = 'OSS'
-  ext.getenv = { env_val, default_val ->
-    ext.val = System.getenv(env_val)
-    if (ext.val == null) {
-      return default_val
-    } else return ext.val
-  }
 
-    ext.dbUsername = ext.getenv("DB_USERNAME", "schedge")
-    ext.dbPassword = ext.getenv("DB_PASSWORD", "docker")
-    ext.dbUrl = ext.getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
-  sample(sourceSets.main) {
+  database(sourceSets.main) {
     jdbc {
-      driver = 'org.postgresql.Driver'
-      url = ext.dbUrl
-      user = ext.dbUsername
-      password = ext.dbPassword
+      driver = dbDriver
+      url = dbUrl
+      user = dbUsername
+      password = dbPassword
     }
     generator {
       database {

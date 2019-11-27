@@ -5,6 +5,7 @@ package database.generated;
 
 
 import database.generated.tables.Courses;
+import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 
@@ -32,29 +33,31 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
+    public static final Index COURSE_IDX = Indexes0.COURSE_IDX;
+    public static final Index COURSES_ID_KEY = Indexes0.COURSES_ID_KEY;
     public static final Index COURSES_PKEY = Indexes0.COURSES_PKEY;
-    public static final Index COURSES_SUBJECT = Indexes0.COURSES_SUBJECT;
-    public static final Index COURSES_TERM_ID = Indexes0.COURSES_TERM_ID;
+    public static final Index FLYWAY_SCHEMA_HISTORY_PK = Indexes0.FLYWAY_SCHEMA_HISTORY_PK;
+    public static final Index FLYWAY_SCHEMA_HISTORY_S_IDX = Indexes0.FLYWAY_SCHEMA_HISTORY_S_IDX;
     public static final Index MEETINGS_PKEY = Indexes0.MEETINGS_PKEY;
-    public static final Index MEETINGS_SECTION_ID = Indexes0.MEETINGS_SECTION_ID;
+    public static final Index SECTION_IDX = Indexes0.SECTION_IDX;
     public static final Index SECTIONS_ASSOCIATED_WITH = Indexes0.SECTIONS_ASSOCIATED_WITH;
-    public static final Index SECTIONS_COURSE_ID = Indexes0.SECTIONS_COURSE_ID;
+    public static final Index SECTIONS_ID_KEY = Indexes0.SECTIONS_ID_KEY;
     public static final Index SECTIONS_PKEY = Indexes0.SECTIONS_PKEY;
-    public static final Index SECTIONS_REGISTRATION_NUMBER = Indexes0.SECTIONS_REGISTRATION_NUMBER;
 
     // -------------------------------------------------------------------------
     // [#1459] distribute members to avoid static initialisers > 64kb
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
-        public static Index COURSES_PKEY = Internal.createIndex("courses_pkey", Courses.COURSES, new OrderField[] { Courses.COURSES.ID }, true);
-        public static Index COURSES_SUBJECT = Internal.createIndex("courses_subject", Courses.COURSES, new OrderField[] { Courses.COURSES.SUBJECT }, false);
-        public static Index COURSES_TERM_ID = Internal.createIndex("courses_term_id", Courses.COURSES, new OrderField[] { Courses.COURSES.TERM_ID }, false);
+        public static Index COURSE_IDX = Internal.createIndex("course_idx", Courses.COURSES, new OrderField[] { Courses.COURSES.ID }, true);
+        public static Index COURSES_ID_KEY = Internal.createIndex("courses_id_key", Courses.COURSES, new OrderField[] { Courses.COURSES.ID }, true);
+        public static Index COURSES_PKEY = Internal.createIndex("courses_pkey", Courses.COURSES, new OrderField[] { Courses.COURSES.TERM_ID, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_NUMBER }, true);
+        public static Index FLYWAY_SCHEMA_HISTORY_PK = Internal.createIndex("flyway_schema_history_pk", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, new OrderField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK }, true);
+        public static Index FLYWAY_SCHEMA_HISTORY_S_IDX = Internal.createIndex("flyway_schema_history_s_idx", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, new OrderField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.SUCCESS }, false);
         public static Index MEETINGS_PKEY = Internal.createIndex("meetings_pkey", Meetings.MEETINGS, new OrderField[] { Meetings.MEETINGS.ID }, true);
-        public static Index MEETINGS_SECTION_ID = Internal.createIndex("meetings_section_id", Meetings.MEETINGS, new OrderField[] { Meetings.MEETINGS.SECTION_ID }, false);
+        public static Index SECTION_IDX = Internal.createIndex("section_idx", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ID }, true);
         public static Index SECTIONS_ASSOCIATED_WITH = Internal.createIndex("sections_associated_with", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ASSOCIATED_WITH }, false);
-        public static Index SECTIONS_COURSE_ID = Internal.createIndex("sections_course_id", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.COURSE_ID }, false);
-        public static Index SECTIONS_PKEY = Internal.createIndex("sections_pkey", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ID }, true);
-        public static Index SECTIONS_REGISTRATION_NUMBER = Internal.createIndex("sections_registration_number", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.REGISTRATION_NUMBER }, false);
+        public static Index SECTIONS_ID_KEY = Internal.createIndex("sections_id_key", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ID }, true);
+        public static Index SECTIONS_PKEY = Internal.createIndex("sections_pkey", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE, Sections.SECTIONS.REGISTRATION_NUMBER }, true);
     }
 }

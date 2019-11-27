@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Meetings extends TableImpl<MeetingsRecord> {
 
-    private static final long serialVersionUID = -1241319757;
+    private static final long serialVersionUID = -667204706;
 
     /**
      * The reference instance of <code>public.meetings</code>
@@ -60,12 +60,12 @@ public class Meetings extends TableImpl<MeetingsRecord> {
     /**
      * The column <code>public.meetings.id</code>.
      */
-    public final TableField<MeetingsRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('meetings_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<MeetingsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('meetings_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.meetings.section_id</code>.
      */
-    public final TableField<MeetingsRecord, Long> SECTION_ID = createField("section_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<MeetingsRecord, Integer> SECTION_ID = createField("section_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.meetings.location</code>.
@@ -73,14 +73,14 @@ public class Meetings extends TableImpl<MeetingsRecord> {
     public final TableField<MeetingsRecord, String> LOCATION = createField("location", org.jooq.impl.SQLDataType.VARCHAR(5), this, "");
 
     /**
-     * The column <code>public.meetings.active_duration</code>.
+     * The column <code>public.meetings.begin_date</code>.
      */
-    public final TableField<MeetingsRecord, Long> ACTIVE_DURATION = createField("active_duration", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<MeetingsRecord, Timestamp> BEGIN_DATE = createField("begin_date", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
-     * The column <code>public.meetings.start</code>.
+     * The column <code>public.meetings.end_date</code>.
      */
-    public final TableField<MeetingsRecord, Timestamp> START = createField("start", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
+    public final TableField<MeetingsRecord, Timestamp> END_DATE = createField("end_date", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
      * The column <code>public.meetings.duration</code>.
@@ -133,14 +133,14 @@ public class Meetings extends TableImpl<MeetingsRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.MEETINGS_PKEY, Indexes.MEETINGS_SECTION_ID);
+        return Arrays.<Index>asList(Indexes.MEETINGS_PKEY);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Identity<MeetingsRecord, Long> getIdentity() {
+    public Identity<MeetingsRecord, Integer> getIdentity() {
         return Keys.IDENTITY_MEETINGS;
     }
 

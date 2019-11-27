@@ -26,15 +26,15 @@ public class Sequences {
     /**
      * The sequence <code>public.courses_id_seq</code>
      */
-    public static final Sequence<Long> COURSES_ID_SEQ = new SequenceImpl<Long>("courses_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> COURSES_ID_SEQ = new SequenceImpl<Integer>("courses_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>public.meetings_id_seq</code>
      */
-    public static final Sequence<Long> MEETINGS_ID_SEQ = new SequenceImpl<Long>("meetings_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> MEETINGS_ID_SEQ = new SequenceImpl<Integer>("meetings_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 
     /**
      * The sequence <code>public.sections_id_seq</code>
      */
-    public static final Sequence<Long> SECTIONS_ID_SEQ = new SequenceImpl<Long>("sections_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.BIGINT.nullable(false));
+    public static final Sequence<Integer> SECTIONS_ID_SEQ = new SequenceImpl<Integer>("sections_id_seq", Public.PUBLIC, org.jooq.impl.SQLDataType.INTEGER.nullable(false));
 }

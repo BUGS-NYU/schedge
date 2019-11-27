@@ -5,6 +5,7 @@ package database.generated;
 
 
 import database.generated.tables.Courses;
+import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 
@@ -33,7 +34,7 @@ import org.jooq.impl.SchemaImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Public extends SchemaImpl {
 
-    private static final long serialVersionUID = 116435965;
+    private static final long serialVersionUID = 1027009341;
 
     /**
      * The reference instance of <code>public</code>
@@ -44,6 +45,11 @@ public class Public extends SchemaImpl {
      * The table <code>public.courses</code>.
      */
     public final Courses COURSES = database.generated.tables.Courses.COURSES;
+
+    /**
+     * The table <code>public.flyway_schema_history</code>.
+     */
+    public final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = database.generated.tables.FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
 
     /**
      * The table <code>public.meetings</code>.
@@ -95,6 +101,7 @@ public class Public extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             Courses.COURSES,
+            FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY,
             Meetings.MEETINGS,
             Sections.SECTIONS);
     }

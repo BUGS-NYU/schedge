@@ -22,10 +22,9 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses implements Serializable {
 
-    private static final long serialVersionUID = -1806388005;
+    private static final long serialVersionUID = 1864439775;
 
-    private final Long    id;
-    private final Long    courseId;
+    private final Integer id;
     private final String  name;
     private final String  subject;
     private final Long    deptCourseNumber;
@@ -33,7 +32,6 @@ public class Courses implements Serializable {
 
     public Courses(Courses value) {
         this.id = value.id;
-        this.courseId = value.courseId;
         this.name = value.name;
         this.subject = value.subject;
         this.deptCourseNumber = value.deptCourseNumber;
@@ -41,27 +39,21 @@ public class Courses implements Serializable {
     }
 
     public Courses(
-        Long    id,
-        Long    courseId,
+        Integer id,
         String  name,
         String  subject,
         Long    deptCourseNumber,
         Integer termId
     ) {
         this.id = id;
-        this.courseId = courseId;
         this.name = name;
         this.subject = subject;
         this.deptCourseNumber = deptCourseNumber;
         this.termId = termId;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return this.id;
-    }
-
-    public Long getCourseId() {
-        return this.courseId;
     }
 
     public String getName() {
@@ -85,7 +77,6 @@ public class Courses implements Serializable {
         StringBuilder sb = new StringBuilder("Courses (");
 
         sb.append(id);
-        sb.append(", ").append(courseId);
         sb.append(", ").append(name);
         sb.append(", ").append(subject);
         sb.append(", ").append(deptCourseNumber);

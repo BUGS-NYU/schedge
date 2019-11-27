@@ -38,16 +38,16 @@ data class Course(
 
 }
 /**
-Sealed class Section that contains:
-- Registration Number
-- Section Code
-- Instructor
-- Section Type
-- Section Status
-- Meetings
-- Recitation
-- including other data classes based on classes
-@param SectionType enum object
+ * Sealed class Section that contains:
+ * - Registration Number
+ * - Section Code
+ * - Instructor
+ * - Section Type
+ * - Section Status
+ * - Meetings
+ * - Recitation
+ * - including other data classes based on classes
+ * @param SectionType enum object
  */
 sealed class Section(val type: SectionType) {
 

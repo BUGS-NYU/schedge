@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = -1347351231;
+    private static final long serialVersionUID = -131848276;
 
     /**
      * The reference instance of <code>public.sections</code>
@@ -59,27 +59,22 @@ public class Sections extends TableImpl<SectionsRecord> {
     /**
      * The column <code>public.sections.id</code>.
      */
-    public final TableField<SectionsRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('sections_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
+    public final TableField<SectionsRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('sections_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.sections.registration_number</code>.
      */
-    public final TableField<SectionsRecord, Integer> REGISTRATION_NUMBER = createField("registration_number", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SectionsRecord, String> REGISTRATION_NUMBER = createField("registration_number", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
 
     /**
      * The column <code>public.sections.course_id</code>.
      */
-    public final TableField<SectionsRecord, Long> COURSE_ID = createField("course_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<SectionsRecord, Integer> COURSE_ID = createField("course_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
-     * The column <code>public.sections.section_number</code>.
+     * The column <code>public.sections.section_code</code>.
      */
-    public final TableField<SectionsRecord, Integer> SECTION_NUMBER = createField("section_number", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>public.sections.term_id</code>.
-     */
-    public final TableField<SectionsRecord, Integer> TERM_ID = createField("term_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SectionsRecord, String> SECTION_CODE = createField("section_code", org.jooq.impl.SQLDataType.VARCHAR(5).nullable(false), this, "");
 
     /**
      * The column <code>public.sections.instructor</code>.
@@ -87,14 +82,14 @@ public class Sections extends TableImpl<SectionsRecord> {
     public final TableField<SectionsRecord, String> INSTRUCTOR = createField("instructor", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>public.sections.type</code>.
+     * The column <code>public.sections.section_type</code>.
      */
-    public final TableField<SectionsRecord, Integer> TYPE = createField("type", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SectionsRecord, Integer> SECTION_TYPE = createField("section_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.sections.associated_with</code>.
      */
-    public final TableField<SectionsRecord, Long> ASSOCIATED_WITH = createField("associated_with", org.jooq.impl.SQLDataType.BIGINT, this, "");
+    public final TableField<SectionsRecord, Integer> ASSOCIATED_WITH = createField("associated_with", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * Create a <code>public.sections</code> table reference
@@ -142,14 +137,14 @@ public class Sections extends TableImpl<SectionsRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.SECTIONS_ASSOCIATED_WITH, Indexes.SECTIONS_COURSE_ID, Indexes.SECTIONS_PKEY, Indexes.SECTIONS_REGISTRATION_NUMBER);
+        return Arrays.<Index>asList(Indexes.SECTION_IDX, Indexes.SECTIONS_ASSOCIATED_WITH, Indexes.SECTIONS_ID_KEY, Indexes.SECTIONS_PKEY);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Identity<SectionsRecord, Long> getIdentity() {
+    public Identity<SectionsRecord, Integer> getIdentity() {
         return Keys.IDENTITY_SECTIONS;
     }
 
@@ -166,7 +161,7 @@ public class Sections extends TableImpl<SectionsRecord> {
      */
     @Override
     public List<UniqueKey<SectionsRecord>> getKeys() {
-        return Arrays.<UniqueKey<SectionsRecord>>asList(Keys.SECTIONS_PKEY);
+        return Arrays.<UniqueKey<SectionsRecord>>asList(Keys.SECTIONS_ID_KEY, Keys.SECTIONS_PKEY);
     }
 
     /**

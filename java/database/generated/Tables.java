@@ -5,6 +5,7 @@ package database.generated;
 
 
 import database.generated.tables.Courses;
+import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 
@@ -28,6 +29,11 @@ public class Tables {
      * The table <code>public.courses</code>.
      */
     public static final Courses COURSES = database.generated.tables.Courses.COURSES;
+
+    /**
+     * The table <code>public.flyway_schema_history</code>.
+     */
+    public static final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = database.generated.tables.FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
 
     /**
      * The table <code>public.meetings</code>.

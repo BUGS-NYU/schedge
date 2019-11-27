@@ -22,77 +22,69 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = -734009287;
+    private static final long serialVersionUID = -1296379963;
 
-    private final Long    id;
-    private final Integer registrationNumber;
-    private final Long    courseId;
-    private final Integer sectionNumber;
-    private final Integer termId;
+    private final Integer id;
+    private final String  registrationNumber;
+    private final Integer courseId;
+    private final String  sectionCode;
     private final String  instructor;
-    private final Integer type;
-    private final Long    associatedWith;
+    private final Integer sectionType;
+    private final Integer associatedWith;
 
     public Sections(Sections value) {
         this.id = value.id;
         this.registrationNumber = value.registrationNumber;
         this.courseId = value.courseId;
-        this.sectionNumber = value.sectionNumber;
-        this.termId = value.termId;
+        this.sectionCode = value.sectionCode;
         this.instructor = value.instructor;
-        this.type = value.type;
+        this.sectionType = value.sectionType;
         this.associatedWith = value.associatedWith;
     }
 
     public Sections(
-        Long    id,
-        Integer registrationNumber,
-        Long    courseId,
-        Integer sectionNumber,
-        Integer termId,
+        Integer id,
+        String  registrationNumber,
+        Integer courseId,
+        String  sectionCode,
         String  instructor,
-        Integer type,
-        Long    associatedWith
+        Integer sectionType,
+        Integer associatedWith
     ) {
         this.id = id;
         this.registrationNumber = registrationNumber;
         this.courseId = courseId;
-        this.sectionNumber = sectionNumber;
-        this.termId = termId;
+        this.sectionCode = sectionCode;
         this.instructor = instructor;
-        this.type = type;
+        this.sectionType = sectionType;
         this.associatedWith = associatedWith;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public Integer getRegistrationNumber() {
+    public String getRegistrationNumber() {
         return this.registrationNumber;
     }
 
-    public Long getCourseId() {
+    public Integer getCourseId() {
         return this.courseId;
     }
 
-    public Integer getSectionNumber() {
-        return this.sectionNumber;
-    }
-
-    public Integer getTermId() {
-        return this.termId;
+    public String getSectionCode() {
+        return this.sectionCode;
     }
 
     public String getInstructor() {
         return this.instructor;
     }
 
-    public Integer getType() {
-        return this.type;
+    public Integer getSectionType() {
+        return this.sectionType;
     }
 
-    public Long getAssociatedWith() {
+    public Integer getAssociatedWith() {
         return this.associatedWith;
     }
 
@@ -103,10 +95,9 @@ public class Sections implements Serializable {
         sb.append(id);
         sb.append(", ").append(registrationNumber);
         sb.append(", ").append(courseId);
-        sb.append(", ").append(sectionNumber);
-        sb.append(", ").append(termId);
+        sb.append(", ").append(sectionCode);
         sb.append(", ").append(instructor);
-        sb.append(", ").append(type);
+        sb.append(", ").append(sectionType);
         sb.append(", ").append(associatedWith);
 
         sb.append(")");

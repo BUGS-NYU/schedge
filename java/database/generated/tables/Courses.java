@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses extends TableImpl<CoursesRecord> {
 
-    private static final long serialVersionUID = 505059024;
+    private static final long serialVersionUID = -442598423;
 
     /**
      * The reference instance of <code>public.courses</code>
@@ -59,12 +59,7 @@ public class Courses extends TableImpl<CoursesRecord> {
     /**
      * The column <code>public.courses.id</code>.
      */
-    public final TableField<CoursesRecord, Long> ID = createField("id", org.jooq.impl.SQLDataType.BIGINT.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('courses_id_seq'::regclass)", org.jooq.impl.SQLDataType.BIGINT)), this, "");
-
-    /**
-     * The column <code>public.courses.course_id</code>.
-     */
-    public final TableField<CoursesRecord, Long> COURSE_ID = createField("course_id", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<CoursesRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('courses_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>public.courses.name</code>.
@@ -132,14 +127,14 @@ public class Courses extends TableImpl<CoursesRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.COURSES_PKEY, Indexes.COURSES_SUBJECT, Indexes.COURSES_TERM_ID);
+        return Arrays.<Index>asList(Indexes.COURSE_IDX, Indexes.COURSES_ID_KEY, Indexes.COURSES_PKEY);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Identity<CoursesRecord, Long> getIdentity() {
+    public Identity<CoursesRecord, Integer> getIdentity() {
         return Keys.IDENTITY_COURSES;
     }
 
@@ -156,7 +151,7 @@ public class Courses extends TableImpl<CoursesRecord> {
      */
     @Override
     public List<UniqueKey<CoursesRecord>> getKeys() {
-        return Arrays.<UniqueKey<CoursesRecord>>asList(Keys.COURSES_PKEY);
+        return Arrays.<UniqueKey<CoursesRecord>>asList(Keys.COURSES_ID_KEY, Keys.COURSES_PKEY);
     }
 
     /**

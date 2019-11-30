@@ -9,7 +9,7 @@ import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import services.queryCatalog
-import writeToFileOrStdout
+import utils.writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
 /**

@@ -71,17 +71,13 @@ class Section(
 // A time that people meet for a class
 data class Meeting(
     val beginDate: DateTime, // Begin date; contains date and time of first event.
-    val duration: Duration, // Duration of meeting
+    val minutesDuration: Long, // Duration of meeting
     val endDate: DateTime // When the meeting stops repeating
 ) {
 
-    constructor(beginDate: DateTime, duration: Long, endDate: DateTime) : this(
-        beginDate, Duration(duration), endDate
-    )
-
     @JsonValue
     fun toJson(): MeetingJson {
-        return MeetingJson(beginDate.toString(), duration.toString(), endDate.toString())
+        return MeetingJson(beginDate.toString(), minutesDuration.toString(), endDate.toString())
     }
 }
 

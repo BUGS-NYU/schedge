@@ -10,7 +10,7 @@ import models.Term
 import mu.KotlinLogging
 import services.JsonMapper
 import services.scrapeFromCatalog
-import writeToFileOrStdout
+import utils.writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
 /**

@@ -5,10 +5,10 @@ import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.option
 import mu.KotlinLogging
-import readFromFileOrStdin
+import utils.readFromFileOrStdin
 import services.JsonMapper
 import services.ParseCatalog
-import writeToFileOrStdout
+import utils.writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
 /**

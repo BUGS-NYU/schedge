@@ -1,6 +1,6 @@
 package models
 
-import asResourceLines
+import utils.asResourceLines
 
 /**
  * Enum class that holds types of section component based on the class and the school

@@ -1,8 +1,15 @@
+package utils
+
 import java.io.File
+import java.time.DayOfWeek
 
 fun String.asResourceLines(): List<String> {
     val resource = object {}::class.java.getResource(this)
-    return resource.readText(Charsets.UTF_8).lineSequence().filter { it.isNotEmpty() }.toList()
+
+    require(resource != null) { "" }
+
+    val text = resource.readText(Charsets.UTF_8)
+    return text.lineSequence().filter { it.isNotEmpty() }.toList()
 }
 
 fun String?.writeToFileOrStdout(text: Any) {
@@ -18,6 +25,19 @@ fun String?.readFromFileOrStdin(): String {
         System.`in`.bufferedReader().readText()
     } else {
         File(this).bufferedReader().readText()
+    }
+}
+
+fun parseDayOfWeek(dayOfWeek: String): DayOfWeek {
+    return when (dayOfWeek) {
+        "Mo" -> DayOfWeek.MONDAY
+        "Tu" -> DayOfWeek.TUESDAY
+        "We" -> DayOfWeek.WEDNESDAY
+        "Th" -> DayOfWeek.THURSDAY
+        "Fr" -> DayOfWeek.FRIDAY
+        "Sa" -> DayOfWeek.SATURDAY
+        "Su" -> DayOfWeek.SUNDAY
+        else -> DayOfWeek.valueOf(dayOfWeek)
     }
 }
 

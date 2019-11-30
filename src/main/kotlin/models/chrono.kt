@@ -25,33 +25,6 @@ data class TimeOfDay(// Positive integer
 }
 
 /**
-Data class for the course's duration
- */
-data class Duration(
-    val minutes: Long
-) {
-
-    companion object {
-        @JvmStatic
-        fun standardDays(days: Long): Duration {
-            return Duration(days * 1440) // 60 * 24
-        }
-    }
-
-    init {
-        require(minutes >= 0) {
-            "Duration cannot be negative! (Given value was $minutes)"
-        }
-    }
-
-    @JsonValue
-    fun toJson(): Long = this.minutes
-
-    fun minus(other: Duration): Duration {
-        return Duration(this.minutes - other.minutes)
-    }
-}
-/**
 Days object
  */
 class Days(vararg days: DayOfWeek) {

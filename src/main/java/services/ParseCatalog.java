@@ -14,6 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.UtilsKt;
 
 /**
  * Parses a catalog string in a stream.
@@ -176,7 +177,7 @@ public class ParseCatalog implements Iterator<Course> {
       }
 
       DateTime beginDateTime;
-      Duration duration;
+      long duration;
       {
         String beginDateString = dateTokens.next();
 
@@ -189,23 +190,22 @@ public class ParseCatalog implements Iterator<Course> {
                 .getMillis() -
             beginDateTime.getMillis();
         logger.trace("Duration of meeting is {}", durationMillis);
-        duration = new Duration(durationMillis / 6000);
+        duration = durationMillis / 6000;
       }
 
       DateTime endDate =
           timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
 
-      Boolean[] daysList;
-      {
-        Days days = new Days(beginDays);
-        daysList = days.toDayNumberArray();
-        logger.trace("{}", days);
-        logger.trace("{}", (Object)daysList);
+      Boolean[] daysList = new Boolean[7];
+      for (int i = 0; i < beginDays.length() / 2; i++) {
+        String dayString = beginDays.substring(i * 2, i * 2 + 1);
+        int dayValue = UtilsKt.parseDayOfWeek(dayString).getValue();
+        daysList[dayValue % 7] = true;
       }
 
       for (int day = 0; day < 7;
            day++, beginDateTime = beginDateTime.plusDays(
-                      1)) { // TODO fix this code to do the right thing
+                      1)) { // @TODO fix this code to do the right thing
         if (daysList[beginDateTime.getDayOfWeek() % 7]) {
           meetings.add(new Meeting(beginDateTime, duration, endDate));
         }

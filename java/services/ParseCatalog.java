@@ -324,13 +324,13 @@ class SectionMetadata {
   }
 
   Section toLectureWithRecitations(ArrayList<Section> recitations) {
-    return new Section.Lecture(registrationNumber, sectionCode, instructor,
-                               status, meetings, recitations);
+    return new Section(registrationNumber, sectionCode, instructor,
+                       SectionType.LEC, status, meetings, recitations);
   }
 
   Section toSectionWithoutRecitations() {
-    return Section.getSection(registrationNumber, sectionCode, instructor, type,
-                              status, meetings, null);
+    return new Section(registrationNumber, sectionCode, instructor, type,
+                       status, meetings, null);
   }
 }
 

@@ -1,4 +1,3 @@
-import models.Days
 fun main(args: Array<String>) = cli.Schedge().main(args)
 // fun main(args: Array<String>) {
 //     val days = Days("Su")

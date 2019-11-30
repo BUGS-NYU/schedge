@@ -36,15 +36,6 @@ data class Course(
     fun getSchool(): String {
         return this.subject.school
     }
-
-    fun toCourseRecord(term: Term): CoursesRecord {
-        val record = CoursesRecord();
-        record.deptCourseNumber = deptCourseNumber;
-        record.name = name;
-        record.subject = subject.abbrev;
-        record.termId = term.id;
-        return record;
-    }
 }
 
 /**

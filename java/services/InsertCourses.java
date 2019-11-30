@@ -1,6 +1,7 @@
 package services;
 
-import database.generated.tables.records.CoursesRecord;
+import database.generated.tables.Courses;
+import database.generated.tables.Sections;
 import models.*;
 import org.jooq.DSLContext;
 import org.jooq.InsertQuery;
@@ -13,15 +14,38 @@ import java.util.List;
 import database.generated.Tables;
 
 public class InsertCourses {
-  public static void insertCourses(Logger logger, List<Course> courses) {
+  public static void insertCourses(Logger logger, Term term,
+                                   List<Course> courses) throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+      Courses COURSES = Tables.COURSES;
       for (Course c : courses) {
-        InsertQuery<CoursesRecord> query = context.insertQuery(Tables.COURSES);
+        int id = context
+                     .insertInto(COURSES, COURSES.NAME, COURSES.SCHOOL,
+                                 COURSES.SUBJECT, COURSES.DEPT_COURSE_NUMBER,
+                                 COURSES.TERM_ID)
+                     .values(c.getName(), c.getSchool(), c.getSubject(),
+                             c.getDeptCourseNumber(), term.getId())
+                     .returning(COURSES.ID)
+                     .fetchOne()
+                     .getValue(COURSES.ID);
+
+        insertSections(logger, context, c.getSections());
       }
-    } catch (SQLException e) {
     }
   }
 
-  public static void insertCourse(Logger logger, Course course) {}
+  public static void insertSections(Logger logger, DSLContext context,
+                                    List<Section> sections)
+      throws SQLException {
+    Sections SECTIONS = Tables.SECTIONS;
+    for (Section s : sections) {
+      context.insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                         SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE);
+    }
+  }
+
+  public static void insertMeetings(Logger logger, DSLContext context,
+                                    List<Meeting> meetings)
+      throws SQLException {}
 }

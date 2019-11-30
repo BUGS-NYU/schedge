@@ -3,6 +3,7 @@ package models
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import database.generated.tables.records.CoursesRecord
 import org.joda.time.DateTime
 
 /**
@@ -36,7 +37,16 @@ data class Course(
         return this.subject.school
     }
 
+    fun toCourseRecord(term: Term): CoursesRecord {
+        val record = CoursesRecord();
+        record.deptCourseNumber = deptCourseNumber;
+        record.name = name;
+        record.subject = subject.abbrev;
+        record.termId = term.id;
+        return record;
+    }
 }
+
 /**
  * Sealed class Section that contains:
  * - Registration Number
@@ -79,31 +89,31 @@ sealed class Section(val type: SectionType) {
                 }
 
                 SectionType.STU -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     Studio(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.SIM -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     Simulation(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.CLI -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     Clinic(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.FLD -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     Field(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.WKS -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     Workshop(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.STI -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     IndependentInstruction(registrationNumber, sectionCode, instructor, status, meetings)
                 }
                 SectionType.STG -> {
-                    require(recitations == null) {"Provided argument recitations=$recitations when type was not SectionType.LEC." }
+                    require(recitations == null) { "Provided argument recitations=$recitations when type was not SectionType.LEC." }
                     GroupInstruction(registrationNumber, sectionCode, instructor, status, meetings)
                 }
 
@@ -114,6 +124,7 @@ sealed class Section(val type: SectionType) {
             }
         }
     }
+
     /**
      * Different data class for different course component
      */

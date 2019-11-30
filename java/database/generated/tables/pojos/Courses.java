@@ -22,17 +22,19 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses implements Serializable {
 
-    private static final long serialVersionUID = 1864439775;
+    private static final long serialVersionUID = 1811214586;
 
     private final Integer id;
     private final String  name;
+    private final String  school;
     private final String  subject;
-    private final Long    deptCourseNumber;
+    private final Integer deptCourseNumber;
     private final Integer termId;
 
     public Courses(Courses value) {
         this.id = value.id;
         this.name = value.name;
+        this.school = value.school;
         this.subject = value.subject;
         this.deptCourseNumber = value.deptCourseNumber;
         this.termId = value.termId;
@@ -41,12 +43,14 @@ public class Courses implements Serializable {
     public Courses(
         Integer id,
         String  name,
+        String  school,
         String  subject,
-        Long    deptCourseNumber,
+        Integer deptCourseNumber,
         Integer termId
     ) {
         this.id = id;
         this.name = name;
+        this.school = school;
         this.subject = subject;
         this.deptCourseNumber = deptCourseNumber;
         this.termId = termId;
@@ -60,11 +64,15 @@ public class Courses implements Serializable {
         return this.name;
     }
 
+    public String getSchool() {
+        return this.school;
+    }
+
     public String getSubject() {
         return this.subject;
     }
 
-    public Long getDeptCourseNumber() {
+    public Integer getDeptCourseNumber() {
         return this.deptCourseNumber;
     }
 
@@ -78,6 +86,7 @@ public class Courses implements Serializable {
 
         sb.append(id);
         sb.append(", ").append(name);
+        sb.append(", ").append(school);
         sb.append(", ").append(subject);
         sb.append(", ").append(deptCourseNumber);
         sb.append(", ").append(termId);

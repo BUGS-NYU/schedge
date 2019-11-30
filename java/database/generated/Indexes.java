@@ -51,7 +51,7 @@ public class Indexes {
     private static class Indexes0 {
         public static Index COURSE_IDX = Internal.createIndex("course_idx", Courses.COURSES, new OrderField[] { Courses.COURSES.ID }, true);
         public static Index COURSES_ID_KEY = Internal.createIndex("courses_id_key", Courses.COURSES, new OrderField[] { Courses.COURSES.ID }, true);
-        public static Index COURSES_PKEY = Internal.createIndex("courses_pkey", Courses.COURSES, new OrderField[] { Courses.COURSES.TERM_ID, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_NUMBER }, true);
+        public static Index COURSES_PKEY = Internal.createIndex("courses_pkey", Courses.COURSES, new OrderField[] { Courses.COURSES.TERM_ID, Courses.COURSES.SCHOOL, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_NUMBER }, true);
         public static Index FLYWAY_SCHEMA_HISTORY_PK = Internal.createIndex("flyway_schema_history_pk", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, new OrderField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK }, true);
         public static Index FLYWAY_SCHEMA_HISTORY_S_IDX = Internal.createIndex("flyway_schema_history_s_idx", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, new OrderField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.SUCCESS }, false);
         public static Index MEETINGS_PKEY = Internal.createIndex("meetings_pkey", Meetings.MEETINGS, new OrderField[] { Meetings.MEETINGS.ID }, true);

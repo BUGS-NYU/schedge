@@ -70,7 +70,7 @@ public class Keys {
 
     private static class UniqueKeys0 {
         public static final UniqueKey<CoursesRecord> COURSES_ID_KEY = Internal.createUniqueKey(Courses.COURSES, "courses_id_key", Courses.COURSES.ID);
-        public static final UniqueKey<CoursesRecord> COURSES_PKEY = Internal.createUniqueKey(Courses.COURSES, "courses_pkey", Courses.COURSES.TERM_ID, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_NUMBER);
+        public static final UniqueKey<CoursesRecord> COURSES_PKEY = Internal.createUniqueKey(Courses.COURSES, "courses_pkey", Courses.COURSES.TERM_ID, Courses.COURSES.SCHOOL, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_NUMBER);
         public static final UniqueKey<FlywaySchemaHistoryRecord> FLYWAY_SCHEMA_HISTORY_PK = Internal.createUniqueKey(FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, "flyway_schema_history_pk", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK);
         public static final UniqueKey<MeetingsRecord> MEETINGS_PKEY = Internal.createUniqueKey(Meetings.MEETINGS, "meetings_pkey", Meetings.MEETINGS.ID);
         public static final UniqueKey<SectionsRecord> SECTIONS_ID_KEY = Internal.createUniqueKey(Sections.SECTIONS, "sections_id_key", Sections.SECTIONS.ID);

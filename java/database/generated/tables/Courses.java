@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses extends TableImpl<CoursesRecord> {
 
-    private static final long serialVersionUID = -442598423;
+    private static final long serialVersionUID = 1883178505;
 
     /**
      * The reference instance of <code>public.courses</code>
@@ -67,14 +67,19 @@ public class Courses extends TableImpl<CoursesRecord> {
     public final TableField<CoursesRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
 
     /**
+     * The column <code>public.courses.school</code>.
+     */
+    public final TableField<CoursesRecord, String> SCHOOL = createField("school", org.jooq.impl.SQLDataType.VARCHAR(4).nullable(false), this, "");
+
+    /**
      * The column <code>public.courses.subject</code>.
      */
-    public final TableField<CoursesRecord, String> SUBJECT = createField("subject", org.jooq.impl.SQLDataType.VARCHAR(8).nullable(false), this, "");
+    public final TableField<CoursesRecord, String> SUBJECT = createField("subject", org.jooq.impl.SQLDataType.VARCHAR(4).nullable(false), this, "");
 
     /**
      * The column <code>public.courses.dept_course_number</code>.
      */
-    public final TableField<CoursesRecord, Long> DEPT_COURSE_NUMBER = createField("dept_course_number", org.jooq.impl.SQLDataType.BIGINT.nullable(false), this, "");
+    public final TableField<CoursesRecord, Integer> DEPT_COURSE_NUMBER = createField("dept_course_number", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.courses.term_id</code>.

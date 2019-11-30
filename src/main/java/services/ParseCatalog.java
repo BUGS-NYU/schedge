@@ -1,6 +1,8 @@
 package services;
 
+import java.time.DayOfWeek;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.*;
 import kotlin.text.StringsKt;
 import models.*;
@@ -30,6 +32,7 @@ public class ParseCatalog implements Iterator<Course> {
 
   public static List<Course> parse(Logger logger, String data)
       throws IOException {
+    logger.debug("parsing raw catalog data...");
     ArrayList<Course> courses = new ArrayList<>();
     new ParseCatalog(logger, Jsoup.parse(data))
         .forEachRemaining(c -> courses.add(c));
@@ -72,6 +75,7 @@ public class ParseCatalog implements Iterator<Course> {
     int registrationNumber;
     String sectionCode;
     SectionType type;
+    List<Meeting> meetings;
 
     try {
       String header = sectionData.get("Section");
@@ -81,14 +85,13 @@ public class ParseCatalog implements Iterator<Course> {
       sectionCode = header.substring(0, headerDashIdx);
       type = SectionType.valueOf(header.substring(
           headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
+      meetings = parseSectionTimesData(sectionData.get("Days/Times"),
+                                       sectionData.get("Dates"));
     } catch (Exception e) {
       logger.error("parseSectionNode throwing with section data: {}",
                    sectionData);
       throw e;
     }
-
-    List<Meeting> meetings = parseSectionTimesData(
-        sectionData.get("Days/Times"), sectionData.get("Dates"));
 
     return new SectionMetadata(
         registrationNumber, sectionCode, type, sectionData.get("Instructor"),
@@ -146,14 +149,14 @@ public class ParseCatalog implements Iterator<Course> {
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
-    // 09/03/2019 - 12/13/2019 10/11/2019
-    // - 10/11/2019 11/08/2019 - 11/08/2019
     Iterator<String> timeTokens =
         StringsKt.split(times, new char[] {' '}, false, 0)
             .stream()
             .filter(s -> !s.equals("-"))
             .iterator();
 
+    // 09/03/2019 - 12/13/2019 10/11/2019
+    // - 10/11/2019 11/08/2019 - 11/08/2019
     Iterator<String> dateTokens =
         StringsKt.split(dates, new char[] {' '}, false, 0)
             .stream()
@@ -183,23 +186,25 @@ public class ParseCatalog implements Iterator<Course> {
 
         beginDateTime = timeParser.parseDateTime(
             beginDateString + ' ' + timeTokens.next().toUpperCase());
+        DateTime stopDateTime = timeParser.parseDateTime(
+            beginDateString + ' ' + timeTokens.next().toUpperCase());
+        logger.trace("Begin date: {}, End date: {}", beginDateTime,
+                     stopDateTime);
         long durationMillis =
-            timeParser
-                .parseDateTime(beginDateString + ' ' +
-                               timeTokens.next().toUpperCase())
-                .getMillis() -
-            beginDateTime.getMillis();
-        logger.trace("Duration of meeting is {}", durationMillis);
-        duration = durationMillis / 6000;
+            stopDateTime.getMillis() - beginDateTime.getMillis();
+        duration = durationMillis / 60000;
+        logger.trace("Duration of meeting is {} minutes", duration);
       }
 
       DateTime endDate =
           timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
 
-      Boolean[] daysList = new Boolean[7];
-      for (int i = 0; i < beginDays.length() / 2; i++) {
-        String dayString = beginDays.substring(i * 2, i * 2 + 1);
+      boolean[] daysList = new boolean[7];
+      Arrays.fill(daysList, Boolean.FALSE);
+      for (int i = 0; i < beginDays.length() - 1; i += 2) {
+        String dayString = beginDays.substring(i, i + 2);
         int dayValue = UtilsKt.parseDayOfWeek(dayString).getValue();
+        logger.trace("day: {} translates to ", dayString, dayValue);
         daysList[dayValue % 7] = true;
       }
 
@@ -211,7 +216,7 @@ public class ParseCatalog implements Iterator<Course> {
         }
       }
     }
-    logger.trace("{}", meetings);
+    logger.trace("Meetings are: {}", meetings);
 
     return meetings;
   }

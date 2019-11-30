@@ -73,7 +73,7 @@ enum class SectionStatus {
 
 }
 
-private val AvailableSubjects: Map<String, Set<String>> = "subjects.txt".asResourceLines().map {
+private val AvailableSubjects: Map<String, Set<String>> = "/subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
     Pair(subj, school)
 }.let {

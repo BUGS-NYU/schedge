@@ -77,8 +77,8 @@ data class Meeting(
 
     @JsonValue
     fun toJson(): MeetingJson {
-        return MeetingJson(beginDate.toString(), minutesDuration.toString(), endDate.toString())
+        return MeetingJson(beginDate.toString(), minutesDuration, endDate.toString())
     }
 }
 
-data class MeetingJson(val beginDate: String, val duration: String, val endDate: String)
+data class MeetingJson(val beginDate: String, val duration: Long, val endDate: String)

@@ -45,7 +45,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
                 )
             } else {
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(scrapeFromCatalog(logger, term, listOf(SubjectCode(subject!!, school))).toList())
+                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode(subject!!, school)))
                 )
             }
 

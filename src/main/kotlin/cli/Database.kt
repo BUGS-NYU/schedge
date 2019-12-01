@@ -21,7 +21,7 @@ import services.scrapeFromCatalog
 internal class Database : CliktCommand(name = "db") {
 
     init {
-        this.subcommands(Scrape(), Query())
+        this.subcommands(Scrape(), Query(), Serve())
     }
 
     override fun run() = Unit

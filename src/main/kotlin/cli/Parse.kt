@@ -3,6 +3,7 @@ package cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import mu.KotlinLogging
 import utils.readFromFileOrStdin
@@ -29,6 +30,7 @@ internal class Parse : CliktCommand(name = "parse") {
      */
     private class Catalog : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("parse.catalog")
+        private val prettyPrint by option("--pretty").flag(default = false)
         private val inputFile by argument(help = "The file to read from. If not provided, reads from stdin.")
         private val outputFile by option(
             "--output-file",
@@ -39,7 +41,7 @@ internal class Parse : CliktCommand(name = "parse") {
         override fun run() {
             val input = inputFile.readFromFileOrStdin()
             val output = ParseCatalog.parse(logger, input)
-            outputFile.writeToFileOrStdout(JsonMapper.toJson(output))
+            outputFile.writeToFileOrStdout(JsonMapper.toJson(output, prettyPrint))
         }
     }
 

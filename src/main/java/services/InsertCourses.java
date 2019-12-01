@@ -21,54 +21,67 @@ public class InsertCourses {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Courses COURSES = Tables.COURSES;
       for (Course c : courses) {
-        int id = context
-                     .insertInto(COURSES, COURSES.NAME, COURSES.SCHOOL,
-                                 COURSES.SUBJECT, COURSES.DEPT_COURSE_NUMBER,
-                                 COURSES.TERM_ID)
-                     .values(c.getName(), c.getSchool(), c.getSubject(),
-                             c.getDeptCourseNumber(), term.getId())
-                     .returning(COURSES.ID)
-                     .fetchOne()
-                     .getValue(COURSES.ID);
+        context.transaction(config -> {
+          DSLContext ctx = DSL.using(config);
+          int id = ctx.insertInto(COURSES, COURSES.NAME, COURSES.SCHOOL,
+                                  COURSES.SUBJECT, COURSES.DEPT_COURSE_NUMBER,
+                                  COURSES.TERM_ID)
+                       .values(c.getName(), c.getSchool(), c.getSubject(),
+                               c.getDeptCourseNumber(), term.getId())
+                       .onDuplicateKeyUpdate()
+                       .set(COURSES.NAME, c.getName())
+                       .returning(COURSES.ID)
+                       .fetchOne()
+                       .getValue(COURSES.ID);
 
-        insertSections(logger, context, id, c.getSections(), null);
+          insertSections(logger, ctx, id, c.getSections());
+        });
       }
     }
   }
 
   public static void insertSections(Logger logger, DSLContext context,
-                                    int courseId, List<Section> sections,
-                                    Integer associatedWith)
+                                    int courseId, List<Section> sections)
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
+    context.delete(SECTIONS).where(SECTIONS.COURSE_ID.eq(courseId)).execute();
     for (Section s : sections) {
-      int id;
-      try {
-        id = context
-                 .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                             SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                             SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                             SECTIONS.ASSOCIATED_WITH)
-                 .values(s.getRegistrationNumber(), courseId,
-                         s.getSectionCode(), s.getInstructor(),
-                         s.getType().ordinal(), associatedWith)
-                 .returning(SECTIONS.ID)
-                 .fetchOne()
-                 .getValue(SECTIONS.ID);
-      } catch (Exception e) {
-        id = context.update(SECTIONS)
-                 .set(SECTIONS.INSTRUCTOR, s.getInstructor())
-                 .where(
-                     SECTIONS.COURSE_ID.eq(courseId),
-                     SECTIONS.SECTION_CODE.eq(s.getSectionCode()),
-                     SECTIONS.REGISTRATION_NUMBER.eq(s.getRegistrationNumber()))
-                 .returning(SECTIONS.ID)
-                 .fetchOne()
-                 .getValue(SECTIONS.ID);
-      }
+      int id =
+          context
+              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE)
+              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
+                      s.getInstructor(), s.getType().ordinal())
+              .returning(SECTIONS.ID)
+              .fetchOne()
+              .getValue(SECTIONS.ID);
       insertMeetings(logger, context, id, s.getMeetings());
       if (s.getRecitations() != null)
-        insertSections(logger, context, courseId, s.getRecitations(), id);
+        insertRecitations(logger, context, courseId, s.getRecitations(), id);
+    }
+  }
+
+  public static void insertRecitations(Logger logger, DSLContext context,
+                                       int courseId, List<Section> sections,
+                                       int associatedWith) throws SQLException {
+    Sections SECTIONS = Tables.SECTIONS;
+    for (Section s : sections) {
+      int id =
+          context
+              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                          SECTIONS.ASSOCIATED_WITH)
+              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
+                      s.getInstructor(), s.getType().ordinal(), associatedWith)
+              .returning(SECTIONS.ID)
+              .fetchOne()
+              .getValue(SECTIONS.ID);
+      insertMeetings(logger, context, id, s.getMeetings());
+      if (s.getRecitations() != null)
+        throw new IllegalArgumentException(
+            "Recitation had associated recitation for some reason.");
     }
   }
 
@@ -76,6 +89,8 @@ public class InsertCourses {
                                     int sectionId, List<Meeting> meetings)
       throws SQLException {
     Meetings MEETINGS = Tables.MEETINGS;
+    context.delete(MEETINGS).where(MEETINGS.SECTION_ID.eq(sectionId)).execute();
+
     for (Meeting m : meetings) {
       context
           .insertInto(MEETINGS, MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,

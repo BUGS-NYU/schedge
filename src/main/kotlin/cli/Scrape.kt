@@ -3,6 +3,7 @@ package cli
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import models.SubjectCode
@@ -36,16 +37,23 @@ internal class Scrape : CliktCommand(name = "scrape") {
         private val school: String by option("--school").required()
         private val subject: String? by option("--subject")
         private val file: String? by option("--file")
+        private val prettyPrint by option("--pretty").flag(default = false)
 
         override fun run() {
             val startTime = System.nanoTime()
             if (subject == null) {
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode.allSubjects(school).toList()).toList())
+                    JsonMapper.toJson(
+                        scrapeFromCatalog(
+                            logger,
+                            term,
+                            SubjectCode.allSubjects(school).toList()
+                        ).toList(), prettyPrint
+                    )
                 )
             } else {
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode(subject!!, school)))
+                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode(subject!!, school)), prettyPrint)
                 )
             }
 

@@ -134,7 +134,7 @@ compileKotlin {
 }
 
 task checkFast {}
-checkFast.dependsOn += 'compileKotlin'
 checkFast.dependsOn += 'compileJava'
+checkFast.dependsOn += 'compileKotlin'
 
 

@@ -16,13 +16,20 @@
         <appender-ref ref="STDERR"/>
     </logger>
 
+    <logger name="org.jooq.tools.LoggerListener" level="INFO" additivity="false">
+        <appender-ref ref="STDERR"/>
+    </logger>
+    <logger name="org.jooq.impl.DefaultConnectionProvider" level="INFO" additivity="false">
+        <appender-ref ref="STDERR"/>
+    </logger>
+    <logger name="org.jooq.impl.DefaultBinding" level="INFO" additivity="false">
+        <appender-ref ref="STDERR"/>
+    </logger>
+
     <logger name="parse.catalog" level="TRACE" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
     <logger name="parse.catalog.meetings" level="INFO" additivity="false">
-        <appender-ref ref="STDERR"/>
-    </logger>
-    <logger name="Exposed" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
     <root level="TRACE">

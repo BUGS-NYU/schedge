@@ -11,17 +11,19 @@ CREATE TABLE public.courses (
 CREATE TABLE public.sections (
   id                  SERIAL                      NOT NULL UNIQUE,
   registration_number integer                     NOT NULL,
-  course_id           int REFERENCES courses(id)  NOT NULL,
+  course_id           int REFERENCES courses(id)
+                          ON DELETE CASCADE       NOT NULL,
   section_code        varchar(5)                  NOT NULL,
   instructor          text                        NOT NULL,
   section_type        integer                     NOT NULL,
-  associated_with     integer,
+  associated_with     integer REFERENCES sections(id),
   PRIMARY KEY (course_id, section_code, registration_number)
 );
 
 CREATE TABLE public.meetings (
   id                  SERIAL                          NOT NULL,
-  section_id          int REFERENCES sections(id)     NOT NULL,
+  section_id          int REFERENCES sections(id)
+                      ON DELETE CASCADE               NOT NULL,
   begin_date          timestamp without time zone     NOT NULL,
   end_date            timestamp without time zone     NOT NULL,
   duration            bigint                          NOT NULL,

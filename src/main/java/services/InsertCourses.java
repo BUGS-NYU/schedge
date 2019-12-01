@@ -67,6 +67,13 @@ public class InsertCourses {
                                        int associatedWith) throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
     for (Section s : sections) {
+      if (s.getType() == SectionType.LEC)
+        throw new IllegalArgumentException(
+            "Associated section was a lecture for some reason");
+      if (s.getRecitations() != null)
+        throw new IllegalArgumentException(
+            "Associated section had associated sections for some reason.");
+
       int id =
           context
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
@@ -79,9 +86,6 @@ public class InsertCourses {
               .fetchOne()
               .getValue(SECTIONS.ID);
       insertMeetings(logger, context, id, s.getMeetings());
-      if (s.getRecitations() != null)
-        throw new IllegalArgumentException(
-            "Recitation had associated recitation for some reason.");
     }
   }
 

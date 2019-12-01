@@ -269,99 +269,101 @@ public class ParseCatalog implements Iterator<Course> {
       return Optional.empty();
     }
   }
-}
 
-/**
- * Metadata for a single section, without nesting of sections.
- *
- * @author Albert Liu
- */
-class SectionMetadata {
-  private int registrationNumber;
-  private String sectionCode;
-  private SectionType type;
-  private String instructor;
-  private SectionStatus status;
-  private List<Meeting> meetings;
 
-  public SectionMetadata(int registrationNumber, String sectionCode,
-                         SectionType type, String instructor,
-                         SectionStatus status, List<Meeting> meetings) {
-    this.registrationNumber = registrationNumber;
-    this.sectionCode = sectionCode;
-    this.type = type;
-    this.instructor = instructor;
-    this.status = status;
-    this.meetings = meetings;
-  }
+  /**
+   * Metadata for a single section, without nesting of sections.
+   *
+   * @author Albert Liu
+   */
+  private static class SectionMetadata {
+    private int registrationNumber;
+    private String sectionCode;
+    private SectionType type;
+    private String instructor;
+    private SectionStatus status;
+    private List<Meeting> meetings;
 
-  @NotNull
-  static ArrayList<Section>
-  getSectionsFrom(ArrayList<SectionMetadata> sectionData, SubjectCode code) {
-    ArrayList<Section> sections = new ArrayList<>();
-
-    int size = sectionData.size();
-    for (int cursor = 0; cursor < size; cursor++) {
-      SectionMetadata current = sectionData.get(cursor);
-      if (current.type == SectionType.LEC) {
-        ArrayList<Section> recitations = new ArrayList<>();
-        for (int nestedCursor = cursor + 1;
-             nestedCursor < size &&
-             sectionData.get(nestedCursor).type != SectionType.LEC;
-             nestedCursor++) {
-          recitations.add(
-              sectionData.get(nestedCursor).toSectionWithoutRecitations());
-        }
-
-        if (recitations.size() > 0) {
-          sections.add(current.toLectureWithRecitations(recitations));
-          cursor += recitations.size();
-        }
-      } else {
-        sections.add(current.toSectionWithoutRecitations());
-      }
+    public SectionMetadata(int registrationNumber, String sectionCode,
+                           SectionType type, String instructor,
+                           SectionStatus status, List<Meeting> meetings) {
+      this.registrationNumber = registrationNumber;
+      this.sectionCode = sectionCode;
+      this.type = type;
+      this.instructor = instructor;
+      this.status = status;
+      this.meetings = meetings;
     }
 
-    return sections;
+    @NotNull
+    static ArrayList<Section>
+    getSectionsFrom(ArrayList<SectionMetadata> sectionData, SubjectCode code) {
+      ArrayList<Section> sections = new ArrayList<>();
+
+      int size = sectionData.size();
+      for (int cursor = 0; cursor < size; cursor++) {
+        SectionMetadata current = sectionData.get(cursor);
+        if (current.type == SectionType.LEC) {
+          ArrayList<Section> recitations = new ArrayList<>();
+          for (int nestedCursor = cursor + 1;
+               nestedCursor < size &&
+                       sectionData.get(nestedCursor).type != SectionType.LEC;
+               nestedCursor++) {
+            recitations.add(
+                    sectionData.get(nestedCursor).toSectionWithoutRecitations());
+          }
+
+          if (recitations.size() > 0) {
+            sections.add(current.toLectureWithRecitations(recitations));
+            cursor += recitations.size();
+          }
+        } else {
+          sections.add(current.toSectionWithoutRecitations());
+        }
+      }
+
+      return sections;
+    }
+
+    Section toLectureWithRecitations(ArrayList<Section> recitations) {
+      return new Section(registrationNumber, sectionCode, instructor,
+              SectionType.LEC, status, meetings, recitations);
+    }
+
+    Section toSectionWithoutRecitations() {
+      return new Section(registrationNumber, sectionCode, instructor, type,
+              status, meetings, null);
+    }
   }
 
-  Section toLectureWithRecitations(ArrayList<Section> recitations) {
-    return new Section(registrationNumber, sectionCode, instructor,
-                       SectionType.LEC, status, meetings, recitations);
-  }
+  /**
+   * Metadata for a single course, without sections.
+   *
+   * @author Albert Liu
+   */
+  private static class CourseMetadata {
 
-  Section toSectionWithoutRecitations() {
-    return new Section(registrationNumber, sectionCode, instructor, type,
-                       status, meetings, null);
+    private String courseName;
+    private int deptCourseNumber;
+    private SubjectCode subject;
+
+    CourseMetadata(String courseName, int deptCourseNumber, SubjectCode subject) {
+      this.courseName = courseName;
+      this.deptCourseNumber = deptCourseNumber;
+      this.subject = subject;
+    }
+
+    @NotNull
+    Course getCourse(ArrayList<SectionMetadata> sections) {
+      return new Course(courseName, deptCourseNumber, subject,
+              SectionMetadata.getSectionsFrom(sections, subject));
+    }
+
+    @Override
+    public String toString() {
+      return "CourseData(courseName=" + courseName + // ", courseId=" + courseId +
+              ", deptCourseNumber=" + deptCourseNumber + ")";
+    }
   }
 }
 
-/**
- * Metadata for a single course, without sections.
- *
- * @author Albert Liu
- */
-class CourseMetadata {
-
-  private String courseName;
-  private int deptCourseNumber;
-  private SubjectCode subject;
-
-  CourseMetadata(String courseName, int deptCourseNumber, SubjectCode subject) {
-    this.courseName = courseName;
-    this.deptCourseNumber = deptCourseNumber;
-    this.subject = subject;
-  }
-
-  @NotNull
-  Course getCourse(ArrayList<SectionMetadata> sections) {
-    return new Course(courseName, deptCourseNumber, subject,
-                      SectionMetadata.getSectionsFrom(sections, subject));
-  }
-
-  @Override
-  public String toString() {
-    return "CourseData(courseName=" + courseName + // ", courseId=" + courseId +
-        ", deptCourseNumber=" + deptCourseNumber + ")";
-  }
-}

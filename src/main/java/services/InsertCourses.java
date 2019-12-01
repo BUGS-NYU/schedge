@@ -5,7 +5,6 @@ import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
 import models.*;
 import org.jooq.DSLContext;
-import org.jooq.InsertQuery;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -56,9 +55,7 @@ public class InsertCourses {
               .getValue(SECTIONS.ID);
       insertMeetings(logger, context, id, s.getMeetings());
       if (s.getRecitations() != null)
-        for (Section r : s.getRecitations()) {
-          insertSections(logger, context, courseId, sections, id);
-        }
+        insertSections(logger, context, courseId, s.getRecitations(), id);
     }
   }
 
@@ -72,7 +69,8 @@ public class InsertCourses {
                       MEETINGS.DURATION, MEETINGS.END_DATE)
           .values(sectionId, new Timestamp(m.getBeginDate().getMillis()),
                   m.getMinutesDuration(),
-                  new Timestamp(m.getEndDate().getMillis()));
+                  new Timestamp(m.getEndDate().getMillis()))
+          .execute();
     }
   }
 }

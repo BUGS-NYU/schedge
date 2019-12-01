@@ -1,14 +1,15 @@
 # Ignore Gradle project-specific cache directory
 .gradle
 
+gradle/*
+gradlew
+gradle.bat
+
 # IDEA IDE
 .idea
 
 # Ignore Gradle build output directory
 build
-
-.env
-production.env
 
 /postgres/*
 !/postgres/.gitkeep

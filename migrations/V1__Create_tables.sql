@@ -17,7 +17,7 @@ CREATE TABLE public.sections (
   instructor          text                        NOT NULL,
   section_type        integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
-  PRIMARY KEY (course_id, section_code, registration_number)
+  PRIMARY KEY (course_id, section_code)
 );
 
 CREATE TABLE public.meetings (

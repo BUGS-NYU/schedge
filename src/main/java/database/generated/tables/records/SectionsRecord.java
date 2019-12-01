@@ -9,7 +9,7 @@ import database.generated.tables.Sections;
 import javax.annotation.Generated;
 
 import org.jooq.Field;
-import org.jooq.Record3;
+import org.jooq.Record2;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implements Record7<Integer, Integer, Integer, String, String, Integer, Integer> {
 
-    private static final long serialVersionUID = -273351320;
+    private static final long serialVersionUID = 1138491945;
 
     /**
      * Setter for <code>public.sections.id</code>.
@@ -143,8 +143,8 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
      * {@inheritDoc}
      */
     @Override
-    public Record3<Integer, String, Integer> key() {
-        return (Record3) super.key();
+    public Record2<Integer, String> key() {
+        return (Record2) super.key();
     }
 
     // -------------------------------------------------------------------------

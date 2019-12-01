@@ -137,4 +137,10 @@ task checkFast {}
 checkFast.dependsOn += 'compileJava'
 checkFast.dependsOn += 'compileKotlin'
 
+task updateDb {}
+updateDb.dependsOn += 'flywayClean'
+updateDb.dependsOn += 'flywayMigrate'
+updateDb.dependsOn += 'generateDatabaseJooqSchemaSource'
+
+
 

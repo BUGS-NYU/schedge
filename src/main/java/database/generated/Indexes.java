@@ -58,6 +58,6 @@ public class Indexes {
         public static Index SECTION_IDX = Internal.createIndex("section_idx", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ID }, true);
         public static Index SECTIONS_ASSOCIATED_WITH = Internal.createIndex("sections_associated_with", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ASSOCIATED_WITH }, false);
         public static Index SECTIONS_ID_KEY = Internal.createIndex("sections_id_key", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ID }, true);
-        public static Index SECTIONS_PKEY = Internal.createIndex("sections_pkey", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE, Sections.SECTIONS.REGISTRATION_NUMBER }, true);
+        public static Index SECTIONS_PKEY = Internal.createIndex("sections_pkey", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE }, true);
     }
 }

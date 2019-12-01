@@ -74,6 +74,6 @@ public class Keys {
         public static final UniqueKey<FlywaySchemaHistoryRecord> FLYWAY_SCHEMA_HISTORY_PK = Internal.createUniqueKey(FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, "flyway_schema_history_pk", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK);
         public static final UniqueKey<MeetingsRecord> MEETINGS_PKEY = Internal.createUniqueKey(Meetings.MEETINGS, "meetings_pkey", Meetings.MEETINGS.ID);
         public static final UniqueKey<SectionsRecord> SECTIONS_ID_KEY = Internal.createUniqueKey(Sections.SECTIONS, "sections_id_key", Sections.SECTIONS.ID);
-        public static final UniqueKey<SectionsRecord> SECTIONS_PKEY = Internal.createUniqueKey(Sections.SECTIONS, "sections_pkey", Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE, Sections.SECTIONS.REGISTRATION_NUMBER);
+        public static final UniqueKey<SectionsRecord> SECTIONS_PKEY = Internal.createUniqueKey(Sections.SECTIONS, "sections_pkey", Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE);
     }
 }

@@ -120,3 +120,6 @@ compileKotlin {
     }
 }
 
+// 
+project.tasks.getByName('compileJava').dependsOn -= 'generateDatabaseJooqSchemaSource'
+project.tasks.getByName('generateDatabaseJooqSchemaSource').outputs.upToDateWhen { false }

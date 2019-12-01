@@ -5,6 +5,9 @@ gradle/*
 gradlew
 gradlew.bat
 
+# Environment vars
+.env
+
 # IDEA IDE
 .idea
 

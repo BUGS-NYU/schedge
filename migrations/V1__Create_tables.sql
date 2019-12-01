@@ -16,6 +16,7 @@ CREATE TABLE public.sections (
   section_code        varchar(5)                  NOT NULL,
   instructor          text                        NOT NULL,
   section_type        integer                     NOT NULL,
+  section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
   PRIMARY KEY (course_id, section_code)
 );

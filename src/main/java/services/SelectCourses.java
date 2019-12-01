@@ -2,7 +2,10 @@ package services;
 
 import database.generated.Tables;
 import database.generated.tables.Courses;
+import database.generated.tables.Sections;
+import database.generated.tables.Meetings;
 import models.*;
+import org.joda.time.DateTime;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -12,7 +15,9 @@ import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SelectCourses {
@@ -59,16 +64,59 @@ public class SelectCourses {
 
   public static List<Section> selectSections(Logger logger, DSLContext context,
                                              int courseId) {
-    return new ArrayList<>();
-  }
-
-  public static List<Section>
-  selectRecitations(Logger logger, DSLContext context, int courseId) {
-    return new ArrayList<>();
+    Sections SECTIONS = Tables.SECTIONS;
+    Result<Record> records = context.select()
+                                 .from(SECTIONS)
+                                 .where(SECTIONS.COURSE_ID.eq(courseId))
+                                 .fetch();
+    Map<Integer, Record> sections = new HashMap<>();
+    Map<Integer, ArrayList<Section>> associatedSections = new HashMap<>();
+    for (Record r : records) {
+      Integer associatedWith = r.get(SECTIONS.ASSOCIATED_WITH);
+      if (associatedWith == null) {
+        sections.put(r.get(SECTIONS.ID), r);
+      } else {
+        Section s = new Section(
+            r.get(SECTIONS.REGISTRATION_NUMBER), r.get(SECTIONS.SECTION_CODE),
+            r.get(SECTIONS.INSTRUCTOR),
+            SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
+            SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
+            selectMeetings(logger, context, r.get(SECTIONS.ID)), null);
+        if (!associatedSections.containsKey(associatedWith)) {
+          associatedSections.put(associatedWith, new ArrayList<>());
+        }
+        associatedSections.get(associatedWith).add(s);
+      }
+    }
+    return sections.entrySet()
+        .stream()
+        .map(kv -> {
+          int id = kv.getKey();
+          Record r = kv.getValue();
+          return new Section(
+              r.get(SECTIONS.REGISTRATION_NUMBER), r.get(SECTIONS.SECTION_CODE),
+              r.get(SECTIONS.INSTRUCTOR),
+              SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
+              SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
+              selectMeetings(logger, context, id),
+              associatedSections.getOrDefault(id, null));
+        })
+        .collect(Collectors.toList());
   }
 
   public static List<Meeting> selectMeetings(Logger logger, DSLContext context,
                                              int sectionId) {
-    return new ArrayList<>();
+    Meetings MEETINGS = Tables.MEETINGS;
+    Result<Record> records = context.select()
+                                 .from(MEETINGS)
+                                 .where(MEETINGS.SECTION_ID.eq(sectionId))
+                                 .fetch();
+    
+    return records.stream()
+        .map(r
+             -> new Meeting(new DateTime(r.get(MEETINGS.BEGIN_DATE).getTime()),
+                            r.get(MEETINGS.DURATION),
+                            new DateTime(r.get(MEETINGS.END_DATE).getTime())))
+        .collect(Collectors.toList());
   }
 }

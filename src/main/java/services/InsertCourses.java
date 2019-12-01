@@ -45,17 +45,19 @@ public class InsertCourses {
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
     context.delete(SECTIONS).where(SECTIONS.COURSE_ID.eq(courseId)).execute();
+
     for (Section s : sections) {
-      int id =
-          context
-              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE)
-              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
-                      s.getInstructor(), s.getType().ordinal())
-              .returning(SECTIONS.ID)
-              .fetchOne()
-              .getValue(SECTIONS.ID);
+      int id = context
+                   .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                               SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                               SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                               SECTIONS.SECTION_STATUS)
+                   .values(s.getRegistrationNumber(), courseId,
+                           s.getSectionCode(), s.getInstructor(),
+                           s.getType().ordinal(), s.getStatus().ordinal())
+                   .returning(SECTIONS.ID)
+                   .fetchOne()
+                   .getValue(SECTIONS.ID);
       insertMeetings(logger, context, id, s.getMeetings());
       if (s.getRecitations() != null)
         insertRecitations(logger, context, courseId, s.getRecitations(), id);
@@ -65,7 +67,6 @@ public class InsertCourses {
   public static void insertRecitations(Logger logger, DSLContext context,
                                        int courseId, List<Section> sections,
                                        int associatedWith) throws SQLException {
-    Sections SECTIONS = Tables.SECTIONS;
     for (Section s : sections) {
       if (s.getType() == SectionType.LEC)
         throw new IllegalArgumentException(
@@ -74,14 +75,17 @@ public class InsertCourses {
         throw new IllegalArgumentException(
             "Associated section had associated sections for some reason.");
 
+      Sections SECTIONS = Tables.SECTIONS;
+
       int id =
           context
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
                           SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
                           SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.ASSOCIATED_WITH)
+                          SECTIONS.SECTION_STATUS, SECTIONS.ASSOCIATED_WITH)
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
-                      s.getInstructor(), s.getType().ordinal(), associatedWith)
+                      s.getInstructor(), s.getType().ordinal(),
+                      s.getStatus().ordinal(), associatedWith)
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);

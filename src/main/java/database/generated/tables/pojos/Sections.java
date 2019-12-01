@@ -22,7 +22,7 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = 2036341378;
+    private static final long serialVersionUID = 59121969;
 
     private final Integer id;
     private final Integer registrationNumber;
@@ -30,6 +30,7 @@ public class Sections implements Serializable {
     private final String  sectionCode;
     private final String  instructor;
     private final Integer sectionType;
+    private final Integer sectionStatus;
     private final Integer associatedWith;
 
     public Sections(Sections value) {
@@ -39,6 +40,7 @@ public class Sections implements Serializable {
         this.sectionCode = value.sectionCode;
         this.instructor = value.instructor;
         this.sectionType = value.sectionType;
+        this.sectionStatus = value.sectionStatus;
         this.associatedWith = value.associatedWith;
     }
 
@@ -49,6 +51,7 @@ public class Sections implements Serializable {
         String  sectionCode,
         String  instructor,
         Integer sectionType,
+        Integer sectionStatus,
         Integer associatedWith
     ) {
         this.id = id;
@@ -57,6 +60,7 @@ public class Sections implements Serializable {
         this.sectionCode = sectionCode;
         this.instructor = instructor;
         this.sectionType = sectionType;
+        this.sectionStatus = sectionStatus;
         this.associatedWith = associatedWith;
     }
 
@@ -84,6 +88,10 @@ public class Sections implements Serializable {
         return this.sectionType;
     }
 
+    public Integer getSectionStatus() {
+        return this.sectionStatus;
+    }
+
     public Integer getAssociatedWith() {
         return this.associatedWith;
     }
@@ -98,6 +106,7 @@ public class Sections implements Serializable {
         sb.append(", ").append(sectionCode);
         sb.append(", ").append(instructor);
         sb.append(", ").append(sectionType);
+        sb.append(", ").append(sectionStatus);
         sb.append(", ").append(associatedWith);
 
         sb.append(")");

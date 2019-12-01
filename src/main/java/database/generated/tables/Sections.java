@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = 1487695824;
+    private static final long serialVersionUID = 2136046422;
 
     /**
      * The reference instance of <code>public.sections</code>
@@ -85,6 +85,11 @@ public class Sections extends TableImpl<SectionsRecord> {
      * The column <code>public.sections.section_type</code>.
      */
     public final TableField<SectionsRecord, Integer> SECTION_TYPE = createField("section_type", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.sections.section_status</code>.
+     */
+    public final TableField<SectionsRecord, Integer> SECTION_STATUS = createField("section_status", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.sections.associated_with</code>.

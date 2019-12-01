@@ -42,17 +42,30 @@ public class InsertCourses {
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
     for (Section s : sections) {
-      int id =
-          context
-              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.ASSOCIATED_WITH)
-              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
-                      s.getInstructor(), s.getType().ordinal(), associatedWith)
-              .returning(SECTIONS.ID)
-              .fetchOne()
-              .getValue(SECTIONS.ID);
+      int id;
+      try {
+        id = context
+                 .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                             SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                             SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                             SECTIONS.ASSOCIATED_WITH)
+                 .values(s.getRegistrationNumber(), courseId,
+                         s.getSectionCode(), s.getInstructor(),
+                         s.getType().ordinal(), associatedWith)
+                 .returning(SECTIONS.ID)
+                 .fetchOne()
+                 .getValue(SECTIONS.ID);
+      } catch (Exception e) {
+        id = context.update(SECTIONS)
+                 .set(SECTIONS.INSTRUCTOR, s.getInstructor())
+                 .where(
+                     SECTIONS.COURSE_ID.eq(courseId),
+                     SECTIONS.SECTION_CODE.eq(s.getSectionCode()),
+                     SECTIONS.REGISTRATION_NUMBER.eq(s.getRegistrationNumber()))
+                 .returning(SECTIONS.ID)
+                 .fetchOne()
+                 .getValue(SECTIONS.ID);
+      }
       insertMeetings(logger, context, id, s.getMeetings());
       if (s.getRecitations() != null)
         insertSections(logger, context, courseId, s.getRecitations(), id);

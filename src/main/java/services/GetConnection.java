@@ -32,4 +32,10 @@ public class GetConnection {
 
     return dataSource.getConnection();
   }
+
+  public static void close() throws SQLException {
+    if (dataSource != null)
+      dataSource.close();
+    dataSource = null;
+  }
 }

@@ -10,6 +10,7 @@ import models.Term
 import mu.KotlinLogging
 import services.InsertCourses
 import services.scrapeFromCatalog
+import services.GetConnection
 
 internal class Database : CliktCommand(name = "db") {
 
@@ -42,12 +43,12 @@ internal class Database : CliktCommand(name = "db") {
                     scrapeFromCatalog(logger, term, SubjectCode(subject!!, school))
                 )
             }
+            GetConnection.close()
 
             val endTime = System.nanoTime()
             val duration = (endTime - startTime) / 1000000000.0 //divide by 1000000 to get milliseconds.
             println("$duration seconds")
         }
-
     }
 
 }

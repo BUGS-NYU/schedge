@@ -14,4 +14,7 @@ The following commands are valid in Schedge:
 schedge query catalog # Query the catalog
 schedge parse catalog # Parse the catalog
 schedge scrape catalog # scrape the catalog
+schedge db scrape # scrape the catalog for information
+schedge db query # TODO query the database for information
+schedge serve # TODO rehash of previous javalin project
 ```

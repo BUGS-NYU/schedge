@@ -3,7 +3,7 @@
 
 gradle/*
 gradlew
-gradle.bat
+gradlew.bat
 
 # IDEA IDE
 .idea

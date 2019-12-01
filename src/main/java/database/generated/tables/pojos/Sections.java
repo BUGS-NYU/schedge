@@ -22,10 +22,10 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = -1296379963;
+    private static final long serialVersionUID = 2036341378;
 
     private final Integer id;
-    private final String  registrationNumber;
+    private final Integer registrationNumber;
     private final Integer courseId;
     private final String  sectionCode;
     private final String  instructor;
@@ -44,7 +44,7 @@ public class Sections implements Serializable {
 
     public Sections(
         Integer id,
-        String  registrationNumber,
+        Integer registrationNumber,
         Integer courseId,
         String  sectionCode,
         String  instructor,
@@ -64,7 +64,7 @@ public class Sections implements Serializable {
         return this.id;
     }
 
-    public String getRegistrationNumber() {
+    public Integer getRegistrationNumber() {
         return this.registrationNumber;
     }
 

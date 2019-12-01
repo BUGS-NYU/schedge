@@ -301,7 +301,6 @@ class SectionMetadata {
     ArrayList<Section> sections = new ArrayList<>();
 
     int size = sectionData.size();
-
     for (int cursor = 0; cursor < size; cursor++) {
       SectionMetadata current = sectionData.get(cursor);
       if (current.type == SectionType.LEC) {

@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Meetings extends TableImpl<MeetingsRecord> {
 
-    private static final long serialVersionUID = -667204706;
+    private static final long serialVersionUID = 691150150;
 
     /**
      * The reference instance of <code>public.meetings</code>
@@ -66,11 +66,6 @@ public class Meetings extends TableImpl<MeetingsRecord> {
      * The column <code>public.meetings.section_id</code>.
      */
     public final TableField<MeetingsRecord, Integer> SECTION_ID = createField("section_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>public.meetings.location</code>.
-     */
-    public final TableField<MeetingsRecord, String> LOCATION = createField("location", org.jooq.impl.SQLDataType.VARCHAR(5), this, "");
 
     /**
      * The column <code>public.meetings.begin_date</code>.

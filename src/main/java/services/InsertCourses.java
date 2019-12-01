@@ -2,6 +2,7 @@ package services;
 
 import database.generated.tables.Courses;
 import database.generated.tables.Sections;
+import database.generated.tables.Meetings;
 import models.*;
 import org.jooq.DSLContext;
 import org.jooq.InsertQuery;
@@ -30,22 +31,49 @@ public class InsertCourses {
                      .fetchOne()
                      .getValue(COURSES.ID);
 
-        insertSections(logger, context, c.getSections());
+        insertSections(logger, context, id, c.getSections(), null);
       }
     }
   }
 
   public static void insertSections(Logger logger, DSLContext context,
-                                    List<Section> sections)
+                                    int courseId, List<Section> sections,
+                                    Integer associatedWith)
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
     for (Section s : sections) {
-      context.insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                         SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE);
+      int id =
+          context
+              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                          SECTIONS.ASSOCIATED_WITH)
+              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
+                      s.getInstructor(), s.getType().ordinal(), associatedWith)
+              .returning(SECTIONS.ID)
+              .fetchOne()
+              .getValue(SECTIONS.ID);
+      insertMeetings(logger, context, id, s.getMeetings());
+      if (s.getRecitations() != null)
+        for (Section r : s.getRecitations()) {
+          insertSections(logger, context, courseId, sections, id);
+        }
     }
   }
 
   public static void insertMeetings(Logger logger, DSLContext context,
-                                    List<Meeting> meetings)
-      throws SQLException {}
+                                    int sectionId, List<Meeting> meetings)
+      throws SQLException {
+    Meetings MEETINGS = Tables.MEETINGS;
+    for (Meeting m : meetings) {
+      // @TODO Rewrite datetimes to work with JOOQ, and then replace nulls with
+      // actual values
+      context
+          .insertInto(MEETINGS, MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,
+                      MEETINGS.DURATION, MEETINGS.END_DATE)
+          .values(sectionId, null, m.getMinutesDuration(), null);
+      // .values(sectionId, m.getBeginDate(), m.getMinutesDuration(),
+      // m.getEndDate());
+    }
+  }
 }

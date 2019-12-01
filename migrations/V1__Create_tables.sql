@@ -10,7 +10,7 @@ CREATE TABLE public.courses (
 
 CREATE TABLE public.sections (
   id                  SERIAL                      NOT NULL UNIQUE,
-  registration_number varchar(128)                NOT NULL,
+  registration_number integer                     NOT NULL,
   course_id           int REFERENCES courses(id)  NOT NULL,
   section_code        varchar(5)                  NOT NULL,
   instructor          text                        NOT NULL,
@@ -22,7 +22,6 @@ CREATE TABLE public.sections (
 CREATE TABLE public.meetings (
   id                  SERIAL                          NOT NULL,
   section_id          int REFERENCES sections(id)     NOT NULL,
-  location            varchar(5),
   begin_date          timestamp without time zone     NOT NULL,
   end_date            timestamp without time zone     NOT NULL,
   duration            bigint                          NOT NULL,

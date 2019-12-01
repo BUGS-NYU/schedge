@@ -23,11 +23,10 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Meetings implements Serializable {
 
-    private static final long serialVersionUID = 801039992;
+    private static final long serialVersionUID = 605633086;
 
     private final Integer   id;
     private final Integer   sectionId;
-    private final String    location;
     private final Timestamp beginDate;
     private final Timestamp endDate;
     private final Long      duration;
@@ -35,7 +34,6 @@ public class Meetings implements Serializable {
     public Meetings(Meetings value) {
         this.id = value.id;
         this.sectionId = value.sectionId;
-        this.location = value.location;
         this.beginDate = value.beginDate;
         this.endDate = value.endDate;
         this.duration = value.duration;
@@ -44,14 +42,12 @@ public class Meetings implements Serializable {
     public Meetings(
         Integer   id,
         Integer   sectionId,
-        String    location,
         Timestamp beginDate,
         Timestamp endDate,
         Long      duration
     ) {
         this.id = id;
         this.sectionId = sectionId;
-        this.location = location;
         this.beginDate = beginDate;
         this.endDate = endDate;
         this.duration = duration;
@@ -63,10 +59,6 @@ public class Meetings implements Serializable {
 
     public Integer getSectionId() {
         return this.sectionId;
-    }
-
-    public String getLocation() {
-        return this.location;
     }
 
     public Timestamp getBeginDate() {
@@ -87,7 +79,6 @@ public class Meetings implements Serializable {
 
         sb.append(id);
         sb.append(", ").append(sectionId);
-        sb.append(", ").append(location);
         sb.append(", ").append(beginDate);
         sb.append(", ").append(endDate);
         sb.append(", ").append(duration);

@@ -67,12 +67,9 @@ public class InsertCourses {
       throws SQLException {
     Meetings MEETINGS = Tables.MEETINGS;
     for (Meeting m : meetings) {
-      // @TODO Rewrite datetimes to work with JOOQ, and then replace nulls with
-      // actual values
       context
           .insertInto(MEETINGS, MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,
                       MEETINGS.DURATION, MEETINGS.END_DATE)
-          // .values(sectionId, null, m.getMinutesDuration(), null);
           .values(sectionId, new Timestamp(m.getBeginDate().getMillis()),
                   m.getMinutesDuration(),
                   new Timestamp(m.getEndDate().getMillis()));

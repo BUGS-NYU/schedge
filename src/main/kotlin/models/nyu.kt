@@ -16,6 +16,7 @@ enum class SectionType {
     FLD, // Field Instruction
     SIM, // Simulation
     PRP, // Unknown
+    DLX, // Unknown
     CLI, // Clinic
     STU, // Studio
     STI, // Independent Instruction

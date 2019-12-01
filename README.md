@@ -16,5 +16,5 @@ schedge parse catalog # Parse the catalog
 schedge scrape catalog # scrape the catalog
 schedge db scrape # scrape the catalog for information
 schedge db query # query the database for information
-schedge db serve # TODO rehash of previous javalin project
+schedge db serve # rehash of previous javalin project
 ```

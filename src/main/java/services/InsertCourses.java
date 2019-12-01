@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import database.generated.Tables;
+import java.sql.Timestamp;
 
 public class InsertCourses {
   public static void insertCourses(Logger logger, Term term,
@@ -71,9 +72,10 @@ public class InsertCourses {
       context
           .insertInto(MEETINGS, MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,
                       MEETINGS.DURATION, MEETINGS.END_DATE)
-          .values(sectionId, null, m.getMinutesDuration(), null);
-      // .values(sectionId, m.getBeginDate(), m.getMinutesDuration(),
-      // m.getEndDate());
+          // .values(sectionId, null, m.getMinutesDuration(), null);
+          .values(sectionId, new Timestamp(m.getBeginDate().getMillis()),
+                  m.getMinutesDuration(),
+                  new Timestamp(m.getEndDate().getMillis()));
     }
   }
 }

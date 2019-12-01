@@ -2,7 +2,7 @@ CREATE TABLE public.courses (
   id                  SERIAL        NOT NULL UNIQUE,
   name                varchar(128)  NOT NULL,
   school              varchar(4)    NOt NULL,
-  subject             varchar(4)    NOT NULL,
+  subject             varchar(6)    NOT NULL,
   dept_course_number  integer       NOT NULL,
   term_id             integer       NOT NULL,
   PRIMARY KEY (term_id, school, subject, dept_course_number)

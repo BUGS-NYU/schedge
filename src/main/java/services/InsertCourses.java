@@ -16,7 +16,8 @@ import java.sql.Timestamp;
 
 public class InsertCourses {
   public static void insertCourses(Logger logger, Term term,
-                                   List<Course> courses) throws SQLException {
+                                   List<Course> courses)
+      throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Courses COURSES = Tables.COURSES;

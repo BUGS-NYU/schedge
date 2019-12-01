@@ -1,22 +1,17 @@
 package cli
 
 import api.App
-import io.javalin.Javalin
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
-import com.github.ajalt.clikt.parameters.options.flag
 import models.SubjectCode
 import models.Term
-import utils.writeToFileOrStdout
 import mu.KotlinLogging
-import services.GetConnection
-import services.InsertCourses
-import services.JsonMapper
-import services.SelectCourses
-import services.scrapeFromCatalog
+import services.*
+import utils.writeToFileOrStdout
 
 internal class Database : CliktCommand(name = "db") {
 
@@ -37,11 +32,11 @@ internal class Database : CliktCommand(name = "db") {
         override fun run() {
             val startTime = System.nanoTime()
             if (subject == null) {
-                InsertCourses.insertCourses(
-                    logger, term, scrapeFromCatalog(
-                        logger, term, SubjectCode.allSubjects(school).toList()
-                    ).flatten().toMutableList()
-                )
+                scrapeFromCatalog(
+                    logger, term, SubjectCode.allSubjects(school).toList()
+                ).forEach {
+                    InsertCourses.insertCourses(logger, term, it)
+                }
             } else {
                 InsertCourses.insertCourses(
                     logger,

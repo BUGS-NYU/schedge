@@ -32,7 +32,7 @@
     <logger name="parse.catalog.meetings" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
-    <root level="TRACE">
+    <root level="INFO">
         <appender-ref ref="STDERR"/>
     </root>
 </configuration>

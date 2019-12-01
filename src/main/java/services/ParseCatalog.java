@@ -270,7 +270,6 @@ public class ParseCatalog implements Iterator<Course> {
     }
   }
 
-
   /**
    * Metadata for a single section, without nesting of sections.
    *
@@ -307,15 +306,17 @@ public class ParseCatalog implements Iterator<Course> {
           ArrayList<Section> recitations = new ArrayList<>();
           for (int nestedCursor = cursor + 1;
                nestedCursor < size &&
-                       sectionData.get(nestedCursor).type != SectionType.LEC;
+               sectionData.get(nestedCursor).type != SectionType.LEC;
                nestedCursor++) {
             recitations.add(
-                    sectionData.get(nestedCursor).toSectionWithoutRecitations());
+                sectionData.get(nestedCursor).toSectionWithoutRecitations());
           }
 
           if (recitations.size() > 0) {
             sections.add(current.toLectureWithRecitations(recitations));
             cursor += recitations.size();
+          } else {
+            sections.add(current.toSectionWithoutRecitations());
           }
         } else {
           sections.add(current.toSectionWithoutRecitations());
@@ -327,12 +328,12 @@ public class ParseCatalog implements Iterator<Course> {
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
       return new Section(registrationNumber, sectionCode, instructor,
-              SectionType.LEC, status, meetings, recitations);
+                         SectionType.LEC, status, meetings, recitations);
     }
 
     Section toSectionWithoutRecitations() {
       return new Section(registrationNumber, sectionCode, instructor, type,
-              status, meetings, null);
+                         status, meetings, null);
     }
   }
 
@@ -347,7 +348,8 @@ public class ParseCatalog implements Iterator<Course> {
     private int deptCourseNumber;
     private SubjectCode subject;
 
-    CourseMetadata(String courseName, int deptCourseNumber, SubjectCode subject) {
+    CourseMetadata(String courseName, int deptCourseNumber,
+                   SubjectCode subject) {
       this.courseName = courseName;
       this.deptCourseNumber = deptCourseNumber;
       this.subject = subject;
@@ -356,14 +358,14 @@ public class ParseCatalog implements Iterator<Course> {
     @NotNull
     Course getCourse(ArrayList<SectionMetadata> sections) {
       return new Course(courseName, deptCourseNumber, subject,
-              SectionMetadata.getSectionsFrom(sections, subject));
+                        SectionMetadata.getSectionsFrom(sections, subject));
     }
 
     @Override
     public String toString() {
-      return "CourseData(courseName=" + courseName + // ", courseId=" + courseId +
-              ", deptCourseNumber=" + deptCourseNumber + ")";
+      return "CourseData(courseName=" +
+          courseName + // ", courseId=" + courseId +
+          ", deptCourseNumber=" + deptCourseNumber + ")";
     }
   }
 }
-

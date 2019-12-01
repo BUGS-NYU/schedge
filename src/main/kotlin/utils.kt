@@ -13,7 +13,7 @@ fun String.asResourceLines(): List<String> {
 }
 
 fun String?.writeToFileOrStdout(text: Any) {
-    return if (this == null) {
+    if (this == null) {
         println(text)
     } else {
         File(this).writeText(text.toString())

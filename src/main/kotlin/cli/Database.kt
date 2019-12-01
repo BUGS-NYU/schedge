@@ -1,5 +1,7 @@
 package cli
 
+import api.App
+import io.javalin.Javalin
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
@@ -82,6 +84,11 @@ internal class Database : CliktCommand(name = "db") {
 
             outputFile.writeToFileOrStdout(JsonMapper.toJson(courses, prettyPrint));
         }
+    }
+
+
+    private class Serve : CliktCommand(name = "serve") {
+        override fun run(): Unit = App.run()
     }
 
 }

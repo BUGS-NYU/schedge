@@ -72,7 +72,7 @@ build/check your work, and the run button to run.
 
 ### Using the Command Line
 Use `gradle build` to build the application, then test using
-`java -jar build/libs/schedge-all.jar`. Since `gradle build` takes a while, you
+`java -jar .build/libs/schedge-all.jar`. Since `gradle build` takes a while, you
 should use `gradle compileKotlin compileJava` to ensure your code compiles, then
 run `gradle build` when you're ready to test your code.
 

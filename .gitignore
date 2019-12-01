@@ -9,7 +9,7 @@ gradlew.bat
 .idea
 
 # Ignore Gradle build output directory
-build
+.build
 
 /postgres/*
 !/postgres/.gitkeep

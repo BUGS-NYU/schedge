@@ -115,6 +115,15 @@ jooq {
   }
 }
 
+// Set up Jooq to always codegen when needed, but not any other time
+project.tasks.getByName('compileJava').dependsOn -= 'generateDatabaseJooqSchemaSource'
+project.tasks.getByName('generateDatabaseJooqSchemaSource').outputs.upToDateWhen { false }
+
+// The build directory should not begin with the same name as the script
+allprojects {
+    buildDir = ".build"
+}
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -124,6 +133,3 @@ compileKotlin {
     }
 }
 
-// 
-project.tasks.getByName('compileJava').dependsOn -= 'generateDatabaseJooqSchemaSource'
-project.tasks.getByName('generateDatabaseJooqSchemaSource').outputs.upToDateWhen { false }

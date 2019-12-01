@@ -209,8 +209,7 @@ public class ParseCatalog implements Iterator<Course> {
       }
 
       for (int day = 0; day < 7;
-           day++, beginDateTime = beginDateTime.plusDays(
-                      1)) { // @TODO fix this code to do the right thing
+           day++, beginDateTime = beginDateTime.plusDays(1)) {
         if (daysList[beginDateTime.getDayOfWeek() % 7]) {
           meetings.add(new Meeting(beginDateTime, duration, endDate));
         }
@@ -296,7 +295,6 @@ class SectionMetadata {
     this.meetings = meetings;
   }
 
-  // @TODO Talk to registrar about what kinds of courses are available
   @NotNull
   static ArrayList<Section>
   getSectionsFrom(ArrayList<SectionMetadata> sectionData, SubjectCode code) {

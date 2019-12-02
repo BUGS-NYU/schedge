@@ -183,6 +183,18 @@ enum class Semester {
     Fall;
 
     companion object {
+
+        @JvmStatic
+        fun fromCode(code: String): Semester {
+          return when(code.toLowerCase()) {
+            "ja" -> January
+            "fa" -> Fall
+            "sp" -> Spring
+            "su" -> Summer
+            else -> valueOf(code)
+          }
+        }
+
         // Turns enum into integer that conforms to NYU's conventions.
         fun fromInt(id: Int): Semester {
             return when (id) {

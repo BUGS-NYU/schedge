@@ -9,6 +9,7 @@ import java.util.List;
 import services.SelectCourses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import models.Semester;
 
 public class App {
   public static void run() {
@@ -30,8 +31,10 @@ public class App {
       ctx.result(JsonMapper.toJson(subjects));
     });
 
-    app.get("/:term/:school/:subject", ctx -> {
-      Term term = Term.fromId(Integer.parseInt(ctx.pathParam("term")));
+    app.get("/:year/:semester/:school/:subject", ctx -> {
+      int year = Integer.parseInt("year");
+      Semester sem = Semester.fromCode(ctx.pathParam("semester"));
+      Term term = new Term(sem, year);
       SubjectCode subject =
           new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
 

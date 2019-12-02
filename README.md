@@ -47,7 +47,7 @@ follow the following format:
 }
 ```
 
-### `/subjects`
+### Subjects Endpoint - `/subjects`
 This endpoint returns all subjects as a list of objects with the following format:
 
 ```javascript
@@ -57,7 +57,7 @@ This endpoint returns all subjects as a list of objects with the following forma
 }
 ```
 
-### `/subjects/:school`
+### Filtered Subjects Endpoint - `/subjects/:school`
 This endpoint returns all subjects for a given school as a list of objects with
 the following format:
 

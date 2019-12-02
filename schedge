@@ -2,14 +2,15 @@
 
 PROJ_DIR="$(dirname "$(dirname "$0")")"
 
-if [ -f "$PROJ_DIR/.pid" ]; then
-  sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")' 1>/dev/null 2>&1"
-fi
 
 if [ "$#" -gt 0 ] && [ "$1" = "--production" ]; then
+  if [ -f "$PROJ_DIR/.pid" ]; then
+    sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")' 1>/dev/null 2>&1"
+  fi
   if [ -f "$PROJ_DIR/.env" ]; then
     . "$PROJ_DIR/.env"
   fi
+
   shift
   echo "Running in disowned process as root..."
   sudo echo -n ""

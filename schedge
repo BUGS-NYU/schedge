@@ -25,10 +25,10 @@ if [ "$#" -gt 0 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
 
   echo "Running in disowned process as root..."
   sudo echo -n ""
-  sudo -E java -jar .build/libs/schedge-all.jar $@ & disown
+  sudo -E java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@ & disown
   echo "$!" > "$PROJ_DIR/.pid"
 else
-  java -jar .build/libs/schedge-all.jar $@
+  java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
   rm "$PROJ_DIR/.pid" 2>/dev/null
 fi
 

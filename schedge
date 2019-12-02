@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJ_DIR="$(dirname "$(dirname "$0")")"
+PROJ_DIR="$(dirname "$0")"
 
 if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   shift

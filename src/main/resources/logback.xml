@@ -6,7 +6,7 @@
         </encoder>
     </appender>
 
-    <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
+    <!-- <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
     <logger name="com.zaxxer.hikari.HikariConfig" level="INFO" additivity="false">
@@ -31,7 +31,7 @@
     </logger>
     <logger name="parse.catalog.meetings" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
-    </logger>
+    </logger> -->
     <root level="INFO">
         <appender-ref ref="STDERR"/>
     </root>

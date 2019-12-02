@@ -26,20 +26,33 @@ public class App {
     });
 
     app.get("/subjects/:school", ctx -> {
-      List<SubjectCode> subjects =
-          SubjectCode.allSubjects(ctx.pathParam("school"));
-      ctx.result(JsonMapper.toJson(subjects));
+      try {
+        List<SubjectCode> subjects =
+            SubjectCode.allSubjects(ctx.pathParam("school"));
+        ctx.result(JsonMapper.toJson(subjects));
+      } catch (IllegalArgumentException e) {
+        ctx.result("{"
+                   + "\"error\":\"" + e.getMessage() + "\"}");
+      }
     });
 
     app.get("/:year/:semester/:school/:subject", ctx -> {
-      int year = Integer.parseInt("year");
-      Semester sem = Semester.fromCode(ctx.pathParam("semester"));
-      Term term = new Term(sem, year);
-      SubjectCode subject =
-          new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
+      try {
+        int year = Integer.parseInt(ctx.pathParam("year"));
+        Semester sem = Semester.fromCode(ctx.pathParam("semester"));
+        Term term = new Term(sem, year);
+        SubjectCode subject =
+            new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
 
-      ctx.result(JsonMapper.toJson(
-          SelectCourses.selectCourses(logger, term, subject)));
+        ctx.result(JsonMapper.toJson(
+            SelectCourses.selectCourses(logger, term, subject)));
+      } catch (NumberFormatException e) {
+        ctx.result("{"
+                   + "\"error\":\"" + e.getMessage() + "\"}");
+      } catch (IllegalArgumentException e) {
+        ctx.result("{"
+                   + "\"error\":\"" + e.getMessage() + "\"}");
+      }
     });
   }
 }

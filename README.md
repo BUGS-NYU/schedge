@@ -32,7 +32,7 @@ above are:
 - `:subject` is the subject code, the full list of which can be obtained by using
   the `/subjects` endpoint.
 
-Example: `schedge.a1liu.com/2020/fa/ua/csci` returns the Computer Science courses
+Example: `schedge.a1liu.com/2020/sp/ua/csci` returns the Computer Science courses
 for the Fall 2020 school year in the College of Arts and Sciences.
 
 **This API is not finalized yet.**
@@ -67,3 +67,7 @@ the following format:
   "subject":"MATH" // Used in the courses endpoint for subjects
 }
 ```
+
+Example: `schedge.a1liu.com/subjects/UA` returns all subjects that the College
+of Arts and Sciences offers classes under.
+

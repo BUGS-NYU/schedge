@@ -8,7 +8,8 @@ fi
 
 if [ "$#" -gt 0 ] && [ "$1" = "--production" ]; then
   shift
-  echo "Running in disowned process as root"
+  echo "Running in disowned process as root..."
+  sudo echo -n ""
   sudo java -jar .build/libs/schedge-all.jar $@ & disown
   echo "$!" > "$PROJ_DIR/.pid"
 else

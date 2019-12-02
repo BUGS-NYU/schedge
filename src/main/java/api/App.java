@@ -13,6 +13,9 @@ import models.Semester;
 
 public class App {
   public static void run() {
+
+    // @TODO Use https://javalin.io/plugins/openapi#getting-started as guide for
+    // documenting API, then use Redoc for docs generation
     Javalin app =
         Javalin.create(config -> { config.enableCorsForAllOrigins(); })
             .start(80);

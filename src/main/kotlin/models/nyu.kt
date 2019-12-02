@@ -89,11 +89,11 @@ private val AvailableSubjects: Map<String, Set<String>> = "/subjects.txt".asReso
     availSubjects
 }
 
-data class School internal constructor(val code: String, val name: String?)
+data class SchoolMetadata internal constructor(val code: String, val name: String?)
 
-private val Schools : List<School> = "/schools.txt".asResourceLines().map {
+private val Schools : List<SchoolMetadata> = "/schools.txt".asResourceLines().map {
     val (code, name) = it.split(',', limit = 2)
-    School(code, name)
+    SchoolMetadata(code, name)
 }
 
 
@@ -109,7 +109,7 @@ class SubjectCode {
     companion object {
 
         @JvmStatic
-        fun allSchools(): List<School> = Schools
+        fun allSchools(): List<SchoolMetadata> = Schools
 
         @JvmStatic
         fun allSubjects(): List<SubjectCode> =

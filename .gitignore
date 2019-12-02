@@ -8,6 +8,9 @@ gradlew.bat
 # Environment vars
 .env
 
+# PID's of old running programs
+.pid
+
 # IDEA IDE
 .idea
 

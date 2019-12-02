@@ -2,6 +2,13 @@
 
 PROJ_DIR="$(dirname "$(dirname "$0")")"
 
+if [ "$#" -gt 0 ] && [ "$1" = "--kill" ] && [ -f "$PROJ_DIR/.pid" ]; then
+  shift
+  sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")'"
+  rm "$PROJ_DIR/.pid" 2>/dev/null
+fi
+
+
 
 if [ "$#" -gt 0 ] && [ "$1" = "--production" ]; then
   if [ -f "$PROJ_DIR/.pid" ]; then

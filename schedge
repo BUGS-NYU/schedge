@@ -7,6 +7,9 @@ if [ -f "$PROJ_DIR/.pid" ]; then
 fi
 
 if [ "$#" -gt 0 ] && [ "$1" = "--production" ]; then
+  if [ -f "$PROJ_DIR/.env" ]; then
+    . "$PROJ_DIR/.env"
+  fi
   shift
   echo "Running in disowned process as root..."
   sudo echo -n ""

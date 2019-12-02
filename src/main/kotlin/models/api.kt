@@ -3,8 +3,13 @@ package models
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
+import com.fasterxml.jackson.annotation.JsonIgnore
 import database.generated.tables.records.CoursesRecord
 import org.joda.time.DateTime
+
+data class School(val code: String, val name: String, val subjects: List<Subject>)
+
+data class Subject(val code: String, val courses: List<Course>)
 
 /**
 Data class for Course object with:
@@ -29,10 +34,12 @@ data class Course(
         @JsonProperty("sections") sections: List<Section>
     ) : this(name, deptCourseNumber, SubjectCode.getUnchecked(subject, school), sections)
 
+    @JsonIgnore
     fun getSubject(): String {
         return this.subject.subject
     }
 
+    @JsonIgnore
     fun getSchool(): String {
         return this.subject.school
     }

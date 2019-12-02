@@ -13,7 +13,9 @@ import models.Semester;
 
 public class App {
   public static void run() {
-    Javalin app = Javalin.create().start(80);
+    Javalin app =
+        Javalin.create(config -> { config.enableCorsForAllOrigins(); })
+            .start(80);
     Logger logger = LoggerFactory.getLogger("app");
 
     app.get("/schools", ctx -> {

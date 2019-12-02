@@ -17,8 +17,8 @@ schedge db serve # rehash of previous javalin project
 ```
 
 ## API Documentation
-The API is available at http://schedge.a1liu.com , and exposes the following
-endpoints:
+The API is available at http://schedge.a1liu.com . Note that **the API is not case
+sensitive.**
 
 ### Courses Endpoint - `/:year/:semester/:school/:subject`
 This endpoint returns courses in a given subject during a given semester. The values
@@ -35,7 +35,8 @@ above are:
 Example: `schedge.a1liu.com/2020/sp/ua/csci` returns the Computer Science courses
 for the Fall 2020 school year in the College of Arts and Sciences.
 
-**This API is not finalized yet.**
+**This endpoint is not finalized yet.**
+
 ### Schools Endpoint - `/schools`
 This endpoint returns the school codes and their names as a list of objects, which
 follow the following format:

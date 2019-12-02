@@ -57,10 +57,15 @@ dependencies {
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
             "com.github.ajalt:clikt:2.2.0", // Command line args
+
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-databind:2.4.1", // JSON
+            "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9", // JSON
+
             "io.javalin:javalin:3.5.0", // Web server framework
+            "io.swagger.core.v3:swagger-core:2.0.8", // Web server docs framework
+            "cc.vileda:kotlin-openapi3-dsl:0.20.1", // Web server docs DSL framework
     )
 
     jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'

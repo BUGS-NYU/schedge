@@ -34,9 +34,12 @@ public class App {
     Javalin app = Javalin
                       .create(config -> {
                         config.enableCorsForAllOrigins();
-                        // config.defaultContentType = "application/json";
+                        String description =
+                            "Schedge is an API to NYU's course catalog."
+                            + "Please note that this API is currently under"
+                            + "active development and subject to change.";
                         Info info =
-                            new Info().version("1.0").description("Schedge");
+                            new Info().version("1.0").description(description);
                         OpenApiOptions options =
                             new OpenApiOptions(info).path("/swagger.json");
                         config.enableWebjars();
@@ -51,10 +54,10 @@ public class App {
                       .lines()
                       .collect(Collectors.joining("\n"));
 
-     app.get("/", ctx -> {
-       ctx.contentType("text/html");
-       ctx.result(docs);
-     });
+    app.get("/", ctx -> {
+      ctx.contentType("text/html");
+      ctx.result(docs);
+    });
 
     app.get("/schools", ctx -> {
       ctx.result(JsonMapper.toJson(SubjectCode.allSchools()));

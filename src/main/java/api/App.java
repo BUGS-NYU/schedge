@@ -31,21 +31,23 @@ public class App {
 
     // @TODO Use https://javalin.io/plugins/openapi#getting-started as guide for
     // documenting API, then use Redoc for docs generation
-    Javalin app = Javalin
-                      .create(config -> {
-                        config.enableCorsForAllOrigins();
-                        String description =
-                            "Schedge is an API to NYU's course catalog."
-                            + "Please note that this API is currently under"
-                            + "active development and subject to change.";
-                        Info info =
-                            new Info().version("1.0").description(description);
-                        OpenApiOptions options =
-                            new OpenApiOptions(info).path("/swagger.json");
-                        config.enableWebjars();
-                        config.registerPlugin(new OpenApiPlugin(options));
-                      })
-                      .start(80);
+    Javalin app =
+        Javalin
+            .create(config -> {
+              config.enableCorsForAllOrigins();
+              String description =
+                  "Schedge is an API to NYU's course catalog. "
+                  + "Please note that <b>this API is currently under "
+                  + "active development and is subject to change</b>.";
+              Info info =
+                  new Info().version("1.0").title("Schedge").description(
+                      description);
+              OpenApiOptions options =
+                  new OpenApiOptions(info).path("/swagger.json");
+              config.enableWebjars();
+              config.registerPlugin(new OpenApiPlugin(options));
+            })
+            .start(80);
     Logger logger = LoggerFactory.getLogger("app");
 
     String docs = new BufferedReader(

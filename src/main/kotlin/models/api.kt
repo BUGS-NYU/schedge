@@ -28,7 +28,7 @@ data class Course(
     @JsonCreator
     private constructor(
         @JsonProperty("name") name: String,
-        @JsonProperty("dept_course_number") deptCourseId: String,
+        @JsonProperty("dept_course_id") deptCourseId: String,
         @JsonProperty("subject") subject: String,
         @JsonProperty("school") school: String,
         @JsonProperty("sections") sections: List<Section>

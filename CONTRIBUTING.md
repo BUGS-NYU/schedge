@@ -62,6 +62,34 @@ sdk install gradle 6.0.1
 sdk install kotlin
 ```
 
+### Mac
+Type the following in the terminal
+```shell script
+# Install homebrew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+#Update homebrew
+brew update
+
+# Install git
+brew install postgresql
+
+#Install Java
+brew cask install java
+
+# Install SDKMAN, a package manager that helps with gradle and kotlin
+curl -s https://get.sdkman.io | bash
+
+# Install Gradle
+brew install gradle 6.0.1
+
+# Install Kotlin
+brew install kotlin
+
+# Upgrade existing tools
+Use upgrade instead of install
+```
+
 ## Development
 
 <!-- @HelpWanted Make this more detailed -->

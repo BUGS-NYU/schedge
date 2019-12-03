@@ -16,8 +16,7 @@ import java.sql.Timestamp;
 
 public class InsertCourses {
   public static void insertCourses(Logger logger, Term term,
-                                   List<Course> courses)
-      throws SQLException {
+                                   List<Course> courses) throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Courses COURSES = Tables.COURSES;
@@ -25,10 +24,10 @@ public class InsertCourses {
         context.transaction(config -> {
           DSLContext ctx = DSL.using(config);
           int id = ctx.insertInto(COURSES, COURSES.NAME, COURSES.SCHOOL,
-                                  COURSES.SUBJECT, COURSES.DEPT_COURSE_NUMBER,
+                                  COURSES.SUBJECT, COURSES.DEPT_COURSE_ID,
                                   COURSES.TERM_ID)
                        .values(c.getName(), c.getSchool(), c.getSubject(),
-                               c.getDeptCourseNumber(), term.getId())
+                               c.getDeptCourseId(), term.getId())
                        .onDuplicateKeyUpdate()
                        .set(COURSES.NAME, c.getName())
                        .returning(COURSES.ID)

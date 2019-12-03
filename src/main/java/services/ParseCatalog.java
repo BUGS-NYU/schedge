@@ -129,8 +129,7 @@ public class ParseCatalog implements Iterator<Course> {
 
     SubjectCode subject =
         SubjectCode.getUnchecked(text.substring(0, textIndex1));
-    int deptCourseNumber =
-        Integer.parseInt(text.substring(textIndex1 + 1, textIndex2));
+    String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 
     // <div class="secondary-head class-title-header" id=MATHUA9129903>
@@ -141,7 +140,7 @@ public class ParseCatalog implements Iterator<Course> {
         break;
     // Long courseId = Long.parseLong(idString.substring(idIndex));
 
-    return new CourseMetadata(courseName, deptCourseNumber, subject);
+    return new CourseMetadata(courseName, deptCourseId, subject);
   }
 
   List<Meeting> parseSectionTimesData(String times, String dates)
@@ -346,19 +345,19 @@ public class ParseCatalog implements Iterator<Course> {
   private static class CourseMetadata {
 
     private String courseName;
-    private int deptCourseNumber;
+    private String deptCourseId;
     private SubjectCode subject;
 
-    CourseMetadata(String courseName, int deptCourseNumber,
+    CourseMetadata(String courseName, String deptCourseId,
                    SubjectCode subject) {
       this.courseName = courseName;
-      this.deptCourseNumber = deptCourseNumber;
+      this.deptCourseId = deptCourseId;
       this.subject = subject;
     }
 
     @NotNull
     Course getCourse(ArrayList<SectionMetadata> sections) {
-      return new Course(courseName, deptCourseNumber, subject,
+      return new Course(courseName, deptCourseId, subject,
                         SectionMetadata.getSectionsFrom(sections, subject));
     }
 
@@ -366,7 +365,7 @@ public class ParseCatalog implements Iterator<Course> {
     public String toString() {
       return "CourseData(courseName=" +
           courseName + // ", courseId=" + courseId +
-          ", deptCourseNumber=" + deptCourseNumber + ")";
+          ", deptCourseId=" + deptCourseId + ")";
     }
   }
 }

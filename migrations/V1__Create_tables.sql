@@ -3,9 +3,9 @@ CREATE TABLE public.courses (
   name                varchar(128)  NOT NULL,
   school              varchar(4)    NOt NULL,
   subject             varchar(6)    NOT NULL,
-  dept_course_number  integer       NOT NULL,
+  dept_course_id      varchar(6)    NOT NULL,
   term_id             integer       NOT NULL,
-  PRIMARY KEY (term_id, school, subject, dept_course_number)
+  PRIMARY KEY (term_id, school, subject, dept_course_id)
 );
 
 CREATE TABLE public.sections (

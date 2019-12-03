@@ -44,7 +44,7 @@ public class ParseCatalog implements Iterator<Course> {
     this.logger = LoggerFactory.getLogger(logger.getName());
 
     if (!elements.hasNext()) {
-      logger.error("CSS query `div.primary-head ~ *` returned no values.");
+      logger.warn("CSS query `div.primary-head ~ *` returned no values.");
       currentElement = null;
       // throw new IOException("models.Course data is empty!");
     } else if (!(currentElement = elements.next()).tagName().equals("div")) {

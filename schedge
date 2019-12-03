@@ -15,12 +15,13 @@ if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   fi
 fi
 
+if [ -f "$PROJ_DIR/.env" ]; then
+  . "$PROJ_DIR/.env"
+fi
+
 if [ "$#" -gt 0 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   if [ -f "$PROJ_DIR/.pid" ]; then
     sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")'"
-  fi
-  if [ -f "$PROJ_DIR/.env" ]; then
-    . "$PROJ_DIR/.env"
   fi
 
   echo "Running in disowned process as root..."

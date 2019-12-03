@@ -45,7 +45,8 @@ public class ParseCatalog implements Iterator<Course> {
 
     if (!elements.hasNext()) {
       logger.error("CSS query `div.primary-head ~ *` returned no values.");
-      throw new IOException("models.Course data is empty!");
+      currentElement = null;
+      // throw new IOException("models.Course data is empty!");
     } else if (!(currentElement = elements.next()).tagName().equals("div")) {
       logger.error("CSS query `div.primary-head ~ *` returned "
                    + "a list whose first element was not a 'div'.");

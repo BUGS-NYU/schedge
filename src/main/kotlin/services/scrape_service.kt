@@ -14,7 +14,7 @@ import mu.KLogger
  */
 fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<List<Course>> {
     return queryCatalog(logger, term, subjectCodes).asSequence().map { rawData ->
-        ParseCatalog.parse(logger, rawData)
+      ParseCatalog.parse(logger, rawData)
     }
 }
 

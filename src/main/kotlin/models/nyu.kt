@@ -16,8 +16,12 @@ enum class SectionType {
     RSC, // Research Tandon's Code
     FLD, // Field Instruction
     SIM, // Simulation
+    GUI, // Unknown
+    NCR, // Unknown
+    MAM, // Unknown
     PRP, // Unknown
     DLX, // Unknown
+    PRO, // Unknown
     CLI, // Clinic
     STU, // Studio
     STI, // Independent Instruction

@@ -20,7 +20,7 @@ Data class for Course object with:
  */
 data class Course(
     val name: String,
-    val deptCourseNumber: Int,
+    val deptCourseId: String,
     private val subject: SubjectCode,
     val sections: List<Section>
 ) {
@@ -28,11 +28,11 @@ data class Course(
     @JsonCreator
     private constructor(
         @JsonProperty("name") name: String,
-        @JsonProperty("dept_course_number") deptCourseNumber: Int,
+        @JsonProperty("dept_course_number") deptCourseId: String,
         @JsonProperty("subject") subject: String,
         @JsonProperty("school") school: String,
         @JsonProperty("sections") sections: List<Section>
-    ) : this(name, deptCourseNumber, SubjectCode.getUnchecked(subject, school), sections)
+    ) : this(name, deptCourseId, SubjectCode.getUnchecked(subject, school), sections)
 
     @JsonIgnore
     fun getSubject(): String {

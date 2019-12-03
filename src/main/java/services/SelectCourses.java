@@ -54,7 +54,7 @@ public class SelectCourses {
         List<Section> sections =
             selectSections(logger, context, r.get(COURSES.ID));
         courses.add(new Course(
-            r.get(COURSES.NAME), r.get(COURSES.DEPT_COURSE_NUMBER),
+            r.get(COURSES.NAME), r.get(COURSES.DEPT_COURSE_ID),
             new SubjectCode(r.get(COURSES.SUBJECT), r.get(COURSES.SCHOOL)),
             sections));
       }
@@ -111,7 +111,7 @@ public class SelectCourses {
                                  .from(MEETINGS)
                                  .where(MEETINGS.SECTION_ID.eq(sectionId))
                                  .fetch();
-    
+
     return records.stream()
         .map(r
              -> new Meeting(new DateTime(r.get(MEETINGS.BEGIN_DATE).getTime()),

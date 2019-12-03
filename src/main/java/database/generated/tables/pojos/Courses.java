@@ -22,13 +22,13 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses implements Serializable {
 
-    private static final long serialVersionUID = 1811214586;
+    private static final long serialVersionUID = -2042109567;
 
     private final Integer id;
     private final String  name;
     private final String  school;
     private final String  subject;
-    private final Integer deptCourseNumber;
+    private final String  deptCourseId;
     private final Integer termId;
 
     public Courses(Courses value) {
@@ -36,7 +36,7 @@ public class Courses implements Serializable {
         this.name = value.name;
         this.school = value.school;
         this.subject = value.subject;
-        this.deptCourseNumber = value.deptCourseNumber;
+        this.deptCourseId = value.deptCourseId;
         this.termId = value.termId;
     }
 
@@ -45,14 +45,14 @@ public class Courses implements Serializable {
         String  name,
         String  school,
         String  subject,
-        Integer deptCourseNumber,
+        String  deptCourseId,
         Integer termId
     ) {
         this.id = id;
         this.name = name;
         this.school = school;
         this.subject = subject;
-        this.deptCourseNumber = deptCourseNumber;
+        this.deptCourseId = deptCourseId;
         this.termId = termId;
     }
 
@@ -72,8 +72,8 @@ public class Courses implements Serializable {
         return this.subject;
     }
 
-    public Integer getDeptCourseNumber() {
-        return this.deptCourseNumber;
+    public String getDeptCourseId() {
+        return this.deptCourseId;
     }
 
     public Integer getTermId() {
@@ -88,7 +88,7 @@ public class Courses implements Serializable {
         sb.append(", ").append(name);
         sb.append(", ").append(school);
         sb.append(", ").append(subject);
-        sb.append(", ").append(deptCourseNumber);
+        sb.append(", ").append(deptCourseId);
         sb.append(", ").append(termId);
 
         sb.append(")");

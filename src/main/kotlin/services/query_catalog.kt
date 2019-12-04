@@ -1,10 +1,8 @@
 package services
 
 import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.Body
 import models.SubjectCode
 import models.Term
-import mu.KLogger
 import mu.KotlinLogging
 import java.io.IOException
 import java.net.HttpCookie
@@ -37,8 +35,6 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
     val request = Fuel.post(DATA_URL).apply {
         set("Referrer", "${ROOT_URL}/${term.id}")
         set("Host", "m.albert.nyu.edu")
-        // set("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0")
-        // set("Accept", "*/*")
         set("Accept-Language", "en-US,en;q=0.5")
         set("Accept-Encoding", "gzip, deflate, br")
         set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
@@ -84,56 +80,13 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> 
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
-    return QueryResults(term, subjectCodes, max(5, min(subjectCodes.size / 5, 20))).asSequence()
-}
 
-/**
- * This class tries to emulate batch processing, with multiple requests potentially in flight at the same time.
- *
- * Internally, it maintains a set of mailboxes which it iterates over, waiting on each one for new data to arrive.
- * While it waits, other "mail" might be arriving in other mailboxes.
- */
-private class QueryResults(val term: Term, val subjects: List<SubjectCode>, arraySize: Int) :
-    Iterator<String> {
-
-    init {
-        require(arraySize > 0) { "Need to have a non-empty array size!" }
+    return batchRequest(
+      subjectCodes, max(5, min(subjectCodes.size / 5, 20)),
+      { getContextAsync() }
+    ) { input, context ->
+      queryCatalog(term, input, context)
     }
-
-    var subjectsIndex = min(subjects.size, arraySize)
-    var pendingRequests = subjectsIndex
-    var arrayIndex = 0
-    val contexts = Array(subjectsIndex) { getContextAsync() }.map { it.get() }
-    val requests = Array(subjectsIndex) {
-        queryCatalog(term, subjects[it], contexts[it])
-    }
-    var result = tryGetNext()
-
-    private fun tryGetNext(): String? {
-        var fetchedResult: String? = null
-        while (fetchedResult == null && pendingRequests > 0) {
-            fetchedResult = requests[arrayIndex].get()
-            if (subjectsIndex < subjects.size) {
-                requests[arrayIndex] = queryCatalog(term, subjects[subjectsIndex], contexts[arrayIndex])
-                subjectsIndex++
-            } else {
-                pendingRequests--
-            }
-            arrayIndex++
-            if (arrayIndex == contexts.size) arrayIndex = 0
-        }
-        return fetchedResult
-    }
-
-    override fun hasNext(): Boolean = result != null
-
-    override fun next(): String {
-        if (result == null) throw NoSuchElementException()
-        val cachedResult = this.result
-        this.result = tryGetNext()
-        return cachedResult!!
-    }
-
 }
 
 /**

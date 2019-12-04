@@ -11,7 +11,7 @@ import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
 
-val queryLogger = KotlinLogging.logger("services.query_catalog");
+private val queryLogger = KotlinLogging.logger("services.query_catalog")
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
 private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearch"
 
@@ -21,6 +21,26 @@ private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearc
 fun queryCatalog(term: Term, subjectCode: SubjectCode): String {
     return queryCatalog(term, subjectCode, getContext()).get()
         ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
+}
+
+/**
+Querying Catalog given list of subject codes
+@param logger
+@param Term (class)
+@param subjectCodes (list of subjectcode)
+@return Sequence of String
+ */
+fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
+    if (subjectCodes.size > 1) {
+        queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
+    }
+
+    return batchRequest(
+        subjectCodes, max(5, min(subjectCodes.size / 5, 20)),
+        { getContextAsync() }
+    ) { subjectCode, context ->
+        queryCatalog(term, subjectCode, context)
+    }
 }
 
 /**
@@ -67,26 +87,6 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
         }
     }
     return future
-}
-
-/**
-Querying Catalog given list of subject codes
-@param logger
-@param Term (class)
-@param subjectCodes (list of subjectcode)
-@return Sequence of String
- */
-fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
-    if (subjectCodes.size > 1) {
-        queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
-    }
-
-    return batchRequest(
-      subjectCodes, max(5, min(subjectCodes.size / 5, 20)),
-      { getContextAsync() }
-    ) { input, context ->
-      queryCatalog(term, input, context)
-    }
 }
 
 /**

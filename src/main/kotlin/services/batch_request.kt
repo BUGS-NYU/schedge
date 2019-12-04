@@ -1,7 +1,19 @@
 package services
 
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.math.min
+
+fun <Input, Output> batchRequest(
+    input: List<Input>,
+    batchSize: Int,
+    callback: (Input) -> Future<Output?>
+): Sequence<Output> = BatchRequestEngine(input, batchSize, {
+    val future = CompletableFuture<Unit>();
+    future.complete(Unit);
+    future
+}, { it, _ -> callback(it) }).asSequence()
+
 
 fun <Input, Context, Output> batchRequest(
     input: List<Input>,
@@ -20,9 +32,9 @@ fun <Input, Context, Output> batchRequest(
 private class BatchRequestEngine<InputData, Context, Output>
 constructor(
     val inputData: List<InputData>,
-    val batchSize: Int,
+    batchSize: Int,
     initializeContext: (Int) -> Future<Context>,
-    val callback: (InputData, Context) -> Future<Output?>
+    val callback: (InputData, Context) -> Future<Output?> // @TODO Change this to give an integer index instead of giving a context
 ) :
     Iterator<Output> {
 
@@ -63,6 +75,5 @@ constructor(
         this.currentResult = tryGetNext()
         return cachedResult!!
     }
-
 }
 

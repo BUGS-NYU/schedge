@@ -1,4 +1,4 @@
-package services
+    package services
 
 import models.SubjectCode
 import models.Term
@@ -35,6 +35,7 @@ private fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode, 
     )
     logger.debug { "Params are ${params}." }
 
+    
     val request = HttpPost(DATA_URL).apply {
         entity = UrlEncodedFormEntity(params)
         addHeader("Referrer", "${ROOT_URL}/${term.id}")

@@ -16,6 +16,7 @@ enum class SectionType {
     RSC, // Research Tandon's Code
     FLD, // Field Instruction
     SIM, // Simulation
+    LLB, // Unknown
     GUI, // Unknown
     NCR, // Unknown
     MAM, // Unknown

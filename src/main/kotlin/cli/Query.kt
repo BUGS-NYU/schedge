@@ -38,7 +38,7 @@ internal class Query : CliktCommand(name = "query") {
 
         override fun run() =
             outputFile.writeToFileOrStdout(
-                queryCatalog(logger, term, SubjectCode(subject, school))
+                queryCatalog(term, SubjectCode(subject, school))
             )
 
     }

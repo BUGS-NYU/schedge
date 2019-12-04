@@ -13,7 +13,7 @@ import mu.KLogger
  * @return Sequence of List of Courses
  */
 fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<List<Course>> {
-    return queryCatalog(logger, term, subjectCodes).asSequence().map { rawData ->
+    return queryCatalog(term, subjectCodes).asSequence().map { rawData ->
       try {
           ParseCatalog.parse(logger, rawData)
       } catch (e: Exception) {
@@ -31,7 +31,7 @@ fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCod
  * @return List of courses
  */
 fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): List<Course> {
-    return queryCatalog(logger, term, subjectCode).let { rawData ->
+    return queryCatalog(term, subjectCode).let { rawData ->
         ParseCatalog.parse(logger, rawData)
     }
 }

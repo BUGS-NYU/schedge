@@ -19,7 +19,8 @@ fun querySection(term: Term, registrationNumber: Int): String =
 
 fun querySection(term: Term, registrationNumbers: List<Int>): Sequence<String> =
     batchRequest(
-        registrationNumbers, max(5, min(registrationNumbers.size / 5, 20))
+        registrationNumbers,
+        max(5, min(registrationNumbers.size / 5, 20)) // @Performance What should this number be?
     ) { registrationNumber ->
         require(registrationNumber > 0) { "Registration numbers aren't negative!" }
         val future = CompletableFuture<String>()

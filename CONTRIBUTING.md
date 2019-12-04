@@ -16,12 +16,13 @@ to worry about it.</small>
 
 <!-- @HelpWanted More detailed explanation of what to do for Intellij -->
 ### Using Intellij
-[Install Intellij from the website][intellij-download], and then from the welcome
-page, select **Check out from Version Control**, select Git from the drop
-down menu, then use the URL for this repository
-( https://github.com/NicholasLYang/schedge ). You'll need to use the command
-line instructions to install Postgres<sup>1<sup>, but everything else should be
-handled for you.
+[Install Intellij from the website][intellij-download], and then:
+- From the welcome page, select **Check out from Version Control**
+- Select Git from the drop down menu
+- Use the URL for this repository ( https://github.com/A1Liu/schedge ).
+
+You'll need to use the command line instructions to install Postgres<sup>1<sup>,
+but everything else should be handled for you.
 
 [intellij-download]: https://www.jetbrains.com/idea/download/index.html
 

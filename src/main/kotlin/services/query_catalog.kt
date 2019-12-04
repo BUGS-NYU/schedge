@@ -83,24 +83,6 @@ private class AlbertClient {
      * Retrieve the csrfToken for making HTTP request to Albert Mobile
      */
     val csrfToken: String
-        get() {
-            val cookie = httpContext.cookieStore.cookies.find { cookie ->
-                cookie.name == "CSRFCookie"
-            }
-
-            if (cookie == null) {
-                logger.error {
-                    val cookies = httpContext.cookieStore.cookies.map {
-                        "${it.name}: \"${it.value}\""
-                    }
-                    "Couldn't find `CSRFCookie`. " +
-                            "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
-                }
-                throw IOException("NYU servers did something unexpected.")
-            } else {
-                return cookie.value
-            }
-        }
 
     init {
         logger.debug("Creating client instance...")
@@ -109,9 +91,26 @@ private class AlbertClient {
         // data straight from NYU's internal web APIs.
         val response = httpClient.execute(HttpGet(ROOT_URL), httpContext)
         response.close()
+        val cookie = httpContext.cookieStore.cookies.find { cookie ->
+                cookie.name == "CSRFCookie"
+            }
+
+        if (cookie == null) {
+            logger.error {
+                val cookies = httpContext.cookieStore.cookies.map {
+                    "${it.name}: \"${it.value}\""
+                }
+                "Couldn't find `CSRFCookie`. " +
+                        "Cookies found were [\n  ${cookies.joinToString(",\n  ")}]."
+            }
+            throw IOException("NYU servers did something unexpected.")
+        } else {
+            csrfToken = cookie.value
+        }
 
         logger.info { "Client instance created with CSRF Token '${csrfToken}'." }
     }
+
     /**
     Making the HTTPRequest to Albert Mobile
     @param HTTPUriRequest
@@ -119,7 +118,7 @@ private class AlbertClient {
      */
     fun execute(req: HttpUriRequest): String {
         logger.trace { "Executing ${req.method.toUpperCase()} request" }
-        return this.httpClient.execute(req, this.httpContext).entity.content.bufferedReader().readText()
+        return this.httpClient.execute(req, httpContext).entity.content.bufferedReader().readText()
     }
 }
 

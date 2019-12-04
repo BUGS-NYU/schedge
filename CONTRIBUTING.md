@@ -62,6 +62,59 @@ sdk install gradle 6.0.1
 sdk install kotlin
 ```
 
+### Mac
+If you are on Mac, installing HomeBrew, a package manager for MacOs, helps make
+managing dependencies easier. Read the [documentation](https://docs.brew.sh/) for more information,
+or just copy paste the script below:
+
+```shell script
+# Install homebrew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+#Update homebrew if it's already installed on your machine
+brew update
+```
+
+Git is a version control system and helps manage the project. Learn [git](https://www.tutorialspoint.com/git/index.htm)
+
+```shell script
+#Install git.
+brew install git
+```
+
+Postgresql is used as the database for Schedge. Read more about it [here](https://www.postgresql.org/about/)
+
+```shell script
+# Install postgresql. postgresql is for the database
+brew install postgresql
+```
+
+Java codes handle I/O and parsing the data. Read the [Javadoc](https://docs.oracle.com/javase/7/docs/api/)
+
+```shell script
+#Install Java.
+brew cask install java
+```
+
+```shell script
+# Install SDKMAN, a package manager that helps with gradle and kotlin
+curl -s https://get.sdkman.io | bash
+```
+
+Gradle is a build tool to manage dependencies. Read the [documentation](https://docs.gradle.org/current/userguide/what_is_gradle.html)
+
+```shell script
+# Install Gradle. Gradle is the build tools for schedge
+brew install gradle
+```
+
+Kotlin code handles scraping and querying data. Read the [documentation](https://kotlinlang.org/docs/reference/)
+
+```shell script
+# Install Kotlin. 
+brew install kotlin
+```
+
 ## Development
 
 <!-- @HelpWanted Make this more detailed -->

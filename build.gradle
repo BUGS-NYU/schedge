@@ -53,7 +53,8 @@ dependencies {
             "org.jooq:jooq-meta", // Database framework
             "org.jooq:jooq-codegen", // Database framework
 
-            "org.apache.httpcomponents:httpclient:4.5.10", // Web requests framework
+            "com.github.kittinunf.fuel:fuel:2.2.0", // Async web requests framework
+
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
             "com.github.ajalt:clikt:2.2.0", // Command line args

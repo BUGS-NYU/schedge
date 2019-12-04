@@ -6,6 +6,9 @@
         </encoder>
     </appender>
 
+    <logger name="services.query_catalog" level="TRACE" additivity="false">
+        <appender-ref ref="STDERR"/>
+    </logger>
     <!-- <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>

@@ -1,6 +1,7 @@
 package services
 
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.Body
 import models.SubjectCode
 import models.Term
 import mu.KLogger
@@ -19,30 +20,48 @@ private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearc
 /**
  * Query the catalog for data
  */
-fun queryCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): String {
-    return queryCatalog(term, subjectCode, getToken()).get()
+fun queryCatalog(term: Term, subjectCode: SubjectCode): String {
+    return queryCatalog(term, subjectCode, getContext()).get()
         ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
 /**
  * The meat of querying the catalog resides here.
  */
-private fun queryCatalog(term: Term, subjectCode: SubjectCode, csrfToken: String): Future<String?> {
+private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: HttpContext): Future<String?> {
     queryLogger.info { "querying catalog for term=$term and subject=$subjectCode..." }
-    val params = listOf( // URL params
-        "CSRFToken" to csrfToken,
-        "term" to term.id.toString(),
-        "acad_group" to subjectCode.school,
-        "subject" to subjectCode.abbrev
-    )
 
-    queryLogger.debug { "Params are ${params}." }
+
     val future = CompletableFuture<String?>()
 
-    Fuel.post(DATA_URL, params).set("Referrer", "${ROOT_URL}/${term.id}").set(
-        "Host",
-        "m.albert.nyu.edu"
-    ).response { _, response, _ ->
+    val request = Fuel.post(DATA_URL).apply {
+        set("Referrer", "${ROOT_URL}/${term.id}")
+        set("Host", "m.albert.nyu.edu")
+        // set("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0")
+        // set("Accept", "*/*")
+        set("Accept-Language", "en-US,en;q=0.5")
+        set("Accept-Encoding", "gzip, deflate, br")
+        set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+        set("X-Requested-With", "XMLHttpRequest")
+        set("Content-Length", "129")
+        set("Origin", "https://m.albert.nyu.edu")
+        set("DNT", "1")
+        set("Connection", "keep-alive")
+        set("Referer", "https://m.albert.nyu.edu/app/catalog/classSearch")
+        set("Cookie", httpContext.cookies.joinToString(";") { it.toString() })
+
+        val params = listOf( // URL params
+            "CSRFToken" to httpContext.csrfToken,
+            "term" to term.id.toString(),
+            "acad_group" to subjectCode.school,
+            "subject" to subjectCode.abbrev
+        )
+        queryLogger.debug { "Params are ${params}." }
+        val bodyValue = params.joinToString("&") { it.first + '=' + it.second }
+        body(bodyValue)
+    }
+
+    request.response { _, response, _ ->
         val result = String(response.data)
         if (result == "No classes found matching your criteria.") {
             queryLogger.warn { "No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}" }
@@ -61,7 +80,7 @@ Querying Catalog given list of subject codes
 @param subjectCodes (list of subjectcode)
 @return Sequence of String
  */
-fun queryCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
+fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
@@ -79,48 +98,34 @@ private class QueryResults(val term: Term, val subjects: List<SubjectCode>, arra
 
     init {
         require(arraySize > 0) { "Need to have a non-empty array size!" }
-        queryLogger.info { "Array size is $arraySize" }
     }
 
     var subjectsIndex = min(subjects.size, arraySize)
     var pendingRequests = subjectsIndex
     var arrayIndex = 0
-    val tokens = Array(subjectsIndex) {
-        getTokenAsync()
-    }.map {
-        it.get()
-    }
+    val contexts = Array(subjectsIndex) { getContextAsync() }.map { it.get() }
     val requests = Array(subjectsIndex) {
-        queryCatalog(term, subjects[it], tokens[it])
+        queryCatalog(term, subjects[it], contexts[it])
     }
-    var result: String? = null
-
-    init {
-        queryLogger.info { "subjectsIndex is $subjectsIndex" }
-        result = tryGetNext()
-    }
+    var result = tryGetNext()
 
     private fun tryGetNext(): String? {
         var fetchedResult: String? = null
         while (fetchedResult == null && pendingRequests > 0) {
             fetchedResult = requests[arrayIndex].get()
-            queryLogger.info { "fetchedResult is $fetchedResult" }
             if (subjectsIndex < subjects.size) {
-                requests[arrayIndex] = queryCatalog(term, subjects[subjectsIndex], tokens[arrayIndex])
+                requests[arrayIndex] = queryCatalog(term, subjects[subjectsIndex], contexts[arrayIndex])
                 subjectsIndex++
             } else {
                 pendingRequests--
             }
             arrayIndex++
-            if (arrayIndex == tokens.size) arrayIndex = 0
+            if (arrayIndex == contexts.size) arrayIndex = 0
         }
-
         return fetchedResult
     }
 
-    override fun hasNext(): Boolean {
-        return result != null
-    }
+    override fun hasNext(): Boolean = result != null
 
     override fun next(): String {
         if (result == null) throw NoSuchElementException()
@@ -134,16 +139,17 @@ private class QueryResults(val term: Term, val subjects: List<SubjectCode>, arra
 /**
  * Get a CSRF Token from NYU
  */
-fun getToken(): String = getTokenAsync().get()
+private fun getContext(): HttpContext = getContextAsync().get()
 
-fun getTokenAsync(): Future<String> {
-    val future = CompletableFuture<String>()
+private fun getContextAsync(): Future<HttpContext> {
+    val future = CompletableFuture<HttpContext>()
 
     queryLogger.info { "Getting CSRF token..." }
     Fuel.get(ROOT_URL).response { _, response, _ ->
-        val token = response.headers["Set-Cookie"].flatMap {
+        val cookies = response.headers["Set-Cookie"].flatMap {
             HttpCookie.parse(it)!!
-        }.find {
+        }
+        val token = cookies.find {
             it.name == "CSRFCookie"
         }?.value
 
@@ -153,8 +159,10 @@ fun getTokenAsync(): Future<String> {
         }
 
         queryLogger.info { "Retrieved CSRF token `${token}`" }
-        future.complete(token)
+        future.complete(HttpContext(token, cookies))
     }
     return future
 }
+
+private data class HttpContext(val csrfToken: String, val cookies: List<HttpCookie>)
 

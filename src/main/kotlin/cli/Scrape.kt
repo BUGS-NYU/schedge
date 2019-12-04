@@ -67,7 +67,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
             val endTime = System.nanoTime()
             val duration = (endTime - startTime) / 1000000000.0 //divide by 1000000 to get milliseconds.
-            println("$duration seconds")
+            logger.info { "$duration seconds" }
 
         }
 

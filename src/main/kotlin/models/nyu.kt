@@ -17,19 +17,19 @@ enum class SectionType {
     FLD, // Field Instruction
     SIM, // Simulation
     LLB, // Unknown
-    GUI, // Unknown
-    NCR, // Unknown
-    MAM, // Unknown
-    PRP, // Unknown
-    DLX, // Unknown
-    PRO, // Unknown
+    DLX, // Distance Learning Hybrid
     CLI, // Clinic
     STU, // Studio
     STI, // Independent Instruction
     STG, // Group Instruction
     CLQ, // Colloquium
     WKS, // Workshop
-    IND; // independent study
+    IND, // independent study
+    PRO, // Project (Tandon)
+    GUI, // Guided Study (Tandon)
+    NCR, // Non-Credit (Tandon)
+    PRP, // Preparatory
+    MAM; // Maintaining Marticulation
 
     /**
      * Return the type of class component
@@ -51,6 +51,12 @@ enum class SectionType {
             INT -> "Internship"
             RSC -> "Research (Tandon)"
             CLQ -> "Colloquium"
+            PRO -> "Project (Tandon)"
+            GUI -> "Guided Studies (Tandon)"
+            NCR -> "Non-Credit (Tandon)"
+            PRP -> "Preparatory"
+            MAM -> "Maintaining Marticulation"
+            DLX -> "Distance Learning Hybrid"
             else -> "Unknown"
         }
     }
@@ -237,6 +243,7 @@ class Term(private val sem: Semester, private val year: Int) {
             require(id >= 0) { "Can't create Term with negative ID" }
             return Term(Semester.fromInt(id % 10), (id / 10) + 1900)
         }
+
     }
 
     init {

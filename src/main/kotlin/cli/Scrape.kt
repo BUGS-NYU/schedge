@@ -11,6 +11,7 @@ import models.Term
 import mu.KotlinLogging
 import services.JsonMapper
 import services.scrapeFromCatalog
+import services.scrapeAllFromCatalog
 import utils.writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
@@ -34,26 +35,33 @@ internal class Scrape : CliktCommand(name = "scrape") {
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()
-        private val school: String by option("--school").required()
+        private val school: String? by option("--school")
         private val subject: String? by option("--subject")
         private val file: String? by option("--file")
         private val prettyPrint by option("--pretty").flag(default = false)
 
         override fun run() {
             val startTime = System.nanoTime()
-            if (subject == null) {
+            val school = school
+            val subject = subject
+            if (school == null) {
                 file.writeToFileOrStdout(
                     JsonMapper.toJson(
-                        scrapeFromCatalog(
-                            logger,
-                            term,
-                            SubjectCode.allSubjects(school).toList()
+                        scrapeFromCatalog(logger, term,
+                            SubjectCode.allSubjects().toList()
                         ).toList(), prettyPrint
+                    )
+                )
+            } else if (subject == null) {
+                file.writeToFileOrStdout(
+                    JsonMapper.toJson(
+                        scrapeAllFromCatalog(logger, term, school).toList(), prettyPrint
                     )
                 )
             } else {
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(scrapeFromCatalog(logger, term, SubjectCode(subject!!, school)), prettyPrint)
+                    JsonMapper.toJson(
+                      scrapeFromCatalog(logger, term, SubjectCode(subject, school)), prettyPrint)
                 )
             }
 

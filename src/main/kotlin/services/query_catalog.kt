@@ -36,7 +36,8 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> 
     }
 
     return batchRequest(
-        subjectCodes, max(5, min(subjectCodes.size / 5, 20)),
+        subjectCodes,
+        max(5, min(subjectCodes.size / 5, 20)), // @Performance What should this number be?
         { getContextAsync() }
     ) { subjectCode, context ->
         queryCatalog(term, subjectCode, context)

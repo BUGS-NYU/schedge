@@ -24,16 +24,6 @@ data class Course(
     private val subject: SubjectCode,
     val sections: List<Section>
 ) {
-
-    @JsonCreator
-    private constructor(
-        @JsonProperty("name") name: String,
-        @JsonProperty("dept_course_id") deptCourseId: String,
-        @JsonProperty("subject") subject: String,
-        @JsonProperty("school") school: String,
-        @JsonProperty("sections") sections: List<Section>
-    ) : this(name, deptCourseId, SubjectCode.getUnchecked(subject, school), sections)
-
     @JsonIgnore
     fun getSubject(): String {
         return this.subject.subject

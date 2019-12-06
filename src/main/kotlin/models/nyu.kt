@@ -11,12 +11,12 @@ enum class SectionType {
     RCT, // Recitation
     LAB, // Lab
     SEM, // Seminar
-    PCT, // Unknown
+    PCT, // Practicum
     INT, // Internship
     RSC, // Research Tandon's Code
     FLD, // Field Instruction
     SIM, // Simulation
-    LLB, // Unknown
+    LLB, // Lecture for Lab (Tandon)
     DLX, // Distance Learning Hybrid
     CLI, // Clinic
     STU, // Studio
@@ -57,6 +57,8 @@ enum class SectionType {
             PRP -> "Preparatory"
             MAM -> "Maintaining Marticulation"
             DLX -> "Distance Learning Hybrid"
+            PCT -> "Practicum"
+            LLB -> "Lecture for Lab"
             else -> "Unknown"
         }
     }

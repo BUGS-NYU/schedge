@@ -20,5 +20,10 @@ The following commands are valid in Schedge:
 ./schedge db serve # rehash of previous javalin project
 ```
 
+#### Arguments: 
+ - term
+ - school
+ - subject 
+
 ## API Documentation
 The API documentation is available at http://schedge.a1liu.com .

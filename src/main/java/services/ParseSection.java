@@ -30,7 +30,7 @@ public class ParseSection {
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
 
-  public static @NotNull String parse(@NotNull String rawData)
+  public static @NotNull Object parse(@NotNull String rawData)
       throws IOException {
     logger.info("parsing raw catalog data...");
     Document doc = Jsoup.parse(rawData);
@@ -41,6 +41,16 @@ public class ParseSection {
         innerDataSection.selectFirst("> div.primary-head").text();
     Elements dataDivs =
         innerDataSection.select("> div.section-content.clearfix");
-    return courseName;
+
+    return parseSectionAttributes(dataDivs);
+  }
+
+  static @NotNull Map<String, String>
+  parseSectionAttributes(@NotNull Elements attributeData) {
+    Map<String, String> map = new HashMap<>();
+    for (Element e : attributeData) {
+      map.put(e.child(0).text(), e.child(1).text());
+    }
+    return map;
   }
 }

@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+This class get connection to the Postgresql database using JDBC Driver
+ */
 public class GetConnection {
 
   private static HikariDataSource dataSource;
@@ -20,6 +23,11 @@ public class GetConnection {
       return value;
   }
 
+  /**
+   * getConnection using default username and password
+   * @return Connection object to the database
+   * @throws SQLException
+   */
   public static Connection getConnection() throws SQLException {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
@@ -33,6 +41,10 @@ public class GetConnection {
     return dataSource.getConnection();
   }
 
+  /**
+   * Closing the connection
+   * @throws SQLException
+   */
   public static void close() throws SQLException {
     if (dataSource != null)
       dataSource.close();

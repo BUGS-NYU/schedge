@@ -14,7 +14,18 @@ import java.util.List;
 import database.generated.Tables;
 import java.sql.Timestamp;
 
+/**
+ * This class insert courses into the Postgresql database based on
+ * the data scraped from Albert Mobile
+ */
 public class InsertCourses {
+  /**
+   * Inserting courses into the database
+   * @param logger
+   * @param term
+   * @param courses
+   * @throws SQLException
+   */
   public static void insertCourses(Logger logger, Term term,
                                    List<Course> courses) throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
@@ -40,6 +51,14 @@ public class InsertCourses {
     }
   }
 
+  /**
+   * Inserting sections into the database
+   * @param logger
+   * @param context
+   * @param courseId
+   * @param sections
+   * @throws SQLException
+   */
   public static void insertSections(Logger logger, DSLContext context,
                                     int courseId, List<Section> sections)
       throws SQLException {
@@ -64,6 +83,15 @@ public class InsertCourses {
     }
   }
 
+  /**
+   * Inserting recitations into the database
+   * @param logger
+   * @param context
+   * @param courseId
+   * @param sections
+   * @param associatedWith
+   * @throws SQLException
+   */
   public static void insertRecitations(Logger logger, DSLContext context,
                                        int courseId, List<Section> sections,
                                        int associatedWith) throws SQLException {
@@ -93,6 +121,14 @@ public class InsertCourses {
     }
   }
 
+  /**
+   * Inserting meetings into the database
+   * @param logger
+   * @param context
+   * @param sectionId
+   * @param meetings
+   * @throws SQLException
+   */
   public static void insertMeetings(Logger logger, DSLContext context,
                                     int sectionId, List<Meeting> meetings)
       throws SQLException {

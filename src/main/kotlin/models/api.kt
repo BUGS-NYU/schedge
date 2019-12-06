@@ -45,6 +45,9 @@ data class Course(
     }
 }
 
+/**
+ * Section Object
+ */
 class Section(
   val registrationNumber: Int,
   val sectionCode: String,
@@ -62,7 +65,9 @@ class Section(
     }
 }
 
-// A time that people meet for a class
+/**
+ * Meeting time for classes/sections
+ */
 data class Meeting(
     val beginDate: DateTime, // Begin date; contains date and time of first event.
     val minutesDuration: Long, // Duration of meeting

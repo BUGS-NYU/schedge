@@ -20,7 +20,7 @@ import utils.UtilsKt;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Parses a catalog string in a stream.
+ * Parses a section string.
  *
  * @author Albert Liu
  */

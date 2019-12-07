@@ -19,10 +19,9 @@ if [ -f "$PROJ_DIR/.env" ]; then
   . "$PROJ_DIR/.env"
 fi
 
-if [ "$#" -gt 0 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
+if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   if [ -f "$PROJ_DIR/.pid" ]; then
     sudo fuser -k -n tcp 80
-    # sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")'"
   fi
 
   echo "Running in disowned process as root..."
@@ -31,7 +30,6 @@ if [ "$#" -gt 0 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   echo "$!" > "$PROJ_DIR/.pid"
 else
   java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
-  rm "$PROJ_DIR/.pid" 2>/dev/null
 fi
 
 

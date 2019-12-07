@@ -45,9 +45,6 @@ data class Course(
     }
 }
 
-/**
- * Section Object
- */
 class Section(
   val registrationNumber: Int,
   val sectionCode: String,

@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Mapping the object to JSON
- */
 public class JsonMapper {
   private static ObjectMapper objMapper =
       new ObjectMapper().setPropertyNamingStrategy(

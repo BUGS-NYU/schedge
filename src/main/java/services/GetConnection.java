@@ -23,11 +23,6 @@ public class GetConnection {
       return value;
   }
 
-  /**
-   * getConnection using default username and password
-   * @return Connection object to the database
-   * @throws SQLException
-   */
   public static Connection getConnection() throws SQLException {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
@@ -41,10 +36,6 @@ public class GetConnection {
     return dataSource.getConnection();
   }
 
-  /**
-   * Closing the connection
-   * @throws SQLException
-   */
   public static void close() throws SQLException {
     if (dataSource != null)
       dataSource.close();

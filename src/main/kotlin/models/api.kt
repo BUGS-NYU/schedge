@@ -9,14 +9,6 @@ data class School(val code: String, val name: String, val subjects: List<Subject
 
 data class Subject(val code: String, val courses: List<Course>)
 
-/**
-Data class for Course object with:
-- Course name (String)
-- Course number (int)
-- Course subject code (type subject)
-- Course sections (type List)
- */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Course(
     val name: String,
     val deptCourseId: String,
@@ -34,7 +26,6 @@ data class Course(
     }
 }
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
 class Section(
   val registrationNumber: Int,
   val sectionCode: String,
@@ -42,13 +33,18 @@ class Section(
   val type: SectionType,
   val status: SectionStatus,
   val meetings: List<Meeting>,
-  val recitations: List<Section>?
+  private val recitations: List<Section>?
   ) {
 
     init {
       require(type == SectionType.LEC || recitations == null) {
         "If the section type isn't a lecture, it can't have recitations!"
       }
+    }
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    fun getRecitations(): List<Section>? {
+        return recitations
     }
 }
 

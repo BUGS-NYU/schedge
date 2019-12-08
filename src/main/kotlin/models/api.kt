@@ -1,9 +1,7 @@
 package models
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.*
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import database.generated.tables.records.CoursesRecord
 import org.joda.time.DateTime
 
@@ -18,6 +16,7 @@ Data class for Course object with:
 - Course subject code (type subject)
 - Course sections (type List)
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class Course(
     val name: String,
     val deptCourseId: String,
@@ -35,6 +34,7 @@ data class Course(
     }
 }
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class Section(
   val registrationNumber: Int,
   val sectionCode: String,
@@ -63,7 +63,7 @@ data class Meeting(
 
     @JsonValue
     fun toJson(): MeetingJson {
-        return MeetingJson(beginDate.toString(), minutesDuration, endDate.toString())
+        return MeetingJson(beginDate.toString("MM/dd/yyyy h:mma"), minutesDuration, endDate.toString("MM/dd/yyyy"))
     }
 }
 

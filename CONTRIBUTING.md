@@ -119,16 +119,22 @@ should use `gradle checkFast` to ensure your code compiles, then run `gradle bui
 when you're ready to test your code.
 
 ## Code organization
+- `api` contains definitions of the web API
 - `models` contains class definitions for modeling data
-  - `chrono.kt` defines time-related classes
   - `api.kt` defines classes that are printed in the API
   - `nyu.kt` defines classes that describe NYU
 - `cli` contains definitions for the command-line interface
-- `services` defines high-level actions that Schedge can perform
-  - `query_service.kt` queries NYU Albert
-  - `scrape_service.kt` scrapes NYU Albert
+- `services` defines high-level actions that Schedge can perform, i.e. the
+  business logic of Schedge; services should not interact with external globals
+  or read global state at all. They should also avoid things like reading user
+  input. Contributions are most impactful here, and also require the least amount
+  of prior knowledge about the codebase.
+  - `query_catalog.kt` queries the NYU Albert course catalog
+  - `query_section.kt` queries NYU Albert for section descriptions
+  - `scrape_catalog.kt` scrapes the NYU Albert course catalog
   - `JsonMapper.java` converts data structures to JSON
-  - `ParseCatalog.java` parses the catalog data
+  - `ParseCatalog.java` parses raw catalog data in a stream
+  - `batch_request.kt` performs an asynchronous action in batches.
 
 ## Comment Annotations
 The codebase uses the following annotations in the comments:

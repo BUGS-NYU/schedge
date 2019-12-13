@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import java.io.File;
 import java.io.IOException;
 
+// @Performance Build a codegen gradle plugin to remove Jackson dependency, and
+// do most of serialization legwork at compile time
 public class JsonMapper {
   private static ObjectMapper objMapper =
       new ObjectMapper().setPropertyNamingStrategy(

@@ -26,6 +26,8 @@ data class Course(
     }
 }
 
+// @TODO @HelpWanted refactor the constructor into a factory method, and then
+// make a subclass of Section for lectures
 class Section(
   val registrationNumber: Int,
   val sectionCode: String,

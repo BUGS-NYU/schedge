@@ -2,11 +2,19 @@ package api;
 
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.swagger.v3.oas.models.examples.Example;
 import org.jetbrains.annotations.NotNull;
-import models.*;
+import models.Semester;
+import models.SubjectCode;
+import models.Term;
+import api.models.*;
 import services.SelectCourses;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+
+import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
 
 class CoursesEndpoint extends Endpoint {
 
@@ -58,8 +66,18 @@ class CoursesEndpoint extends Endpoint {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
               })
-        .jsonArray("200", Course.class,
-                   openApiParam -> { openApiParam.description("OK."); });
+        .jsonArray("200", Course.class, openApiParam -> {
+          openApiParam.description("OK.");
+
+          ArrayList<Section> sections = new ArrayList<>();
+
+          openApiParam.getContent()
+              .get(guessContentType(Course.class))
+              .addExamples("course",
+                           new Example().value(new Course(
+                               "Intro to Computer SCI", "101",
+                               new SubjectCode("CSCI", "UA"), sections)));
+        });
   }
 
   @NotNull

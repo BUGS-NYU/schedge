@@ -4,6 +4,7 @@ import database.generated.tables.Courses;
 import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
 import models.*;
+import scraping.models.*;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;

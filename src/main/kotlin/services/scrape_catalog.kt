@@ -1,6 +1,6 @@
 package services
 
-import models.Course
+import scraping.models.Course
 import models.SubjectCode
 import models.Term
 import mu.KLogger

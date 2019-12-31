@@ -9,7 +9,7 @@ EXPOSE 8080
 
 RUN mkdir /app
 
-COPY --from=build /home/gradle/src/.build/libs/schedge-all.jar /app/spring-boot-application.jar
+COPY --from=build /home/gradle/src/.build/libs/schedge-all.jar /app/schedge-all.jar
 
 ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", \
-"-Djava.security.egd=file:/dev/./urandom",  "-jar", "/app/spring-boot-application.jar", "db", "serve"]
+"-Djava.security.egd=file:/dev/./urandom",  "-jar", "/app/schedge-all.jar", "db", "serve"]

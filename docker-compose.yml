@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: schedge
+
+  app:
+    build: .
+    ports:
+      - 8080:8080

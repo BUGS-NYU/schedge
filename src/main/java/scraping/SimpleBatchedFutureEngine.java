@@ -1,13 +1,9 @@
 package scraping;
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.BiFunction;
-import java.util.concurrent.Future;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.List;
+
 import org.slf4j.Logger;
 
 /**
@@ -21,27 +17,24 @@ import org.slf4j.Logger;
 public class SimpleBatchedFutureEngine<Input, Output>
     implements Iterator<Output> {
 
-  private static Logger logger;
+  static long DEFAULT_TIMEOUT = 10;
 
-  int pendingRequests;
-  int currentMailbox = 0;
-  ArrayList<Future<Output>> mailboxes;
-  Iterator<Input> inputData;
-  BiFunction<Input, Integer, Future<Output>> callback;
+  private int pendingRequests;
+  private long timeout;
+  private ArrayList<Future<Output>> mailboxes;
+  private Iterator<Input> inputData;
+  private BiFunction<Input, Integer, Future<Output>> callback;
 
-  /**
-   * Creates a SimpleBatchFutureEngine. Calling this constructor fills the batch
-   * with futures until either there are no more or until the batch is full.
-   *
-   * @param inputData The data to source the futures from.
-   * @param batchSize The size of the batch.
-   * @param callback The source of futures; takes in an element from inputDdata
-   * and an index into the batch.
-   */
   public SimpleBatchedFutureEngine(
       List<Input> inputData, int batchSize,
       BiFunction<Input, Integer, Future<Output>> callback) {
     this(inputData.iterator(), batchSize, callback);
+  }
+
+  public SimpleBatchedFutureEngine(
+      Iterator<Input> inputData, int batchSize,
+      BiFunction<Input, Integer, Future<Output>> callback) {
+    this(inputData, batchSize, DEFAULT_TIMEOUT, callback);
   }
 
   /**
@@ -50,11 +43,30 @@ public class SimpleBatchedFutureEngine<Input, Output>
    *
    * @param inputData The data to source the futures from.
    * @param batchSize The size of the batch.
+   * @param timeout The amount of time to wait before checking for completed
+   * tasks again.
    * @param callback The source of futures; takes in an element from inputDdata
    * and an index into the batch.
    */
   public SimpleBatchedFutureEngine(
-      Iterator<Input> inputData, int batchSize,
+      List<Input> inputData, int batchSize, long timeout,
+      BiFunction<Input, Integer, Future<Output>> callback) {
+    this(inputData.iterator(), batchSize, timeout, callback);
+  }
+
+  /**
+   * Creates a SimpleBatchFutureEngine. Calling this constructor fills the batch
+   * with futures until either there are no more or until the batch is full.
+   *
+   * @param inputData The data to source the futures from.
+   * @param batchSize The size of the batch.
+   * @param timeout The amount of time to wait before checking for completed
+   * tasks again.
+   * @param callback The source of futures; takes in an element from inputDdata
+   * and an index into the batch.
+   */
+  public SimpleBatchedFutureEngine(
+      Iterator<Input> inputData, int batchSize, long timeout,
       BiFunction<Input, Integer, Future<Output>> callback) {
     if (batchSize < 0)
       throw new IllegalArgumentException("batchSize must be positive!");
@@ -69,12 +81,14 @@ public class SimpleBatchedFutureEngine<Input, Output>
     this.callback = callback;
   }
 
-  private static <E> E getFuture(Future<E> future) throws ExecutionException {
+  private static <E> E getFuture(Future<E> future) {
     while (true) {
       try {
         return future.get();
       } catch (CancellationException e) {
         return null;
+      } catch (ExecutionException e) {
+        throw new RuntimeException(e);
       } catch (InterruptedException e) {
       }
     }
@@ -82,30 +96,44 @@ public class SimpleBatchedFutureEngine<Input, Output>
 
   public boolean hasNext() { return pendingRequests > 0; }
 
+  public Output checkMailboxes() {
+    for (int i = 0; i < pendingRequests; i++) {
+      Future<Output> future = mailboxes.get(i);
+      if (future.isDone()) {
+
+        Output value = getFuture(future);
+        if (inputData.hasNext()) {
+          mailboxes.set(i, callback.apply(inputData.next(), i));
+        } else {
+          pendingRequests--;
+          mailboxes.set(i, mailboxes.get(pendingRequests));
+          mailboxes.remove(pendingRequests);
+        }
+
+        if (value != null)
+          return value;
+      }
+    }
+    return null;
+  }
+
   @Override
   public Output next() {
     if (pendingRequests <= 0)
       throw new NoSuchElementException();
 
     Output fetchedResult = null;
-    do {
-      try {
-        fetchedResult = getFuture(mailboxes.get(currentMailbox));
-      } catch (ExecutionException e) {
-        throw new RuntimeException(e);
-      }
-
-      if (inputData.hasNext()) {
-        mailboxes.set(currentMailbox,
-                      callback.apply(inputData.next(), currentMailbox));
+    while (pendingRequests > 0) {
+      fetchedResult = checkMailboxes();
+      if (fetchedResult != null) {
+        return fetchedResult;
       } else {
-        pendingRequests--;
+        try {
+          Thread.sleep(timeout);
+        } catch (InterruptedException e) {
+        }
       }
-
-      currentMailbox++;
-      if (currentMailbox == mailboxes.size())
-        currentMailbox = 0;
-    } while (fetchedResult == null && pendingRequests > 0);
+    }
 
     return fetchedResult;
   }

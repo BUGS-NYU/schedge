@@ -10,6 +10,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
+import scraping.SimpleBatchedFutureEngine
 
 private val queryLogger = KotlinLogging.logger("services.query_catalog")
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
@@ -34,14 +35,12 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> 
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
+    val batchSize = max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
+    val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
 
-    return batchRequest(
-        subjectCodes,
-        max(5, min(subjectCodes.size / 5, 20)), // @Performance What should this number be?
-        { getContextAsync() }
-    ) { subjectCode, context ->
-        queryCatalog(term, subjectCode, context)
-    }
+    return SimpleBatchedFutureEngine(subjectCodes, batchSize) { subjectCode, idx ->
+        queryCatalog(term, subjectCode, contexts[idx])
+    }.asSequence().filterNotNull()
 }
 
 /**

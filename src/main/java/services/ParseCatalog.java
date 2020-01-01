@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.*;
 import kotlin.text.StringsKt;
 import models.*;
+import scraping.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;

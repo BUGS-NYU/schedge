@@ -1,6 +1,6 @@
 package services
 
-import models.Course
+import scraping.models.Course
 import models.SubjectCode
 import models.Term
 import mu.KLogger
@@ -12,8 +12,8 @@ import mu.KLogger
  * @param subjectCodes The subjects for which we should be scraping
  * @return Sequence of List of Courses
  */
-fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>): Sequence<List<Course>> {
-    return queryCatalog(term, subjectCodes).asSequence().map { rawData ->
+fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
+    return queryCatalog(term, subjectCodes, batchSize).asSequence().map { rawData ->
       try {
           ParseCatalog.parse(logger, rawData)
       } catch (e: Exception) {
@@ -43,5 +43,5 @@ fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): Li
  * @param forSchool School's name
  * @return Sequence of List of Courses
  */
-fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?): Sequence<List<Course>> =
-    scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList())
+fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?, batchSize: Int? = null): Sequence<List<Course>> =
+    scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList(), batchSize)

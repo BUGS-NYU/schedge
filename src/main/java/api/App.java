@@ -8,7 +8,6 @@ import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.javalin.plugin.openapi.ui.SwaggerOptions;
 import io.swagger.v3.oas.models.info.Info;
-import models.Course;
 import models.SubjectCode;
 import models.Term;
 import org.jetbrains.annotations.NotNull;

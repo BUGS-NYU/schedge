@@ -17,13 +17,8 @@ The following commands are valid in Schedge:
 ./schedge scrape catalog # scrape the catalog
 ./schedge db scrape # scrape the catalog for information
 ./schedge db query # query the database for information
-./schedge db serve # rehash of previous javalin project
+./schedge db serve # Serve the database data through an API
 ```
-
-#### Arguments: 
- - term
- - school
- - subject 
 
 ## API Documentation
 The API documentation is available at http://schedge.a1liu.com .

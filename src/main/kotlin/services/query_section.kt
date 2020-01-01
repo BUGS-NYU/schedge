@@ -1,15 +1,13 @@
 package services
 
 import com.github.kittinunf.fuel.Fuel
-import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
-import java.io.IOException
-import java.net.HttpCookie
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
+import scraping.SimpleBatchedFutureEngine
 
 private val queryLogger = KotlinLogging.logger("services.query_section")
 private val DATA_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/"
@@ -17,13 +15,13 @@ private val DATA_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/
 fun querySection(term: Term, registrationNumber: Int): String =
     querySectionAsync(term, registrationNumber).get()
 
-fun querySection(term: Term, registrationNumbers: List<Int>): Sequence<String> {
+fun querySection(term: Term, registrationNumbers: List<Int>, batchSizeNullable: Int? = null): Sequence<String> {
     if (registrationNumbers.size > 1)
       queryLogger.info { "Querying multiple sections..." }
-    return batchRequest(
-        registrationNumbers,
-        max(5, min(registrationNumbers.size / 5, 20)) // @Performance What should this number be?
-    ) { registrationNumber ->
+    val batchSize = batchSizeNullable ?: max(5, min(registrationNumbers.size / 5, 20))
+    return SimpleBatchedFutureEngine(
+        registrationNumbers, batchSize
+    ) { registrationNumber, _ ->
         require(registrationNumber > 0) { "Registration numbers aren't negative!" }
         val future = CompletableFuture<String>()
 
@@ -31,7 +29,7 @@ fun querySection(term: Term, registrationNumbers: List<Int>): Sequence<String> {
             future.complete(String(response.data))
         }
         future
-    }
+    }.asSequence()
 }
 
 private fun querySectionAsync(

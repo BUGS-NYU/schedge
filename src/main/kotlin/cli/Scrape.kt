@@ -2,10 +2,8 @@ package cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.options.convert
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
+import com.github.ajalt.clikt.parameters.options.*
+import com.github.ajalt.clikt.parameters.types.int
 import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
@@ -38,6 +36,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
         private val school: String? by option("--school")
         private val subject: String? by option("--subject")
         private val file: String? by option("--file")
+        private val batchSize: Int? by option("--batchSize").int()
         private val prettyPrint by option("--pretty").flag(default = false)
 
         override fun run() {
@@ -45,20 +44,22 @@ internal class Scrape : CliktCommand(name = "scrape") {
             val school = school
             val subject = subject
             if (school == null) {
+                require(subject == null) { "--subject doesn't make sense if no school is provided." }
                 file.writeToFileOrStdout(
                     JsonMapper.toJson(
                         scrapeFromCatalog(logger, term,
-                            SubjectCode.allSubjects().toList()
+                            SubjectCode.allSubjects().toList(), batchSize
                         ).toList(), prettyPrint
                     )
                 )
             } else if (subject == null) {
                 file.writeToFileOrStdout(
                     JsonMapper.toJson(
-                        scrapeAllFromCatalog(logger, term, school).toList(), prettyPrint
+                        scrapeAllFromCatalog(logger, term, school, batchSize).toList(), prettyPrint
                     )
                 )
             } else {
+                require( batchSize == null) { "Batch size doesn't make sense when only doing one query." }
                 file.writeToFileOrStdout(
                     JsonMapper.toJson(
                       scrapeFromCatalog(logger, term, SubjectCode(subject, school)), prettyPrint)

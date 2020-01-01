@@ -15,11 +15,12 @@ private val DATA_URL = "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/
 fun querySection(term: Term, registrationNumber: Int): String =
     querySectionAsync(term, registrationNumber).get()
 
-fun querySection(term: Term, registrationNumbers: List<Int>): Sequence<String> {
+fun querySection(term: Term, registrationNumbers: List<Int>, batchSizeNullable: Int? = null): Sequence<String> {
     if (registrationNumbers.size > 1)
       queryLogger.info { "Querying multiple sections..." }
+    val batchSize = batchSizeNullable ?: max(5, min(registrationNumbers.size / 5, 20))
     return SimpleBatchedFutureEngine(
-        registrationNumbers, max(5, min(registrationNumbers.size / 5, 20))
+        registrationNumbers, batchSize
     ) { registrationNumber, _ ->
         require(registrationNumber > 0) { "Registration numbers aren't negative!" }
         val future = CompletableFuture<String>()

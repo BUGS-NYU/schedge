@@ -25,7 +25,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
 
   int pendingRequests;
   int currentMailbox = 0;
-  Future<Output>[] mailboxes;
+  ArrayList<Future<Output>> mailboxes;
   Iterator<Input> inputData;
   BiFunction<Input, Integer, Future<Output>> callback;
 
@@ -59,18 +59,12 @@ public class SimpleBatchedFutureEngine<Input, Output>
     if (batchSize < 0)
       throw new IllegalArgumentException("batchSize must be positive!");
 
-    {
-      ArrayList<Future<Output>> boxes = new ArrayList<>();
-      for (int count = 0; inputData.hasNext() && count < batchSize; count++)
-        boxes.add(callback.apply(inputData.next(), count));
+    this.mailboxes = new ArrayList<>();
 
-      @SuppressWarnings("unchecked")
-      Future<Output>[] mailboxes =
-          (Future<Output>[])boxes.toArray(new Object[0]);
-      this.mailboxes = mailboxes;
-    }
+    for (int count = 0; inputData.hasNext() && count < batchSize; count++)
+      this.mailboxes.add(callback.apply(inputData.next(), count));
 
-    this.pendingRequests = this.mailboxes.length;
+    this.pendingRequests = this.mailboxes.size();
     this.inputData = inputData;
     this.callback = callback;
   }
@@ -96,20 +90,20 @@ public class SimpleBatchedFutureEngine<Input, Output>
     Output fetchedResult = null;
     do {
       try {
-        fetchedResult = getFuture(mailboxes[currentMailbox]);
+        fetchedResult = getFuture(mailboxes.get(currentMailbox));
       } catch (ExecutionException e) {
         throw new RuntimeException(e);
       }
 
       if (inputData.hasNext()) {
-        mailboxes[currentMailbox] =
-            callback.apply(inputData.next(), currentMailbox);
+        mailboxes.set(currentMailbox,
+                      callback.apply(inputData.next(), currentMailbox));
       } else {
         pendingRequests--;
       }
 
       currentMailbox++;
-      if (currentMailbox == mailboxes.length)
+      if (currentMailbox == mailboxes.size())
         currentMailbox = 0;
     } while (fetchedResult == null && pendingRequests > 0);
 

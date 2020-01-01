@@ -4,13 +4,13 @@ import com.github.kittinunf.fuel.Fuel
 import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
+import scraping.SimpleBatchedFutureEngine
 import java.io.IOException
 import java.net.HttpCookie
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
-import scraping.SimpleBatchedFutureEngine
 
 private val queryLogger = KotlinLogging.logger("services.query_catalog")
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
@@ -24,18 +24,12 @@ fun queryCatalog(term: Term, subjectCode: SubjectCode): String {
         ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
-/**
-Querying Catalog given list of subject codes
-@param logger
-@param Term (class)
-@param subjectCodes (list of subjectcode)
-@return Sequence of String
- */
-fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>): Sequence<String> {
+fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<String> {
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
-    val batchSize = max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
+
+    val batchSize = batchSizeNullable ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
     val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
 
     return SimpleBatchedFutureEngine(subjectCodes, batchSize) { subjectCode, idx ->

@@ -1,6 +1,7 @@
 package models
 
 import utils.asResourceLines
+import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
@@ -34,6 +35,7 @@ enum class SectionType {
     /**
      * Return the type of class component
      */
+    @JsonValue
     fun getName(): String {
         return when (this) {
             LEC -> "Lecture"

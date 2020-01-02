@@ -10,17 +10,17 @@ services:
       POSTGRES_USER: schedge
 
   app:
-    image: nicholaslyang/schedge
+    image: .
     ports:
       - 80:80
     environment:
-      JDBC_URL: jdbc:postgresql://localhost:5432/schedge
+      JDBC_URL: jdbc:postgresql://db:5432/schedge
 
   reverse-proxy:
     # The official v2.1 Traefik docker image
     image: traefik:v2.1
     # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker
+    command: --providers.docker
     ports:
       # The HTTP port
       - "8002:80"

@@ -1,19 +1,31 @@
-version: '3.1'
+version: '3'
 
 services:
   db:
     image: postgres
     restart: always
-    ports:
-      - 8001:5432
     environment:
       POSTGRES_PASSWORD:
       POSTGRES_DB: schedge
       POSTGRES_USER: schedge
 
   app:
-    build: .
+    image: nicholaslyang/schedge
     ports:
-      - 8080:8080
+      - 80:80
     environment:
       JDBC_URL: jdbc:postgresql://db:5432/schedge
+
+  # reverse-proxy:
+  #   # The official v2.1 Traefik docker image
+  #   image: traefik:v2.1
+  #   # Enables the web UI and tells Traefik to listen to docker
+  #   command: --api.insecure=true --providers.docker
+  #   ports:
+  #     # The HTTP port
+  #     - "8002:80"
+  #     # The Web UI (enabled by --api.insecure=true)
+  #     - "8080:8080"
+  #   volumes:
+  #     # So that Traefik can listen to the Docker events
+  #     - /var/run/docker.sock:/var/run/docker.sock

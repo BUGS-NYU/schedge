@@ -22,3 +22,6 @@ The following commands are valid in Schedge:
 
 ## API Documentation
 The API documentation is available at http://schedge.a1liu.com .
+
+## Contributing
+If you'd like to contribute, please take a look at out [contributing guide](CONTRIBUTING.md).

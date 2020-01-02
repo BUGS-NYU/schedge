@@ -1,5 +1,11 @@
 # Contributing
 
+#### Table of Contents
+- [Setup](#user-content-setup)
+- [Development](#user-content-development)
+- [Code Organization](#user-content-code-organization)
+- [Comment Annotations](#user-content-comment-annotations)
+
 ## Setup
 You'll need to install a few applications to contribute to this project:
 
@@ -112,7 +118,7 @@ brew install gradle
 Kotlin code handles scraping and querying data. Read the [documentation](https://kotlinlang.org/docs/reference/)
 
 ```shell script
-# Install Kotlin. 
+# Install Kotlin.
 brew install kotlin
 ```
 
@@ -130,10 +136,13 @@ Use `gradle build` to build the application, then test using
 should use `gradle checkFast` to ensure your code compiles, then run `gradle build`
 when you're ready to test your code.
 
-## Code organization
+## Code Organization
 - `api` contains definitions of the web API
+  - `models` contains definitions of the models used in the web API
+- `scraping` contains the `SimpleBatchedFutureEngine`, which handles batched execution
+  of futures.
+  - `models` contains definitions of the models used while scraping
 - `models` contains class definitions for modeling data
-  - `api.kt` defines classes that are printed in the API
   - `nyu.kt` defines classes that describe NYU
 - `cli` contains definitions for the command-line interface
 - `services` defines high-level actions that Schedge can perform, i.e. the
@@ -154,4 +163,5 @@ The codebase uses the following annotations in the comments:
 - `@HelpWanted` - We need contributors for this code
 - `@TODO` - We need to finish this code
 - `@Performance` - This area can be tweaked/rewritten to improve performance
+- `@CodeOrg` - We should reorganize this code
 

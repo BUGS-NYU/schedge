@@ -1,5 +1,7 @@
 package services
 
+// @CodeOrg This file should be in java/scraping
+
 import scraping.models.Course
 import models.SubjectCode
 import models.Term

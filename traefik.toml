@@ -1,0 +1,9 @@
+[entryPoints]
+  [entryPoints.dashboard]
+    address = ":8080"
+    [entryPoints.dashboard.auth]
+      [entryPoints.dashboard.auth.basic]
+        users = ["admin:"]
+
+[api]
+entrypoint="dashboard"

@@ -11,8 +11,6 @@ services:
 
   app:
     build: .
-    ports:
-      - 80:80
     environment:
       JDBC_URL: jdbc:postgresql://db:5432/schedge
     labels:
@@ -25,9 +23,12 @@ services:
     command: --providers.docker
     ports:
       # The HTTP port
-      - "8002:80"
+      - "80:80"
       # The Web UI (enabled by --api.insecure=true)
       - "8080:8080"
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.frontend.rule=Host:(`monitor.semioticg.host`)"
+      - "traefik.port=8080"

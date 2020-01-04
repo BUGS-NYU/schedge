@@ -1,6 +1,6 @@
 FROM gradle AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
+COPY --chown=gradle:gradle . /home/gradle/schedge
+WORKDIR /home/gradle/schedge
 RUN gradle build --no-daemon
 
 EXPOSE 8080

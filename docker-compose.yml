@@ -10,11 +10,13 @@ services:
       POSTGRES_USER: schedge
 
   app:
-    image: .
+    build: .
     ports:
       - 80:80
     environment:
       JDBC_URL: jdbc:postgresql://db:5432/schedge
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`semioticg.host`)"
 
   reverse-proxy:
     # The official v2.1 Traefik docker image

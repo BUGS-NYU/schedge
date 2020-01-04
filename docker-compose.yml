@@ -1,6 +1,37 @@
 version: '3.3'
 
 services:
+
+  reverse-proxy:
+    # The official v2.1 Traefik docker image
+    image: traefik:v2.1
+    restart: always
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+#      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      # You need to actively say traefik.enable=true
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=nick@nicholasyang.com"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    labels:
+      # Redirects all traffic to HTTPS
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
+      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+
   db:
     image: postgres
     restart: always
@@ -13,28 +44,12 @@ services:
     build: .
     environment:
       JDBC_URL: jdbc:postgresql://db:5432/schedge
+    ports:
+      - "8001:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`*`)"
-      - "traefik.http.routers.app.entrypoints=web"
+      - "traefik.http.routers.app.rule=Host(`albertsucks.com`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=mytlschallenge"
 
-  reverse-proxy:
-    # The official v2.1 Traefik docker image
-    image: traefik:v2.1
-    # Enables the web UI and tells Traefik to listen to docker
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-    ports:
-      # The HTTP port
-      - "80:80"
-      # The HTTPS port
-      - "443:443"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
-    volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
 

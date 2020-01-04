@@ -21,5 +21,3 @@ gradlew.bat
 !/postgres/.gitkeep
 
 .kotlintest
-traefik.toml
-acme.json

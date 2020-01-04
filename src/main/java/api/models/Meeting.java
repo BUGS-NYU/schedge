@@ -25,8 +25,8 @@ public class Meeting {
 
   @JsonValue
   public @NotNull MeetingJson toJson() {
-    return new MeetingJson(beginDate.toString("MM/dd/yyyy h:mma"),
-                           minutesDuration, endDate.toString("MM/dd/yyyy"));
+    return new MeetingJson(beginDate.toString(), minutesDuration,
+                           endDate.toString());
   }
 
   class MeetingJson {

@@ -40,7 +40,7 @@ services:
       POSTGRES_DB: schedge
       POSTGRES_USER: schedge
 
-  app:
+  api:
     build: .
     environment:
       JDBC_URL: jdbc:postgresql://db:5432/schedge
@@ -48,8 +48,8 @@ services:
       - "8001:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`api.albertsucks.com`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=mytlschallenge"
+      - "traefik.http.routers.api.rule=Host(`schedge.torchnyu.com`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=mytlschallenge"
 
 

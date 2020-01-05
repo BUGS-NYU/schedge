@@ -26,7 +26,6 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./traefik.toml:/traefik.toml" # Traefik configuration file
       - "./letsencrypt:/letsencrypt"
     labels:
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https" 

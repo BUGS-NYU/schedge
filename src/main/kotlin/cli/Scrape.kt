@@ -101,7 +101,9 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
 
 
+
     /**
+       adding features for schedge to scrape section
      * CLI for performing search queries of NYU Albert.
      */
     private class Catalog() : CliktCommand(name = "catalog") {

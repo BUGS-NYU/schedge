@@ -29,6 +29,7 @@ services:
       - "./traefik.toml:/traefik.toml" # Traefik configuration file
       - "./letsencrypt:/letsencrypt"
     labels:
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https" 
       # Redirects all traffic to HTTPS
       - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
       - "traefik.http.routers.redirs.entrypoints=web"

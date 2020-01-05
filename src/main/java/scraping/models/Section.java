@@ -15,16 +15,20 @@ public class Section {
   private SectionStatus status;
   private List<Meeting> meetings;
   private List<Section> recitations;
+  private String sectionName;
+  private int waitlistTotal;
 
   public Section(int registrationNumber, String sectionCode, String instructor,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations) {
+                 List<Section> recitations, String sectionName, int waitlistTotal) {
 
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
     }
 
+    this.waitlistTotal = waitlistTotal;
+    this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
     this.sectionCode = sectionCode;
     this.instructor = instructor;
@@ -33,6 +37,10 @@ public class Section {
     this.meetings = meetings;
     this.recitations = recitations;
   }
+
+  public int getWaitlistTotal() { return waitlistTotal; }
+
+  public @NotNull String getSectionName() { return sectionName; }
 
   public @NotNull int getRegistrationNumber() { return registrationNumber; }
 

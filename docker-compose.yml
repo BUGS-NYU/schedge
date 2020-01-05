@@ -48,7 +48,7 @@ services:
       - "8001:80"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`albertsucks.com`)"
+      - "traefik.http.routers.app.rule=Host(`api.albertsucks.com`)"
       - "traefik.http.routers.app.entrypoints=websecure"
       - "traefik.http.routers.app.tls.certresolver=mytlschallenge"
 

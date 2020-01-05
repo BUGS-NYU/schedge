@@ -13,6 +13,7 @@ services:
       - "--providers.docker=true"
       # You need to actively say traefik.enable=true
       - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
       - "--certificatesresolvers.mytlschallenge.acme.email=nick@nicholasyang.com"
@@ -25,6 +26,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik.toml:/traefik.toml" # Traefik configuration file
       - "./letsencrypt:/letsencrypt"
     labels:
       # Redirects all traffic to HTTPS

@@ -1,16 +1,9 @@
 package services;
 
-import java.time.DayOfWeek;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.*;
-
-import api.models.Meeting;
-import kotlin.text.StringsKt;
 import models.*;
-import mu.KLogger;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
@@ -20,8 +13,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
-import utils.UtilsKt;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Parses a section string.
@@ -41,6 +32,7 @@ public class ParseSection {
     Document doc = Jsoup.parse(rawData);
     doc.select("a").unwrap();
     doc.select("i").unwrap();
+    doc.select("b").unwrap();
     Element outerDataSection = doc.selectFirst("body > section.main");
     Element header = outerDataSection.selectFirst("> header.page-header");
     Element innerDataSection = outerDataSection.selectFirst("> section");
@@ -67,17 +59,16 @@ public class ParseSection {
 
   public static @NotNull SectionAttribute parsingElements(Map<String, String> secData, String courseName) {
     String units = secData.get("Units");
-    int minUnits, maxUnits = 0;
+    String minUnits = "0", maxUnits = "0";
     if(units.contains("-")) {
-      minUnits = Integer.parseInt(units.split(" - ")[0]);
-      maxUnits = Integer.parseInt(units.split(" - ")[1].split(" ")[0]);
+      minUnits = units.split(" - ")[0];
+      maxUnits = units.split(" - ")[1].split(" ")[0];
     } else {
-      minUnits = 0;
-      maxUnits = Integer.parseInt(units.split(" ")[0]);
+      maxUnits = units.split(" ")[0];
     }
     courseName += secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
     return new SectionAttribute(courseName, Integer.parseInt(secData.get("Class Number")),
-            SectionStatus.parseStatus(secData.get("Status")), secData.get("Campus"), secData.get("Description"),
+            SectionStatus.parseStatus(secData.get("Status")), secData.get("Location"), secData.get("Description"),
             secData.get("Instruction Mode"), secData.get("Instructor(s)"),
             minUnits, maxUnits, secData.get("Grading"),
             secData.containsKey("Notes") ? secData.get("Notes") : "See Description. None otherwise", secData.get("Room"));

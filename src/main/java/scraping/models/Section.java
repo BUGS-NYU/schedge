@@ -16,11 +16,11 @@ public class Section {
   private List<Meeting> meetings;
   private List<Section> recitations;
   private String sectionName;
-  private int waitlistTotal;
+  private Integer waitlistTotal;
 
   public Section(int registrationNumber, String sectionCode, String instructor,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, String sectionName, int waitlistTotal) {
+                 List<Section> recitations, String sectionName, Integer waitlistTotal) {
 
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
@@ -38,7 +38,7 @@ public class Section {
     this.recitations = recitations;
   }
 
-  public int getWaitlistTotal() { return waitlistTotal; }
+  public Integer getWaitlistTotal() { return waitlistTotal; }
 
   public @NotNull String getSectionName() { return sectionName; }
 

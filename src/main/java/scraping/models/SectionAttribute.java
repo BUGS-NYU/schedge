@@ -3,7 +3,11 @@ package scraping.models;
 import models.SectionStatus;
 import javax.validation.constraints.NotNull;
 
-//duplicate variables can be removed later on
+//Duplicate variables can be removed later on
+
+/**
+ * SectionAttribute to holds data for scraping catalogs' sections
+ */
 public class SectionAttribute {
     private String courseName;
     private int registrationNumber;
@@ -12,15 +16,15 @@ public class SectionAttribute {
     private String description;
     private String instructionMode;
     private String instructor; //dup
-    private int minUnits;
-    private int maxUnits;
+    private String minUnits;
+    private String maxUnits;
     private String grading;
     private String room;
     private String prerequisites;
     //private List<Meeting> meetings; //dup. Ignore for now
 
     public SectionAttribute(String courseName, int registrationNumber, SectionStatus status , String campus,
-                            String description, String instructorMode, String instructor, int minUnits, int maxUnits,
+                            String description, String instructorMode, String instructor, String minUnits, String maxUnits,
                             String grading, String prerequisites, String room) {
         this.courseName = courseName;
         this.registrationNumber = registrationNumber;
@@ -55,9 +59,9 @@ public class SectionAttribute {
 
     public @NotNull String getInstructor() { return instructor; }
 
-    public int getMinUnits() { return minUnits; }
+    public String getMinUnits() { return minUnits; }
 
-    public int getMaxUnits() {
+    public String getMaxUnits() {
         return maxUnits;
     }
 

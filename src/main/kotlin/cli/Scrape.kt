@@ -37,14 +37,13 @@ internal class Scrape : CliktCommand(name = "scrape") {
                 help = "The registration number that you'd use to register for the course."
         ).int().required()
         private val file: String? by option("--file")
-        private val batchSize: Int? by option("--batchSize").int()
         private val prettyPrint by option("--pretty").flag(default = false)
 
         override fun run() {
             val startTime = System.nanoTime()
             file.writeToFileOrStdout(
                     JsonMapper.toJson(
-                            scrapeFromSection(logger, term, registrationNumber), prettyPrint)
+                            scrapeFromSection(term, registrationNumber), prettyPrint)
             )
 
             val endTime = System.nanoTime()
@@ -75,21 +74,34 @@ internal class Scrape : CliktCommand(name = "scrape") {
             if(school != null && subject != null) {
                 file.writeToFileOrStdout(
                         JsonMapper.toJson(
-                                scrapeFromCatalogSection(logger, term, SubjectCode(subject, school)).toList(),
+                                scrapeFromCatalogSection(logger, term, SubjectCode(subject, school), batchSize).toList(),
                                 prettyPrint)
+                )
+            } else if(subject == null) {
+                file.writeToFileOrStdout(
+                        JsonMapper.toJson(
+                                scrapeFromCatalogSection(logger, term, school, batchSize).toList(),
+                                prettyPrint
+                        )
+                )
+            } else {
+                file.writeToFileOrStdout(
+                        JsonMapper.toJson(
+                                scrapeFromAllCatalogSection(logger, term, SubjectCode.allSubjects().toList(), batchSize),
+                                prettyPrint
+                        )
                 )
             }
             val endTime = System.nanoTime()
             val duration = (endTime - startTime) / 1000000000.0 //divide by 1000000 to get milliseconds.
             logger.info { "$duration seconds" }
-
         }
 
     }
 
 
 
-        /**
+    /**
      * CLI for performing search queries of NYU Albert.
      */
     private class Catalog() : CliktCommand(name = "catalog") {

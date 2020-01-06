@@ -8,7 +8,6 @@ import javax.validation.constraints.NotNull;
 /**
  * SectionAttribute to holds data for scraping catalogs' sections
  */
-//duplicate variables can be removed later on
 public class SectionAttribute {
     private String courseName;
     private int registrationNumber;

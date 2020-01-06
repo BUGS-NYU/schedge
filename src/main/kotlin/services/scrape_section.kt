@@ -5,6 +5,7 @@ import models.SubjectCode
 import models.Term
 import mu.KLogger
 import scraping.models.SectionAttribute
+import scraping.models.Subject
 import java.lang.Exception
 
 

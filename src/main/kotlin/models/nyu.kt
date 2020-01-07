@@ -67,7 +67,6 @@ enum class SectionType {
             DLX -> "Distance Learning Hybrid"
             PCT -> "Practicum"
             LLB -> "Lecture for Lab"
-            else -> "Unknown"
         }
     }
 }

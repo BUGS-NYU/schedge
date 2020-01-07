@@ -1,0 +1,57 @@
+version: '3.3'
+
+services:
+
+  reverse-proxy:
+    # The official v2.1 Traefik docker image
+    image: traefik:v2.1
+    restart: always
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+#      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      # You need to actively say traefik.enable=true
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=nick@nicholasyang.com"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https" 
+      # Redirects all traffic to HTTPS
+      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.redirs.entrypoints=web"
+      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: schedge
+      POSTGRES_USER: schedge
+
+  api:
+    build: .
+    environment:
+      JDBC_URL: jdbc:postgresql://db:5432/schedge
+    ports:
+      - "8001:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`schedge.torchnyu.com`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=mytlschallenge"
+
+

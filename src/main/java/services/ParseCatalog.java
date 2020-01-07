@@ -27,7 +27,7 @@ import utils.UtilsKt;
 public class ParseCatalog implements Iterator<Course> {
   private Logger logger;
   private static DateTimeFormatter timeParser =
-      DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
+      DateTimeFormat.forPattern("MM/dd/yyyy h:mma").withLocale(Locale.ENGLISH);
   private Iterator<Element> elements;
   private Element currentElement;
 

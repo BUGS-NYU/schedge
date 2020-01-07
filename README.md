@@ -6,7 +6,7 @@ NYU Albert is really annoying to use, and so is the rest of NYU's course catalog
 infrastructure. Our goal with this API is to make it easier for students to plan
 out their schedules, and eventually to also do some of that for them.
 
-API Docs: http://schedge.a1liu.com
+API Docs: https://schedge.torchnyu.com
 
 ## CLI Interface
 The following commands are valid in Schedge:
@@ -21,7 +21,7 @@ The following commands are valid in Schedge:
 ```
 
 ## API Documentation
-The API documentation is available at http://schedge.a1liu.com .
+The API documentation is available at https://schedge.torchnyu.com .
 
 ## Contributing
 If you'd like to contribute, please take a look at out [contributing guide](CONTRIBUTING.md).

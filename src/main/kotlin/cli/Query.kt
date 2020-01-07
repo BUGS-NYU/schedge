@@ -10,6 +10,7 @@ import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import services.queryCatalog
+import services.querySchool
 import services.querySection
 import utils.writeToFileOrStdout
 
@@ -21,7 +22,7 @@ import utils.writeToFileOrStdout
 internal class Query : CliktCommand(name = "query") {
 
     init {
-        this.subcommands(Catalog(), Section())
+        this.subcommands(Catalog(), Section(), School())
     }
 
     override fun run() = Unit
@@ -61,5 +62,15 @@ internal class Query : CliktCommand(name = "query") {
                 queryCatalog(term, SubjectCode(subject, school))
             )
 
+    }
+
+    private class School() : CliktCommand(name = "school") {
+        private val logger = KotlinLogging.logger("query.school")
+        private val term: Term by option("--term").convert {
+            Term.fromId(Integer.parseInt(it))
+        }.required()
+
+        override fun run() =
+                println(querySchool(term).toString())
     }
 }

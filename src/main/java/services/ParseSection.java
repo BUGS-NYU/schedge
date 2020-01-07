@@ -59,12 +59,12 @@ public class ParseSection {
 
   public static @NotNull SectionAttribute parsingElements(Map<String, String> secData, String courseName) {
     String units = secData.get("Units");
-    String minUnits = "0", maxUnits = "0";
+    float minUnits = 0, maxUnits = 0;
     if(units.contains("-")) {
-      minUnits = units.split(" - ")[0];
-      maxUnits = units.split(" - ")[1].split(" ")[0];
+      minUnits = Float.parseFloat(units.split(" - ")[0]);
+      maxUnits = Float.parseFloat(units.split(" - ")[1].split(" ")[0]);
     } else {
-      maxUnits = units.split(" ")[0];
+      maxUnits = Float.parseFloat(units.split(" ")[0]);
     }
     courseName += secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
     return new SectionAttribute(courseName, Integer.parseInt(secData.get("Class Number")),

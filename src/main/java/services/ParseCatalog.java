@@ -40,6 +40,20 @@ public class ParseCatalog implements Iterator<Course> {
     return courses;
   }
 
+  public static List<Integer> parseRegistrationNumber(Logger logger, String data)
+          throws IOException{
+    logger.debug("parsing raw catalog registration numbers data...");
+    Document secData = Jsoup.parse(data);
+    Elements fields = secData.select("div.section-content > div.section-body");
+    ArrayList<Integer> registrationNumbers = new ArrayList<>();
+    for (Element child : fields) {
+      if(child.text().contains("Section")) {
+        registrationNumbers.add(Integer.parseInt(child.text().split("[\\(\\)]")[1]));
+      }
+    }
+    return registrationNumbers;
+  }
+
   private ParseCatalog(Logger logger, Document data) throws IOException {
     elements = data.select("div.primary-head ~ *").iterator();
     this.logger = LoggerFactory.getLogger(logger.getName());
@@ -94,10 +108,11 @@ public class ParseCatalog implements Iterator<Course> {
                    sectionData);
       throw e;
     }
-
     return new SectionMetadata(
         registrationNumber, sectionCode, type, sectionData.get("Instructor"),
-        SectionStatus.parseStatus(sectionData.get("Status")), meetings);
+        SectionStatus.parseStatus(sectionData.get("Status")), meetings,
+            sectionData.containsKey("Topic") ? sectionData.get("Topic") : "",
+            sectionData.containsKey("Wait List Total") ? Integer.parseInt(sectionData.get("Wait List Total")) : 0);
   }
 
   private HashMap<String, String> sectionFieldTable(Elements fields) {
@@ -283,16 +298,21 @@ public class ParseCatalog implements Iterator<Course> {
     private String instructor;
     private SectionStatus status;
     private List<Meeting> meetings;
+    private String sectionName;
+    private int waitlistTotal;
 
     public SectionMetadata(int registrationNumber, String sectionCode,
                            SectionType type, String instructor,
-                           SectionStatus status, List<Meeting> meetings) {
+                           SectionStatus status, List<Meeting> meetings,
+                           String sectionName, int waitlistTotal) {
       this.registrationNumber = registrationNumber;
       this.sectionCode = sectionCode;
       this.type = type;
       this.instructor = instructor;
       this.status = status;
       this.meetings = meetings;
+      this.sectionName = sectionName;
+      this.waitlistTotal = waitlistTotal;
     }
 
     @NotNull
@@ -329,12 +349,12 @@ public class ParseCatalog implements Iterator<Course> {
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
       return new Section(registrationNumber, sectionCode, instructor,
-                         SectionType.LEC, status, meetings, recitations);
+                         SectionType.LEC, status, meetings, recitations, sectionName, waitlistTotal);
     }
 
     Section toSectionWithoutRecitations() {
       return new Section(registrationNumber, sectionCode, instructor, type,
-                         status, meetings, null);
+                         status, meetings, null, sectionName, waitlistTotal);
     }
   }
 

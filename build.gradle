@@ -59,6 +59,7 @@ dependencies {
 
             "com.github.rvesse:airline:2.7.2", // Command line args
             "com.github.ajalt:clikt:2.2.0", // Command line args
+            "info.picocli:picocli:4.1.4", // Command line args
 
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON

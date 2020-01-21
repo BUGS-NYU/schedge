@@ -4,10 +4,12 @@ import scraping.models.Course
 import models.SubjectCode
 import models.Term
 import mu.KLogger
+import mu.KotlinLogging
 import scraping.models.SectionAttribute
 import scraping.models.Subject
 import java.lang.Exception
 
+private val scraperLogger = KotlinLogging.logger("services.scrape_section")
 
 /**
  * Scraping the catalogs from Albert Mobile given one registration number
@@ -29,14 +31,14 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalogSection(logger: KLogger, term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
+fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySection(term, queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parseRegistrationNumber(logger, rawData)
+        ParseCatalog.parseRegistrationNumber(scraperLogger, rawData)
     }, batchSize).asSequence().map { rawData ->
         try {
             ParseSection.parse(rawData)
         } catch (e : Exception){
-            logger.warn(e.message)
+            scraperLogger.warn(e.message)
             null
         }
     }.filterNotNull()
@@ -49,9 +51,9 @@ fun scrapeFromCatalogSection(logger: KLogger, term: Term, subjectCode: SubjectCo
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalogSection(logger: KLogger, term : Term, forSchool: String?, batchSize: Int? = null) : Sequence<SectionAttribute> {
+fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = null) : Sequence<SectionAttribute> {
     return querySection(term,
-            ParseCatalog.parseRegistrationNumber(logger,
+            ParseCatalog.parseRegistrationNumber(scraperLogger,
                     queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
             .asSequence().map { rawData ->
                 ParseSection.parse(rawData)
@@ -65,9 +67,9 @@ fun scrapeFromCatalogSection(logger: KLogger, term : Term, forSchool: String?, b
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromAllCatalogSection(logger: KLogger, term: Term, subjectCodes : List<SubjectCode>, batchSize: Int? = null) : Sequence<SectionAttribute> {
+fun scrapeFromAllCatalogSection(term: Term, subjectCodes : List<SubjectCode>, batchSize: Int? = null) : Sequence<SectionAttribute> {
     return querySection(term,
-            ParseCatalog.parseRegistrationNumber(logger,
+            ParseCatalog.parseRegistrationNumber(scraperLogger,
                     queryCatalog(term, subjectCodes).toList().toString()), batchSize)
             .asSequence().map { rawData ->
                 ParseSection.parse(rawData)

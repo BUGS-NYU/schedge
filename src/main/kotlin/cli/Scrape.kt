@@ -19,7 +19,7 @@ import utils.writeToFileOrStdout
 internal class Scrape : CliktCommand(name = "scrape") {
 
     init {
-        this.subcommands(Catalog(), Section(), Sections())
+        this.subcommands(Catalog(), Section(), Sections(), School())
     }
 
     override fun run() = Unit
@@ -100,9 +100,8 @@ internal class Scrape : CliktCommand(name = "scrape") {
     }
 
 
-
     /**
-     * CLI for performing search queries of NYU Albert.
+        CLI for performing search queries of NYU Albert.
      */
     private class Catalog() : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("scrape.catalog")
@@ -148,5 +147,30 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
         }
 
+    }
+
+    private class School() : CliktCommand(name = "school") {
+        private val logger = KotlinLogging.logger("scrape.school")
+        private val term: Term by option("--term").convert {
+            Term.fromId(Integer.parseInt(it))
+        }.required()
+        private val file: String? by option("--file")
+        private val prettyPrint by option("--pretty").flag(default = false)
+
+        override fun run() {
+            val startTime = System.nanoTime()
+            file.writeToFileOrStdout(
+                    JsonMapper.toJson(
+                            ParseSchoolSubjects.parseSchool(querySchool(term)), prettyPrint)
+            )
+            file.writeToFileOrStdout(
+                    JsonMapper.toJson(
+                            ParseSchoolSubjects.parseSubject(querySchool(term)), prettyPrint)
+            )
+            val endTime = System.nanoTime()
+            val duration = (endTime - startTime) / 1000000000.0 //divide by 1000000 to get milliseconds.
+            logger.info { "$duration seconds" }
+
+        }
     }
 }

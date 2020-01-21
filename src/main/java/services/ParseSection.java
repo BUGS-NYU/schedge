@@ -67,10 +67,10 @@ public class ParseSection {
       maxUnits = Float.parseFloat(units.split(" ")[0]);
     }
     courseName += secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
-    return new SectionAttribute(courseName, Integer.parseInt(secData.get("Class Number")),
-            SectionStatus.parseStatus(secData.get("Status")), secData.get("Location"), secData.get("Description"),
-            secData.get("Instruction Mode"), secData.get("Instructor(s)"),
-            minUnits, maxUnits, secData.get("Grading"),
-            secData.containsKey("Notes") ? secData.get("Notes") : "See Description. None otherwise", secData.get("Room"));
-  }
+      return new SectionAttribute(courseName, Integer.parseInt(secData.get("Class Number")),
+              SectionStatus.parseStatus(secData.get("Status")), secData.get("Location"), secData.get("Description"),
+              secData.get("Instruction Mode"), secData.get("Instructor(s)"),
+              minUnits, maxUnits, secData.get("Grading"),
+              secData.containsKey("Notes") ? secData.get("Notes") : "See Description. None otherwise", secData.get("Room"));
+    }
 }

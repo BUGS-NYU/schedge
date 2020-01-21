@@ -1,11 +1,10 @@
 package api.models;
 
-import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
+import javax.validation.constraints.NotNull;
 import models.SectionStatus;
 import models.SectionType;
-
-import java.util.List;
 
 public class Section {
   private int registrationNumber;

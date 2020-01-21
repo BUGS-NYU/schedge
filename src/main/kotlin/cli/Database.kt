@@ -35,21 +35,21 @@ internal class Database : CliktCommand(name = "db") {
             val subject = subject
             if (school == null) {
                 scrapeFromCatalog(
-                    logger, term, SubjectCode.allSubjects().toList()
+                        logger, term, SubjectCode.allSubjects().toList()
                 ).forEach {
                     InsertCourses.insertCourses(logger, term, it)
                 }
             } else if (subject == null) {
                 scrapeFromCatalog(
-                    logger, term, SubjectCode.allSubjects(school).toList()
+                        logger, term, SubjectCode.allSubjects(school).toList()
                 ).forEach {
                     InsertCourses.insertCourses(logger, term, it)
                 }
             } else {
                 InsertCourses.insertCourses(
-                    logger,
-                    term,
-                    scrapeFromCatalog(logger, term, SubjectCode(subject, school))
+                        logger,
+                        term,
+                        scrapeFromCatalog(logger, term, SubjectCode(subject, school))
                 )
             }
             GetConnection.close()
@@ -69,23 +69,23 @@ internal class Database : CliktCommand(name = "db") {
         private val subject: String? by option("--subject")
         private val prettyPrint by option("--pretty").flag(default = false)
         private val outputFile by option(
-            "--output-file",
-            help = "The file to write to. If not provided, writes to stdout."
+                "--output-file",
+                help = "The file to write to. If not provided, writes to stdout."
         )
 
         override fun run() {
             val courses = if (subject == null) {
                 SelectCourses.selectCourses(
-                    logger, term, SubjectCode.allSubjects(school).asSequence().toMutableList()
+                        logger, term, SubjectCode.allSubjects(school).asSequence().toMutableList()
                 )
             } else {
                 SelectCourses.selectCourses(
-                    logger, term, SubjectCode(subject!!, school)
+                        logger, term, SubjectCode(subject!!, school)
                 )
             }
             GetConnection.close()
 
-            outputFile.writeToFileOrStdout(JsonMapper.toJson(courses, prettyPrint));
+            outputFile.writeToFileOrStdout(JsonMapper.toJson(courses, prettyPrint))
         }
     }
 

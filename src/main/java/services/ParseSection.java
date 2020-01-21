@@ -1,8 +1,9 @@
 package services;
 
 import java.io.IOException;
-import java.util.*;
-import models.*;
+import java.util.HashMap;
+import java.util.Map;
+import models.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -25,8 +26,7 @@ public class ParseSection {
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
 
-  public static @NotNull
-  SectionAttribute parse(@NotNull String rawData)
+  public static @NotNull SectionAttribute parse(@NotNull String rawData)
       throws IOException {
     logger.info("parsing raw catalog data...");
     Document doc = Jsoup.parse(rawData);
@@ -41,7 +41,6 @@ public class ParseSection {
     Elements dataDivs =
         innerDataSection.select("> div.section-content.clearfix");
     Map<String, String> secData = parseSectionAttributes(dataDivs);
-    //Haven't checked for special case but seems to work for general ones. Will keep for now
     return parsingElements(secData, courseName);
   }
 
@@ -49,28 +48,38 @@ public class ParseSection {
   parseSectionAttributes(@NotNull Elements attributeData) {
     Map<String, String> map = new HashMap<>();
     for (Element e : attributeData) {
-      if(e.child(0).text().equals("Topic") && e.child(1).text().contains("Room")) {
-        continue;
+      if (e.child(0).text().equals("Topic") &&
+          e.child(1).text().contains("Room")) {
+        if (e.child(0).text().equals("Topic") &&
+            e.child(1).text().contains("Room")) {
+          continue;
+        }
+        map.put(e.child(0).text(), e.child(1).text());
       }
-      map.put(e.child(0).text(), e.child(1).text());
     }
     return map;
   }
 
-  public static @NotNull SectionAttribute parsingElements(Map<String, String> secData, String courseName) {
+  public static @NotNull SectionAttribute
+  parsingElements(Map<String, String> secData, String courseName) {
     String units = secData.get("Units");
     float minUnits = 0, maxUnits = 0;
-    if(units.contains("-")) {
+    if (units.contains("-")) {
       minUnits = Float.parseFloat(units.split(" - ")[0]);
       maxUnits = Float.parseFloat(units.split(" - ")[1].split(" ")[0]);
     } else {
       maxUnits = Float.parseFloat(units.split(" ")[0]);
     }
-    courseName += secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
-      return new SectionAttribute(courseName, Integer.parseInt(secData.get("Class Number")),
-              SectionStatus.parseStatus(secData.get("Status")), secData.get("Location"), secData.get("Description"),
-              secData.get("Instruction Mode"), secData.get("Instructor(s)"),
-              minUnits, maxUnits, secData.get("Grading"),
-              secData.containsKey("Notes") ? secData.get("Notes") : "See Description. None otherwise", secData.get("Room"));
-    }
+    courseName +=
+        secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
+    return new SectionAttribute(
+        courseName, Integer.parseInt(secData.get("Class Number")),
+        SectionStatus.parseStatus(secData.get("Status")),
+        secData.get("Location"), secData.get("Description"),
+        secData.get("Instruction Mode"), secData.get("Instructor(s)"), minUnits,
+        maxUnits, secData.get("Grading"),
+        secData.containsKey("Notes") ? secData.get("Notes")
+                                     : "See Description. None otherwise",
+        secData.get("Room"));
+  }
 }

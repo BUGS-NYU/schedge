@@ -23,7 +23,7 @@ private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearc
  */
 fun queryCatalog(term: Term, subjectCode: SubjectCode): String {
     return queryCatalog(term, subjectCode, getContext()).get()
-        ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
+            ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
 fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<String> {
@@ -31,9 +31,9 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
 
-    val batchSize = batchSizeNullable ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
+    val batchSize = batchSizeNullable
+            ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
     val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
-
     return SimpleBatchedFutureEngine(subjectCodes, batchSize) { subjectCode, idx ->
         queryCatalog(term, subjectCode, contexts[idx])
     }.asSequence().filterNotNull()
@@ -61,12 +61,11 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
         set("Connection", "keep-alive")
         set("Referer", "https://m.albert.nyu.edu/app/catalog/classSearch")
         set("Cookie", httpContext.cookies.joinToString(";") { it.toString() })
-
         val params = listOf( // URL params
-            "CSRFToken" to httpContext.csrfToken,
-            "term" to term.id.toString(),
-            "acad_group" to subjectCode.school,
-            "subject" to subjectCode.abbrev
+                "CSRFToken" to httpContext.csrfToken,
+                "term" to term.id.toString(),
+                "acad_group" to subjectCode.school,
+                "subject" to subjectCode.abbrev
         )
         queryLogger.debug { "Params are ${params}." }
         val bodyValue = params.joinToString("&") { it.first + '=' + it.second }
@@ -77,11 +76,12 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
         val result = String(response.data)
         if (result == "No classes found matching your criteria.") {
             queryLogger.warn { "No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}" }
-            future.complete(null);
+            future.complete(null)
         } else {
             future.complete(result)
         }
     }
+
     return future
 }
 
@@ -106,7 +106,6 @@ private fun getContextAsync(): Future<HttpContext> {
             queryLogger.error("Couldn't find cookie with name=CSRFCookie")
             throw IOException("NYU servers did something unexpected.")
         }
-
         queryLogger.info { "Retrieved CSRF token `${token}`" }
         future.complete(HttpContext(token, cookies))
     }

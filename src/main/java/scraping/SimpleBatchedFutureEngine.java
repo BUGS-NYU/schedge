@@ -1,16 +1,19 @@
 package scraping;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 
-import org.slf4j.Logger;
-
 /**
- * This class handles batch resoltion of futures.
+ * This class handles batch resolution of futures.
  *
- * The engine internally uses an Array to batch futures, filling the array with
- * futures then waiting on each one in turn as you call next.
+ * <p>The engine internally uses an Array to batch futures, filling the array
+ * with futures then waiting on each one in turn as you call next.
  *
  * @author Albert Liu
  */
@@ -43,10 +46,11 @@ public class SimpleBatchedFutureEngine<Input, Output>
    *
    * @param inputData The data to source the futures from.
    * @param batchSize The size of the batch.
-   * @param timeout The amount of time to wait before checking for completed
-   * tasks again.
-   * @param callback The source of futures; takes in an element from inputDdata
-   * and an index into the batch.
+   * @param timeout   The amount of time to wait before checking for completed
+   *     tasks again.
+   * @param callback  The source of futures; takes in an element from inputDdata
+   *     and an index into
+   *                  the batch.
    */
   public SimpleBatchedFutureEngine(
       List<Input> inputData, int batchSize, long timeout,
@@ -60,10 +64,11 @@ public class SimpleBatchedFutureEngine<Input, Output>
    *
    * @param inputData The data to source the futures from.
    * @param batchSize The size of the batch.
-   * @param timeout The amount of time to wait before checking for completed
-   * tasks again.
-   * @param callback The source of futures; takes in an element from inputDdata
-   * and an index into the batch.
+   * @param timeout   The amount of time to wait before checking for completed
+   *     tasks again.
+   * @param callback  The source of futures; takes in an element from inputDdata
+   *     and an index into
+   *                  the batch.
    */
   public SimpleBatchedFutureEngine(
       Iterator<Input> inputData, int batchSize, long timeout,

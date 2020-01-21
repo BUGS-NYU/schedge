@@ -1,7 +1,7 @@
 package scraping.models;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 
 public class Subject {
   private String code;

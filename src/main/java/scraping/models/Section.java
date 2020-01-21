@@ -1,11 +1,10 @@
 package scraping.models;
 
-import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
+import javax.validation.constraints.NotNull;
 import models.SectionStatus;
 import models.SectionType;
-
-import java.util.List;
 
 public class Section {
   private int registrationNumber;
@@ -20,7 +19,8 @@ public class Section {
 
   public Section(int registrationNumber, String sectionCode, String instructor,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, String sectionName, Integer waitlistTotal) {
+                 List<Section> recitations, String sectionName,
+                 Integer waitlistTotal) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");

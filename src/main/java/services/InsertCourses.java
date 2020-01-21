@@ -1,23 +1,26 @@
 package services;
 
+import database.generated.Tables;
 import database.generated.tables.Courses;
-import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
-import models.*;
-import scraping.models.*;
+import database.generated.tables.Sections;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+import models.SectionType;
+import models.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import database.generated.Tables;
-import java.sql.Timestamp;
+import scraping.models.Course;
+import scraping.models.Meeting;
+import scraping.models.Section;
 
 /**
- * This class insert courses into the Postgresql database based on
- * the data scraped from Albert Mobile
+ * This class insert courses into the Postgresql database based on the data
+ * scraped from Albert Mobile
  */
 public class InsertCourses {
   public static void insertCourses(Logger logger, Term term,

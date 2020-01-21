@@ -1,15 +1,23 @@
 package services;
 
+import api.models.Course;
+import api.models.Meeting;
+import api.models.Section;
 import database.generated.Tables;
 import database.generated.tables.Courses;
-import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
-import models.Semester;
-import models.Term;
-import models.SubjectCode;
+import database.generated.tables.Sections;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import models.SectionStatus;
 import models.SectionType;
-import api.models.*;
+import models.SubjectCode;
+import models.Term;
 import org.joda.time.DateTime;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -17,13 +25,6 @@ import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SelectCourses {
   public static List<Course> selectCourses(Logger logger, Term term,

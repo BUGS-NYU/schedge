@@ -26,5 +26,5 @@ US,Silver School of Social Work
 UW,Robert F. Wagner Graduate School of Public Service
 UU,College of Global Public Health
 UH,NYU Abu Dhabi
-NT,
-ND,
+NT, NC Tisch School of Arts
+NI, NC ALI Shanghai

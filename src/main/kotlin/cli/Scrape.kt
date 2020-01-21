@@ -2,12 +2,14 @@ package cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.options.*
+import com.github.ajalt.clikt.parameters.options.convert
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.int
 import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
-import scraping.models.Course
 import services.*
 import utils.writeToFileOrStdout
 
@@ -56,8 +58,8 @@ internal class Scrape : CliktCommand(name = "scrape") {
     /**
      * CLI for performing search queries for catalog's sections of NYU Albert based on school and subject.
      */
-    private class Sections() : CliktCommand(name = "sections") {
-        private val logger = KotlinLogging.logger("scrape.catalog")
+    private class Sections : CliktCommand(name = "sections") {
+        private val logger = KotlinLogging.logger("scrape.sections")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()
@@ -77,7 +79,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
                                 scrapeFromCatalogSection(logger, term, SubjectCode(subject, school), batchSize).toList(),
                                 prettyPrint)
                 )
-            } else if(subject == null) {
+            } else if (subject == null) {
                 file.writeToFileOrStdout(
                         JsonMapper.toJson(
                                 scrapeFromCatalogSection(logger, term, school, batchSize).toList(),
@@ -103,7 +105,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
     /**
         CLI for performing search queries of NYU Albert.
      */
-    private class Catalog() : CliktCommand(name = "catalog") {
+    private class Catalog : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("scrape.catalog")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
@@ -121,23 +123,23 @@ internal class Scrape : CliktCommand(name = "scrape") {
             if (school == null) {
                 require(subject == null) { "--subject doesn't make sense if no school is provided." }
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(
-                        scrapeFromCatalog(logger, term,
-                            SubjectCode.allSubjects().toList(), batchSize
-                        ).toList(), prettyPrint
-                    )
+                        JsonMapper.toJson(
+                                scrapeFromCatalog(logger, term,
+                                        SubjectCode.allSubjects().toList(), batchSize
+                                ).toList(), prettyPrint
+                        )
                 )
             } else if (subject == null) {
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(
-                        scrapeAllFromCatalog(logger, term, school, batchSize).toList(), prettyPrint
-                    )
+                        JsonMapper.toJson(
+                                scrapeAllFromCatalog(logger, term, school, batchSize).toList(), prettyPrint
+                        )
                 )
             } else {
-                require( batchSize == null) { "Batch size doesn't make sense when only doing one query." }
+                require(batchSize == null) { "Batch size doesn't make sense when only doing one query." }
                 file.writeToFileOrStdout(
-                    JsonMapper.toJson(
-                      scrapeFromCatalog(logger, term, SubjectCode(subject, school)), prettyPrint)
+                        JsonMapper.toJson(
+                                scrapeFromCatalog(logger, term, SubjectCode(subject, school)), prettyPrint)
                 )
             }
 
@@ -149,7 +151,7 @@ internal class Scrape : CliktCommand(name = "scrape") {
 
     }
 
-    private class School() : CliktCommand(name = "school") {
+    private class School : CliktCommand(name = "school") {
         private val logger = KotlinLogging.logger("scrape.school")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))

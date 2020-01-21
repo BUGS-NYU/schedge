@@ -30,25 +30,25 @@ internal class Query : CliktCommand(name = "query") {
     /**
      * CLI for performing search queries of NYU Albert for a single section.
      */
-    private class Section() : CliktCommand(name = "section") {
+    private class Section : CliktCommand(name = "section") {
         private val logger = KotlinLogging.logger("query.section")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()
         private val registrationNumber: Int by option(
-            "--registrationNumber",
-            help = "The registration number that you'd use to register for the course."
+                "--registrationNumber",
+                help = "The registration number that you'd use to register for the course."
         ).int().required()
         private val outputFile: String? by option(help = "The file to output to. If none provided, prints to stdout.")
 
         override fun run() =
-            outputFile.writeToFileOrStdout(querySection(term, registrationNumber))
+                outputFile.writeToFileOrStdout(querySection(term, registrationNumber))
     }
 
     /**
      * CLI for performing search queries of NYU Albert's catalog.
      */
-    private class Catalog() : CliktCommand(name = "catalog") {
+    private class Catalog : CliktCommand(name = "catalog") {
         private val logger = KotlinLogging.logger("query.catalog")
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
@@ -58,13 +58,13 @@ internal class Query : CliktCommand(name = "query") {
         private val outputFile: String? by option(help = "The file to output to. If none provided, prints to stdout.")
 
         override fun run() =
-            outputFile.writeToFileOrStdout(
-                queryCatalog(term, SubjectCode(subject, school))
-            )
+                outputFile.writeToFileOrStdout(
+                        queryCatalog(term, SubjectCode(subject, school))
+                )
 
     }
 
-    private class School() : CliktCommand(name = "school") {
+    private class School : CliktCommand(name = "school") {
         private val term: Term by option("--term").convert {
             Term.fromId(Integer.parseInt(it))
         }.required()

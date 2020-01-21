@@ -1,7 +1,6 @@
 package api.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 
@@ -25,8 +24,8 @@ public class Meeting {
 
   @JsonValue
   public @NotNull MeetingJson toJson() {
-    return new MeetingJson(beginDate.toString(), minutesDuration,
-                           endDate.toString());
+    return new MeetingJson(beginDate.toString("MM/dd/yyyy h:mma"),
+                           minutesDuration, endDate.toString("MM/dd/yyyy"));
   }
 
   class MeetingJson {

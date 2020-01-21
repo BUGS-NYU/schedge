@@ -2,13 +2,12 @@ package services;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jetbrains.annotations.NotNull;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.jetbrains.annotations.NotNull;
 
 /**
-This class get connection to the Postgresql database using JDBC Driver
+ * This class get connection to the Postgresql database using JDBC Driver
  */
 public class GetConnection {
 

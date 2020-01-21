@@ -6,11 +6,11 @@ import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import mu.KotlinLogging
-import utils.readFromFileOrStdin
 import services.JsonMapper
 import services.ParseCatalog
 import services.ParseSchoolSubjects
 import services.ParseSection
+import utils.readFromFileOrStdin
 import utils.writeToFileOrStdout
 
 // TODO Change this to package-level protected if that becomes a thing
@@ -36,8 +36,8 @@ internal class Parse : CliktCommand(name = "parse") {
         private val prettyPrint by option("--pretty").flag(default = false)
         private val inputFile by argument(help = "The file to read from. If not provided, reads from stdin.")
         private val outputFile by option(
-            "--output-file",
-            help = "The file to write to. If not provided, writes to stdout."
+                "--output-file",
+                help = "The file to write to. If not provided, writes to stdout."
         )
 
         override fun run() {
@@ -55,8 +55,8 @@ internal class Parse : CliktCommand(name = "parse") {
         private val prettyPrint by option("--pretty").flag(default = false)
         private val inputFile by argument(help = "The file to read from. If not provided, reads from stdin.")
         private val outputFile by option(
-            "--output-file",
-            help = "The file to write to. If not provided, writes to stdout."
+                "--output-file",
+                help = "The file to write to. If not provided, writes to stdout."
         )
 
         override fun run() {

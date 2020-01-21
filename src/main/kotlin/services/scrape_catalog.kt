@@ -2,10 +2,10 @@ package services
 
 // @CodeOrg This file should be in java/scraping
 
-import scraping.models.Course
 import models.SubjectCode
 import models.Term
 import mu.KLogger
+import scraping.models.Course
 
 /**
  * Scraping the catalogs from Albert Mobile given multiple subjecs
@@ -16,12 +16,12 @@ import mu.KLogger
  */
 fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
     return queryCatalog(term, subjectCodes, batchSize).asSequence().map { rawData ->
-      try {
-          ParseCatalog.parse(logger, rawData)
-      } catch (e: Exception) {
-          logger.warn(e.message)
-          null
-      }
+        try {
+            ParseCatalog.parse(logger, rawData)
+        } catch (e: Exception) {
+            logger.warn(e.message)
+            null
+        }
     }.filterNotNull()
 }
 
@@ -46,4 +46,4 @@ fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): Li
  * @return Sequence of List of Courses
  */
 fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?, batchSize: Int? = null): Sequence<List<Course>> =
-    scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList(), batchSize)
+        scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList(), batchSize)

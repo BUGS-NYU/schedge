@@ -1,11 +1,9 @@
 package api;
 
-import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.swagger.v3.oas.models.media.Content;
-import org.jetbrains.annotations.NotNull;
 import models.SubjectCode;
+import org.jetbrains.annotations.NotNull;
 
 class SubjectsEndpoint extends Endpoint {
 

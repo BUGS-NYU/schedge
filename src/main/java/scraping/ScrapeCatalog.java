@@ -1,11 +1,12 @@
 package scraping;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
-import models.SubjectCode;
-import models.Term;
+import scraping.models.SubjectCode;
+import scraping.models.Term;
 import org.slf4j.Logger;
 import scraping.models.Course;
 import services.ParseCatalog;
@@ -20,28 +21,38 @@ public class ScrapeCatalog {
                                                SubjectCode subjectCode)
       throws InterruptedException, ExecutionException, IOException {
     return ParseCatalog.parse(logger,
-                              QueryCatalog.queryCatalog(term, subjectCode));
+                                  QueryCatalog.queryCatalog(term, subjectCode));
   }
 
-  public static Vector<List<Course>>
+  public static Iterator<List<Course>>
   scrapeFromCatalog(Logger logger, Term term, List<SubjectCode> subjectCodes,
                     Integer batchSize) {
-    Vector<List<Course>> outputs = new Vector<>();
-    QueryCatalog.queryCatalog(term, subjectCodes, batchSize)
-        .forEach(rawData -> {
-          try {
-            outputs.add(ParseCatalog.parse(logger, rawData));
-          } catch (IOException e) {
-            logger.warn(e.getMessage());
-          }
-        });
-    return outputs;
+      Iterator<String> origin = QueryCatalog.queryCatalog(term, subjectCodes, batchSize);
+    return new Iterator<List<Course>>() {
+
+        @Override
+        public boolean hasNext() {
+            return origin.hasNext();
+        }
+
+        @Override
+        public List<Course> next() {
+            String val = origin.next();
+            if (val == null) return null;
+            try {
+                return ParseCatalog.parse(logger, val);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    };
   }
 
-  public static Vector<List<Course>> scrapeAllFromCatalog(Logger logger,
+  public static Iterator<List<Course>> scrapeAllFromCatalog(Logger logger,
                                                           Term term,
                                                           String forSchool,
-                                                          Integer batchSize) {
+                                                          Integer batchSize) throws IOException {
     return scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool),
                              batchSize);
   }

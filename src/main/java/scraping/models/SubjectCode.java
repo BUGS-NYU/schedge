@@ -15,7 +15,7 @@ public class SubjectCode {
   private String school;
 
   public SubjectCode(String school, String subject) throws IOException {
-    validate(subject, school);
+    validate(school, subject);
     this.subject = subject;
     this.school = school;
   }
@@ -80,15 +80,10 @@ public class SubjectCode {
     String[] values = subjectString.split("-");
     String subject = values[0];
     String school = values[1];
-    return new SubjectCode(subject, school);
+    return new SubjectCode(school, subject);
   }
 
-  public static SubjectCode getUnchecked(String subject, String school)
-      throws IOException {
-    return new SubjectCode(subject, school);
-  }
-
-  public void validate(String subject, String school) throws IOException {
+  public void validate(String school, String subject) throws IOException {
     Map<String, Set<String>> availableSubjects = getAllSubjects();
     if (availableSubjects.get(school) == null) {
       throw new IllegalArgumentException("School must be valid");

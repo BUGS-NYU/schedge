@@ -3,7 +3,7 @@ package api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import models.SubjectCode;
+import scraping.models.SubjectCode;
 
 public class Course {
 

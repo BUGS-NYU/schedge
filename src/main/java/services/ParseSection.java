@@ -3,7 +3,7 @@ package services;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import models.SectionStatus;
+import scraping.models.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

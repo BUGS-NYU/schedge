@@ -2,7 +2,7 @@ package api;
 
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import models.SubjectCode;
+import scraping.models.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 
 class SubjectsEndpoint extends Endpoint {

@@ -7,10 +7,12 @@ import api.models.Section;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
+
+import java.io.IOException;
 import java.util.ArrayList;
-import models.Semester;
-import models.SubjectCode;
-import models.Term;
+import scraping.models.Semester;
+import scraping.models.SubjectCode;
+import scraping.models.Term;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +66,16 @@ class CoursesEndpoint extends Endpoint {
 
           ArrayList<Section> sections = new ArrayList<>();
 
-          openApiParam.getContent()
-              .get(guessContentType(Course.class))
-              .addExamples("course",
-                           new Example().value(new Course(
-                               "Intro to Computer SCI", "101",
-                               new SubjectCode("CSCI", "UA"), sections)));
+          try {
+            openApiParam.getContent()
+                .get(guessContentType(Course.class))
+                .addExamples("course",
+                             new Example().value(new Course(
+                                 "Intro to Computer SCI", "101",
+                                 new SubjectCode("CSCI", "UA"), sections)));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
         });
   }
 

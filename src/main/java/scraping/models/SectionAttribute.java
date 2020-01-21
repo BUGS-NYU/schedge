@@ -1,6 +1,6 @@
 package scraping.models;
 
-import models.SectionStatus;
+import scraping.models.SectionStatus;
 import javax.validation.constraints.NotNull;
 
 //Duplicate variables can be removed later on

@@ -2,8 +2,8 @@ package cli;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import models.SubjectCode;
-import models.Term;
+import scraping.models.SubjectCode;
+import scraping.models.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -42,7 +42,12 @@ public class query implements Runnable {
     public void run() {
       long start = System.nanoTime();
       Term term = Term.fromId(this.term);
-      SubjectCode subjectCode = new SubjectCode(this.subject, this.school);
+      SubjectCode subjectCode = null;
+      try {
+        subjectCode = new SubjectCode(school, subject);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
       try {
         Utils.writeToFileOrStdOut(QueryCatalog.queryCatalog(term, subjectCode),
                                   outputFile);

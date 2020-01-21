@@ -2,8 +2,8 @@ package cli;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import models.SubjectCode;
-import models.Term;
+import scraping.models.SubjectCode;
+import scraping.models.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -79,7 +79,7 @@ public class scrape {
           Utils.writeToFileOrStdOut(
               JsonMapper.toJson(ScrapeSection.scrapeFromCatalogSection(
                                     logger, term,
-                                    new SubjectCode(subject, school),
+                                    new SubjectCode(school, subject),
                                     Integer.parseInt(batchSize)),
                                 Boolean.valueOf(pretty)),
               outputFile);
@@ -173,7 +173,7 @@ public class scrape {
           Utils.writeToFileOrStdOut(
               JsonMapper.toJson(
                   ScrapeCatalog.scrapeFromCatalog(
-                      logger, term, new SubjectCode(subject, school)),
+                      logger, term, new SubjectCode(school, subject)),
                   Boolean.parseBoolean(pretty)),
               outputFile);
         } catch (IOException | InterruptedException | ExecutionException e) {

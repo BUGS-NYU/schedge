@@ -3,8 +3,8 @@ package scraping.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import models.SectionStatus;
-import models.SectionType;
+import scraping.models.SectionStatus;
+import scraping.models.SectionType;
 
 public class Section {
   private int registrationNumber;

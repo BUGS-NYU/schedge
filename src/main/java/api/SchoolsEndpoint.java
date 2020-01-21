@@ -2,8 +2,8 @@ package api;
 
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import models.SchoolMetadata;
-import models.SubjectCode;
+import scraping.models.SchoolMetadata;
+import scraping.models.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 
 class SchoolsEndpoint extends Endpoint {
@@ -31,6 +31,6 @@ class SchoolsEndpoint extends Endpoint {
   @NotNull
   @Override
   Handler getHandler() {
-    return ctx -> { ctx.json(SubjectCode.allSchools()); };
+    return ctx -> { ctx.json(SubjectCode.getAllSchools()); };
   }
 }

@@ -3,9 +3,9 @@ package services;
 import java.io.IOException;
 import java.util.*;
 import kotlin.text.StringsKt;
-import models.SectionStatus;
-import models.SectionType;
-import models.SubjectCode;
+import scraping.models.SectionStatus;
+import scraping.models.SectionType;
+import scraping.models.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import scraping.models.Course;
 import scraping.models.Meeting;
 import scraping.models.Section;
-import utils.UtilsKt;
 
 /**
  * Parses a catalog string in a stream.
@@ -233,7 +232,7 @@ public class ParseCatalog implements Iterator<Course> {
       Arrays.fill(daysList, Boolean.FALSE);
       for (int i = 0; i < beginDays.length() - 1; i += 2) {
         String dayString = beginDays.substring(i, i + 2);
-        int dayValue = UtilsKt.parseDayOfWeek(dayString).getValue();
+        int dayValue = Utils.parseDayOfWeek(dayString).getValue();
         logger.trace("day: {} translates to ", dayString, dayValue);
         daysList[dayValue % 7] = true;
       }

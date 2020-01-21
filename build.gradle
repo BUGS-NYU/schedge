@@ -13,8 +13,7 @@ plugins {
 }
 
 group 'BUGS-NYU'
-mainClassName = 'MainKt'
-//mainClassName = 'Main'
+mainClassName = 'Main'
 sourceCompatibility = 1.8
 
 def getenv = { env_val, default_val ->
@@ -81,7 +80,8 @@ dependencies {
             'org.apache.httpcomponents:httpclient:4.5.10',
             'info.picocli:picocli:4.1.4',
             'org.apache.httpcomponents:httpasyncclient:4.1.4',
-            'com.google.googlejavaformat:google-java-format:1.7'
+            'com.google.googlejavaformat:google-java-format:1.7',
+            'org.asynchttpclient:async-http-client:2.10.4'
     )
 
 

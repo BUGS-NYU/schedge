@@ -10,6 +10,7 @@ import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import services.queryCatalog
+import services.querySchool
 import services.querySection
 import utils.writeToFileOrStdout
 
@@ -21,7 +22,7 @@ import utils.writeToFileOrStdout
 internal class Query : CliktCommand(name = "query") {
 
     init {
-        this.subcommands(Catalog(), Section())
+        this.subcommands(Catalog(), Section(), School())
     }
 
     override fun run() = Unit
@@ -60,6 +61,19 @@ internal class Query : CliktCommand(name = "query") {
             outputFile.writeToFileOrStdout(
                 queryCatalog(term, SubjectCode(subject, school))
             )
+
+    }
+
+    private class School() : CliktCommand(name = "school") {
+        private val term: Term by option("--term").convert {
+            Term.fromId(Integer.parseInt(it))
+        }.required()
+        private val outputFile: String? by option(help = "The file to output to. If none provided, prints to stdout.")
+
+        override fun run() =
+                outputFile.writeToFileOrStdout(
+                        querySchool(term)
+                )
 
     }
 }

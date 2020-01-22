@@ -25,46 +25,52 @@ import utils.UtilsKt;
  * @author Albert Liu
  */
 public class ParseCatalog implements Iterator<Course> {
-  private Logger logger;
+  private static Logger logger =
+      LoggerFactory.getLogger("services.parse_catalog");
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma").withLocale(Locale.ENGLISH);
   private Iterator<Element> elements;
   private Element currentElement;
 
-  public static List<Course> parse(Logger logger, String data)
+  public static List<Course> parse(String data, SubjectCode subjectCode)
       throws IOException {
     logger.debug("parsing raw catalog data...");
     ArrayList<Course> courses = new ArrayList<>();
-    new ParseCatalog(logger, Jsoup.parse(data))
+    new ParseCatalog(Jsoup.parse(data), subjectCode)
         .forEachRemaining(c -> courses.add(c));
     return courses;
   }
 
-  public static List<Integer> parseRegistrationNumber(Logger logger, String data)
-          throws IOException{
+  public static List<Integer> parseRegistrationNumber(String data)
+      throws IOException {
     logger.debug("parsing raw catalog registration numbers data...");
     Document secData = Jsoup.parse(data);
     Elements fields = secData.select("div.section-content > div.section-body");
     ArrayList<Integer> registrationNumbers = new ArrayList<>();
     for (Element child : fields) {
-      if(child.text().contains("Section")) {
-        registrationNumbers.add(Integer.parseInt(child.text().split("[\\(\\)]")[1]));
+      if (child.text().contains("Section")) {
+        registrationNumbers.add(
+            Integer.parseInt(child.text().split("[\\(\\)]")[1]));
       }
     }
     return registrationNumbers;
   }
 
-  private ParseCatalog(Logger logger, Document data) throws IOException {
+  private ParseCatalog(Document data, SubjectCode subjectCode)
+      throws IOException {
     elements = data.select("div.primary-head ~ *").iterator();
     this.logger = LoggerFactory.getLogger(logger.getName());
 
     if (!elements.hasNext()) {
-      logger.warn("CSS query `div.primary-head ~ *` returned no values.");
+      logger.warn(
+          "CSS query `div.primary-head ~ *` returned no values (subject=" +
+          subjectCode + ").");
       currentElement = null;
       // throw new IOException("models.Course data is empty!");
     } else if (!(currentElement = elements.next()).tagName().equals("div")) {
       logger.error("CSS query `div.primary-head ~ *` returned "
-                   + "a list whose first element was not a 'div'.");
+                   + "a list whose first element was not a 'div' (subject=" +
+                   subjectCode + ").");
       throw new IOException("NYU sent back data we weren't expecting.");
     } else if (currentElement.text().equals(
                    "No classes found matching your criteria.")) {
@@ -111,8 +117,10 @@ public class ParseCatalog implements Iterator<Course> {
     return new SectionMetadata(
         registrationNumber, sectionCode, type, sectionData.get("Instructor"),
         SectionStatus.parseStatus(sectionData.get("Status")), meetings,
-            sectionData.containsKey("Topic") ? sectionData.get("Topic") : "",
-            sectionData.containsKey("Wait List Total") ? Integer.parseInt(sectionData.get("Wait List Total")) : 0);
+        sectionData.containsKey("Topic") ? sectionData.get("Topic") : "",
+        sectionData.containsKey("Wait List Total")
+            ? Integer.parseInt(sectionData.get("Wait List Total"))
+            : 0);
   }
 
   private HashMap<String, String> sectionFieldTable(Elements fields) {
@@ -349,7 +357,8 @@ public class ParseCatalog implements Iterator<Course> {
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
       return new Section(registrationNumber, sectionCode, instructor,
-                         SectionType.LEC, status, meetings, recitations, sectionName, waitlistTotal);
+                         SectionType.LEC, status, meetings, recitations,
+                         sectionName, waitlistTotal);
     }
 
     Section toSectionWithoutRecitations() {

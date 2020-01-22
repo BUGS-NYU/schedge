@@ -9,6 +9,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -20,8 +21,11 @@ import java.sql.Timestamp;
  * the data scraped from Albert Mobile
  */
 public class InsertCourses {
-  public static void insertCourses(Logger logger, Term term,
-                                   List<Course> courses) throws SQLException {
+
+  private static Logger logger =
+      LoggerFactory.getLogger("services.insert_courses");
+  public static void insertCourses(Term term, List<Course> courses)
+      throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Courses COURSES = Tables.COURSES;
@@ -39,14 +43,14 @@ public class InsertCourses {
                        .fetchOne()
                        .getValue(COURSES.ID);
 
-          insertSections(logger, ctx, id, c.getSections());
+          insertSections(ctx, id, c.getSections());
         });
       }
     }
   }
 
-  public static void insertSections(Logger logger, DSLContext context,
-                                    int courseId, List<Section> sections)
+  public static void insertSections(DSLContext context, int courseId,
+                                    List<Section> sections)
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
     context.delete(SECTIONS).where(SECTIONS.COURSE_ID.eq(courseId)).execute();
@@ -63,14 +67,14 @@ public class InsertCourses {
                    .returning(SECTIONS.ID)
                    .fetchOne()
                    .getValue(SECTIONS.ID);
-      insertMeetings(logger, context, id, s.getMeetings());
+      insertMeetings(context, id, s.getMeetings());
       if (s.getRecitations() != null)
-        insertRecitations(logger, context, courseId, s.getRecitations(), id);
+        insertRecitations(context, courseId, s.getRecitations(), id);
     }
   }
 
-  public static void insertRecitations(Logger logger, DSLContext context,
-                                       int courseId, List<Section> sections,
+  public static void insertRecitations(DSLContext context, int courseId,
+                                       List<Section> sections,
                                        int associatedWith) throws SQLException {
     for (Section s : sections) {
       if (s.getType() == SectionType.LEC)
@@ -94,12 +98,12 @@ public class InsertCourses {
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);
-      insertMeetings(logger, context, id, s.getMeetings());
+      insertMeetings(context, id, s.getMeetings());
     }
   }
 
-  public static void insertMeetings(Logger logger, DSLContext context,
-                                    int sectionId, List<Meeting> meetings)
+  public static void insertMeetings(DSLContext context, int sectionId,
+                                    List<Meeting> meetings)
       throws SQLException {
     Meetings MEETINGS = Tables.MEETINGS;
     context.delete(MEETINGS).where(MEETINGS.SECTION_ID.eq(sectionId)).execute();

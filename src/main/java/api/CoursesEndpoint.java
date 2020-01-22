@@ -111,7 +111,7 @@ class CoursesEndpoint extends Endpoint {
       }
 
       ctx.status(200);
-      ctx.json(SelectCourses.selectCourses(logger, term, subject));
+      ctx.json(SelectCourses.selectCourses(term, subject));
     };
   }
 }

@@ -5,12 +5,12 @@ package services
 import scraping.models.Course
 import models.SubjectCode
 import models.Term
+import mu.KLogger
 import mu.KotlinLogging
 
 private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
 /**
  * Scraping the catalogs from Albert Mobile given multiple subjecs
- * @param logger The logger to log to during execution of this service
  * @param term The term for which we should be scraping
  * @param subjectCodes The subjects for which we should be scraping
  * @return Sequence of List of Courses
@@ -28,7 +28,6 @@ fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: In
 
 /**
  * Scraping the catalogs from Albert Mobile given one subject code
- * @param logger The logger to log to during execution of this service
  * @param term The term for which we should be scraping
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
@@ -41,7 +40,6 @@ fun scrapeFromCatalog(term: Term, subjectCode: SubjectCode): List<Course> {
 
 /**
  * Scraping all catalogs from Albert Mobile given multiple subjecs
- * @param logger The logger to log to during execution of this service
  * @param term The term for which we should be scraping
  * @param forSchool School's name
  * @return Sequence of List of Courses

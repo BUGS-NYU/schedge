@@ -41,8 +41,7 @@ public class ParseCatalog implements Iterator<Course> {
     return courses;
   }
 
-  public static List<Integer> parseRegistrationNumber(Logger logger,
-                                                      String data)
+  public static List<Integer> parseRegistrationNumber(String data)
       throws IOException {
     logger.debug("parsing raw catalog registration numbers data...");
     Document secData = Jsoup.parse(data);

@@ -17,6 +17,7 @@ import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -26,12 +27,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class SelectCourses {
-  public static List<Course> selectCourses(Logger logger, Term term,
-                                           List<SubjectCode> codes) {
+
+  private static Logger logger =
+      LoggerFactory.getLogger("services.select_courses");
+
+  public static List<Course> selectCourses(Term term, List<SubjectCode> codes) {
     return codes.stream()
         .map(code -> {
           try {
-            return selectCourses(logger, term, code);
+            return selectCourses(term, code);
           } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -41,8 +45,7 @@ public class SelectCourses {
         .collect(Collectors.toList());
   }
 
-  public static List<Course> selectCourses(Logger logger, Term term,
-                                           SubjectCode code)
+  public static List<Course> selectCourses(Term term, SubjectCode code)
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       Courses COURSES = Tables.COURSES;
@@ -56,8 +59,7 @@ public class SelectCourses {
       ArrayList<Course> courses = new ArrayList<>(records.size());
 
       for (Record r : records) {
-        List<Section> sections =
-            selectSections(logger, context, r.get(COURSES.ID));
+        List<Section> sections = selectSections(context, r.get(COURSES.ID));
         courses.add(new Course(
             r.get(COURSES.NAME), r.get(COURSES.DEPT_COURSE_ID),
             new SubjectCode(r.get(COURSES.SUBJECT), r.get(COURSES.SCHOOL)),
@@ -67,8 +69,7 @@ public class SelectCourses {
     }
   }
 
-  public static List<Section> selectSections(Logger logger, DSLContext context,
-                                             int courseId) {
+  public static List<Section> selectSections(DSLContext context, int courseId) {
     Sections SECTIONS = Tables.SECTIONS;
     Result<Record> records = context.select()
                                  .from(SECTIONS)
@@ -86,7 +87,7 @@ public class SelectCourses {
             r.get(SECTIONS.INSTRUCTOR),
             SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
             SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
-            selectMeetings(logger, context, r.get(SECTIONS.ID)), null);
+            selectMeetings(context, r.get(SECTIONS.ID)), null);
         if (!associatedSections.containsKey(associatedWith)) {
           associatedSections.put(associatedWith, new ArrayList<>());
         }
@@ -103,13 +104,13 @@ public class SelectCourses {
               r.get(SECTIONS.INSTRUCTOR),
               SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
               SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
-              selectMeetings(logger, context, id),
+              selectMeetings(context, id),
               associatedSections.getOrDefault(id, null));
         })
         .collect(Collectors.toList());
   }
 
-  public static List<Meeting> selectMeetings(Logger logger, DSLContext context,
+  public static List<Meeting> selectMeetings(DSLContext context,
                                              int sectionId) {
     Meetings MEETINGS = Tables.MEETINGS;
     Result<Record> records = context.select()

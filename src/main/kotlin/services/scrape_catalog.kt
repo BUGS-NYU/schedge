@@ -5,8 +5,9 @@ package services
 import scraping.models.Course
 import models.SubjectCode
 import models.Term
-import mu.KLogger
+import mu.KotlinLogging
 
+private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
 /**
  * Scraping the catalogs from Albert Mobile given multiple subjecs
  * @param logger The logger to log to during execution of this service
@@ -14,12 +15,12 @@ import mu.KLogger
  * @param subjectCodes The subjects for which we should be scraping
  * @return Sequence of List of Courses
  */
-fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
+fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
     return queryCatalog(term, subjectCodes, batchSize).asSequence().map { rawData ->
       try {
-          ParseCatalog.parse(logger, rawData)
+          ParseCatalog.parse(scraperLogger, rawData)
       } catch (e: Exception) {
-          logger.warn(e.message)
+          scraperLogger.warn(e.message)
           null
       }
     }.filterNotNull()
@@ -32,9 +33,9 @@ fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCodes: List<SubjectCod
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): List<Course> {
+fun scrapeFromCatalog(term: Term, subjectCode: SubjectCode): List<Course> {
     return queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parse(logger, rawData)
+        ParseCatalog.parse(scraperLogger, rawData)
     }
 }
 
@@ -45,5 +46,5 @@ fun scrapeFromCatalog(logger: KLogger, term: Term, subjectCode: SubjectCode): Li
  * @param forSchool School's name
  * @return Sequence of List of Courses
  */
-fun scrapeAllFromCatalog(logger: KLogger, term: Term, forSchool: String?, batchSize: Int? = null): Sequence<List<Course>> =
-    scrapeFromCatalog(logger, term, SubjectCode.allSubjects(forSchool).toList(), batchSize)
+fun scrapeAllFromCatalog(term: Term, forSchool: String?, batchSize: Int? = null): Sequence<List<Course>> =
+    scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool).toList(), batchSize)

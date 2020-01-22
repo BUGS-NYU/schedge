@@ -13,7 +13,7 @@ plugins {
 }
 
 group 'BUGS-NYU'
-mainClassName = 'MainKt'
+mainClassName = 'Main'
 sourceCompatibility = 1.8
 
 def getenv = { env_val, default_val ->

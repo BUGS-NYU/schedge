@@ -33,7 +33,7 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  */
 fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySection(term, queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parseRegistrationNumber(scraperLogger, rawData)
+        ParseCatalog.parseRegistrationNumber(scraperLogger, rawData.toString())
     }, batchSize).asSequence().map { rawData ->
         try {
             ParseSection.parse(rawData)

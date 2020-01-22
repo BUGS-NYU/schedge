@@ -18,7 +18,7 @@ private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
 fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
     return queryCatalog(term, subjectCodes, batchSize).asSequence().map { rawData ->
       try {
-          ParseCatalog.parse(scraperLogger, rawData)
+          ParseCatalog.parse(rawData.data, rawData.subject)
       } catch (e: Exception) {
           scraperLogger.warn(e.message)
           null
@@ -35,7 +35,7 @@ fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: In
  */
 fun scrapeFromCatalog(term: Term, subjectCode: SubjectCode): List<Course> {
     return queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parse(scraperLogger, rawData)
+        ParseCatalog.parse(rawData.data, rawData.subject)
     }
 }
 

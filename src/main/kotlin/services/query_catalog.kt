@@ -7,6 +7,7 @@ import models.SubjectCode
 import models.Term
 import mu.KotlinLogging
 import scraping.SimpleBatchedFutureEngine
+import scraping.models.CatalogQueryData
 import java.io.IOException
 import java.net.HttpCookie
 import java.util.concurrent.CompletableFuture
@@ -21,12 +22,12 @@ private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearc
 /**
  * Query the catalog for data
  */
-fun queryCatalog(term: Term, subjectCode: SubjectCode): String {
+fun queryCatalog(term: Term, subjectCode: SubjectCode): CatalogQueryData {
     return queryCatalog(term, subjectCode, getContext()).get()
         ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
-fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<String> {
+fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
@@ -34,7 +35,11 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
     val batchSize = batchSizeNullable ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
     val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
 
-    return SimpleBatchedFutureEngine(subjectCodes, batchSize) { subjectCode, idx ->
+
+    return SimpleBatchedFutureEngine<SubjectCode, CatalogQueryData>(
+        subjectCodes,
+        batchSize
+    ) { subjectCode, idx ->
         queryCatalog(term, subjectCode, contexts[idx])
     }.asSequence().filterNotNull()
 }
@@ -42,11 +47,11 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
 /**
  * The meat of querying the catalog resides here.
  */
-private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: HttpContext): Future<String?> {
+private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: HttpContext): Future<CatalogQueryData?> {
     queryLogger.info { "querying catalog for term=$term and subject=$subjectCode..." }
 
 
-    val future = CompletableFuture<String?>()
+    val future = CompletableFuture<CatalogQueryData?>()
 
     val request = Fuel.post(DATA_URL).apply {
         set("Referrer", "${ROOT_URL}/${term.id}")
@@ -79,7 +84,7 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
             queryLogger.warn { "No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}" }
             future.complete(null);
         } else {
-            future.complete(result)
+            future.complete(CatalogQueryData(subjectCode, result))
         }
     }
     return future

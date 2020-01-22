@@ -70,7 +70,7 @@ public class parse implements Runnable {
       try {
         long start = System.nanoTime();
         String input = UtilsKt.readFromFileOrStdin(inputFile);
-        List<Course> output = ParseCatalog.parse(logger, input);
+        List<Course> output = ParseCatalog.parse(input, null);
         UtilsKt.writeToFileOrStdout(
             JsonMapper.toJson(output, Boolean.parseBoolean(pretty)),
             outputFile);

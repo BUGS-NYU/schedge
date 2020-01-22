@@ -1,7 +1,6 @@
 package cli;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import models.SubjectCode;
 import models.Term;
 import org.slf4j.Logger;
@@ -11,9 +10,9 @@ import services.*;
 import utils.UtilsKt;
 
 /*
-    @Todo: Add annotation for parameter. Fix the method to parse
-    @Help: Add annotations, comments to code
- */
+   @Todo: Add annotation for parameter. Fix the method to parse
+   @Help: Add annotations, comments to code
+*/
 @CommandLine.Command(name = "scrape")
 public class scrape {
 
@@ -32,11 +31,10 @@ public class scrape {
     public void run() {
       long start = System.nanoTime();
       try {
-        UtilsKt.writeToFileOrStdout(outputFile,
-            JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
-                Term.fromId(Integer.parseInt(term)),
-                Integer.parseInt(registrationNumber)))
-            );
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
+                            Term.fromId(Integer.parseInt(term)),
+                            Integer.parseInt(registrationNumber))));
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -68,23 +66,23 @@ public class scrape {
       Term term = Term.fromId(Integer.parseInt(this.term));
       if (school != null && subject != null) {
         try {
-          UtilsKt.writeToFileOrStdout(outputFile,
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
               JsonMapper.toJson(Scrape_sectionKt.scrapeFromCatalogSection(
                                     term,
-                                    new SubjectCode(school.toUpperCase(), subject.toUpperCase()),
+                                    new SubjectCode(school.toUpperCase(),
+                                                    subject.toUpperCase()),
                                     Integer.parseInt(batchSize)),
-                                Boolean.parseBoolean(pretty))
-              );
+                                Boolean.parseBoolean(pretty)));
         } catch (IOException e) {
           logger.warn(e.getMessage());
         }
       } else if (subject == null) {
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(
-                  Scrape_sectionKt.scrapeFromCatalogSection(
-                      term, school, Integer.parseInt(batchSize)),
-                  Boolean.parseBoolean(pretty)),
+              JsonMapper.toJson(Scrape_sectionKt.scrapeFromCatalogSection(
+                                    term, school, Integer.parseInt(batchSize)),
+                                Boolean.parseBoolean(pretty)),
               outputFile);
         } catch (IOException e) {
           logger.warn(e.getMessage());
@@ -93,7 +91,7 @@ public class scrape {
         try {
           UtilsKt.writeToFileOrStdout(
               JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
-                      term, SubjectCode.allSubjects(),
+                                    term, SubjectCode.allSubjects(),
                                     Integer.parseInt(batchSize)),
                                 Boolean.parseBoolean(pretty)),
               outputFile);
@@ -134,10 +132,9 @@ public class scrape {
         }
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(
-                  Scrape_catalogKt.scrapeFromCatalog(
-                      term, SubjectCode.allSubjects(), batchSize),
-                  Boolean.parseBoolean(pretty)),
+              JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
+                                    term, SubjectCode.allSubjects(), batchSize),
+                                Boolean.parseBoolean(pretty)),
               outputFile);
         } catch (IOException e) {
           e.printStackTrace();
@@ -159,10 +156,9 @@ public class scrape {
         }
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(
-                  Scrape_catalogKt.scrapeFromCatalog(
-                       term, new SubjectCode(school, subject)),
-                  Boolean.parseBoolean(pretty)),
+              JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
+                                    term, new SubjectCode(school, subject)),
+                                Boolean.parseBoolean(pretty)),
               outputFile);
         } catch (IOException e) {
           logger.warn(e.getMessage());
@@ -194,7 +190,7 @@ public class scrape {
             outputFile);
         UtilsKt.writeToFileOrStdout(
             JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
-                    Query_schoolKt.querySchool(term)),
+                                  Query_schoolKt.querySchool(term)),
                               Boolean.parseBoolean(pretty)),
             outputFile);
       } catch (IOException e) {

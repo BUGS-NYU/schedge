@@ -3,9 +3,9 @@ package cli;
 import picocli.CommandLine;
 
 /*
-    @Todo: Add annotation for parameter. Fix the method to parse
-    @Help: Add annotations, comments to code
- */
+   @Todo: Add annotation for parameter. Fix the method to parse
+   @Help: Add annotations, comments to code
+*/
 @CommandLine.Command(name = "schedge")
 public class schedge {
   public schedge(String[] args) {

@@ -8,13 +8,16 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.models.Course;
 import scraping.models.SectionAttribute;
-import services.*;
+import services.JsonMapper;
+import services.ParseCatalog;
+import services.ParseSchoolSubjects;
+import services.ParseSection;
 import utils.UtilsKt;
 
 /*
-    @Todo: Add annotation for parameter. Fix the method to parse
-    @Help: Add annotations, comments to code
- */
+   @Todo: Add annotation for parameter. Fix the method to parse
+   @Help: Add annotations, comments to code
+*/
 @CommandLine.Command(name = "parse")
 public class parse implements Runnable {
   @Override
@@ -39,9 +42,9 @@ public class parse implements Runnable {
         long start = System.nanoTime();
         String input = UtilsKt.readFromFileOrStdin(inputFile);
         SectionAttribute output = ParseSection.parse(input);
-        UtilsKt.writeToFileOrStdout(outputFile,
-            JsonMapper.toJson(output, Boolean.parseBoolean(pretty))
-            );
+        UtilsKt.writeToFileOrStdout(
+            outputFile,
+            JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
         long end = System.nanoTime();
         long duration = (end - start) / 1000000000;
         logger.info(duration + " seconds");

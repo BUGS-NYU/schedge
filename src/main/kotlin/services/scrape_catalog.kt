@@ -16,14 +16,14 @@ private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
  * @return Sequence of List of Courses
  */
 fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<List<Course>> {
-    return queryCatalog(term, subjectCodes, batchSize).asSequence().map { rawData ->
-      try {
-          ParseCatalog.parse(rawData.data, rawData.subject)
-      } catch (e: Exception) {
-          scraperLogger.warn(e.message)
-          null
-      }
-    }.filterNotNull()
+    return queryCatalog(term, subjectCodes, batchSize).asIterable().map { rawData ->
+        try {
+            ParseCatalog.parse(rawData.data, rawData.subject)
+        } catch (e : Exception) {
+            scraperLogger.warn { e.message }
+            null
+        }
+    }.asSequence().filterNotNull()
 }
 
 /**

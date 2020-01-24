@@ -18,23 +18,40 @@ import utils.UtilsKt;
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "parse")
+@CommandLine.Command(
+        name = "query", synopsisSubcommandLabel = "(catalog | section | school)",
+        subcommands = {parse.Catalog.class, parse.Section.class, parse.School.class})
 public class parse implements Runnable {
+  @CommandLine.Spec
+  private CommandLine.Model.CommandSpec spec;
+
   @Override
   public void run() {
-    return;
+    throw new CommandLine.ParameterException(spec.commandLine(),
+            "Missing required subcommand");
   }
 
-  @CommandLine.Command(name = "section")
+
+  @CommandLine.Command(
+          name = "section",
+          sortOptions = false,
+          headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n",
+          descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n",
+          header = "Parse catalog",
+          description = "Parse catalog based on term, subject codes, " +
+                  "or school for one or multiple subjects/schools")
   public static class Section implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.section");
 
     @CommandLine.Option(names = "--pretty", defaultValue = "false")
     private String pretty;
-
-    @CommandLine.Option(names = "--inputFile") private String inputFile;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.Option(names = "--input-file", description = "intput file to read from. If none provided, read from stdout")
+    private String inputFile;
+    @CommandLine.Option(names = "--output-file", description = "output file to write to. If none provided, write to stdout")
+    private String outputFile;
 
     @Override
     public void run() {
@@ -54,16 +71,25 @@ public class parse implements Runnable {
     }
   }
 
-  @CommandLine.Command(name = "catalog")
+  @CommandLine.Command(
+          name = "catalog",
+          sortOptions = false,
+          headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n",
+          descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n",
+          header = "Parse catalog",
+          description = "Parse catalog based on input file. If not provided, read from stdin")
   public static class Catalog implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
     @CommandLine.Option(names = "--pretty", defaultValue = "false")
     private String pretty;
-
-    @CommandLine.Option(names = "--inputFile") private String inputFile;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.Option(names = "--input-file", description = "intput file to read from. If none provided, read from stdout")
+    private String inputFile;
+    @CommandLine.Option(names = "--output-file", description = "output file to write to. If none provided, write to stdout")
+    private String outputFile;
 
     @Override
     public void run() {
@@ -83,16 +109,26 @@ public class parse implements Runnable {
     }
   }
 
-  @CommandLine.Command(name = "section")
+
+  @CommandLine.Command(
+          name = "school",
+          sortOptions = false,
+          headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n",
+          descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n",
+          header = "Parse school",
+          description = "Parse school based on input file")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
     @CommandLine.Option(names = "--pretty", defaultValue = "false")
     private String pretty;
-
-    @CommandLine.Option(names = "--inputFile") private String inputFile;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.Option(names = "--input-file", description = "intput file to read from. If none provided, read from stdout")
+    private String inputFile;
+    @CommandLine.Option(names = "--output-file", description = "output file to write to. If none provided, write to stdout")
+    private String outputFile;
 
     @Override
     public void run() {

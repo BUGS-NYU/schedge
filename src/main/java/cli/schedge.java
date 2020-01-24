@@ -11,21 +11,11 @@ public class schedge {
   public schedge(String[] args) {
     new CommandLine(this)
         .addSubcommand("query",
-                       new CommandLine(new query())
-                           .addSubcommand("school", new query.School())
-                           .addSubcommand("catalog", new query.Catalog())
-                           .addSubcommand("section", new query.Section()))
+                       new CommandLine(new query()))
         .addSubcommand("parse",
-                       new CommandLine(new parse())
-                           .addSubcommand("school", new parse.School())
-                           .addSubcommand("catalog", new parse.Catalog())
-                           .addSubcommand("section", new parse.Section()))
+                       new CommandLine(new parse()))
         .addSubcommand("scrape",
-                       new CommandLine(new scrape())
-                           .addSubcommand("school", new scrape.School())
-                           .addSubcommand("section", new scrape.Section())
-                           .addSubcommand("sections", new scrape.Sections())
-                           .addSubcommand("catalog", new scrape.Catalog()))
+                       new CommandLine(new scrape()))
         .execute(args);
   }
 }

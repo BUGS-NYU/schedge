@@ -19,7 +19,7 @@ import utils.UtilsKt;
    @Help: Add annotations, comments to code
 */
 @CommandLine.Command(
-        name = "query", synopsisSubcommandLabel = "(catalog | section | school)",
+        name = "parse", synopsisSubcommandLabel = "(catalog | section | school)",
         subcommands = {parse.Catalog.class, parse.Section.class, parse.School.class})
 public class parse implements Runnable {
   @CommandLine.Spec
@@ -110,6 +110,7 @@ public class parse implements Runnable {
   }
 
 
+  // @ToDo: Fix this with two options
   @CommandLine.Command(
           name = "school",
           sortOptions = false,
@@ -118,11 +119,21 @@ public class parse implements Runnable {
           descriptionHeading = "%nDescription:%n%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n",
-          header = "Parse school",
-          description = "Parse school based on input file")
+          header = "Parse school/subject",
+          description = "Parse school/subject based on input file")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
+    @CommandLine.Option(
+        names = "--school",
+        description =
+            "Enter no if not want. If none provided, will read the school values")
+    private String school;
+    @CommandLine.Option(
+        names = "--subject",
+        description =
+            "Enter no if not want. If none provided, will read the subject values")
+    private String subject;
     @CommandLine.Option(names = "--pretty", defaultValue = "false")
     private String pretty;
     @CommandLine.Option(names = "--input-file", description = "intput file to read from. If none provided, read from stdout")
@@ -135,15 +146,27 @@ public class parse implements Runnable {
       try {
         long start = System.nanoTime();
         String input = UtilsKt.readFromFileOrStdin(inputFile);
-        Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
-        Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
-            outputFile);
+        if(school == null && subject == null) {
+          Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
+          Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
+          UtilsKt.writeToFileOrStdout(
+                  JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
+                  outputFile);
 
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
-            outputFile);
+          UtilsKt.writeToFileOrStdout(
+                  JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
+                  outputFile);
+        } else if(subject == null) {
+          Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
+          UtilsKt.writeToFileOrStdout(
+                  JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
+                  outputFile);
+        } else {
+          Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
+          UtilsKt.writeToFileOrStdout(
+                  JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
+                  outputFile);
+        }
         long end = System.nanoTime();
         long duration = (end - start) / 1000000000;
         logger.info(duration + " seconds");

@@ -32,15 +32,15 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  */
 fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySection(term, queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parseRegistrationNumber(rawData.toString())
-    }, batchSize).asSequence().map { rawData ->
+        ParseCatalog.parseRegistrationNumber(rawData.data)
+    }, batchSize).asIterable().map { rawData ->
         try {
             ParseSection.parse(rawData)
         } catch (e : Exception){
             scraperLogger.warn(e.message)
             null
         }
-    }.filterNotNull()
+    }.asSequence().filterNotNull()
 }
 
 /**
@@ -53,9 +53,9 @@ fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = 
     return querySection(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
-            .asSequence().map { rawData ->
+            .asIterable().map { rawData ->
                 ParseSection.parse(rawData)
-            }
+            }.asSequence()
 }
 
 /**
@@ -68,8 +68,8 @@ fun scrapeFromAllCatalogSection(term: Term, subjectCodes : List<SubjectCode>, ba
     return querySection(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, subjectCodes).toList().toString()), batchSize)
-            .asSequence().map { rawData ->
+            .asIterable().map { rawData ->
                 ParseSection.parse(rawData)
-            }
+            }.asSequence()
 
 }

@@ -19,7 +19,7 @@ fun querySection(term: Term, registrationNumber: Int): String =
 
 fun querySection(term: Term, registrationNumbers: List<Int>, batchSizeNullable: Int? = null): Sequence<String> {
     if (registrationNumbers.size > 1)
-      queryLogger.info { "Querying multiple sections..." }
+      queryLogger.info { "Querying catalog sections for term = ${term} multiple sections..." }
     val batchSize = batchSizeNullable ?: max(5, min(registrationNumbers.size / 5, 20))
     return SimpleBatchedFutureEngine(
         registrationNumbers, batchSize

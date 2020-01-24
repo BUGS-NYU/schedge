@@ -28,7 +28,7 @@ public class ParseSection {
   public static @NotNull
   SectionAttribute parse(@NotNull String rawData)
       throws IOException {
-    logger.info("parsing raw catalog data...");
+    logger.info("parsing raw catalog section data...");
     Document doc = Jsoup.parse(rawData);
     doc.select("a").unwrap();
     doc.select("i").unwrap();

@@ -1,5 +1,7 @@
 package cli;
 
+import java.io.IOException;
+import models.Semester;
 import models.SubjectCode;
 import models.Term;
 import org.slf4j.Logger;
@@ -15,9 +17,12 @@ import utils.UtilsKt;
           Adding multiple options for querying
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "query", synopsisSubcommandLabel = "COMMAND")
+@CommandLine.Command(name = "query",
+                     synopsisSubcommandLabel = "(catalog | section | school)",
+                     subcommands = {query.Catalog.class, query.Section.class,
+                                    query.School.class})
 public class query implements Runnable {
-  @CommandLine.Spec CommandLine.Model.CommandSpec spec;
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   @Override
   public void run() {
@@ -25,60 +30,159 @@ public class query implements Runnable {
                                              "Missing required subcommand");
   }
 
-  public static class Catalog implements Runnable {
+  @CommandLine.Command(
+      name = "catalog", sortOptions = false, headerHeading = "Usage:%n%n",
+      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n", header = "Query catalog",
+      description =
+          "Query catalog based on term, subject codes, or school for one or multiple subjects/schools")
+  static class Catalog implements Runnable {
     private Logger logger = LoggerFactory.getLogger("query.catalog");
 
-    @CommandLine.Option(names = "--term", required = true) private Integer term;
-
-    @CommandLine.Option(names = "--school") private String school;
-
-    @CommandLine.Option(names = "--subject") private String subject;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.
+    Option(names = "--school", description = "school code: UA, UT, UY, etc")
+    private String school;
+    @CommandLine.
+    Option(names = "--subject",
+           description = "subject code: CSCI(Computer Science), MA(Math), etc")
+    private String subject;
+    @CommandLine.
+    Option(names = "--batch-size",
+           description = "batch size if query more than one catalog")
+    private Integer batchSize;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
 
     public void run() {
       long start = System.nanoTime();
-      Term term = Term.fromId(this.term);
-      SubjectCode subjectCode = null;
-
-      UtilsKt.writeToFileOrStdout(
-          outputFile, Query_catalogKt.queryCatalog(term, subjectCode));
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
+      if (school == null) {
+        if (subject != null) {
+          throw new IllegalArgumentException(
+              "--subject doesn't make sense if school is null");
+        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, Query_catalogKt.queryCatalog(
+                            term, SubjectCode.allSubjects(), batchSize));
+      } else if (subject == null) {
+        UtilsKt.writeToFileOrStdout(
+            outputFile, Query_catalogKt.queryCatalog(
+                            term, SubjectCode.allSubjects(school), batchSize));
+      } else {
+        UtilsKt.writeToFileOrStdout(
+            outputFile, Query_catalogKt.queryCatalog(
+                            term, new SubjectCode(subject, school)));
+      }
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }
   }
 
-  public static class Section implements Runnable {
+  // @ToDo: Adding query section for multiple sections
+  @CommandLine.
+  Command(name = "section", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Query section",
+          description = "Query section based on registration number")
+  static class Section implements Runnable {
     private Logger logger = LoggerFactory.getLogger("query.section");
 
-    @CommandLine.Option(names = "--term", required = true) private Integer term;
-
-    @CommandLine.Option(names = "--registrationNumber", required = true)
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.
+    Option(names = "--registration-number",
+           description = "registration number for specific catalog",
+           required = true)
     private Integer registrationNumber;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
 
     public void run() {
       long start = System.nanoTime();
-      Term term = Term.fromId(this.term);
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
       UtilsKt.writeToFileOrStdout(
-          Query_sectionKt.querySection(term, registrationNumber), outputFile);
+          outputFile, Query_sectionKt.querySection(term, registrationNumber));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }
   }
 
-  public static class School implements Runnable {
+  @CommandLine.
+  Command(name = "school", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Query school",
+          description = "Query school based on term")
+  static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("query.school");
 
-    @CommandLine.Option(names = "--term", required = true) private Integer term;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
 
     public void run() {
       long start = System.nanoTime();
-      Term term = Term.fromId(this.term);
-      UtilsKt.writeToFileOrStdout(Query_schoolKt.querySchool(term), outputFile);
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
+      UtilsKt.writeToFileOrStdout(outputFile, Query_schoolKt.querySchool(term));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

@@ -1,6 +1,8 @@
 package cli;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
+import models.Semester;
 import models.SubjectCode;
 import models.Term;
 import org.slf4j.Logger;
@@ -13,30 +15,132 @@ import utils.UtilsKt;
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "scrape")
-public class scrape {
+@CommandLine.
+Command(name = "scrape",
+        synopsisSubcommandLabel = "(catalog | section | sections | school)",
+        subcommands = {scrape.Catalog.class, scrape.Sections.class,
+                       scrape.School.class})
+public class scrape implements Runnable {
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
-  public static class Section implements Runnable {
+  @Override
+  public void run() {
+    throw new CommandLine.ParameterException(spec.commandLine(),
+                                             "Missing required subcommand");
+  }
+
+  @CommandLine.Command(
+      name = "sections", sortOptions = false, headerHeading = "Usage:%n%n",
+      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n", header = "Scrape section",
+      description =
+          "Scrape section based on term and registration number, OR school and subject")
+  public static class Sections implements Runnable {
     private Logger logger = LoggerFactory.getLogger("scrape.section");
 
-    @CommandLine.Option(names = "--term", required = true) private String term;
-
-    @CommandLine.Option(names = "--registrationNumber", required = true)
-    private String registrationNumber;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
-
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.
+    Option(names = "--registration-number",
+           description = "registration number for specific catalog")
+    private Integer registrationNumber;
+    @CommandLine.
+    Option(names = "--school", description = "school code: UA, UT, UY, etc")
+    private String school;
+    @CommandLine.
+    Option(names = "--subject", description = "subject code: CSCI, MA, etc")
+    private String subject;
+    @CommandLine.
+    Option(names = "--batch-size",
+           description = "batch size if query more than one catalog")
+    private Integer batchSize;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
     @CommandLine.Option(names = "--pretty") private String pretty;
 
     public void run() {
       long start = System.nanoTime();
-      try {
-        UtilsKt.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
-                            Term.fromId(Integer.parseInt(term)),
-                            Integer.parseInt(registrationNumber))));
-      } catch (IOException e) {
-        e.printStackTrace();
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
+      if (subject == null && school == null && registrationNumber == null) {
+        throw new IllegalArgumentException(
+            "Must provide either --registration-number OR "
+            + "--subject AND --term");
+      } else if (subject != null && school != null &&
+                 registrationNumber != null) {
+        throw new IllegalArgumentException(
+            "Must provide either --registration-number OR "
+            + "--subject AND --term");
+      }
+
+      if (subject == null && school == null) {
+        if (batchSize != null) {
+          throw new IllegalArgumentException(
+              "--batch-size doesn't make sense if scrape one catalog");
+        }
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
+                              term, registrationNumber)));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      } else if (school != null && subject != null) {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(
+                  Scrape_sectionKt
+                      .scrapeFromCatalogSection(
+                          term, new SubjectCode(this.subject, this.school),
+                          batchSize)
+                      .iterator(),
+                  Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
+      } else if (subject == null) {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile, JsonMapper.toJson(Scrape_sectionKt
+                                                .scrapeFromCatalogSection(
+                                                    term, school, batchSize)
+                                                .iterator(),
+                                            Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
+      } else {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(
+                  Scrape_sectionKt
+                      .scrapeFromAllCatalogSection(
+                          term, SubjectCode.allSubjects(), batchSize)
+                      .iterator(),
+                  Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
       }
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -44,87 +148,55 @@ public class scrape {
     }
   }
 
-  public static class Sections implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("scrape.sections");
-
-    @CommandLine.Option(names = "--term", required = true) private String term;
-
-    @CommandLine.Option(names = "--school") private String school;
-
-    @CommandLine.Option(names = "--subject") private String subject;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
-
-    @CommandLine.Option(names = "--batchSize") private String batchSize;
-
-    @CommandLine.Option(names = "--pretty") private String pretty;
-
-    public void run() {
-      long start = System.nanoTime();
-      String school = this.school;
-      String subject = this.subject;
-      Term term = Term.fromId(Integer.parseInt(this.term));
-      if (school != null && subject != null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(Scrape_sectionKt.scrapeFromCatalogSection(
-                                    term,
-                                    new SubjectCode(school.toUpperCase(),
-                                                    subject.toUpperCase()),
-                                    Integer.parseInt(batchSize)),
-                                Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
-      } else if (subject == null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(Scrape_sectionKt.scrapeFromCatalogSection(
-                                    term, school, Integer.parseInt(batchSize)),
-                                Boolean.parseBoolean(pretty)),
-              outputFile);
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
-      } else {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
-                                    term, SubjectCode.allSubjects(),
-                                    Integer.parseInt(batchSize)),
-                                Boolean.parseBoolean(pretty)),
-              outputFile);
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
-      }
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info(duration + " seconds");
-    }
-  }
-
+  @CommandLine.Command(
+      name = "catalog", sortOptions = false, headerHeading = "Usage:%n%n",
+      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n", header = "Scrape catalog",
+      description =
+          "Scrape catalog based on term, subject codes, or school for one or multiple subjects/schools")
   public static class Catalog implements Runnable {
     private Logger logger = LoggerFactory.getLogger("scrape.catalog");
 
-    @CommandLine.Option(names = "--term", required = true) private String term;
-
-    @CommandLine.Option(names = "--school") private String school;
-
-    @CommandLine.Option(names = "--subject") private String subject;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
-
-    @CommandLine.Option(names = "--batchSize") private Integer batchSize;
-
-    @CommandLine.Option(names = "--pretty") private String pretty;
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.
+    Option(names = "--school", description = "school code: UA, UT, UY, etc")
+    private String school;
+    @CommandLine.
+    Option(names = "--subject",
+           description = "subject code: CSCI(Computer Science), MA(Math), etc")
+    private String subject;
+    @CommandLine.
+    Option(names = "--batch-size",
+           description = "batch size if query more than one catalog")
+    private Integer batchSize;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
+    @CommandLine.Option(names = "--pretty", defaultValue = "false")
+    private String pretty;
 
     public void run() {
       long start = System.nanoTime();
-      String school = this.school;
-      String subject = this.subject;
-      Term term = Term.fromId(Integer.parseInt(this.term));
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
       if (school == null) {
         if (subject != null) {
           throw new IllegalArgumentException(
@@ -132,22 +204,26 @@ public class scrape {
         }
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
-                                    term, SubjectCode.allSubjects(), batchSize),
-                                Boolean.parseBoolean(pretty)),
-              outputFile);
-        } catch (IOException e) {
+              outputFile,
+              JsonMapper.toJson(
+                  Scrape_catalogKt
+                      .scrapeFromCatalog(term, SubjectCode.allSubjects(),
+                                         batchSize)
+                      .iterator(),
+                  Boolean.parseBoolean(pretty)));
+        } catch (JsonProcessingException e) {
           e.printStackTrace();
         }
       } else if (subject == null) {
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(Scrape_catalogKt.scrapeAllFromCatalog(
-                                    term, school, batchSize),
-                                Boolean.parseBoolean(pretty)),
-              outputFile);
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
+              outputFile,
+              JsonMapper.toJson(
+                  Scrape_catalogKt.scrapeAllFromCatalog(term, school, batchSize)
+                      .iterator(),
+                  Boolean.parseBoolean(pretty)));
+        } catch (JsonProcessingException e) {
+          e.printStackTrace();
         }
       } else {
         if (batchSize != null) {
@@ -156,12 +232,14 @@ public class scrape {
         }
         try {
           UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(Scrape_catalogKt.scrapeFromCatalog(
-                                    term, new SubjectCode(school, subject)),
-                                Boolean.parseBoolean(pretty)),
-              outputFile);
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
+              outputFile,
+              JsonMapper.toJson(
+                  Scrape_catalogKt
+                      .scrapeFromCatalog(term, new SubjectCode(subject, school))
+                      .iterator(),
+                  Boolean.parseBoolean(pretty)));
+        } catch (JsonProcessingException e) {
+          e.printStackTrace();
         }
       }
       long end = System.nanoTime();
@@ -170,31 +248,91 @@ public class scrape {
     }
   }
 
+  @CommandLine.
+  Command(name = "school", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
+          description = "Scrape school/subject based on term")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("scrape.school");
 
-    @CommandLine.Option(names = "--term") private String term;
-
-    @CommandLine.Option(names = "--outputFile") private String outputFile;
-
+    @CommandLine.Option(names = "--term", description = "term to query from")
+    private Integer term;
+    @CommandLine.
+    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+    private String semester;
+    @CommandLine.Option(names = "--year", description = "year to scrape from")
+    private Integer year;
+    @CommandLine.Option(
+        names = "--school",
+        description =
+            "Enter no if not want. If none provided, will read the school values")
+    private String school;
+    @CommandLine.Option(
+        names = "--subject",
+        description =
+            "Enter no if not want. If none provided, will read the subject values")
+    private String subject;
+    @CommandLine.
+    Option(names = "--batch-size",
+           description = "batch size if query more than one catalog")
+    private Integer batchSize;
+    @CommandLine.
+    Option(names = "--output-file", description = "output file to write to")
+    private String outputFile;
     @CommandLine.Option(names = "--pretty") private String pretty;
 
     public void run() {
       long start = System.nanoTime();
-      Term term = Term.fromId(Integer.parseInt(this.term));
-      try {
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                  Query_schoolKt.querySchool(term)),
-                              Boolean.parseBoolean(pretty)),
-            outputFile);
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
-                                  Query_schoolKt.querySchool(term)),
-                              Boolean.parseBoolean(pretty)),
-            outputFile);
-      } catch (IOException e) {
-        logger.warn(e.getMessage());
+      Term term;
+      if (this.term == null && this.semester == null && this.year == null) {
+        throw new IllegalArgumentException(
+            "Must provide at least one. Either --term OR --semester AND --year");
+      } else if (this.term == null) {
+        if (this.semester == null || this.year == null) {
+          throw new IllegalArgumentException(
+              "Must provide both --semester AND --year");
+        }
+        term = new Term(Semester.fromCode(this.semester), year);
+      } else {
+        term = Term.fromId(this.term);
+      }
+      if (school == null && subject == null) {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                    Query_schoolKt.querySchool(term)),
+                                Boolean.parseBoolean(pretty)));
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
+                                    Query_schoolKt.querySchool(term)),
+                                Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
+      } else if (school != null) {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                    Query_schoolKt.querySchool(term)),
+                                Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
+      } else {
+        try {
+          UtilsKt.writeToFileOrStdout(
+              outputFile,
+              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                    Query_schoolKt.querySchool(term)),
+                                Boolean.parseBoolean(pretty)));
+        } catch (IOException e) {
+          logger.warn(e.getMessage());
+        }
       }
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

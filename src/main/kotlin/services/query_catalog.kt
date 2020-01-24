@@ -35,7 +35,6 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
     val batchSize = batchSizeNullable ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
     val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
 
-
     return SimpleBatchedFutureEngine<SubjectCode, CatalogQueryData>(
         subjectCodes,
         batchSize

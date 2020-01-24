@@ -11,6 +11,8 @@ import services.Query_schoolKt;
 import services.Query_sectionKt;
 import utils.UtilsKt;
 
+import java.io.IOException;
+
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
           Adding multiple options for querying
@@ -30,7 +32,8 @@ public class query implements Runnable {
                                              "Missing required subcommand");
   }
 
-  @CommandLine.Command(name = "catalog",
+  @CommandLine.Command(
+          name = "catalog",
           sortOptions = false,
           headerHeading = "Usage:%n%n",
           synopsisHeading = "%n",
@@ -105,7 +108,7 @@ public class query implements Runnable {
     @CommandLine.Option(names = "--term", description = "term to query from") private Integer term;
     @CommandLine.Option(names = "--semester", description = "semester: ja, sp, su, or fa") private String semester;
     @CommandLine.Option(names = "--year", description = "year to scrape from") private Integer year;
-    @CommandLine.Option(names = "--registrationNumber", description = "registration number for specific catalog", required = true)
+    @CommandLine.Option(names = "--registration-number", description = "registration number for specific catalog", required = true)
     private Integer registrationNumber;
     @CommandLine.Option(names = "--output-file", description = "output file to write to") private String outputFile;
 
@@ -125,8 +128,9 @@ public class query implements Runnable {
       } else {
         term = Term.fromId(this.term);
       }
-      UtilsKt.writeToFileOrStdout(
-          Query_sectionKt.querySection(term, registrationNumber), outputFile);
+      System.out.println(
+              Query_sectionKt.querySection(term, registrationNumber)
+      );
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }
@@ -166,7 +170,7 @@ public class query implements Runnable {
       } else {
         term = Term.fromId(this.term);
       }
-      UtilsKt.writeToFileOrStdout(Query_schoolKt.querySchool(term), outputFile);
+      System.out.println(Query_schoolKt.querySchool(term));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

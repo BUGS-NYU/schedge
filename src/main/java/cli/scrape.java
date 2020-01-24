@@ -47,7 +47,7 @@ public class scrape implements Runnable {
     @CommandLine.Option(names = "--year", description = "year to scrape from") private Integer year;
     @CommandLine.Option(names = "--batch-size", description = "batch size if query more than one catalog") private Integer batchSize;
     @CommandLine.Option(names = "--output-file", description = "output file to write to") private String outputFile;
-    @CommandLine.Option(names = "--registrationNumber", required = true, description = "registration number for specific catalog")
+    @CommandLine.Option(names = "--registration-number", required = true, description = "registration number for specific catalog")
     private String registrationNumber;
 
     public void run() {

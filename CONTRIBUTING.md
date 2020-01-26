@@ -3,8 +3,10 @@
 #### Table of Contents
 - [Setup](#user-content-setup)
 - [Development](#user-content-development)
-- [Code Organization](#user-content-code-organization)
+- [Project Overview](#user-content-project-overview)
 - [Comment Annotations](#user-content-comment-annotations)
+- [Issue](#user-content-issue)
+- [Pull Request](#user-content-pull-request)
 
 ## Setup
 You'll need to install a few applications to contribute to this project:
@@ -121,21 +123,6 @@ Kotlin code handles scraping and querying data. Read the [documentation](https:/
 # Install Kotlin.
 brew install kotlin
 ```
-
-## Development
-
-<!-- @HelpWanted Make this more detailed -->
-### Using IntelliJ
-You'll need to specify the command line arguments to use when testing the app, but
-in the typical case you can use the build button in the top right hand corner to
-build/check your work, and the run button to run.
-
-### Using the Command Line
-Use `gradle build` to build the application, then test using
-`java -jar .build/libs/schedge-all.jar`. Since `gradle build` takes a while, you
-should use `gradle checkFast` to ensure your code compiles, then run `gradle build`
-when you're ready to test your code.
-
 ## Project Overview
 The following ASCII file structure diagram shows the most important packages and files, with comments.
 ``` bash
@@ -146,7 +133,7 @@ The following ASCII file structure diagram shows the most important packages and
             ├── java                                    // Java code currently being refactored from Kotlin. Handle I/O, database, and CLI
             │   ├── Main.java                           // Main to run cli  
             │   ├── api                                 // Handling API endpoints and documentation
-            │   │   ├── App.java                        // Main and abstract classes for APIEndpoint
+            │   │   ├── App.java                        // Main and abstract classes of the API
             │   │   ├── CoursesEndpoint.java            // Courses endpoint providing catalog's data 
             │   │   ├── SchoolsEndpoint.java            // Schools endpoint providing list of schools
             │   │   ├── SubjectsEndpoint.java           // Subjects endpoint providing list of subjects available
@@ -189,10 +176,76 @@ The following ASCII file structure diagram shows the most important packages and
             │   │   ├── query_section.kt                // queries NYU Albert for section descriptions
             │   │   ├── scrape_catalog.kt               // scrapes the NYU Albert course catalog
             │   │   └── scrape_section.kt               // scrapes the NYU Albert course section descriptions
-            └── resources                               // Schools and subjects stored in txt file for now.
+            └── resources                               // Schools and subjects stored in txt file for now
                 ├── schools.txt
                 └── subjects.txt
 ```
+
+## Development
+
+<!-- @HelpWanted Make this more detailed -->
+### Using IntelliJ
+You'll need to specify the command line arguments to use when testing the app, but
+in the typical case you can use the build button in the top right hand corner to
+build/check your work, and the run button to run. The class `Main` is located in Java folder. 
+
+### Using the Command Line
+
+#### What is it you ask ?!!
+A command-line interface (CLI) processes commands to a computer program in the form of 
+lines of text. The program which handles the interface is called a command-line interpreter 
+or command-line processor. This can easily be used through the Terminal (Mac) or Command Prompt (Windows).
+If you have taken Introduction to CS in Java, you are familiar with Scanner. CLI is somewhat similar. It reads the inputs 
+from the users but there are only some subcommands defined in the project. We have provided them for Schedge that 
+would quickly allow you to query, scrape and parse Albert data. So shall we open the terminal and begin? 
+
+## Build
+- `gradle build`: build the application.
+- `java-jar .build/libs/schedge-all.jar`: test the code. 
+- `gradle checkFast`: quickly check if the code compiles. 
+
+## Commands
+The following commands are valid in Schedge:
+
+```sh
+./schedge query catalog     // Query the catalog
+./schedge query sections    // Query a section
+./schedge query school      // Query a school/subject
+./schedge parse catalog     // Parse the catalog
+./schedge parse section     // Parse the section
+./schedge parse school      // Parse the school/subject
+./schedge scrape catalog    // scrape the catalog
+./schedge scrape sections   // scrape the sections
+./schedge scrape school     // scrape the school/subject
+
+// In development
+./schedge db scrape // scrape the catalog for information
+./schedge db query  // query the database for information
+./schedge db serve  // Serve the database data through an API
+```
+
+#### Parameters
+These are generally true for most commands. For detailed parameters of each specific commands,
+we type, for instance, `./schedge query`. CLI will then prompt us the information for the other 
+parameters and its descriptions. Please read it carefully to input the correct format. 
+The order of the parameters do not matter as long as the parameters' names and formats are correct.
+
+```sh
+--term                  // term = (year - 1900) * 10 + (2,4,6 OR 8). Shortcut version. Recommend to use year and semester instead             
+--year                  // integer 
+--semester              // string. sp, ja, fa, OR su
+--registration-number   // the number for each catalog. Can be found on Albert mobile more specifically
+--subject               // subject code: CSCI, MA, ECON, etc
+--school                // school code: UA, UY, UT, UB, etc
+--batch-size            // batch size to do async services. 
+``` 
+
+#### Example 
+```sh
+./schedge scrape catalog --year 2020 --term sp --school UA --subject CSCI 
+```
+The above command will scrape catalog data from Albert website for Computer Science courses at the 
+College of Arts and Sciences for the Spring, 2020. 
 
 ## Comment Annotations
 The codebase uses the following annotations in the comments:
@@ -201,4 +254,17 @@ The codebase uses the following annotations in the comments:
 - `@TODO` - We need to finish this code
 - `@Performance` - This area can be tweaked/rewritten to improve performance
 - `@CodeOrg` - We should reorganize this code
+
+## Issue
+Remember to include enough information if you're reporting a bug.
+Asking question through an issue is totally fine as well. 
+
+## Pull Request
+It would be best to develop your feature with a new branch other than master.
+Every PR will be considered.
+
+### Before Creating a PR
+- Making sure that the code compiles and 
+test your code.
+- Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).    
 

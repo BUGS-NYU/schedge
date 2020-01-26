@@ -136,26 +136,63 @@ Use `gradle build` to build the application, then test using
 should use `gradle checkFast` to ensure your code compiles, then run `gradle build`
 when you're ready to test your code.
 
-## Code Organization
-- `api` contains definitions of the web API
-  - `models` contains definitions of the models used in the web API
-- `scraping` contains the `SimpleBatchedFutureEngine`, which handles batched execution
-  of futures.
-  - `models` contains definitions of the models used while scraping
-- `models` contains class definitions for modeling data
-  - `nyu.kt` defines classes that describe NYU
-- `cli` contains definitions for the command-line interface
-- `services` defines high-level actions that Schedge can perform, i.e. the
-  business logic of Schedge; services should not interact with external globals
-  or read global state at all. They should also avoid things like reading user
-  input. Contributions are most impactful here, and also require the least amount
-  of prior knowledge about the codebase.
-  - `query_catalog.kt` queries the NYU Albert course catalog
-  - `query_section.kt` queries NYU Albert for section descriptions
-  - `scrape_catalog.kt` scrapes the NYU Albert course catalog
-  - `JsonMapper.java` converts data structures to JSON
-  - `ParseCatalog.java` parses raw catalog data in a stream
-  - `batch_request.kt` performs an asynchronous action in batches.
+## Project Overview
+The following ASCII file structure diagram shows the most important packages and files, with comments.
+``` bash
+    .
+    ├── build.gradle                                    // Gradle build tool to get dependencies, build automation
+    └── src
+        └── main
+            ├── java                                    // Java code currently being refactored from Kotlin. Handle I/O, database, and CLI
+            │   ├── Main.java                           // Main to run cli  
+            │   ├── api                                 // Handling API endpoints and documentation
+            │   │   ├── App.java                        // Main and abstract classes for APIEndpoint
+            │   │   ├── CoursesEndpoint.java            // Courses endpoint providing catalog's data 
+            │   │   ├── SchoolsEndpoint.java            // Schools endpoint providing list of schools
+            │   │   ├── SubjectsEndpoint.java           // Subjects endpoint providing list of subjects available
+            │   │   └── models                          // Data objects for the API
+            │   │       ├── Course.java                 
+            │   │       ├── Meeting.java
+            │   │       ├── School.java
+            │   │       ├── Section.java
+            │   │       └── Subject.java
+            │   ├── cli                                 // cli - command-line interface
+            │   │   ├── parse.java                      // Parse commands based on input file or console 
+            │   │   ├── query.java                      // Query commands for catalog, sections and schools/subjects
+            │   │   ├── schedge.java                    // Schedge commands to provide all subcommands: query, parse and scrape
+            │   │   └── scrape.java                     // Scrape commands for catalog, sections and schools/subjects
+            │   ├── scraping
+            │   │   ├── SimpleBatchedFutureEngine.java  // Handling asynchronous scraping with Future
+            │   │   └── models                          // Data objects for scraping 
+            │   │       ├── CatalogData.java            
+            │   │       ├── CatalogQueryData.java
+            │   │       ├── Course.java
+            │   │       ├── Meeting.java
+            │   │       ├── School.java
+            │   │       ├── Section.java
+            │   │       ├── SectionAttribute.java
+            │   │       └── Subject.java
+            │   └── services                            // Parsing, Inserting and Connecting to Postgres database
+            │       ├── GetConnection.java
+            │       ├── InsertCourses.java
+            │       ├── JsonMapper.java
+            │       ├── ParseCatalog.java
+            │       ├── ParseSchoolSubjects.java
+            │       ├── ParseSection.java
+            │       └── SelectCourses.java
+            ├── kotlin                                  // Handling scraping for now. Currently being refactored into Java
+            │   ├── models                              // Data objects for query and scraping
+            │   │   └── nyu.kt
+            │   ├── services                            // The meat of the scraping: query & scrape catalogs, sections and subjects asynchronously
+            │   │   ├── query_catalog.kt                // queries the NYU Albert course catalog                                                                                                              
+            │   │   ├── query_school.kt                 // queries NYU Albert for schools/subjects based on term
+            │   │   ├── query_section.kt                // queries NYU Albert for section descriptions
+            │   │   ├── scrape_catalog.kt               // scrapes the NYU Albert course catalog
+            │   │   └── scrape_section.kt               // scrapes the NYU Albert course section descriptions
+            └── resources                               // Schools and subjects stored in txt file for now.
+                ├── schools.txt
+                └── subjects.txt
+```
 
 ## Comment Annotations
 The codebase uses the following annotations in the comments:

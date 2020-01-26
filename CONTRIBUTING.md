@@ -183,6 +183,16 @@ The following ASCII file structure diagram shows the most important packages and
 
 ## Development
 
+### Repository
+- Fork this repository by clicking `fork` on the right side. 
+- Choose where you want to save the project locally on your computer then run `git clone [Your URL/Git here]`.
+- We recommend to develop your feature through another branch other than the `master` branch. 
+So, run `git checkout -b [name of your branch here]` and develop the feature. You can switch between
+branches by the same command by removing `-b`. 
+- Once you finish, you can run the normal `git add`, `git commit` & `git push`. 
+- Make a [PR](#user-content-pull-request) when the feature is fully finished or if you would like
+feedback on your changes. 
+
 <!-- @HelpWanted Make this more detailed -->
 ### Using IntelliJ
 You'll need to specify the command line arguments to use when testing the app, but
@@ -192,7 +202,7 @@ build/check your work, and the run button to run. The class `Main` is located in
 ### Using the Command Line
 
 #### What is it you ask ?!!
-A command-line interface (CLI) processes commands to a computer program in the form of 
+A [command-line interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) processes commands to a computer program in the form of 
 lines of text. The program which handles the interface is called a command-line interpreter 
 or command-line processor. This can easily be used through the Terminal (Mac) or Command Prompt (Windows).
 If you have taken Introduction to CS in Java, you are familiar with Scanner. CLI is somewhat similar. It reads the inputs 

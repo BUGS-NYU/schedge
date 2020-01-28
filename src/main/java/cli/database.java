@@ -16,14 +16,15 @@ import utils.UtilsKt;
 
 @CommandLine.
 Command(name = "db", synopsisSubcommandLabel = "(scrape | query | serve)",
-        subcommands = {database.Scrape.class, database.Scrape.class,
+        subcommands = {database.Scrape.class, database.Query.class,
                        database.Serve.class})
 public class database implements Runnable {
-  private CommandLine.Model.CommandSpec spec;
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+
+  @Override
   public void run() {
-    throw new CommandLine.ParameterException(
-        spec.commandLine(), ""
-                                + "Missing arguments for command lines");
+    throw new CommandLine.ParameterException(spec.commandLine(),
+                                             "Missing required subcommand");
   }
 
   @CommandLine.Command(
@@ -54,6 +55,7 @@ public class database implements Runnable {
            description = "batch size if query more than one catalog")
     private Integer batchSize;
 
+    @Override
     public void run() {
       long start = System.nanoTime();
       Term term;
@@ -153,6 +155,7 @@ public class database implements Runnable {
     Option(names = "--output-file", description = "output file to write to")
     private String outputFile;
 
+    @Override
     public void run() {
       long start = System.nanoTime();
       List<Course> courses = null;
@@ -206,6 +209,9 @@ public class database implements Runnable {
           description = "Serve data through an API")
   public static class Serve implements Runnable {
     private Logger logger = LoggerFactory.getLogger("db.serve");
-    public void run() { App.run(); }
+    @Override
+    public void run() {
+      App.run();
+    }
   }
 }

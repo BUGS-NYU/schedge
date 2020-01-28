@@ -60,8 +60,8 @@ public class parse implements Runnable {
         String input = UtilsKt.readFromFileOrStdin(inputFile);
         SectionAttribute output = ParseSection.parse(input);
         UtilsKt.writeToFileOrStdout(
-            outputFile,
-            JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
+                outputFile,
+                JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
         long end = System.nanoTime();
         long duration = (end - start) / 1000000000;
         logger.info(duration + " seconds");
@@ -98,8 +98,8 @@ public class parse implements Runnable {
         String input = UtilsKt.readFromFileOrStdin(inputFile);
         List<Course> output = ParseCatalog.parse(input, null);
         UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(output, Boolean.parseBoolean(pretty)),
-            outputFile);
+                JsonMapper.toJson(output, Boolean.parseBoolean(pretty)),
+                outputFile);
         long end = System.nanoTime();
         long duration = (end - start) / 1000000000;
         logger.info(duration + " seconds");
@@ -125,14 +125,14 @@ public class parse implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
     @CommandLine.Option(
-        names = "--school",
-        description =
-            "Enter no if not want. If none provided, will read the school values")
+            names = "--school",
+            description =
+                    "Enter no if not want. If none provided, will read the school values")
     private String school;
     @CommandLine.Option(
-        names = "--subject",
-        description =
-            "Enter no if not want. If none provided, will read the subject values")
+            names = "--subject",
+            description =
+                    "Enter no if not want. If none provided, will read the subject values")
     private String subject;
     @CommandLine.Option(names = "--pretty", defaultValue = "false")
     private String pretty;

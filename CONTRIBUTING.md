@@ -227,28 +227,10 @@ The following commands are valid in Schedge:
 ./schedge scrape catalog    // scrape the catalog
 ./schedge scrape sections   // scrape the sections
 ./schedge scrape school     // scrape the school/subject
-
-// In development
 ./schedge db scrape // scrape the catalog for information
 ./schedge db query  // query the database for information
 ./schedge db serve  // Serve the database data through an API
 ```
-
-#### Parameters
-These are generally true for most commands. For detailed parameters of each specific commands,
-we type, for instance, `./schedge query`. CLI will then prompt us the information for the other 
-parameters and its descriptions. Please read it carefully to input the correct format. 
-The order of the parameters do not matter as long as the parameters' names and formats are correct.
-
-```sh
---term                  // term = (year - 1900) * 10 + (2,4,6 OR 8). Shortcut version. Recommend to use year and semester instead             
---year                  // integer 
---semester              // string. sp, ja, fa, OR su
---registration-number   // the number for each catalog. Can be found on Albert mobile more specifically
---subject               // subject code: CSCI, MA, ECON, etc
---school                // school code: UA, UY, UT, UB, etc
---batch-size            // batch size to do async services. 
-``` 
 
 #### Example 
 ```sh
@@ -256,14 +238,6 @@ The order of the parameters do not matter as long as the parameters' names and f
 ```
 The above command will scrape catalog data from Albert website for Computer Science courses at the 
 College of Arts and Sciences for the Spring, 2020. 
-
-## Comment Annotations
-The codebase uses the following annotations in the comments:
-
-- `@HelpWanted` - We need contributors for this code
-- `@TODO` - We need to finish this code
-- `@Performance` - This area can be tweaked/rewritten to improve performance
-- `@CodeOrg` - We should reorganize this code
 
 ## Issue
 Remember to include enough information if you're reporting a bug.
@@ -276,5 +250,13 @@ Every PR will be considered.
 ### Before Creating a PR
 - Making sure that the code compiles and 
 test your code.
-- Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).    
+- Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).
+
+## Comment Annotations
+The codebase uses the following annotations in the comments:
+
+- `@HelpWanted` - We need contributors for this code
+- `@TODO` - We need to finish this code
+- `@Performance` - This area can be tweaked/rewritten to improve performance
+- `@CodeOrg` - We should reorganize this code    
 

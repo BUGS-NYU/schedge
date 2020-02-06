@@ -29,6 +29,67 @@ public class scrape implements Runnable {
                                              "Missing required subcommand");
   }
 
+//  public static class Master implements Runnable {
+//    private Logger logger = LoggerFactory.getLogger("scrape.section");
+//
+//    @CommandLine.Option(names = "--term", description = "term to query from")
+//    private Integer term;
+//    @CommandLine.
+//            Option(names = "--semester", description = "semester: ja, sp, su, or fa")
+//    private String semester;
+//    @CommandLine.Option(names = "--year", description = "year to scrape from")
+//    private Integer year;
+//    @CommandLine.
+//            Option(names = "--registration-number",
+//            description = "registration number for specific catalog")
+//    private Integer registrationNumber;
+//    @CommandLine.
+//            Option(names = "--school", description = "school code: UA, UT, UY, etc")
+//    private String school;
+//    @CommandLine.
+//            Option(names = "--subject", description = "subject code: CSCI, MA, etc")
+//    private String subject;
+//    @CommandLine.
+//            Option(names = "--batch-size",
+//            description = "batch size if query more than one catalog")
+//    private Integer batchSize;
+//    @CommandLine.
+//            Option(names = "--output-file", description = "output file to write to")
+//    private String outputFile;
+//    @CommandLine.Option(names = "--pretty") private String pretty;
+//
+//    public void run() {
+//      long start = System.nanoTime();
+//      Term term;
+//      if (this.term == null && this.semester == null && this.year == null) {
+//        throw new IllegalArgumentException(
+//                "Must provide at least one. Either --term OR --semester AND --year");
+//      } else if (this.term == null) {
+//        if (this.semester == null || this.year == null) {
+//          throw new IllegalArgumentException(
+//                  "Must provide both --semester AND --year");
+//        }
+//        term = new Term(Semester.fromCode(this.semester), year);
+//      } else {
+//        term = Term.fromId(this.term);
+//      }
+//      if (subject != null && school != null &&
+//              registrationNumber != null) {
+//        throw new IllegalArgumentException(
+//                "Must provide either --registration-number OR "
+//                        + "--subject AND --term");
+//      }
+//
+//      if(school == null) {
+//        if(subject != null) {
+//          throw new IllegalArgumentException("Subject does not make sense here");
+//        }
+//        Master_scraperKt.masterScrapeSection(term, school, batchSize);
+//      }
+//    }
+//      //add ending timer
+//  }
+
   @CommandLine.Command(
       name = "sections", sortOptions = false, headerHeading = "Usage:%n%n",
       synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
@@ -80,11 +141,7 @@ public class scrape implements Runnable {
       } else {
         term = Term.fromId(this.term);
       }
-      if (subject == null && school == null && registrationNumber == null) {
-        throw new IllegalArgumentException(
-            "Must provide either --registration-number OR "
-            + "--subject AND --term");
-      } else if (subject != null && school != null &&
+      if (subject != null && school != null &&
                  registrationNumber != null) {
         throw new IllegalArgumentException(
             "Must provide either --registration-number OR "

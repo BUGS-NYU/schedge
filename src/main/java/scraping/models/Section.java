@@ -1,7 +1,6 @@
 package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -56,19 +55,25 @@ public class Section {
 
   public Future<Void> update(String rawData) {
     Map<String, String> map = ParseSection.update(rawData);
-    this.sectionName = map.get("sectionName");
-    this.campus = map.get("Location");
-    this.description = map.get("Description");
-    if(map.get("minUnits") != null && !((map.get("minUnits")).trim().equals(""))) {
-      this.minUnits = Float.parseFloat(map.get("minUnits"));
+    if (map.get("sectionName") != null &&
+        !(map.get("sectionName").trim().equals(""))) {
+      this.sectionName = map.get("sectionName");
+      this.campus = map.get("Location");
+      this.description = map.get("Description");
+      if (map.get("minUnits") != null &&
+          !((map.get("minUnits")).trim().equals(""))) {
+        this.minUnits = Float.parseFloat(map.get("minUnits"));
+      }
+      if (map.get("maxUnits") != null &&
+          !((map.get("maxUnits")).trim().equals(""))) {
+        this.maxUnits = Float.parseFloat(map.get("maxUnits"));
+      }
+      this.instructionMode = map.get("Instruction Mode");
+      this.grading = map.get("Grading");
+      this.roomNumber = map.get("Location");
+      this.prerequisites =
+          map.getOrDefault("Notes", "See Description. None otherwise");
     }
-    if(map.get("maxUnits") != null && !((map.get("maxUnits")).trim().equals(""))) {
-      this.maxUnits = Float.parseFloat(map.get("maxUnits"));
-    }
-    this.instructionMode = map.get("Instruction Mode");
-    this.grading = map.get("Grading");
-    this.roomNumber = map.get("Location");
-    this.prerequisites = map.getOrDefault("Notes", "See Description. None otherwise");
     return new CompletableFuture<>();
   }
 

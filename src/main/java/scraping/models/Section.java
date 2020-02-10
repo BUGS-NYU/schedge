@@ -51,36 +51,40 @@ public class Section {
     this.status = status;
     this.meetings = meetings;
     this.recitations = recitations;
+
+    this.grading = "";
+    this.instructionMode = "";
+    this.prerequisites = "";
+    this.roomNumber = "";
+    this.description = "";
+    this.campus = "";
   }
 
   public Future<Void> update(String rawData) {
     Map<String, String> map = ParseSection.update(rawData);
-    if (map.get("sectionName") != null &&
-        !(map.get("sectionName").trim().equals(""))) {
-      this.sectionName = map.get("sectionName");
-      this.campus = map.get("Location");
-      this.description = map.get("Description");
-      if (map.get("minUnits") != null &&
-          !((map.get("minUnits")).trim().equals(""))) {
-        this.minUnits = Float.parseFloat(map.get("minUnits"));
-      }
-      if (map.get("maxUnits") != null &&
-          !((map.get("maxUnits")).trim().equals(""))) {
-        this.maxUnits = Float.parseFloat(map.get("maxUnits"));
-      }
-      this.instructionMode = map.get("Instruction Mode");
-      this.grading = map.get("Grading");
-      this.roomNumber = map.get("Location");
-      this.prerequisites =
-          map.getOrDefault("Notes", "See Description. None otherwise");
+    this.sectionName = map.get("sectionName");
+    this.campus = map.getOrDefault("Location","");
+    this.description = map.getOrDefault("Description","");
+    if (map.get("minUnits") != null &&
+        !((map.get("minUnits")).trim().equals(""))) {
+      this.minUnits = Float.parseFloat(map.getOrDefault("minUnits","0"));
     }
+    if (map.get("maxUnits") != null &&
+        !((map.get("maxUnits")).trim().equals(""))) {
+      this.maxUnits = Float.parseFloat(map.getOrDefault("maxUnits","0"));
+    }
+    this.instructionMode = map.getOrDefault("Instruction Mode", "In-Person");
+    this.grading = map.getOrDefault("Grading","");
+    this.roomNumber = map.getOrDefault("Location","");
+    this.prerequisites =
+        map.getOrDefault("Notes", "See Description. None otherwise");
     return new CompletableFuture<>();
   }
 
   public String getSectionName() { return sectionName; }
   public int getRegistrationNumber() { return registrationNumber; }
-  public float getMinUnits() { return minUnits; }
-  public float getMaxUnits() { return maxUnits; }
+  public double getMinUnits() { return minUnits; }
+  public double getMaxUnits() { return maxUnits; }
   public String getSectionCode() { return sectionCode; }
   public String getInstructor() { return instructor; }
   public SectionType getType() { return type; }

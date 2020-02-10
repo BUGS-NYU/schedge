@@ -14,7 +14,7 @@ import kotlin.streams.toList
 
 fun masterScrapeSection(term : Term, subjectCode: SubjectCode): List<Course> {
     val courses = scrapeFromCatalog(term, subjectCode)
-    val iterator: MutableIterator<Section> = courses.stream().map {
+    val iterator = courses.stream().map {
         course -> course.sections
     }.flatMap {
         mutableList -> mutableList.stream()
@@ -23,11 +23,13 @@ fun masterScrapeSection(term : Term, subjectCode: SubjectCode): List<Course> {
     val size = courses.map {
         course -> course.sections
     }.flatten().toList().size
+
     SimpleBatchedFutureEngine<Section, Void>(
             iterator, size
     ){
         section, _ -> section.update(querySection(term, section.registrationNumber))
     }
+
     return courses
 }
 

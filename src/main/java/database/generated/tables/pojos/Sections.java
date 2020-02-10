@@ -22,7 +22,7 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = 59121969;
+    private static final long serialVersionUID = -885001624;
 
     private final Integer id;
     private final Integer registrationNumber;
@@ -32,6 +32,16 @@ public class Sections implements Serializable {
     private final Integer sectionType;
     private final Integer sectionStatus;
     private final Integer associatedWith;
+    private final Integer waitlistTotal;
+    private final String  sectionName;
+    private final Double  minUnits;
+    private final Double  maxUnits;
+    private final String  campus;
+    private final String  description;
+    private final String  instructionMode;
+    private final String  grading;
+    private final String  roomNumber;
+    private final String  prerequisites;
 
     public Sections(Sections value) {
         this.id = value.id;
@@ -42,6 +52,16 @@ public class Sections implements Serializable {
         this.sectionType = value.sectionType;
         this.sectionStatus = value.sectionStatus;
         this.associatedWith = value.associatedWith;
+        this.waitlistTotal = value.waitlistTotal;
+        this.sectionName = value.sectionName;
+        this.minUnits = value.minUnits;
+        this.maxUnits = value.maxUnits;
+        this.campus = value.campus;
+        this.description = value.description;
+        this.instructionMode = value.instructionMode;
+        this.grading = value.grading;
+        this.roomNumber = value.roomNumber;
+        this.prerequisites = value.prerequisites;
     }
 
     public Sections(
@@ -52,7 +72,17 @@ public class Sections implements Serializable {
         String  instructor,
         Integer sectionType,
         Integer sectionStatus,
-        Integer associatedWith
+        Integer associatedWith,
+        Integer waitlistTotal,
+        String  sectionName,
+        Double  minUnits,
+        Double  maxUnits,
+        String  campus,
+        String  description,
+        String  instructionMode,
+        String  grading,
+        String  roomNumber,
+        String  prerequisites
     ) {
         this.id = id;
         this.registrationNumber = registrationNumber;
@@ -62,6 +92,16 @@ public class Sections implements Serializable {
         this.sectionType = sectionType;
         this.sectionStatus = sectionStatus;
         this.associatedWith = associatedWith;
+        this.waitlistTotal = waitlistTotal;
+        this.sectionName = sectionName;
+        this.minUnits = minUnits;
+        this.maxUnits = maxUnits;
+        this.campus = campus;
+        this.description = description;
+        this.instructionMode = instructionMode;
+        this.grading = grading;
+        this.roomNumber = roomNumber;
+        this.prerequisites = prerequisites;
     }
 
     public Integer getId() {
@@ -96,6 +136,46 @@ public class Sections implements Serializable {
         return this.associatedWith;
     }
 
+    public Integer getWaitlistTotal() {
+        return this.waitlistTotal;
+    }
+
+    public String getSectionName() {
+        return this.sectionName;
+    }
+
+    public Double getMinUnits() {
+        return this.minUnits;
+    }
+
+    public Double getMaxUnits() {
+        return this.maxUnits;
+    }
+
+    public String getCampus() {
+        return this.campus;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getInstructionMode() {
+        return this.instructionMode;
+    }
+
+    public String getGrading() {
+        return this.grading;
+    }
+
+    public String getRoomNumber() {
+        return this.roomNumber;
+    }
+
+    public String getPrerequisites() {
+        return this.prerequisites;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Sections (");
@@ -108,6 +188,16 @@ public class Sections implements Serializable {
         sb.append(", ").append(sectionType);
         sb.append(", ").append(sectionStatus);
         sb.append(", ").append(associatedWith);
+        sb.append(", ").append(waitlistTotal);
+        sb.append(", ").append(sectionName);
+        sb.append(", ").append(minUnits);
+        sb.append(", ").append(maxUnits);
+        sb.append(", ").append(campus);
+        sb.append(", ").append(description);
+        sb.append(", ").append(instructionMode);
+        sb.append(", ").append(grading);
+        sb.append(", ").append(roomNumber);
+        sb.append(", ").append(prerequisites);
 
         sb.append(")");
         return sb.toString();

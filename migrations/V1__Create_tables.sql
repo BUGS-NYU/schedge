@@ -5,8 +5,6 @@ CREATE TABLE public.courses (
   subject             varchar(6)    NOT NULL,
   dept_course_id      varchar(6)    NOT NULL,
   term_id             integer       NOT NULL,
-  min_units           float         NOT NULL,
-  max_units           float         NOT NULL,
   PRIMARY KEY (term_id, school, subject, dept_course_id)
 );
 
@@ -21,14 +19,16 @@ CREATE TABLE public.sections (
   section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
 
-  section_name        varchar(128)                NOT NULL,
-
-  campus              varchar(100)                NOT NULL,
-  description         text                        NOT NULL,
-  instruction_mode    varchar(20)                 NOT NULL,
-  grading             varchar(20),
-  room_number         varchar(20)                 NOT NULL,
-  prerequisites       varchar(128),
+  waitlist_total       integer                     NOT NULL,
+  section_name        varchar(128)               NOT NULL,
+  min_units           float                       NOT NULL,
+  max_units           float                      NOT NULL,
+  campus              varchar(100)               NOT NULL,
+  description         text                       NOT NULL,
+  instruction_mode    varchar(20)                NOT NULL,
+  grading             varchar(20)               NOT NULL,
+  room_number         varchar(20)               NOT NULL             ,
+  prerequisites       varchar                   NOT NULL,
 
   PRIMARY KEY (course_id, section_code)
 );

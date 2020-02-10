@@ -99,9 +99,7 @@ public class scrape implements Runnable {
           UtilsKt.writeToFileOrStdout(
               outputFile,
               JsonMapper.toJson(
-                  Master_scraperKt
-                      .masterScrapeSection(
-                          term, SubjectCode.allSubjects(school), batchSize)
+                  Master_scraperKt.masterScrapeSection(term, school, batchSize)
                       .iterator(),
                   Boolean.parseBoolean(pretty)));
         } catch (JsonProcessingException e) {

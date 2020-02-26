@@ -19,7 +19,7 @@ fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSize: In
     return queryCatalog(term, subjectCodes, batchSize).asIterable().map { rawData ->
         try {
             ParseCatalog.parse(rawData.data, rawData.subject)
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             scraperLogger.warn { e.message }
             null
         }
@@ -45,4 +45,4 @@ fun scrapeFromCatalog(term: Term, subjectCode: SubjectCode): List<Course> {
  * @return Sequence of List of Courses
  */
 fun scrapeAllFromCatalog(term: Term, forSchool: String?, batchSize: Int? = null): Sequence<List<Course>> =
-    scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool).toList(), batchSize)
+        scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool).toList(), batchSize)

@@ -36,7 +36,7 @@ fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: In
     }, batchSize).asIterable().map { rawData ->
         try {
             ParseSection.parse(rawData)
-        } catch (e : Exception){
+        } catch (e: Exception) {
             scraperLogger.warn(e.message)
             null
         }
@@ -49,7 +49,7 @@ fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: In
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = null) : Sequence<SectionAttribute> {
+fun scrapeFromCatalogSection(term: Term, forSchool: String?, batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
@@ -64,7 +64,7 @@ fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = 
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromAllCatalogSection(term: Term, subjectCodes : List<SubjectCode>, batchSize: Int? = null) : Sequence<SectionAttribute> {
+fun scrapeFromAllCatalogSection(term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, subjectCodes).toList().toString()), batchSize)

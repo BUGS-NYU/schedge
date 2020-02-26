@@ -19,32 +19,32 @@ fun querySection(term: Term, registrationNumber: Int): String {
 }
 
 private fun querySectionAsync(
-    term: Term,
-    registrationNumber: Int
+        term: Term,
+        registrationNumber: Int
 ): Future<String> {
-  queryLogger.info { "Querying section in term=$term with registrationNumber=$registrationNumber..." }
-  require(registrationNumber > 0) { "Registration numbers aren't negative!" }
-  val future = CompletableFuture<String>()
+    queryLogger.info { "Querying section in term=$term with registrationNumber=$registrationNumber..." }
+    require(registrationNumber > 0) { "Registration numbers aren't negative!" }
+    val future = CompletableFuture<String>()
 
-  Fuel.get(DATA_URL + "${term.id}/${registrationNumber}").response { _, response, _ ->
-    future.complete(String(response.data))
-  }
+    Fuel.get(DATA_URL + "${term.id}/${registrationNumber}").response { _, response, _ ->
+        future.complete(String(response.data))
+    }
 
-  return future
+    return future
 }
 
-fun querySections(term: Term, registrationNumbers: List<Int>, batchSizeNullable: Int?) : Sequence<String> {
-    if(registrationNumbers.size > 1) {
+fun querySections(term: Term, registrationNumbers: List<Int>, batchSizeNullable: Int?): Sequence<String> {
+    if (registrationNumbers.size > 1) {
         queryLogger.info { "Querying section in term = $term" }
     }
 
-    val batchSize = batchSizeNullable ?: max(5, min(registrationNumbers.size/5, 20))
+    val batchSize = batchSizeNullable ?: max(5, min(registrationNumbers.size / 5, 20))
 
     return SimpleBatchedFutureEngine<Int, String>(
             registrationNumbers,
             batchSize
-    ) {
-        registrationNumber, _ -> querySectionAsync(term, registrationNumber)
+    ) { registrationNumber, _ ->
+        querySectionAsync(term, registrationNumber)
     }.asSequence().filterNotNull()
 }
 

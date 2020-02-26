@@ -28,7 +28,7 @@ private const val DATA_URL = "https://m.albert.nyu.edu/app/catalog/getClassSearc
  */
 fun queryCatalog(term: Term, subjectCode: SubjectCode): CatalogQueryData {
     return queryCatalog(term, subjectCode, getContext()).get()
-        ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
+            ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
 fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
@@ -36,12 +36,13 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
 
-    val batchSize = batchSizeNullable ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
+    val batchSize = batchSizeNullable
+            ?: max(5, min(subjectCodes.size / 5, 20)) // @Performance What should this number be?
     val contexts = Array(batchSize) { getContextAsync() }.map { it.get() }.toTypedArray()
 
     return SimpleBatchedFutureEngine<SubjectCode, CatalogQueryData>(
-        subjectCodes,
-        batchSize
+            subjectCodes,
+            batchSize
     ) { subjectCode, idx ->
         queryCatalog(term, subjectCode, contexts[idx])
     }.asSequence().filterNotNull()
@@ -71,10 +72,10 @@ private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: Http
         set("Cookie", httpContext.cookies.joinToString(";") { it.toString() })
 
         val params = listOf( // URL params
-            "CSRFToken" to httpContext.csrfToken,
-            "term" to term.id.toString(),
-            "acad_group" to subjectCode.school,
-            "subject" to subjectCode.abbrev
+                "CSRFToken" to httpContext.csrfToken,
+                "term" to term.id.toString(),
+                "acad_group" to subjectCode.school,
+                "subject" to subjectCode.abbrev
         )
         queryLogger.debug { "Params are ${params}." }
         val bodyValue = params.joinToString("&") { it.first + '=' + it.second }

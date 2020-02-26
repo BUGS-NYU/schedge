@@ -89,6 +89,7 @@ enum class SectionStatus {
     }
 
 }
+
 // @HelpWanted We need to store the subject names here as well
 private val AvailableSubjects: Map<String, Set<String>> = "/subjects.txt".asResourceLines().map {
     val (subj, school) = it.split('-')
@@ -105,7 +106,7 @@ private val AvailableSubjects: Map<String, Set<String>> = "/subjects.txt".asReso
 
 data class SchoolMetadata internal constructor(val code: String, val name: String?)
 
-private val Schools : List<SchoolMetadata> = "/schools.txt".asResourceLines().map {
+private val Schools: List<SchoolMetadata> = "/schools.txt".asResourceLines().map {
     val (code, name) = it.split(',', limit = 2)
     SchoolMetadata(code, name)
 }
@@ -127,11 +128,11 @@ class SubjectCode {
 
         @JvmStatic
         fun allSubjects(): List<SubjectCode> =
-            AvailableSubjects.asSequence().map { pair ->
-                pair.value.asSequence().map {
-                    SubjectCode(it, pair.key, Unit)
-                }
-            }.flatten().toList()
+                AvailableSubjects.asSequence().map { pair ->
+                    pair.value.asSequence().map {
+                        SubjectCode(it, pair.key, Unit)
+                    }
+                }.flatten().toList()
 
         /*
         Get sequence of subject codes based on school
@@ -200,13 +201,13 @@ enum class Semester {
 
         @JvmStatic
         fun fromCode(code: String): Semester {
-          return when(code.toLowerCase()) {
-            "ja" -> January
-            "fa" -> Fall
-            "sp" -> Spring
-            "su" -> Summer
-            else -> valueOf(code)
-          }
+            return when (code.toLowerCase()) {
+                "ja" -> January
+                "fa" -> Fall
+                "sp" -> Spring
+                "su" -> Summer
+                else -> valueOf(code)
+            }
         }
 
         // Turns enum into integer that conforms to NYU's conventions.

@@ -35,41 +35,17 @@ fun masterScrapeSection(term: Term, subjectCode: SubjectCode): List<Course> {
 
 fun masterScrapeSection(term: Term, forSchool: String, batchSizeNullable: Int?): Sequence<List<Course>> {
     val courses = scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool), batchSizeNullable)
-    val iterator = courses.flatten().asStream().map { course ->
-        course.sections
-    }.flatMap { mutableList ->
-        mutableList.stream()
-    }.iterator()
-
-    val size = courses.flatten().map { course ->
-        course.sections
-    }.flatten().toList().size
-    SimpleBatchedFutureEngine<Section, Void>(
-            iterator, size
-    ) { section, _ ->
-        section.update(querySection(term, section.registrationNumber))
+    return courses.map {courseList ->
+      scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
     }
-    return courses
 }
 
 
 fun masterScrapeSection(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int?): Sequence<List<Course>> {
     val courses = scrapeFromCatalog(term, subjectCodes, batchSizeNullable)
-    val iterator = courses.flatten().asStream().map { course ->
-        course.sections
-    }.flatMap { mutableList ->
-        mutableList.stream()
-    }.iterator()
-
-    val size = courses.flatten().map { course ->
-        course.sections
-    }.flatten().toList().size
-    SimpleBatchedFutureEngine<Section, Void>(
-            iterator, size
-    ) { section, _ ->
-        section.update(querySection(term, section.registrationNumber))
+    return courses.map {courseList ->
+      scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
     }
-    return courses
 }
 
 private fun scrapeCourseSections(term: Term, courses: Sequence<Course>, batchSizeNullable: Int? = null): List<Course> {

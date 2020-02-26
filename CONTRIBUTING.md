@@ -115,56 +115,42 @@ brew install kotlin
 The following ASCII file structure diagram shows the most important packages and files, with comments.
 ``` bash
     .
-    ├── build.gradle                                    // Gradle build tool to get dependencies, build automation
+    ├── build.gradle                                    // Build script
     └── src
         └── main
-            ├── java                                    // Java code currently being refactored from Kotlin. Handle I/O, database, and CLI
-            │   ├── Main.java                           // Main to run cli  
-            │   ├── api                                 // Handling API endpoints and documentation
-            │   │   ├── App.java                        // Main and abstract classes of the API
-            │   │   ├── CoursesEndpoint.java            // Courses endpoint providing catalog's data 
-            │   │   ├── SchoolsEndpoint.java            // Schools endpoint providing list of schools
-            │   │   ├── SubjectsEndpoint.java           // Subjects endpoint providing list of subjects available
-            │   │   └── models                          // Data objects for the API
-            │   │       ├── Course.java                 
-            │   │       ├── Meeting.java
-            │   │       ├── School.java
-            │   │       ├── Section.java
-            │   │       └── Subject.java
-            │   ├── cli                                 // cli - command-line interface
-            │   │   ├── parse.java                      // Parse commands based on input file or console 
-            │   │   ├── query.java                      // Query commands for catalog, sections and schools/subjects
-            │   │   ├── schedge.java                    // Schedge commands to provide all subcommands: query, parse and scrape
-            │   │   └── scrape.java                     // Scrape commands for catalog, sections and schools/subjects
-            │   ├── scraping
-            │   │   ├── SimpleBatchedFutureEngine.java  // Handling asynchronous scraping with Future
-            │   │   └── models                          // Data objects for scraping 
-            │   │       ├── CatalogData.java            
-            │   │       ├── CatalogQueryData.java
-            │   │       ├── Course.java
-            │   │       ├── Meeting.java
-            │   │       ├── School.java
-            │   │       ├── Section.java
-            │   │       ├── SectionAttribute.java
-            │   │       └── Subject.java
-            │   └── services                            // Parsing, Inserting and Connecting to Postgres database
-            │       ├── GetConnection.java
-            │       ├── InsertCourses.java
-            │       ├── JsonMapper.java
-            │       ├── ParseCatalog.java
-            │       ├── ParseSchoolSubjects.java
-            │       ├── ParseSection.java
-            │       └── SelectCourses.java
-            ├── kotlin                                  // Handling scraping for now. Currently being refactored into Java
-            │   ├── models                              // Data objects for query and scraping
-            │   │   └── nyu.kt
-            │   ├── services                            // The meat of the scraping: query & scrape catalogs, sections and subjects asynchronously
-            │   │   ├── query_catalog.kt                // queries the NYU Albert course catalog                                                                                                              
-            │   │   ├── query_school.kt                 // queries NYU Albert for schools/subjects based on term
-            │   │   ├── query_section.kt                // queries NYU Albert for section descriptions
-            │   │   ├── scrape_catalog.kt               // scrapes the NYU Albert course catalog
-            │   │   └── scrape_section.kt               // scrapes the NYU Albert course section descriptions
-            └── resources                               // Schools and subjects stored in txt file for now
+            ├── java
+            │   ├── Main.java                           // Main to run cli
+            │   ├── api                                 // Handling API endpoints and documentation
+            │   │   ├── App.java                        // Main and abstract classes of the API
+            │   │   ├── CoursesEndpoint.java            // Endpoint for course data
+            │   │   ├── SchoolsEndpoint.java            // Endpoint for schools API
+            │   │   ├── SubjectsEndpoint.java           // Endpoint for subjects API
+            │   │   └── models                          // Data objects for the API
+            │   │       └── ...
+            │   ├── cli                                 // cli - command-line interface
+            │   │   └── ...
+            │   ├── scraping
+            │   │   ├── SimpleBatchedFutureEngine.java  // Handling asynchronous scraping
+            │   │   └── models                          // Data objects for scraping
+            │   │       └── ...
+            │   └── services                            // Actions that Schedge can do
+            │       ├── GetConnection.java
+            │       ├── InsertCourses.java
+            │       ├── JsonMapper.java
+            │       ├── ParseCatalog.java
+            │       ├── ParseSchoolSubjects.java
+            │       ├── ParseSection.java
+            │       └── SelectCourses.java
+            ├── kotlin                                  // Kotlin code; mostly handles scraping
+            │   ├── models                              // Data objects for query and scraping
+            │   │   └── nyu.kt
+            │   ├── services                            // Services for scraping data asynchronously
+            │   │   ├── query_catalog.kt
+            │   │   ├── query_school.kt
+            │   │   ├── query_section.kt
+            │   │   ├── scrape_catalog.kt
+            │   │   └── scrape_section.kt
+            └── resources                               // School and subject data
                 ├── schools.txt
                 └── subjects.txt
 ```
@@ -172,14 +158,14 @@ The following ASCII file structure diagram shows the most important packages and
 ## Development
 
 ### Repository
-- Fork this repository by clicking `fork` on the right side. 
+- Fork this repository by clicking `fork` on the right side.
 - Choose where you want to save the project locally on your computer then run `git clone [Your URL/Git here]`.
-- We recommend to develop your feature through another branch other than the `master` branch. 
-So, run `git checkout -b [name of your branch here]` and develop the feature. You can switch between
-branches by the same command by removing `-b`. 
+- We recommend to develop your feature through another branch other than the `master` branch.
+  So, run `git checkout -b [name of your branch here]` and develop the feature. You can switch
+  between branches by the same command by removing `-b`.
 - Once you finish, you can run the normal `git add`, `git commit` & `git push`. 
 - Make a [PR](#user-content-pull-request) when the feature is fully finished or if you would like
-feedback on your changes. 
+  feedback on your changes.
 
 <!-- @HelpWanted Make this more detailed -->
 ### Using IntelliJ
@@ -188,56 +174,60 @@ in the typical case you can use the build button in the top right hand corner to
 build/check your work, and the run button to run. The class `Main` is located in Java folder. 
 
 ### Using the Command Line
+A [command-line interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface)
+processes commands to a computer program in the form of lines of text. The program
+which handles the interface is called a command-line interpreter or command-line
+processor. This can easily be used through the Terminal (Mac) or Command Prompt
+(Windows).  If you have taken Introduction to CS in Java, you are familiar with Scanner.
+CLI is somewhat similar. It reads the inputs from the users but there are only some
+subcommands defined in the project. We have provided them for Schedge that would quickly
+allow you to query, scrape and parse Albert data. So shall we open the terminal and begin?
 
-#### What is it you ask ?!!
-A [command-line interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface) processes commands to a computer program in the form of 
-lines of text. The program which handles the interface is called a command-line interpreter 
-or command-line processor. This can easily be used through the Terminal (Mac) or Command Prompt (Windows).
-If you have taken Introduction to CS in Java, you are familiar with Scanner. CLI is somewhat similar. It reads the inputs 
-from the users but there are only some subcommands defined in the project. We have provided them for Schedge that 
-would quickly allow you to query, scrape and parse Albert data. So shall we open the terminal and begin? 
+### Setting Up the PostGres Database
+- Run `pg_ctl -D /usr/local/var/postgres start`
+- Login to the database using `psql -d postgres`
+  - `CREATE DATABASE schedge;`
 
 ## Build
 - `gradle build`: build the application.
-- `java-jar .build/libs/schedge-all.jar`: test the code. 
-- `gradle checkFast`: quickly check if the code compiles. 
+- `java-jar .build/libs/schedge-all.jar`: test the code.
+- `gradle checkFast`: quickly check if the code compiles.
 
 ## Commands
 The following commands are valid in Schedge:
 
 ```sh
-./schedge query catalog     // Query the catalog
-./schedge query sections    // Query a section
-./schedge query school      // Query a school/subject
-./schedge parse catalog     // Parse the catalog
-./schedge parse section     // Parse the section
-./schedge parse school      // Parse the school/subject
-./schedge scrape catalog    // scrape the catalog
-./schedge scrape sections   // scrape the sections
-./schedge scrape school     // scrape the school/subject
-./schedge db scrape // scrape the catalog for information
-./schedge db query  // query the database for information
-./schedge db serve  // Serve the database data through an API
+./schedge query catalog     # Query the catalog
+./schedge query sections    # Query a section
+./schedge query school      # Query a school/subject
+./schedge parse catalog     # Parse the catalog
+./schedge parse section     # Parse the section
+./schedge parse school      # Parse the school/subject
+./schedge scrape catalog    # scrape the catalog
+./schedge scrape sections   # scrape the sections
+./schedge scrape school     # scrape the school/subject
+./schedge db scrape         # scrape the catalog for information
+./schedge db query          # query the database for information
+./schedge db serve          # Serve the database data through an API
 ```
 
-#### Example 
+#### Example
 ```sh
-./schedge scrape catalog --year 2020 --term sp --school UA --subject CSCI 
+./schedge scrape catalog --year 2020 --term sp --school UA --subject CSCI
 ```
-The above command will scrape catalog data from Albert website for Computer Science courses at the 
-College of Arts and Sciences for the Spring, 2020. 
+The above command will scrape catalog data from Albert website for Computer Science courses at the
+College of Arts and Sciences for the Spring, 2020.
 
 ## Issue
 Remember to include enough information if you're reporting a bug.
-Asking question through an issue is totally fine as well. 
+Asking question through an issue is totally fine as well.
 
 ## Pull Request
 It would be best to develop your feature with a new branch other than master.
 Every PR will be considered.
 
 ### Before Creating a PR
-- Making sure that the code compiles and 
-test your code.
+- Making sure that the code compiles and test your code.
 - Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).
 
 ## Comment Annotations
@@ -246,5 +236,5 @@ The codebase uses the following annotations in the comments:
 - `@HelpWanted` - We need contributors for this code
 - `@TODO` - We need to finish this code
 - `@Performance` - This area can be tweaked/rewritten to improve performance
-- `@CodeOrg` - We should reorganize this code    
+- `@CodeOrg` - We should reorganize this code
 

@@ -31,7 +31,7 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  * @return List of courses
  */
 fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
-    return querySection(term, queryCatalog(term, subjectCode).let { rawData ->
+    return querySections(term, queryCatalog(term, subjectCode).let { rawData ->
         ParseCatalog.parseRegistrationNumber(rawData.data)
     }, batchSize).asIterable().map { rawData ->
         try {
@@ -50,7 +50,7 @@ fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: In
  * @return List of courses
  */
 fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = null) : Sequence<SectionAttribute> {
-    return querySection(term,
+    return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
             .asIterable().map { rawData ->
@@ -65,7 +65,7 @@ fun scrapeFromCatalogSection(term : Term, forSchool: String?, batchSize: Int? = 
  * @return List of courses
  */
 fun scrapeFromAllCatalogSection(term: Term, subjectCodes : List<SubjectCode>, batchSize: Int? = null) : Sequence<SectionAttribute> {
-    return querySection(term,
+    return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, subjectCodes).toList().toString()), batchSize)
             .asIterable().map { rawData ->

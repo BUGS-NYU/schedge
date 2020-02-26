@@ -1,12 +1,11 @@
 package services;
 
-import java.time.DayOfWeek;
 import java.io.IOException;
-import java.util.Arrays;
+import java.time.DayOfWeek;
 import java.util.*;
+import java.util.Arrays;
 import kotlin.text.StringsKt;
 import models.*;
-import scraping.models.*;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -17,6 +16,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraping.models.*;
 import utils.UtilsKt;
 
 /**
@@ -117,7 +117,7 @@ public class ParseCatalog implements Iterator<Course> {
     return new SectionMetadata(
         registrationNumber, sectionCode, type, sectionData.get("Instructor"),
         SectionStatus.parseStatus(sectionData.get("Status")), meetings,
-        sectionData.containsKey("Topic") ? sectionData.get("Topic") : "",
+        sectionData.getOrDefault("Topic", ""),
         sectionData.containsKey("Wait List Total")
             ? Integer.parseInt(sectionData.get("Wait List Total"))
             : 0);

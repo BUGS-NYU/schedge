@@ -72,9 +72,10 @@ sdk install kotlin
 ```
 
 ### Mac
-If you are on Mac, installing homebrew helps manage dependencies easier for your life.
-Homebrew is a package manager for MacOS, helping installation of other dependencies become easier. 
-Read the [documentation](https://docs.brew.sh/)
+If you are on Mac, installing HomeBrew, a package manager for MacOs, helps make
+managing dependencies easier. Read the [documentation](https://docs.brew.sh/)
+for more information, or just copy paste the script below:
+
 ```shell script
 # Install homebrew
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -82,17 +83,26 @@ Read the [documentation](https://docs.brew.sh/)
 #Update homebrew if it's already installed on your machine
 brew update
 ```
-Git is a version control system and helps manage the project. Learn [git](https://www.tutorialspoint.com/git/index.htm)
+
+Git is a version control system and helps manage the project. Learn
+[git](https://www.tutorialspoint.com/git/index.htm)
+
 ```shell script
 #Install git.
 brew install git 
 ```
-Postgresql is used as the database for Schedge. Read more about it [here](https://www.postgresql.org/about/)
+
+Postgresql is used as the database for Schedge. Read more about it
+[here](https://www.postgresql.org/about/)
+
 ```shell script
 # Install postgresql. postgresql is for the database
 brew install postgresql
-``` 
-Java codes handle I/O and parsing the data. Read the [Javadoc](https://docs.oracle.com/javase/7/docs/api/)
+```
+
+Java codes handle I/O and parsing the data. Read the
+[Javadoc](https://docs.oracle.com/javase/7/docs/api/)
+
 ```shell script
 #Install Java.
 brew cask install java
@@ -159,19 +169,21 @@ The following ASCII file structure diagram shows the most important packages and
 
 ### Repository
 - Fork this repository by clicking `fork` on the right side.
-- Choose where you want to save the project locally on your computer then run `git clone [Your URL/Git here]`.
-- We recommend to develop your feature through another branch other than the `master` branch.
-  So, run `git checkout -b [name of your branch here]` and develop the feature. You can switch
-  between branches by the same command by removing `-b`.
-- Once you finish, you can run the normal `git add`, `git commit` & `git push`. 
-- Make a [PR](#user-content-pull-request) when the feature is fully finished or if you would like
-  feedback on your changes.
+- Choose where you want to save the project locally on your computer then run
+  `git clone [Your URL/Git here]`.
+- We recommend to develop your feature through another branch other than the
+  `master` branch. So, run `git checkout -b [name of your branch here]` and develop
+  the feature. You can switch between branches by the same command by removing `-b`.
+- Once you finish, you can run the normal `git add`, `git commit` & `git push`.
+- Make a [PR](#user-content-pull-request) when the feature is fully finished or
+  if you would like feedback on your changes.
 
 <!-- @HelpWanted Make this more detailed -->
 ### Using IntelliJ
 You'll need to specify the command line arguments to use when testing the app, but
 in the typical case you can use the build button in the top right hand corner to
-build/check your work, and the run button to run. The class `Main` is located in Java folder. 
+build/check your work, and the run button to run. The class `Main` is located in
+Java folder.
 
 ### Using the Command Line
 A [command-line interface (CLI)](https://en.wikipedia.org/wiki/Command-line_interface)

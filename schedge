@@ -5,7 +5,7 @@ PROJ_DIR="$(dirname "$0")"
 if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   shift
   if [ -f "$PROJ_DIR/.pid" ]; then
-    sudo fuser -k -n tcp 80
+    cat "$PROJ_DIR/.pid" | sudo xargs kill
     rm "$PROJ_DIR/.pid" 2>/dev/null
   else
     echo "Nothing to kill!"
@@ -21,7 +21,7 @@ fi
 
 if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   if [ -f "$PROJ_DIR/.pid" ]; then
-    sudo fuser -k -n tcp 80
+    cat "$PROJ_DIR/.pid" | sudo xargs kill
   fi
 
   echo "Running in disowned process as root..."

@@ -199,6 +199,8 @@ allow you to query, scrape and parse Albert data. So shall we open the terminal 
 - Run `pg_ctl -D /usr/local/var/postgres start`
 - Login to the database using `psql -d postgres`
   - `CREATE DATABASE schedge;`
+  - `CREATE USER schedge WITH SUPERUSER;`
+- Run `gradle updateDb`
 
 ## Build
 - `gradle build`: build the application.

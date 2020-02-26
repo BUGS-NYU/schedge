@@ -1,15 +1,21 @@
 package services;
 
+import api.models.*;
 import database.generated.Tables;
 import database.generated.tables.Courses;
-import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
-import models.Semester;
-import models.Term;
-import models.SubjectCode;
+import database.generated.tables.Sections;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import models.SectionStatus;
 import models.SectionType;
-import api.models.*;
+import models.Semester;
+import models.SubjectCode;
+import models.Term;
 import org.joda.time.DateTime;
 import org.jooq.DSLContext;
 import org.jooq.Record;
@@ -18,13 +24,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class SelectCourses {
 
@@ -87,7 +86,8 @@ public class SelectCourses {
             r.get(SECTIONS.INSTRUCTOR),
             SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
             SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
-            selectMeetings(context, r.get(SECTIONS.ID)), null);
+            selectMeetings(context, r.get(SECTIONS.ID)), null,
+            r.get(SECTIONS.WAITLIST_TOTAL));
         if (!associatedSections.containsKey(associatedWith)) {
           associatedSections.put(associatedWith, new ArrayList<>());
         }
@@ -105,7 +105,12 @@ public class SelectCourses {
               SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
               SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
               selectMeetings(context, id),
-              associatedSections.getOrDefault(id, null));
+              associatedSections.getOrDefault(id, null),
+              r.get(SECTIONS.SECTION_NAME), r.get(SECTIONS.WAITLIST_TOTAL),
+              r.get(SECTIONS.CAMPUS), r.get(SECTIONS.DESCRIPTION),
+              r.get(SECTIONS.MIN_UNITS), r.get(SECTIONS.MAX_UNITS),
+              r.get(SECTIONS.INSTRUCTION_MODE), r.get(SECTIONS.GRADING),
+              r.get(SECTIONS.ROOM_NUMBER), r.get(SECTIONS.PREREQUISITES));
         })
         .collect(Collectors.toList());
   }

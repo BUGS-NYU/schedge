@@ -1,20 +1,20 @@
 package services;
 
+import database.generated.Tables;
 import database.generated.tables.Courses;
-import database.generated.tables.Sections;
 import database.generated.tables.Meetings;
+import database.generated.tables.Sections;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
 import models.*;
-import scraping.models.*;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import database.generated.Tables;
-import java.sql.Timestamp;
+import scraping.models.*;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -56,17 +56,26 @@ public class InsertCourses {
     context.delete(SECTIONS).where(SECTIONS.COURSE_ID.eq(courseId)).execute();
 
     for (Section s : sections) {
-      int id = context
-                   .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                               SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                               SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                               SECTIONS.SECTION_STATUS)
-                   .values(s.getRegistrationNumber(), courseId,
-                           s.getSectionCode(), s.getInstructor(),
-                           s.getType().ordinal(), s.getStatus().ordinal())
-                   .returning(SECTIONS.ID)
-                   .fetchOne()
-                   .getValue(SECTIONS.ID);
+      int id =
+          context
+              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                          SECTIONS.SECTION_STATUS, SECTIONS.SECTION_NAME,
+                          SECTIONS.WAITLIST_TOTAL, SECTIONS.MIN_UNITS,
+                          SECTIONS.MAX_UNITS, SECTIONS.CAMPUS,
+                          SECTIONS.DESCRIPTION, SECTIONS.INSTRUCTION_MODE,
+                          SECTIONS.GRADING, SECTIONS.ROOM_NUMBER,
+                          SECTIONS.PREREQUISITES)
+              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
+                      s.getInstructor(), s.getType().ordinal(),
+                      s.getStatus().ordinal(), s.getSectionName(),
+                      s.getWaitlistTotal(), s.getMinUnits(), s.getMaxUnits(),
+                      s.getCampus(), s.getDescription(), s.getInstructionMode(),
+                      s.getGrading(), s.getRoomNumber(), s.getPrerequisites())
+              .returning(SECTIONS.ID)
+              .fetchOne()
+              .getValue(SECTIONS.ID);
       insertMeetings(context, id, s.getMeetings());
       if (s.getRecitations() != null)
         insertRecitations(context, courseId, s.getRecitations(), id);
@@ -91,10 +100,19 @@ public class InsertCourses {
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
                           SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
                           SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.SECTION_STATUS, SECTIONS.ASSOCIATED_WITH)
+                          SECTIONS.SECTION_STATUS, SECTIONS.ASSOCIATED_WITH,
+                          SECTIONS.SECTION_NAME, SECTIONS.WAITLIST_TOTAL,
+                          SECTIONS.MIN_UNITS, SECTIONS.MAX_UNITS,
+                          SECTIONS.CAMPUS, SECTIONS.DESCRIPTION,
+                          SECTIONS.INSTRUCTION_MODE, SECTIONS.GRADING,
+                          SECTIONS.ROOM_NUMBER, SECTIONS.PREREQUISITES)
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
                       s.getInstructor(), s.getType().ordinal(),
-                      s.getStatus().ordinal(), associatedWith)
+                      s.getStatus().ordinal(), associatedWith,
+                      s.getSectionName(), s.getWaitlistTotal(), s.getMinUnits(),
+                      s.getMaxUnits(), s.getCampus(), s.getDescription(),
+                      s.getInstructionMode(), s.getGrading(), s.getRoomNumber(),
+                      s.getPrerequisites())
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);

@@ -18,6 +18,18 @@ CREATE TABLE public.sections (
   section_type        integer                     NOT NULL,
   section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
+
+  waitlist_total       integer                     NOT NULL,
+  section_name        varchar(128)                 NOT NULL,
+  min_units           float                        NOT NULL,
+  max_units           float                        NOT NULL,
+  campus              varchar(100)                 NOT NULL,
+  description         text                         NOT NULL,
+  instruction_mode    varchar(20)                  NOT NULL,
+  grading             varchar(20)                  NOT NULL,
+  room_number         varchar(20)                  NOT NULL,
+  prerequisites       varchar                      NOT NULL,
+
   PRIMARY KEY (course_id, section_code)
 );
 
@@ -35,4 +47,3 @@ CREATE TABLE public.meetings (
 CREATE UNIQUE INDEX course_idx ON courses (id);
 CREATE UNIQUE INDEX section_idx ON sections (id);
 CREATE INDEX sections_associated_with ON sections (associated_with);
-

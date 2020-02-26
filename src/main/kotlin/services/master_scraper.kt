@@ -33,20 +33,18 @@ fun masterScrapeSection(term: Term, subjectCode: SubjectCode): List<Course> {
     return courses
 }
 
-fun masterScrapeSection(term: Term, forSchool: String, batchSizeNullable: Int?): Sequence<List<Course>> {
-    val courses = scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool), batchSizeNullable)
-    return courses.map {courseList ->
-      scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
-    }
-}
+fun masterScrapeSection(term: Term, forSchool: String, batchSizeNullable: Int?): Sequence<List<Course>> =
+        scrapeFromCatalog(term, SubjectCode.allSubjects(forSchool), batchSizeNullable)
+                .map { courseList ->
+                    scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
+                }
 
 
-fun masterScrapeSection(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int?): Sequence<List<Course>> {
-    val courses = scrapeFromCatalog(term, subjectCodes, batchSizeNullable)
-    return courses.map {courseList ->
-      scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
-    }
-}
+fun masterScrapeSection(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int?): Sequence<List<Course>> =
+        scrapeFromCatalog(term, subjectCodes, batchSizeNullable)
+                .map { courseList ->
+                    scrapeCourseSections(term, courseList.asSequence(), batchSizeNullable)
+                }
 
 private fun scrapeCourseSections(term: Term, courses: Sequence<Course>, batchSizeNullable: Int? = null): List<Course> {
     val courseList: MutableList<Course> = mutableListOf()

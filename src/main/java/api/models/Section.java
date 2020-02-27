@@ -19,19 +19,12 @@ public class Section {
 
   // values that need to be updated
   private String campus;
-
   private String description;
-
-  private double minUnits;
-
-  private double maxUnits;
-
+  private Double minUnits;
+  private Double maxUnits;
   private String instructionMode;
-
   private String grading;
-
   private String roomNumber;
-
   private String prerequisites;
 
   public Section(int registrationNumber, String sectionCode, String instructor,
@@ -57,7 +50,7 @@ public class Section {
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal, String campus, String description,
-                 double minUnits, double maxUnits, String instructionMode,
+                 Double minUnits, Double maxUnits, String instructionMode,
                  String grading, String roomNumber, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
@@ -101,42 +94,13 @@ public class Section {
   }
 
   public String getCampus() { return campus; }
-
-  public void setCampus(String campus) { this.campus = campus; }
-
   public String getSectionName() { return sectionName; }
-
-  public void setSectionName(String sectionName) {
-    this.sectionName = sectionName;
-  }
-
   public Integer getWaitlistTotal() { return waitlistTotal; }
-
-  public void setWaitlistTotal(Integer waitlistTotal) {
-    this.waitlistTotal = waitlistTotal;
-  }
-
   public String getDescription() { return description; }
-
-  public double getMinUnits() { return minUnits; }
-
-  public double getMaxUnits() { return maxUnits; }
-
-  public void setMaxUnits(double maxUnits) { this.maxUnits = maxUnits; }
-
+  public Double getMinUnits() { return minUnits; }
+  public Double getMaxUnits() { return maxUnits; }
   public String getInstructionMode() { return instructionMode; }
-
   public String getGrading() { return grading; }
-
-  public void setGrading(String grading) { this.grading = grading; }
-
   public String getRoomNumber() { return roomNumber; }
-
-  public void setRoomNumber(String roomNumber) { this.roomNumber = roomNumber; }
-
   public String getPrerequisites() { return prerequisites; }
-
-  public void setPrerequisites(String prerequisites) {
-    this.prerequisites = prerequisites;
-  }
 }

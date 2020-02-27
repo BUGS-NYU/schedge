@@ -1,6 +1,6 @@
 package cli;
 
-import cli.validation.ValidateCatalogArgs;
+import cli.validation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.core.util.Json;
 import java.io.IOException;
@@ -66,68 +66,20 @@ public class scrape implements Runnable {
     @CommandLine.
     Option(names = "--output-file", description = "output file to write to")
     private String outputFile;
-    @CommandLine.Option(names = "--pretty") private String pretty;
+    @CommandLine.Option(names = "--pretty", defaultValue = "true")
+    private boolean pretty;
 
     public void run() {
       long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(Semester.fromCode(this.semester), year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      if ((subject != null && school != null && registrationNumber != null)) {
-        throw new IllegalArgumentException(
-            "Must provide either --registration-number OR "
-            + "--subject AND --term");
-      }
-
-      if (subject == null && school == null) {
-        if (batchSize != null) {
-          throw new IllegalArgumentException(
-              "--batch-size doesn't make sense if scrape one catalog");
-        }
-
-        if (registrationNumber == null) {
-          throw new IllegalArgumentException(
-              "--registration-number is required if school and subject aren't provided!");
-        }
-        UtilsKt.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
-                            term, registrationNumber)));
-      } else if (school != null && subject != null) {
-        UtilsKt.writeToFileOrStdout(
-            outputFile,
-            JsonMapper.toJson(
-                Scrape_sectionKt
-                    .scrapeFromCatalogSection(
-                        term, new SubjectCode(this.subject, this.school),
-                        batchSize)
-                    .iterator(),
-                Boolean.parseBoolean(pretty)));
-      } else if (subject == null) {
-        UtilsKt.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(Scrape_sectionKt
-                                              .scrapeFromCatalogSection(
-                                                  term, school, batchSize)
-                                              .iterator(),
-                                          Boolean.parseBoolean(pretty)));
-      } else {
-        UtilsKt.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(
-                            Scrape_sectionKt
-                                .scrapeFromAllCatalogSection(
-                                    term, SubjectCode.allSubjects(), batchSize)
-                                .iterator(),
-                            Boolean.parseBoolean(pretty)));
-      }
+      ValidateSectionArgs
+          .validate(term, semester, year, registrationNumber, school, subject,
+                    batchSize, outputFile, pretty)
+          .andRun((term, list, batchSize)
+                      -> Scrape_sectionKt.scrapeFromAllCatalogSection(
+                          term, list, batchSize),
+                  (term, subjectCode)
+                      -> Scrape_sectionKt.scrapeFromSection(
+                          term, registrationNumber));
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + "seconds");

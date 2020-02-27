@@ -31,7 +31,9 @@ fun queryCatalog(term: Term, subjectCode: SubjectCode): CatalogQueryData {
             ?: throw IOException("No classes found matching criteria school=${subjectCode.school}, subject=${subjectCode.abbrev}")
 }
 
-fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
+
+fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
+                 batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
     if (subjectCodes.size > 1) {
         queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
     }
@@ -51,7 +53,8 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>, batchSizeNullable:
 /**
  * The meat of querying the catalog resides here.
  */
-private fun queryCatalog(term: Term, subjectCode: SubjectCode, httpContext: HttpContext): Future<CatalogQueryData?> {
+private fun queryCatalog(term: Term, subjectCode: SubjectCode,
+                         httpContext: HttpContext): Future<CatalogQueryData?> {
     queryLogger.info { "querying catalog for term=$term and subject=$subjectCode..." }
 
 

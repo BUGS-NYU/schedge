@@ -3,7 +3,6 @@ package scraping;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
-
 import org.slf4j.Logger;
 
 /**

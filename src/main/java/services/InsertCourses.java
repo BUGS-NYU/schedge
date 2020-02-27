@@ -42,7 +42,6 @@ public class InsertCourses {
                        .returning(COURSES.ID)
                        .fetchOne()
                        .getValue(COURSES.ID);
-
           insertSections(ctx, id, c.getSections());
         });
       }
@@ -53,7 +52,6 @@ public class InsertCourses {
                                     List<Section> sections)
       throws SQLException {
     Sections SECTIONS = Tables.SECTIONS;
-    context.delete(SECTIONS).where(SECTIONS.COURSE_ID.eq(courseId)).execute();
 
     for (Section s : sections) {
       int id =
@@ -73,6 +71,21 @@ public class InsertCourses {
                       s.getWaitlistTotal(), s.getMinUnits(), s.getMaxUnits(),
                       s.getCampus(), s.getDescription(), s.getInstructionMode(),
                       s.getGrading(), s.getRoomNumber(), s.getPrerequisites())
+              .onDuplicateKeyUpdate()
+              .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
+              .set(SECTIONS.INSTRUCTOR, s.getInstructor())
+              .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
+              .set(SECTIONS.SECTION_STATUS, s.getStatus().ordinal())
+              .set(SECTIONS.SECTION_NAME, s.getSectionName())
+              .set(SECTIONS.WAITLIST_TOTAL, s.getWaitlistTotal())
+              .set(SECTIONS.MIN_UNITS, s.getMinUnits())
+              .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
+              .set(SECTIONS.CAMPUS, s.getCampus())
+              .set(SECTIONS.DESCRIPTION, s.getDescription())
+              .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())
+              .set(SECTIONS.GRADING, s.getGrading())
+              .set(SECTIONS.ROOM_NUMBER, s.getRoomNumber())
+              .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);

@@ -30,7 +30,8 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: Int? = null): Sequence<SectionAttribute> {
+fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode,
+                             batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySections(term, queryCatalog(term, subjectCode).let { rawData ->
         ParseCatalog.parseRegistrationNumber(rawData.data)
     }, batchSize).asIterable().map { rawData ->
@@ -49,7 +50,8 @@ fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode, batchSize: In
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromCatalogSection(term: Term, forSchool: String?, batchSize: Int? = null): Sequence<SectionAttribute> {
+fun scrapeFromCatalogSection(term: Term, forSchool: String?,
+                             batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
@@ -64,7 +66,8 @@ fun scrapeFromCatalogSection(term: Term, forSchool: String?, batchSize: Int? = n
  * @param subjectCodes The subject for which we should be scraping
  * @return List of courses
  */
-fun scrapeFromAllCatalogSection(term: Term, subjectCodes: List<SubjectCode>, batchSize: Int? = null): Sequence<SectionAttribute> {
+fun scrapeFromAllCatalogSection(term: Term, subjectCodes: List<SubjectCode>,
+                                batchSize: Int? = null): Sequence<SectionAttribute> {
     return querySections(term,
             ParseCatalog.parseRegistrationNumber(
                     queryCatalog(term, subjectCodes).toList().toString()), batchSize)

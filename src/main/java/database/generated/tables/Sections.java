@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = 605364202;
+    private static final long serialVersionUID = 1464477129;
 
     /**
      * The reference instance of <code>public.sections</code>
@@ -134,7 +134,7 @@ public class Sections extends TableImpl<SectionsRecord> {
     /**
      * The column <code>public.sections.grading</code>.
      */
-    public final TableField<SectionsRecord, String> GRADING = createField("grading", org.jooq.impl.SQLDataType.VARCHAR(25), this, "");
+    public final TableField<SectionsRecord, String> GRADING = createField("grading", org.jooq.impl.SQLDataType.VARCHAR(48), this, "");
 
     /**
      * The column <code>public.sections.room_number</code>.

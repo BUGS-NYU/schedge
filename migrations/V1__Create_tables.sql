@@ -26,7 +26,7 @@ CREATE TABLE public.sections (
   campus              varchar(100),
   description         text,
   instruction_mode    varchar(32),
-  grading             varchar(25),
+  grading             varchar(48),
   room_number         varchar(64),
   prerequisites       varchar,
 

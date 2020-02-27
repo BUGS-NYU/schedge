@@ -2,6 +2,7 @@ package api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
+import java.util.Objects;
 import javax.validation.constraints.NotNull;
 import models.SectionStatus;
 import models.SectionType;
@@ -103,4 +104,31 @@ public class Section {
   public String getGrading() { return grading; }
   public String getRoomNumber() { return roomNumber; }
   public String getPrerequisites() { return prerequisites; }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return registrationNumber == section.registrationNumber &&
+                Objects.equals(sectionName, section.sectionName) &&
+                sectionCode.equals(section.sectionCode) &&
+                instructor.equals(section.instructor) &&
+                type == section.type &&
+                status == section.status &&
+                Objects.equals(waitlistTotal, section.waitlistTotal) &&
+                Objects.equals(campus, section.campus) &&
+                Objects.equals(description, section.description) &&
+                Objects.equals(minUnits, section.minUnits) &&
+                Objects.equals(maxUnits, section.maxUnits) &&
+                Objects.equals(instructionMode, section.instructionMode) &&
+                Objects.equals(grading, section.grading) &&
+                Objects.equals(roomNumber, section.roomNumber) &&
+                Objects.equals(prerequisites, section.prerequisites);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sectionName, registrationNumber, sectionCode, instructor, type, status, waitlistTotal, campus, description, minUnits, maxUnits, instructionMode, grading, roomNumber, prerequisites);
+    }
 }

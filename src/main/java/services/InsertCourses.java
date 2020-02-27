@@ -23,7 +23,7 @@ import scraping.models.*;
 public class InsertCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.insert_courses");
+      LoggerFactory.getLogger("services.InsertCourses");
   public static void insertCourses(Term term, List<Course> courses)
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {

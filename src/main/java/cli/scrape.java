@@ -75,11 +75,9 @@ public class scrape implements Runnable {
           .validate(term, semester, year, registrationNumber, school, subject,
                     batchSize, outputFile, pretty)
           .andRun((term, list, batchSize)
-                      -> Scrape_sectionKt.scrapeFromAllCatalogSection(
-                          term, list, batchSize),
-                  (term, subjectCode)
-                      -> Scrape_sectionKt.scrapeFromSection(
-                          term, registrationNumber));
+                      -> UtilsKt.seqToList(Scrape_sectionKt.scrapeFromAllCatalogSection(
+                          term, list, batchSize)),
+                  Scrape_sectionKt::scrapeFromSection);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + "seconds");
@@ -126,10 +124,8 @@ public class scrape implements Runnable {
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile, pretty)
           .andRun(
-              (term, list, batchSize)
-                  -> Scrape_catalogKt.scrapeFromCatalog(term, list, batchSize),
-              (term, subjectCode)
-                  -> Scrape_catalogKt.scrapeFromCatalog(term, subjectCode));
+                  Scrape_catalogKt::scrapeFromCatalog,
+                  Scrape_catalogKt::scrapeFromCatalog);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + " seconds");

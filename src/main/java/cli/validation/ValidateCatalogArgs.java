@@ -4,6 +4,7 @@ import api.App;
 import api.models.Course;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import models.Semester;
@@ -18,16 +19,16 @@ import utils.UtilsKt;
 public abstract class ValidateCatalogArgs {
   Term term;
   Integer batchSize;
-  Consumer<Object> writer;
+  BiConsumer<Term, Object> writer;
 
   private ValidateCatalogArgs(Term term, Integer batchSize,
-                              Consumer<Object> writer) {
+                              BiConsumer<Term, Object> writer) {
     this.term = term;
     this.batchSize = batchSize;
     this.writer = writer;
   }
 
-  public static interface ScraperForList {
+  public interface ScraperForList {
     Object scrape(Term term, List<SubjectCode> items, Integer batchSize);
   }
 
@@ -36,7 +37,7 @@ public abstract class ValidateCatalogArgs {
                                              String subject, Integer batchSize,
                                              String outputFile) {
     return validate(term, semester, year, school, subject, batchSize,
-                    o -> UtilsKt.writeToFileOrStdout(outputFile, o));
+            (t, o) -> UtilsKt.writeToFileOrStdout(outputFile, o));
   }
 
   public static ValidateCatalogArgs validate(Integer term, String semester,
@@ -45,7 +46,7 @@ public abstract class ValidateCatalogArgs {
                                              String outputFile,
                                              boolean prettyPrint) {
     return validate(term, semester, year, school, subject, batchSize,
-                    o
+            (t, o)
                     -> UtilsKt.writeToFileOrStdout(
                         outputFile, JsonMapper.toJson(o, prettyPrint)));
   }
@@ -53,7 +54,7 @@ public abstract class ValidateCatalogArgs {
   public static ValidateCatalogArgs validate(Integer termId, String semester,
                                              Integer year, String school,
                                              String subject, Integer batchSize,
-                                             Consumer<Object> writer) {
+                                             BiConsumer<Term, Object> writer) {
     Term term;
     if (termId == null && semester == null && year == null) {
       throw new IllegalArgumentException(
@@ -91,7 +92,7 @@ public abstract class ValidateCatalogArgs {
 
   public void andRun(ScraperForList forList,
                      BiFunction<Term, SubjectCode, Object> forSingleTon) {
-    writer.accept(this.run(forList, forSingleTon));
+    writer.accept(term, this.run(forList, forSingleTon));
   }
 
   abstract Object run(ScraperForList forList,
@@ -99,7 +100,7 @@ public abstract class ValidateCatalogArgs {
 
   public static class ByTerm extends ValidateCatalogArgs {
 
-    private ByTerm(Term term, Integer batchSize, Consumer<Object> writer) {
+    private ByTerm(Term term, Integer batchSize, BiConsumer<Term, Object> writer) {
       super(term, batchSize, writer);
     }
 
@@ -111,7 +112,7 @@ public abstract class ValidateCatalogArgs {
   public static class BySubject extends ValidateCatalogArgs {
     private SubjectCode c;
 
-    private BySubject(Term term, SubjectCode c, Consumer<Object> writer) {
+    private BySubject(Term term, SubjectCode c, BiConsumer<Term,Object> writer) {
       super(term, null, writer);
       this.c = c;
     }
@@ -125,7 +126,7 @@ public abstract class ValidateCatalogArgs {
   public static class BySchool extends ValidateCatalogArgs {
     private String school;
     private BySchool(Term term, String school, Integer batchSize,
-                     Consumer<Object> writer) {
+                     BiConsumer<Term,Object> writer) {
       super(term, batchSize, writer);
       this.school = school;
     }

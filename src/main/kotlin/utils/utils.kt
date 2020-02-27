@@ -114,3 +114,4 @@ sealed class T {
     }
 }
 
+fun <T> seqToList(seq: Sequence<T>): List<T> = seq.toList()

@@ -2,6 +2,8 @@ package cli;
 
 import cli.validation.*;
 import java.io.IOException;
+import java.util.Collections;
+
 import models.Semester;
 import models.SubjectCode;
 import models.Term;
@@ -12,6 +14,7 @@ import services.Query_catalogKt;
 import services.Query_schoolKt;
 import services.Query_sectionKt;
 import utils.UtilsKt;
+
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
@@ -69,8 +72,7 @@ public class query implements Runnable {
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile)
           .andRun((term, list, batchSize)
-                      -> Query_catalogKt.queryCatalog(
-                          term, SubjectCode.allSubjects(), batchSize),
+                      -> UtilsKt.seqToList(Query_catalogKt.queryCatalog(term, list, batchSize)),
                   (term, subjectCode)
                       -> Query_catalogKt.queryCatalog(term, subjectCode));
       long end = System.nanoTime();

@@ -18,15 +18,14 @@ fun querySection(term: Term, registrationNumber: Int): String {
     return querySectionAsync(term, registrationNumber).get()
 }
 
-fun querySectionAsync(term: Term, registrationNumber: Int,
-                      complete: (String) -> Unit): Future<Unit> {
+fun <T> querySectionAsync(term: Term, registrationNumber: Int,
+                      complete: (String) -> T): Future<T> {
     queryLogger.info { "Querying section in term=$term with registrationNumber=$registrationNumber..." }
     require(registrationNumber > 0) { "Registration numbers aren't negative!" }
-    val future = CompletableFuture<Unit>()
+    val future = CompletableFuture<T>()
 
     Fuel.get(DATA_URL + "${term.id}/${registrationNumber}").response { _, response, _ ->
-        complete(String(response.data))
-        future.complete(Unit)
+        future.complete(complete(String(response.data)))
     }
 
     return future
@@ -37,7 +36,7 @@ private fun querySectionAsync(
         registrationNumber: Int
 ): Future<String> {
     queryLogger.info { "Querying section in term=$term with registrationNumber=$registrationNumber..." }
-    require(registrationNumber > 0) { "Registration numbers aren't negative!" }
+    require(registrationNumber > 0) { "Registration numbers are positive!" }
     val future = CompletableFuture<String>()
 
     Fuel.get(DATA_URL + "${term.id}/${registrationNumber}").response { _, response, _ ->

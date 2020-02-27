@@ -1,5 +1,7 @@
 package services;
 
+import static services.Query_sectionKt.*;
+
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
@@ -24,39 +26,44 @@ import scraping.models.*;
  * the data scraped from Albert Mobile
  */
 public class UpdateSections {
-  public static void updateSessions(Term term, Integer batchSizeNullable)
+  private static Logger logger =
+      LoggerFactory.getLogger("services.UpdateSections");
+
+  public static void updateSections(Term term, Integer batchSizeNullable)
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Sections SECTIONS = Tables.SECTIONS;
 
-      // List<Integer> registrationNumbers =
-      //     (List<Integer>)context.select(SECTIONS.REGISTRATION_NUMBER)
-      //         .from(SECTIONS)
-      //         .fetch()
-      //         .getValues(0);
+      List<Integer> registrationNumbers =
+          (List<Integer>)context.select(SECTIONS.REGISTRATION_NUMBER)
+              .from(SECTIONS)
+              .fetch()
+              .getValues(0);
 
-      // Iterator<SectionAttribute> sectionAttributes =
-      //     new SimpleBatchedFutureEngine<>(
-      //         registrationNumbers,
-      //         batchSizeNullable == null ? 20 : batchSizeNullable,
-      //         (n, a) -> new CompletableFuture<>());
+      Iterator<SectionAttribute> sectionAttributes =
+          new SimpleBatchedFutureEngine<>(
+              registrationNumbers,
+              batchSizeNullable == null ? 40 : batchSizeNullable,
+              (num, __) -> querySectionAsync(term, num, ParseSection::parse));
 
-      // while (sectionAttributes.hasNext()) {
-      //   SectionAttribute s = sectionAttributes.next();
-      //   context.update(SECTIONS)
-      //       .set(SECTIONS.SECTION_NAME, s.getCourseName())
-      //       .set(SECTIONS.CAMPUS, s.getCampus())
-      //       .set(SECTIONS.DESCRIPTION, s.getDescription())
-      //       .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())
-      //       .set(SECTIONS.MIN_UNITS, s.getMinUnits())
-      //       .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
-      //       .set(SECTIONS.ROOM_NUMBER, s.getRoom())
-      //       .set(SECTIONS.GRADING, s.getGrading())
-      //       .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
-      //       .where(SECTIONS.REGISTRATION_NUMBER.eq(s.getRegistrationNumber()))
-      //       .execute();
-      // }
+      while (sectionAttributes.hasNext()) {
+
+        SectionAttribute s = sectionAttributes.next();
+        logger.info("Section: " + s.getRegistrationNumber());
+        context.update(SECTIONS)
+            .set(SECTIONS.SECTION_NAME, s.getCourseName())
+            .set(SECTIONS.CAMPUS, s.getCampus())
+            .set(SECTIONS.DESCRIPTION, s.getDescription())
+            .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())
+            .set(SECTIONS.MIN_UNITS, s.getMinUnits())
+            .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
+            .set(SECTIONS.ROOM_NUMBER, s.getRoom())
+            .set(SECTIONS.GRADING, s.getGrading())
+            .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
+            .where(SECTIONS.REGISTRATION_NUMBER.eq(s.getRegistrationNumber()))
+            .execute();
+      }
     }
   }
 }

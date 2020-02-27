@@ -87,7 +87,11 @@ public class SelectCourses {
             SectionType.values()[r.get(SECTIONS.SECTION_TYPE)],
             SectionStatus.values()[r.get(SECTIONS.SECTION_STATUS)],
             selectMeetings(context, r.get(SECTIONS.ID)), null,
-            r.get(SECTIONS.WAITLIST_TOTAL));
+            r.get(SECTIONS.SECTION_NAME), r.get(SECTIONS.WAITLIST_TOTAL),
+            r.get(SECTIONS.CAMPUS), r.get(SECTIONS.DESCRIPTION),
+            r.get(SECTIONS.MIN_UNITS), r.get(SECTIONS.MAX_UNITS),
+            r.get(SECTIONS.INSTRUCTION_MODE), r.get(SECTIONS.GRADING),
+            r.get(SECTIONS.ROOM_NUMBER), r.get(SECTIONS.PREREQUISITES));
         if (!associatedSections.containsKey(associatedWith)) {
           associatedSections.put(associatedWith, new ArrayList<>());
         }

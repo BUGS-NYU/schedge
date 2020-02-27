@@ -26,10 +26,8 @@ public class ParseSection {
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
 
-  public static @NotNull SectionAttribute parse(@NotNull String rawData)
-      throws IOException {
+  public static @NotNull SectionAttribute parse(@NotNull String rawData) {
     logger.info("parsing raw catalog section data...");
-    logger.info(rawData);
     Document doc = Jsoup.parse(rawData);
     doc.select("a").unwrap();
     doc.select("i").unwrap();

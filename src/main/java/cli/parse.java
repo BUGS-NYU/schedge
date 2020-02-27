@@ -148,38 +148,32 @@ public class parse implements Runnable {
 
     @Override
     public void run() {
-      try {
-        long start = System.nanoTime();
-        String input = UtilsKt.readFromFileOrStdin(inputFile);
-        if (school == null && subject == null) {
-          Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
-          Map<String, String> subjects =
-              ParseSchoolSubjects.parseSubject(input);
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
-              outputFile);
+      long start = System.nanoTime();
+      String input = UtilsKt.readFromFileOrStdin(inputFile);
+      if (school == null && subject == null) {
+        Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
+        Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
+        UtilsKt.writeToFileOrStdout(
+            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
+            outputFile);
 
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
-              outputFile);
-        } else if (subject == null) {
-          Map<String, String> subjects =
-              ParseSchoolSubjects.parseSubject(input);
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
-              outputFile);
-        } else {
-          Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
-          UtilsKt.writeToFileOrStdout(
-              JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
-              outputFile);
-        }
-        long end = System.nanoTime();
-        long duration = (end - start) / 1000000000;
-        logger.info(duration + " seconds");
-      } catch (IOException e) {
-        logger.warn(e.getMessage());
+        UtilsKt.writeToFileOrStdout(
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
+            outputFile);
+      } else if (subject == null) {
+        Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
+        UtilsKt.writeToFileOrStdout(
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
+            outputFile);
+      } else {
+        Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
+        UtilsKt.writeToFileOrStdout(
+            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
+            outputFile);
       }
+      long end = System.nanoTime();
+      long duration = (end - start) / 1000000000;
+      logger.info(duration + " seconds");
     }
   }
 }

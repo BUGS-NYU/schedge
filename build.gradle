@@ -128,6 +128,11 @@ project.tasks.getByName('generateDatabaseJooqSchemaSource').outputs.upToDateWhen
 // The build directory should not begin with the same name as the script
 allprojects {
     buildDir = ".build"
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8

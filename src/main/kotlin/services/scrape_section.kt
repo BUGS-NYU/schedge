@@ -25,42 +25,6 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
 }
 
 /**
- * Scraping the catalogs' sections from Albert Mobile given one subject code
- * @param term The term for which we should be scraping
- * @param subjectCodes The subject for which we should be scraping
- * @return List of courses
- */
-fun scrapeFromCatalogSection(term: Term, subjectCode: SubjectCode,
-                             batchSize: Int? = null): Sequence<SectionAttribute> {
-    return querySections(term, queryCatalog(term, subjectCode).let { rawData ->
-        ParseCatalog.parseRegistrationNumber(rawData.data)
-    }, batchSize).asIterable().map { rawData ->
-        try {
-            ParseSection.parse(rawData)
-        } catch (e: Exception) {
-            scraperLogger.warn(e.message)
-            null
-        }
-    }.asSequence().filterNotNull()
-}
-
-/**
- * Scraping the catalogs' sections from Albert Mobile given school name
- * @param term The term for which we should be scraping
- * @param subjectCodes The subject for which we should be scraping
- * @return List of courses
- */
-fun scrapeFromCatalogSection(term: Term, forSchool: String?,
-                             batchSize: Int? = null): Sequence<SectionAttribute> {
-    return querySections(term,
-            ParseCatalog.parseRegistrationNumber(
-                    queryCatalog(term, SubjectCode.allSubjects(forSchool)).toList().toString()), batchSize)
-            .asIterable().map { rawData ->
-                ParseSection.parse(rawData)
-            }.asSequence()
-}
-
-/**
  * Scraping the catalogs' sections from Albert Mobile given multiple subject codes
  * @param term The term for which we should be scraping
  * @param subjectCodes The subject for which we should be scraping

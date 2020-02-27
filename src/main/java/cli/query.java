@@ -62,14 +62,12 @@ public class query implements Runnable {
     @CommandLine.
     Option(names = "--output-file", description = "output file to write to")
     private String outputFile;
-    @CommandLine.Option(names = "--pretty", defaultValue = "true")
-    private boolean pretty;
 
     public void run() {
       long start = System.nanoTime();
       ValidateCatalogArgs
           .validate(term, semester, year, school, subject, batchSize,
-                    outputFile, pretty)
+                    outputFile)
           .andRun((term, list, batchSize)
                       -> Query_catalogKt.queryCatalog(
                           term, SubjectCode.allSubjects(), batchSize),

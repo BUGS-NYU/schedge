@@ -35,7 +35,7 @@ fun queryCatalog(term: Term, subjectCode: SubjectCode): CatalogQueryData {
 fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
                  batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
     if (subjectCodes.size > 1) {
-        queryLogger.info { "querying catalog for term=$term with multiple subjects..." }
+        queryLogger.debug { "querying catalog for term=$term with multiple subjects..." }
     }
 
     val batchSize = batchSizeNullable
@@ -55,7 +55,7 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
  */
 private fun queryCatalog(term: Term, subjectCode: SubjectCode,
                          httpContext: HttpContext): Future<CatalogQueryData?> {
-    queryLogger.info { "querying catalog for term=$term and subject=$subjectCode..." }
+    queryLogger.debug { "querying catalog for term=$term and subject=$subjectCode..." }
 
 
     val future = CompletableFuture<CatalogQueryData?>()
@@ -105,7 +105,7 @@ private fun getContext(): HttpContext = getContextAsync().get()
 private fun getContextAsync(): Future<HttpContext> {
     val future = CompletableFuture<HttpContext>()
 
-    queryLogger.info { "Getting CSRF token..." }
+    queryLogger.debug { "Getting CSRF token..." }
     Fuel.get(ROOT_URL).response { _, response, _ ->
         val cookies = response.headers["Set-Cookie"].flatMap {
             HttpCookie.parse(it)!!
@@ -119,7 +119,7 @@ private fun getContextAsync(): Future<HttpContext> {
             throw IOException("NYU servers did something unexpected.")
         }
 
-        queryLogger.info { "Retrieved CSRF token `${token}`" }
+        queryLogger.debug { "Retrieved CSRF token `${token}`" }
         future.complete(HttpContext(token, cookies))
     }
     return future

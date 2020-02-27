@@ -26,8 +26,8 @@ public class Section {
   // values that need to be updated
   private String campus = null;
   private String description = null;
-  private float minUnits = -1;
-  private float maxUnits = -1;
+  private Double minUnits = null;
+  private Double maxUnits = null;
   private String instructionMode = null;
   private String grading = null;
   private String roomNumber = null;
@@ -60,11 +60,11 @@ public class Section {
     this.description = map.getOrDefault("Description", "");
     if (map.get("minUnits") != null &&
         !((map.get("minUnits")).trim().equals(""))) {
-      this.minUnits = Float.parseFloat(map.getOrDefault("minUnits", "0"));
+      this.minUnits = Double.parseDouble(map.getOrDefault("minUnits", "0"));
     }
     if (map.get("maxUnits") != null &&
         !((map.get("maxUnits")).trim().equals(""))) {
-      this.maxUnits = Float.parseFloat(map.getOrDefault("maxUnits", "0"));
+      this.maxUnits = Double.parseDouble(map.getOrDefault("maxUnits", "0"));
     }
     this.instructionMode = map.getOrDefault("Instruction Mode", "In-Person");
     this.grading = map.getOrDefault("Grading", "");
@@ -75,8 +75,8 @@ public class Section {
 
   public String getSectionName() { return sectionName; }
   public int getRegistrationNumber() { return registrationNumber; }
-  public double getMinUnits() { return minUnits; }
-  public double getMaxUnits() { return maxUnits; }
+  public Double getMinUnits() { return minUnits; }
+  public Double getMaxUnits() { return maxUnits; }
   public String getSectionCode() { return sectionCode; }
   public String getInstructor() { return instructor; }
   public SectionType getType() { return type; }

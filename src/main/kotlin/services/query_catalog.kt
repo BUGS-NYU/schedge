@@ -55,7 +55,7 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
  */
 private fun queryCatalog(term: Term, subjectCode: SubjectCode,
                          httpContext: HttpContext): Future<CatalogQueryData?> {
-    queryLogger.debug { "querying catalog for term=$term and subject=$subjectCode..." }
+    queryLogger.info { "querying catalog for term=$term and subject=$subjectCode..." }
 
 
     val future = CompletableFuture<CatalogQueryData?>()
@@ -119,7 +119,7 @@ private fun getContextAsync(): Future<HttpContext> {
             throw IOException("NYU servers did something unexpected.")
         }
 
-        queryLogger.debug { "Retrieved CSRF token `${token}`" }
+        queryLogger.info { "Retrieved CSRF token `${token}`" }
         future.complete(HttpContext(token, cookies))
     }
     return future

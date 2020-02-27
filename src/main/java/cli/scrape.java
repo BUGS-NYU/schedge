@@ -17,11 +17,11 @@ import utils.UtilsKt;
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "scrape",
-                     synopsisSubcommandLabel =
-                         "(master | catalog | section | sections | school)",
-                     subcommands = {scrape.Master.class, scrape.Catalog.class,
-                                    scrape.Sections.class, scrape.School.class})
+@CommandLine.
+Command(name = "scrape",
+        synopsisSubcommandLabel = "(master | catalog | sections | school)",
+        subcommands = {scrape.Catalog.class, scrape.Sections.class,
+                       scrape.School.class})
 public class scrape implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
@@ -29,97 +29,6 @@ public class scrape implements Runnable {
   public void run() {
     throw new CommandLine.ParameterException(spec.commandLine(),
                                              "Missing required subcommand");
-  }
-
-  @CommandLine.
-  Command(name = "master", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape section",
-          description = "Scrape sections and update accordingly")
-  public static class Master implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("scrape.master");
-
-    @CommandLine.Option(names = "--term", description = "term to query from")
-    private Integer term;
-    @CommandLine.
-    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
-    private String semester;
-    @CommandLine.Option(names = "--year", description = "year to scrape from")
-    private Integer year;
-    @CommandLine.
-    Option(names = "--school", description = "school code: UA, UT, UY, etc")
-    private String school;
-    @CommandLine.
-    Option(names = "--subject", description = "subject code: CSCI, MA, etc")
-    private String subject;
-    @CommandLine.
-    Option(names = "--batch-size",
-           description = "batch size if query more than one catalog")
-    private Integer batchSize;
-    @CommandLine.
-    Option(names = "--output-file", description = "output file to write to")
-    private String outputFile;
-    @CommandLine.Option(names = "--pretty") private String pretty;
-
-    public void run() {
-      long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(Semester.fromCode(this.semester), year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      if (school == null) {
-        if (subject != null) {
-          throw new IllegalArgumentException(
-              "Subject does not make sense here");
-        }
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Master_scraperKt
-                      .masterScrapeSection(term, SubjectCode.allSubjects(),
-                                           batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      } else if (subject == null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Master_scraperKt.masterScrapeSection(term, school, batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      } else {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(Master_scraperKt.masterScrapeSection(
-                                    term, new SubjectCode(subject, school)),
-                                Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      }
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info(duration + "seconds");
-    }
   }
 
   @CommandLine.Command(
@@ -183,6 +92,11 @@ public class scrape implements Runnable {
         if (batchSize != null) {
           throw new IllegalArgumentException(
               "--batch-size doesn't make sense if scrape one catalog");
+        }
+
+        if (registrationNumber == null) {
+          throw new IllegalArgumentException(
+              "--registration-number is required if school and subject aren't provided!");
         }
         try {
           UtilsKt.writeToFileOrStdout(
@@ -307,7 +221,9 @@ public class scrape implements Runnable {
           UtilsKt.writeToFileOrStdout(
               outputFile,
               JsonMapper.toJson(
-                  Scrape_catalogKt.scrapeAllFromCatalog(term, school, batchSize)
+                  Scrape_catalogKt
+                      .scrapeFromCatalog(term, SubjectCode.allSubjects(school),
+                                         batchSize)
                       .iterator(),
                   Boolean.parseBoolean(pretty)));
         } catch (JsonProcessingException e) {

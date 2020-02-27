@@ -29,6 +29,7 @@ public class ParseSection {
   public static @NotNull SectionAttribute parse(@NotNull String rawData)
       throws IOException {
     logger.info("parsing raw catalog section data...");
+    logger.info(rawData);
     Document doc = Jsoup.parse(rawData);
     doc.select("a").unwrap();
     doc.select("i").unwrap();
@@ -71,6 +72,7 @@ public class ParseSection {
     }
     courseName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
+
     return new SectionAttribute(
         courseName, Integer.parseInt(secData.get("Class Number")),
         SectionStatus.parseStatus(secData.get("Status")),

@@ -24,14 +24,14 @@ public class Section {
   private Integer waitlistTotal;
 
   // values that need to be updated
-  private String campus;
-  private String description;
-  private float minUnits;
-  private float maxUnits;
-  private String instructionMode;
-  private String grading;
-  private String roomNumber;
-  private String prerequisites;
+  private String campus = null;
+  private String description = null;
+  private float minUnits = -1;
+  private float maxUnits = -1;
+  private String instructionMode = null;
+  private String grading = null;
+  private String roomNumber = null;
+  private String prerequisites = null;
 
   public Section(int registrationNumber, String sectionCode, String instructor,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
@@ -51,34 +51,26 @@ public class Section {
     this.status = status;
     this.meetings = meetings;
     this.recitations = recitations;
-
-    this.grading = "";
-    this.instructionMode = "";
-    this.prerequisites = "";
-    this.roomNumber = "";
-    this.description = "";
-    this.campus = "";
   }
 
-  public Future<Void> update(String rawData) {
+  public void update(String rawData) {
     Map<String, String> map = ParseSection.update(rawData);
     this.sectionName = map.get("sectionName");
-    this.campus = map.getOrDefault("Location","");
-    this.description = map.getOrDefault("Description","");
+    this.campus = map.getOrDefault("Location", "");
+    this.description = map.getOrDefault("Description", "");
     if (map.get("minUnits") != null &&
         !((map.get("minUnits")).trim().equals(""))) {
-      this.minUnits = Float.parseFloat(map.getOrDefault("minUnits","0"));
+      this.minUnits = Float.parseFloat(map.getOrDefault("minUnits", "0"));
     }
     if (map.get("maxUnits") != null &&
         !((map.get("maxUnits")).trim().equals(""))) {
-      this.maxUnits = Float.parseFloat(map.getOrDefault("maxUnits","0"));
+      this.maxUnits = Float.parseFloat(map.getOrDefault("maxUnits", "0"));
     }
     this.instructionMode = map.getOrDefault("Instruction Mode", "In-Person");
-    this.grading = map.getOrDefault("Grading","");
-    this.roomNumber = map.getOrDefault("Location","");
+    this.grading = map.getOrDefault("Grading", "");
+    this.roomNumber = map.getOrDefault("Room", "");
     this.prerequisites =
         map.getOrDefault("Notes", "See Description. None otherwise");
-    return new CompletableFuture<>();
   }
 
   public String getSectionName() { return sectionName; }

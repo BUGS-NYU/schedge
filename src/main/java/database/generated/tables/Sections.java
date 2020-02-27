@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = 746989642;
+    private static final long serialVersionUID = 605364202;
 
     /**
      * The reference instance of <code>public.sections</code>
@@ -99,52 +99,52 @@ public class Sections extends TableImpl<SectionsRecord> {
     /**
      * The column <code>public.sections.waitlist_total</code>.
      */
-    public final TableField<SectionsRecord, Integer> WAITLIST_TOTAL = createField("waitlist_total", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<SectionsRecord, Integer> WAITLIST_TOTAL = createField("waitlist_total", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.sections.section_name</code>.
      */
-    public final TableField<SectionsRecord, String> SECTION_NAME = createField("section_name", org.jooq.impl.SQLDataType.VARCHAR(128).nullable(false), this, "");
+    public final TableField<SectionsRecord, String> SECTION_NAME = createField("section_name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
 
     /**
      * The column <code>public.sections.min_units</code>.
      */
-    public final TableField<SectionsRecord, Double> MIN_UNITS = createField("min_units", org.jooq.impl.SQLDataType.DOUBLE.nullable(false), this, "");
+    public final TableField<SectionsRecord, Double> MIN_UNITS = createField("min_units", org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * The column <code>public.sections.max_units</code>.
      */
-    public final TableField<SectionsRecord, Double> MAX_UNITS = createField("max_units", org.jooq.impl.SQLDataType.DOUBLE.nullable(false), this, "");
+    public final TableField<SectionsRecord, Double> MAX_UNITS = createField("max_units", org.jooq.impl.SQLDataType.DOUBLE, this, "");
 
     /**
      * The column <code>public.sections.campus</code>.
      */
-    public final TableField<SectionsRecord, String> CAMPUS = createField("campus", org.jooq.impl.SQLDataType.VARCHAR(100).nullable(false), this, "");
+    public final TableField<SectionsRecord, String> CAMPUS = createField("campus", org.jooq.impl.SQLDataType.VARCHAR(100), this, "");
 
     /**
      * The column <code>public.sections.description</code>.
      */
-    public final TableField<SectionsRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<SectionsRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>public.sections.instruction_mode</code>.
      */
-    public final TableField<SectionsRecord, String> INSTRUCTION_MODE = createField("instruction_mode", org.jooq.impl.SQLDataType.VARCHAR(20).nullable(false), this, "");
+    public final TableField<SectionsRecord, String> INSTRUCTION_MODE = createField("instruction_mode", org.jooq.impl.SQLDataType.VARCHAR(32), this, "");
 
     /**
      * The column <code>public.sections.grading</code>.
      */
-    public final TableField<SectionsRecord, String> GRADING = createField("grading", org.jooq.impl.SQLDataType.VARCHAR(20).nullable(false), this, "");
+    public final TableField<SectionsRecord, String> GRADING = createField("grading", org.jooq.impl.SQLDataType.VARCHAR(25), this, "");
 
     /**
      * The column <code>public.sections.room_number</code>.
      */
-    public final TableField<SectionsRecord, String> ROOM_NUMBER = createField("room_number", org.jooq.impl.SQLDataType.VARCHAR(20).nullable(false), this, "");
+    public final TableField<SectionsRecord, String> ROOM_NUMBER = createField("room_number", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
 
     /**
      * The column <code>public.sections.prerequisites</code>.
      */
-    public final TableField<SectionsRecord, String> PREREQUISITES = createField("prerequisites", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<SectionsRecord, String> PREREQUISITES = createField("prerequisites", org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
      * Create a <code>public.sections</code> table reference

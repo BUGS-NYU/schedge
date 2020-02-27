@@ -19,16 +19,16 @@ CREATE TABLE public.sections (
   section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
 
-  waitlist_total       integer                     NOT NULL,
-  section_name        varchar(128)                 NOT NULL,
-  min_units           float                        NOT NULL,
-  max_units           float                        NOT NULL,
-  campus              varchar(100)                 NOT NULL,
-  description         text                         NOT NULL,
-  instruction_mode    varchar(20)                  NOT NULL,
-  grading             varchar(20)                  NOT NULL,
-  room_number         varchar(20)                  NOT NULL,
-  prerequisites       varchar                      NOT NULL,
+  waitlist_total      integer,
+  section_name        varchar(128),
+  min_units           float,
+  max_units           float,
+  campus              varchar(100),
+  description         text,
+  instruction_mode    varchar(32),
+  grading             varchar(25),
+  room_number         varchar(64),
+  prerequisites       varchar,
 
   PRIMARY KEY (course_id, section_code)
 );

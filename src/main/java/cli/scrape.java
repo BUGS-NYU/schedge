@@ -1,5 +1,6 @@
 package cli;
 
+import cli.validation.ValidateCatalogArgs;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.core.util.Json;
 import java.io.IOException;
@@ -98,51 +99,34 @@ public class scrape implements Runnable {
           throw new IllegalArgumentException(
               "--registration-number is required if school and subject aren't provided!");
         }
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
-                              term, registrationNumber)));
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(Scrape_sectionKt.scrapeFromSection(
+                            term, registrationNumber)));
       } else if (school != null && subject != null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Scrape_sectionKt
-                      .scrapeFromCatalogSection(
-                          term, new SubjectCode(this.subject, this.school),
-                          batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile,
+            JsonMapper.toJson(
+                Scrape_sectionKt
+                    .scrapeFromCatalogSection(
+                        term, new SubjectCode(this.subject, this.school),
+                        batchSize)
+                    .iterator(),
+                Boolean.parseBoolean(pretty)));
       } else if (subject == null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile, JsonMapper.toJson(Scrape_sectionKt
-                                                .scrapeFromCatalogSection(
-                                                    term, school, batchSize)
-                                                .iterator(),
-                                            Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(Scrape_sectionKt
+                                              .scrapeFromCatalogSection(
+                                                  term, school, batchSize)
+                                              .iterator(),
+                                          Boolean.parseBoolean(pretty)));
       } else {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Scrape_sectionKt
-                      .scrapeFromAllCatalogSection(
-                          term, SubjectCode.allSubjects(), batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(
+                            Scrape_sectionKt
+                                .scrapeFromAllCatalogSection(
+                                    term, SubjectCode.allSubjects(), batchSize)
+                                .iterator(),
+                            Boolean.parseBoolean(pretty)));
       }
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -181,71 +165,19 @@ public class scrape implements Runnable {
     @CommandLine.
     Option(names = "--output-file", description = "output file to write to")
     private String outputFile;
-    @CommandLine.Option(names = "--pretty", defaultValue = "false")
-    private String pretty;
+    @CommandLine.Option(names = "--pretty", defaultValue = "true")
+    private boolean pretty;
 
     public void run() {
       long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(Semester.fromCode(this.semester), year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      if (school == null) {
-        if (subject != null) {
-          throw new IllegalArgumentException(
-              "--subject doesn't make sense if school is null");
-        }
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Scrape_catalogKt
-                      .scrapeFromCatalog(term, SubjectCode.allSubjects(),
-                                         batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      } else if (subject == null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Scrape_catalogKt
-                      .scrapeFromCatalog(term, SubjectCode.allSubjects(school),
-                                         batchSize)
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      } else {
-        if (batchSize != null) {
-          throw new IllegalArgumentException(
-              "Batch size doesn't make sense when only doing on query");
-        }
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(
-                  Scrape_catalogKt
-                      .scrapeFromCatalog(term, new SubjectCode(subject, school))
-                      .iterator(),
-                  Boolean.parseBoolean(pretty)));
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
-      }
+      ValidateCatalogArgs
+          .validate(term, semester, year, school, subject, batchSize,
+                    outputFile, pretty)
+          .andRun(
+              (term, list, batchSize)
+                  -> Scrape_catalogKt.scrapeFromCatalog(term, list, batchSize),
+              (term, subjectCode)
+                  -> Scrape_catalogKt.scrapeFromCatalog(term, subjectCode));
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + " seconds");
@@ -303,40 +235,24 @@ public class scrape implements Runnable {
         term = Term.fromId(this.term);
       }
       if (school == null && subject == null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                    Query_schoolKt.querySchool(term)),
-                                Boolean.parseBoolean(pretty)));
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
-                                    Query_schoolKt.querySchool(term)),
-                                Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                              Query_schoolKt.querySchool(term)),
+                                          Boolean.parseBoolean(pretty)));
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
+                                              Query_schoolKt.querySchool(term)),
+                                          Boolean.parseBoolean(pretty)));
       } else if (school != null) {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                    Query_schoolKt.querySchool(term)),
-                                Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                              Query_schoolKt.querySchool(term)),
+                                          Boolean.parseBoolean(pretty)));
       } else {
-        try {
-          UtilsKt.writeToFileOrStdout(
-              outputFile,
-              JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                    Query_schoolKt.querySchool(term)),
-                                Boolean.parseBoolean(pretty)));
-        } catch (IOException e) {
-          logger.warn(e.getMessage());
-        }
+        UtilsKt.writeToFileOrStdout(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+                                              Query_schoolKt.querySchool(term)),
+                                          Boolean.parseBoolean(pretty)));
       }
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

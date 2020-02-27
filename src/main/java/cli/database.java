@@ -189,11 +189,7 @@ public class database implements Runnable {
         e.printStackTrace();
       }
 
-      try {
-        UtilsKt.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      }
+      UtilsKt.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

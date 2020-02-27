@@ -1,5 +1,6 @@
 package cli;
 
+import cli.validation.*;
 import java.io.IOException;
 import models.Semester;
 import models.SubjectCode;
@@ -61,39 +62,19 @@ public class query implements Runnable {
     @CommandLine.
     Option(names = "--output-file", description = "output file to write to")
     private String outputFile;
+    @CommandLine.Option(names = "--pretty", defaultValue = "true")
+    private boolean pretty;
 
     public void run() {
       long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(Semester.fromCode(this.semester), year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      if (school == null) {
-        if (subject != null) {
-          throw new IllegalArgumentException(
-              "--subject doesn't make sense if school is null");
-        }
-        UtilsKt.writeToFileOrStdout(
-            outputFile, Query_catalogKt.queryCatalog(
-                            term, SubjectCode.allSubjects(), batchSize));
-      } else if (subject == null) {
-        UtilsKt.writeToFileOrStdout(
-            outputFile, Query_catalogKt.queryCatalog(
-                            term, SubjectCode.allSubjects(school), batchSize));
-      } else {
-        UtilsKt.writeToFileOrStdout(
-            outputFile, Query_catalogKt.queryCatalog(
-                            term, new SubjectCode(subject, school)));
-      }
+      ValidateCatalogArgs
+          .validate(term, semester, year, school, subject, batchSize,
+                    outputFile, pretty)
+          .andRun((term, list, batchSize)
+                      -> Query_catalogKt.queryCatalog(
+                          term, SubjectCode.allSubjects(), batchSize),
+                  (term, subjectCode)
+                      -> Query_catalogKt.queryCatalog(term, subjectCode));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

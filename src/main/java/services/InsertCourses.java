@@ -59,33 +59,16 @@ public class InsertCourses {
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
                           SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
                           SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.SECTION_STATUS, SECTIONS.SECTION_NAME,
-                          SECTIONS.WAITLIST_TOTAL, SECTIONS.MIN_UNITS,
-                          SECTIONS.MAX_UNITS, SECTIONS.CAMPUS,
-                          SECTIONS.DESCRIPTION, SECTIONS.INSTRUCTION_MODE,
-                          SECTIONS.GRADING, SECTIONS.ROOM_NUMBER,
-                          SECTIONS.PREREQUISITES)
+                          SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL)
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
                       s.getInstructor(), s.getType().ordinal(),
-                      s.getStatus().ordinal(), s.getSectionName(),
-                      s.getWaitlistTotal(), s.getMinUnits(), s.getMaxUnits(),
-                      s.getCampus(), s.getDescription(), s.getInstructionMode(),
-                      s.getGrading(), s.getRoomNumber(), s.getPrerequisites())
+                      s.getStatus().ordinal(), s.getWaitlistTotal())
               .onDuplicateKeyUpdate()
               .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
               .set(SECTIONS.INSTRUCTOR, s.getInstructor())
               .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
               .set(SECTIONS.SECTION_STATUS, s.getStatus().ordinal())
-              .set(SECTIONS.SECTION_NAME, s.getSectionName())
               .set(SECTIONS.WAITLIST_TOTAL, s.getWaitlistTotal())
-              .set(SECTIONS.MIN_UNITS, s.getMinUnits())
-              .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
-              .set(SECTIONS.CAMPUS, s.getCampus())
-              .set(SECTIONS.DESCRIPTION, s.getDescription())
-              .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())
-              .set(SECTIONS.GRADING, s.getGrading())
-              .set(SECTIONS.ROOM_NUMBER, s.getRoomNumber())
-              .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);
@@ -113,19 +96,16 @@ public class InsertCourses {
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
                           SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
                           SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.SECTION_STATUS, SECTIONS.ASSOCIATED_WITH,
-                          SECTIONS.SECTION_NAME, SECTIONS.WAITLIST_TOTAL,
-                          SECTIONS.MIN_UNITS, SECTIONS.MAX_UNITS,
-                          SECTIONS.CAMPUS, SECTIONS.DESCRIPTION,
-                          SECTIONS.INSTRUCTION_MODE, SECTIONS.GRADING,
-                          SECTIONS.ROOM_NUMBER, SECTIONS.PREREQUISITES)
+                          SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL)
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
                       s.getInstructor(), s.getType().ordinal(),
-                      s.getStatus().ordinal(), associatedWith,
-                      s.getSectionName(), s.getWaitlistTotal(), s.getMinUnits(),
-                      s.getMaxUnits(), s.getCampus(), s.getDescription(),
-                      s.getInstructionMode(), s.getGrading(), s.getRoomNumber(),
-                      s.getPrerequisites())
+                      s.getStatus().ordinal(), s.getWaitlistTotal())
+              .onDuplicateKeyUpdate()
+              .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
+              .set(SECTIONS.INSTRUCTOR, s.getInstructor())
+              .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
+              .set(SECTIONS.SECTION_STATUS, s.getStatus().ordinal())
+              .set(SECTIONS.WAITLIST_TOTAL, s.getWaitlistTotal())
               .returning(SECTIONS.ID)
               .fetchOne()
               .getValue(SECTIONS.ID);

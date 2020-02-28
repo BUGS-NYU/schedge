@@ -26,22 +26,35 @@ public class ParseSection {
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
 
-  public static @NotNull SectionAttribute parse(@NotNull String rawData) {
-    logger.info("parsing raw catalog section data...");
+  public static SectionAttribute parse(@NotNull String rawData) {
+    logger.info("parsing raw catalog section data into SectionAttribute...");
+
+    rawData = rawData.trim();
+
+    if (rawData.equals("")) {
+      logger.warn("Got bad data: empty string");
+      return null; // the course doesn't exist
+    }
+
     Document doc = Jsoup.parse(rawData);
+    Element failed = doc.selectFirst("div.alert.alert-info");
+    if (failed != null) {
+      logger.warn("Got bad data: " + failed.text());
+      return null; // the course doesn't exist
+    }
+
     doc.select("a").unwrap();
     doc.select("i").unwrap();
     doc.select("b").unwrap();
     Element outerDataSection = doc.selectFirst("body > section.main");
     Element header = outerDataSection.selectFirst("> header.page-header");
     Element innerDataSection = outerDataSection.selectFirst("> section");
-    String courseName =
-        innerDataSection.selectFirst("> div.primary-head").text();
+    Element courseNameDiv = innerDataSection.selectFirst("> div.primary-head");
+    String courseName = courseNameDiv.text();
     Elements dataDivs =
         innerDataSection.select("> div.section-content.clearfix");
     Map<String, String> secData = parseSectionAttributes(dataDivs);
-    // Haven't checked for special case but seems to work for general ones. Will
-    // keep for now
+
     return parsingElements(secData, courseName);
   }
 
@@ -61,18 +74,20 @@ public class ParseSection {
   public static @NotNull SectionAttribute
   parsingElements(Map<String, String> secData, String courseName) {
     String units = secData.get("Units");
-    double minUnits = 0, maxUnits = 0;
+    double minUnits = 0, maxUnits;
     if (units.contains("-")) {
       minUnits = Double.parseDouble(units.split(" - ")[0]);
       maxUnits = Double.parseDouble(units.split(" - ")[1].split(" ")[0]);
     } else {
       maxUnits = Double.parseDouble(units.split(" ")[0]);
     }
+
     courseName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
     return new SectionAttribute(
-        courseName, Integer.parseInt(secData.get("Class Number")),
+        courseName.equals("") ? null : courseName,
+        Integer.parseInt(secData.get("Class Number")),
         SectionStatus.parseStatus(secData.get("Status")),
         secData.get("Location"), secData.get("Description"),
         secData.get("Instruction Mode"), secData.get("Instructor(s)"), minUnits,

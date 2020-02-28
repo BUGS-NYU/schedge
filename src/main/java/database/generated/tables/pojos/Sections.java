@@ -22,7 +22,7 @@ import javax.annotation.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = -885001624;
+    private static final long serialVersionUID = -802979826;
 
     private final Integer id;
     private final Integer registrationNumber;
@@ -38,6 +38,7 @@ public class Sections implements Serializable {
     private final Double  maxUnits;
     private final String  campus;
     private final String  description;
+    private final String  notes;
     private final String  instructionMode;
     private final String  grading;
     private final String  roomNumber;
@@ -58,6 +59,7 @@ public class Sections implements Serializable {
         this.maxUnits = value.maxUnits;
         this.campus = value.campus;
         this.description = value.description;
+        this.notes = value.notes;
         this.instructionMode = value.instructionMode;
         this.grading = value.grading;
         this.roomNumber = value.roomNumber;
@@ -79,6 +81,7 @@ public class Sections implements Serializable {
         Double  maxUnits,
         String  campus,
         String  description,
+        String  notes,
         String  instructionMode,
         String  grading,
         String  roomNumber,
@@ -98,6 +101,7 @@ public class Sections implements Serializable {
         this.maxUnits = maxUnits;
         this.campus = campus;
         this.description = description;
+        this.notes = notes;
         this.instructionMode = instructionMode;
         this.grading = grading;
         this.roomNumber = roomNumber;
@@ -160,6 +164,10 @@ public class Sections implements Serializable {
         return this.description;
     }
 
+    public String getNotes() {
+        return this.notes;
+    }
+
     public String getInstructionMode() {
         return this.instructionMode;
     }
@@ -194,6 +202,7 @@ public class Sections implements Serializable {
         sb.append(", ").append(maxUnits);
         sb.append(", ").append(campus);
         sb.append(", ").append(description);
+        sb.append(", ").append(notes);
         sb.append(", ").append(instructionMode);
         sb.append(", ").append(grading);
         sb.append(", ").append(roomNumber);

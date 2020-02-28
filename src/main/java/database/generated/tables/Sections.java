@@ -41,7 +41,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = 1464477129;
+    private static final long serialVersionUID = -1778653030;
 
     /**
      * The reference instance of <code>public.sections</code>
@@ -104,7 +104,7 @@ public class Sections extends TableImpl<SectionsRecord> {
     /**
      * The column <code>public.sections.section_name</code>.
      */
-    public final TableField<SectionsRecord, String> SECTION_NAME = createField("section_name", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
+    public final TableField<SectionsRecord, String> SECTION_NAME = createField("section_name", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>public.sections.min_units</code>.
@@ -127,6 +127,11 @@ public class Sections extends TableImpl<SectionsRecord> {
     public final TableField<SectionsRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
+     * The column <code>public.sections.notes</code>.
+     */
+    public final TableField<SectionsRecord, String> NOTES = createField("notes", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
      * The column <code>public.sections.instruction_mode</code>.
      */
     public final TableField<SectionsRecord, String> INSTRUCTION_MODE = createField("instruction_mode", org.jooq.impl.SQLDataType.VARCHAR(32), this, "");
@@ -139,7 +144,7 @@ public class Sections extends TableImpl<SectionsRecord> {
     /**
      * The column <code>public.sections.room_number</code>.
      */
-    public final TableField<SectionsRecord, String> ROOM_NUMBER = createField("room_number", org.jooq.impl.SQLDataType.VARCHAR(64), this, "");
+    public final TableField<SectionsRecord, String> ROOM_NUMBER = createField("room_number", org.jooq.impl.SQLDataType.VARCHAR(128), this, "");
 
     /**
      * The column <code>public.sections.prerequisites</code>.

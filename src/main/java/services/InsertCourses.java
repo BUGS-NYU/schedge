@@ -32,6 +32,13 @@ public class InsertCourses {
       for (Course c : courses) {
         context.transaction(config -> {
           DSLContext ctx = DSL.using(config);
+
+          ctx.delete(COURSES)
+              .where(COURSES.TERM_ID.eq(term.getId()))
+              .and(COURSES.SUBJECT.eq(c.getSubject()))
+              .and(COURSES.SCHOOL.eq(c.getSchool()))
+              .and(COURSES.DEPT_COURSE_ID.eq(c.getDeptCourseId()));
+
           int id = ctx.insertInto(COURSES, COURSES.NAME, COURSES.SCHOOL,
                                   COURSES.SUBJECT, COURSES.DEPT_COURSE_ID,
                                   COURSES.TERM_ID)

@@ -20,9 +20,9 @@ import utils.UtilsKt;
 */
 @CommandLine.Command(name = "parse",
                      synopsisSubcommandLabel = "(catalog | section | school)",
-                     subcommands = {parse.Catalog.class, parse.Section.class,
-                                    parse.School.class})
-public class parse implements Runnable {
+                     subcommands = {Parse.Catalog.class, Parse.Section.class,
+                                    Parse.School.class})
+public class Parse implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   @Override

@@ -2,8 +2,7 @@ package cli;
 
 import api.App;
 import cli.validation.ValidateCatalogArgs;
-import cli.validation.ValidateSectionArgs;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.sql.SQLException;
 import java.util.List;
 import kotlin.sequences.Sequence;
@@ -18,9 +17,9 @@ import utils.UtilsKt;
 
 @CommandLine.
 Command(name = "db", synopsisSubcommandLabel = "(scrape | query | update | serve)",
-        subcommands = {database.Scrape.class, database.Query.class,
-                       database.Serve.class, database.Update.class})
-public class database implements Runnable {
+        subcommands = {Database.Scrape.class, Database.Query.class,
+                       Database.Serve.class, Database.Update.class})
+public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   @Override

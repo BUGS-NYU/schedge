@@ -1,16 +1,11 @@
 package cli;
 
 import cli.validation.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.swagger.v3.core.util.Json;
-import java.io.IOException;
 import models.Semester;
-import models.SubjectCode;
 import models.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.models.Subject;
 import services.*;
 import utils.UtilsKt;
 
@@ -21,9 +16,9 @@ import utils.UtilsKt;
 @CommandLine.
 Command(name = "scrape",
         synopsisSubcommandLabel = "(master | catalog | sections | school)",
-        subcommands = {scrape.Catalog.class, scrape.Sections.class,
-                       scrape.School.class})
-public class scrape implements Runnable {
+        subcommands = {Scrape.Catalog.class, Scrape.Sections.class,
+                       Scrape.School.class})
+public class Scrape implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   @Override

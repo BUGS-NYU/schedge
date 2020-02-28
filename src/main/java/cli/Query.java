@@ -1,11 +1,8 @@
 package cli;
 
 import cli.validation.*;
-import java.io.IOException;
-import java.util.Collections;
 
 import models.Semester;
-import models.SubjectCode;
 import models.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +20,9 @@ import utils.UtilsKt;
 */
 @CommandLine.Command(name = "query",
                      synopsisSubcommandLabel = "(catalog | section | school)",
-                     subcommands = {query.Catalog.class, query.Section.class,
-                                    query.School.class})
-public class query implements Runnable {
+                     subcommands = {Query.Catalog.class, Query.Section.class,
+                                    Query.School.class})
+public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   @Override

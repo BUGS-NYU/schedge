@@ -94,9 +94,14 @@ public class Section {
     return recitations;
   }
 
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public Integer getWaitlistTotal() {
+    return waitlistTotal;
+  }
+
   public String getCampus() { return campus; }
   public String getSectionName() { return sectionName; }
-  public Integer getWaitlistTotal() { return waitlistTotal; }
+
   public String getDescription() { return description; }
   public Double getMinUnits() { return minUnits; }
   public Double getMaxUnits() { return maxUnits; }
@@ -105,30 +110,34 @@ public class Section {
   public String getRoomNumber() { return roomNumber; }
   public String getPrerequisites() { return prerequisites; }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return registrationNumber == section.registrationNumber &&
-                Objects.equals(sectionName, section.sectionName) &&
-                sectionCode.equals(section.sectionCode) &&
-                instructor.equals(section.instructor) &&
-                type == section.type &&
-                status == section.status &&
-                Objects.equals(waitlistTotal, section.waitlistTotal) &&
-                Objects.equals(campus, section.campus) &&
-                Objects.equals(description, section.description) &&
-                Objects.equals(minUnits, section.minUnits) &&
-                Objects.equals(maxUnits, section.maxUnits) &&
-                Objects.equals(instructionMode, section.instructionMode) &&
-                Objects.equals(grading, section.grading) &&
-                Objects.equals(roomNumber, section.roomNumber) &&
-                Objects.equals(prerequisites, section.prerequisites);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Section section = (Section)o;
+    return registrationNumber == section.registrationNumber &&
+        Objects.equals(sectionName, section.sectionName) &&
+        sectionCode.equals(section.sectionCode) &&
+        instructor.equals(section.instructor) && type == section.type &&
+        status == section.status &&
+        Objects.equals(waitlistTotal, section.waitlistTotal) &&
+        Objects.equals(campus, section.campus) &&
+        Objects.equals(description, section.description) &&
+        Objects.equals(minUnits, section.minUnits) &&
+        Objects.equals(maxUnits, section.maxUnits) &&
+        Objects.equals(instructionMode, section.instructionMode) &&
+        Objects.equals(grading, section.grading) &&
+        Objects.equals(roomNumber, section.roomNumber) &&
+        Objects.equals(prerequisites, section.prerequisites);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(sectionName, registrationNumber, sectionCode, instructor, type, status, waitlistTotal, campus, description, minUnits, maxUnits, instructionMode, grading, roomNumber, prerequisites);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(sectionName, registrationNumber, sectionCode,
+                        instructor, type, status, waitlistTotal, campus,
+                        description, minUnits, maxUnits, instructionMode,
+                        grading, roomNumber, prerequisites);
+  }
 }

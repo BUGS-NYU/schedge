@@ -120,7 +120,7 @@ public class ParseCatalog implements Iterator<Course> {
         sectionData.getOrDefault("Topic", ""),
         sectionData.containsKey("Wait List Total")
             ? Integer.parseInt(sectionData.get("Wait List Total"))
-            : 0);
+            : null);
   }
 
   private HashMap<String, String> sectionFieldTable(Elements fields) {
@@ -307,12 +307,12 @@ public class ParseCatalog implements Iterator<Course> {
     private SectionStatus status;
     private List<Meeting> meetings;
     private String sectionName;
-    private int waitlistTotal;
+    private Integer waitlistTotal;
 
     public SectionMetadata(int registrationNumber, String sectionCode,
                            SectionType type, String instructor,
                            SectionStatus status, List<Meeting> meetings,
-                           String sectionName, int waitlistTotal) {
+                           String sectionName, Integer waitlistTotal) {
       this.registrationNumber = registrationNumber;
       this.sectionCode = sectionCode;
       this.type = type;

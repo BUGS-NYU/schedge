@@ -53,7 +53,7 @@ dependencies {
             "org.jooq:jooq-meta", // Database framework
             "org.jooq:jooq-codegen", // Database framework
 
-            "com.github.kittinunf.fuel:fuel:2.2.0", // Async web requests framework
+            "com.github.kittinunf.fuel:fuel:2.2.1", // Async web requests framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 

@@ -20,14 +20,15 @@ CREATE TABLE public.sections (
   associated_with     integer REFERENCES sections(id),
 
   waitlist_total      integer,
-  section_name        varchar(128),
+  section_name        text,
   min_units           float,
   max_units           float,
   campus              varchar(100),
   description         text,
+  notes               text,
   instruction_mode    varchar(32),
   grading             varchar(48),
-  room_number         varchar(64),
+  room_number         varchar(128),
   prerequisites       varchar,
 
   PRIMARY KEY (course_id, section_code)

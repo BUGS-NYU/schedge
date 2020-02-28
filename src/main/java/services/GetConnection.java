@@ -2,10 +2,9 @@ package services;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jetbrains.annotations.NotNull;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.jetbrains.annotations.NotNull;
 
 /**
 This class get connection to the Postgresql database using JDBC Driver
@@ -36,9 +35,13 @@ public class GetConnection {
     return dataSource.getConnection();
   }
 
-  public static void close() throws SQLException {
-    if (dataSource != null)
-      dataSource.close();
-    dataSource = null;
+  public static void close() {
+    try {
+      if (dataSource != null)
+        dataSource.close();
+      dataSource = null;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

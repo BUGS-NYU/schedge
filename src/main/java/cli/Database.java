@@ -2,7 +2,6 @@ package cli;
 
 import api.App;
 import cli.validation.ValidateCatalogArgs;
-
 import java.sql.SQLException;
 import java.util.List;
 import kotlin.sequences.Sequence;
@@ -16,7 +15,8 @@ import services.*;
 import utils.UtilsKt;
 
 @CommandLine.
-Command(name = "db", synopsisSubcommandLabel = "(scrape | query | update | serve)",
+Command(name = "db",
+        synopsisSubcommandLabel = "(scrape | query | update | serve)",
         subcommands = {Database.Scrape.class, Database.Query.class,
                        Database.Serve.class, Database.Update.class})
 public class Database implements Runnable {
@@ -86,6 +86,8 @@ public class Database implements Runnable {
 
           .andRun(Scrape_catalogKt::scrapeFromCatalog,
                   Scrape_catalogKt::scrapeFromCatalog);
+
+      GetConnection.close();
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + " seconds");
@@ -98,7 +100,7 @@ public class Database implements Runnable {
       parameterListHeading = "%nParameters:%n",
       optionListHeading = "%nOptions:%n", header = "Scrape section",
       description =
-          "Scrape section based on term and registration number, OR school and subject")
+          "Update section information based on term and registration number, OR school and subject")
   public static class Update implements Runnable {
     private Logger logger = LoggerFactory.getLogger("scrape.section");
 
@@ -137,6 +139,7 @@ public class Database implements Runnable {
       } catch (SQLException e) {
         e.printStackTrace();
       }
+      GetConnection.close();
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + "seconds");
@@ -203,12 +206,7 @@ public class Database implements Runnable {
         }
       }
 
-      try {
-        GetConnection.close();
-      } catch (SQLException e) {
-        e.printStackTrace();
-      }
-
+      GetConnection.close();
       UtilsKt.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
 
       long end = System.nanoTime();

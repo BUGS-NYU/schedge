@@ -63,14 +63,6 @@ public class Section {
   public String getGrading() { return grading; }
   public String getRoomNumber() { return roomNumber; }
   public String getPrerequisites() { return prerequisites; }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public List<Section> getRecitations() {
-    return recitations;
-  }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Integer getWaitlistTotal() {
-    return waitlistTotal;
-  }
+  public List<Section> getRecitations() { return recitations; }
+  public Integer getWaitlistTotal() { return waitlistTotal; }
 }

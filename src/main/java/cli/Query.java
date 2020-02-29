@@ -6,8 +6,9 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.QueryCatalog;
-import services.Query_catalogKt;
+import scraping.query.QueryCatalog;
+import scraping.query.QuerySchool;
+import scraping.query.QuerySection;
 import services.Query_schoolKt;
 import services.Query_sectionKt;
 import utils.Utils;
@@ -114,12 +115,12 @@ public class Query implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Term.semesterFromString(this.semester), year);
+        term = new Term(this.semester, year);
       } else {
         term = Term.fromId(this.term);
       }
       Utils.writeToFileOrStdout(
-          outputFile, Query_sectionKt.querySection(term, registrationNumber));
+          outputFile, QuerySection.querySection(term, registrationNumber));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }
@@ -156,11 +157,11 @@ public class Query implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Term.semesterFromString(this.semester), year);
+        term = new Term(this.semester, year);
       } else {
         term = Term.fromId(this.term);
       }
-      Utils.writeToFileOrStdout(outputFile, Query_schoolKt.querySchool(term));
+      Utils.writeToFileOrStdout(outputFile, QuerySchool.querySchool(term));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

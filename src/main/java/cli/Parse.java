@@ -91,19 +91,14 @@ public class Parse implements Runnable {
 
     @Override
     public void run() {
-      try {
-        long start = System.nanoTime();
-        String input = Utils.readFromFileOrStdin(inputFile);
-        List<Course> output = ParseCatalog.parse(input, null);
-        Utils.writeToFileOrStdout(
-            JsonMapper.toJson(output, Boolean.parseBoolean(pretty)),
-            outputFile);
-        long end = System.nanoTime();
-        long duration = (end - start) / 1000000000;
-        logger.info(duration + " seconds");
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      long start = System.nanoTime();
+      String input = Utils.readFromFileOrStdin(inputFile);
+      List<Course> output = ParseCatalog.parse(input, null);
+      Utils.writeToFileOrStdout(
+          JsonMapper.toJson(output, Boolean.parseBoolean(pretty)), outputFile);
+      long end = System.nanoTime();
+      long duration = (end - start) / 1000000000;
+      logger.info(duration + " seconds");
     }
   }
 

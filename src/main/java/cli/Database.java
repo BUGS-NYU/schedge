@@ -10,6 +10,7 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.ScrapeCatalog;
 import services.*;
 import utils.Utils;
 
@@ -83,8 +84,8 @@ public class Database implements Runnable {
                       }
                     })
 
-          .andRun(Scrape_catalogKt::scrapeFromCatalog,
-                  Scrape_catalogKt::scrapeFromCatalog);
+          .andRun(ScrapeCatalog::scrapeFromCatalog,
+                  ScrapeCatalog::scrapeFromCatalog);
 
       GetConnection.close();
       long end = System.nanoTime();
@@ -128,7 +129,7 @@ public class Database implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Term.semesterFromString(semester), year);
+        term = new Term(semester, year);
       } else {
         term = Term.fromId(termId);
       }

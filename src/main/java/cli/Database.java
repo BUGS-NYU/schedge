@@ -4,7 +4,7 @@ import api.App;
 import cli.validation.ValidateCatalogArgs;
 import java.sql.SQLException;
 import java.util.List;
-import kotlin.sequences.Sequence;
+import java.util.stream.Stream;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -63,8 +63,8 @@ public class Database implements Runnable {
       ValidateCatalogArgs
           .validate(term, semester, year, school, subject, batchSize,
                     (t, obj) -> {
-                      if (obj instanceof Sequence) {
-                        ((Sequence<List<scraping.models.Course>>)obj)
+                      if (obj instanceof Stream) {
+                        ((Stream<List<scraping.models.Course>>)obj)
                             .iterator()
                             .forEachRemaining(courseList -> {
                               InsertCourses.insertCourses(t, courseList);

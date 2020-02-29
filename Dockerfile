@@ -1,4 +1,4 @@
-FROM gradle AS build
+FROM gradle:jdk13 AS build
 COPY --chown=gradle:gradle . /home/gradle/schedge
 WORKDIR /home/gradle/schedge
 RUN gradle build --no-daemon

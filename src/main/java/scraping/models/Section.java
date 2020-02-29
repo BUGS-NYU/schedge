@@ -48,26 +48,6 @@ public class Section {
     this.recitations = recitations;
   }
 
-  public void update(String rawData) {
-    Map<String, String> map = ParseSection.update(rawData);
-    this.sectionName = map.get("sectionName");
-    this.campus = map.getOrDefault("Location", "");
-    this.description = map.getOrDefault("Description", "");
-    if (map.get("minUnits") != null &&
-        !((map.get("minUnits")).trim().equals(""))) {
-      this.minUnits = Double.parseDouble(map.getOrDefault("minUnits", "0"));
-    }
-    if (map.get("maxUnits") != null &&
-        !((map.get("maxUnits")).trim().equals(""))) {
-      this.maxUnits = Double.parseDouble(map.getOrDefault("maxUnits", "0"));
-    }
-    this.instructionMode = map.getOrDefault("Instruction Mode", "In-Person");
-    this.grading = map.getOrDefault("Grading", "");
-    this.roomNumber = map.getOrDefault("Room", "");
-    this.prerequisites =
-        map.getOrDefault("Notes", "See Description. None otherwise");
-  }
-
   public String getSectionName() { return sectionName; }
   public int getRegistrationNumber() { return registrationNumber; }
   public Double getMinUnits() { return minUnits; }

@@ -99,24 +99,26 @@ public class InsertCourses {
 
       Sections SECTIONS = Tables.SECTIONS;
 
-      int id =
-          context
-              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                          SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL)
-              .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
-                      s.getInstructor(), s.getType().ordinal(),
-                      s.getStatus().ordinal(), s.getWaitlistTotal())
-              .onDuplicateKeyUpdate()
-              .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
-              .set(SECTIONS.INSTRUCTOR, s.getInstructor())
-              .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
-              .set(SECTIONS.SECTION_STATUS, s.getStatus().ordinal())
-              .set(SECTIONS.WAITLIST_TOTAL, s.getWaitlistTotal())
-              .returning(SECTIONS.ID)
-              .fetchOne()
-              .getValue(SECTIONS.ID);
+      int id = context
+                   .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                               SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                               SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
+                               SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL,
+                               SECTIONS.ASSOCIATED_WITH)
+                   .values(s.getRegistrationNumber(), courseId,
+                           s.getSectionCode(), s.getInstructor(),
+                           s.getType().ordinal(), s.getStatus().ordinal(),
+                           s.getWaitlistTotal(), associatedWith)
+                   .onDuplicateKeyUpdate()
+                   .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
+                   .set(SECTIONS.INSTRUCTOR, s.getInstructor())
+                   .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
+                   .set(SECTIONS.SECTION_STATUS, s.getStatus().ordinal())
+                   .set(SECTIONS.WAITLIST_TOTAL, s.getWaitlistTotal())
+                   .set(SECTIONS.ASSOCIATED_WITH, associatedWith)
+                   .returning(SECTIONS.ID)
+                   .fetchOne()
+                   .getValue(SECTIONS.ID);
       insertMeetings(context, id, s.getMeetings());
     }
   }

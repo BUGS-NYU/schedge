@@ -1,10 +1,10 @@
 package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import javax.validation.constraints.NotNull;
-
 import java.util.List;
-import models.*;
+import javax.validation.constraints.NotNull;
+import models.SubjectCode;
+import nyu.*;
 
 public class Course {
 

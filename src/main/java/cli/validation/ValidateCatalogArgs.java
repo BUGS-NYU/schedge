@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import models.Semester;
 import models.SubjectCode;
-import models.Term;
+import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -37,7 +37,7 @@ public abstract class ValidateCatalogArgs {
                                              String subject, Integer batchSize,
                                              String outputFile) {
     return validate(term, semester, year, school, subject, batchSize,
-            (t, o) -> UtilsKt.writeToFileOrStdout(outputFile, o));
+                    (t, o) -> UtilsKt.writeToFileOrStdout(outputFile, o));
   }
 
   public static ValidateCatalogArgs validate(Integer term, String semester,
@@ -46,9 +46,9 @@ public abstract class ValidateCatalogArgs {
                                              String outputFile,
                                              boolean prettyPrint) {
     return validate(term, semester, year, school, subject, batchSize,
-            (t, o)
-                    -> UtilsKt.writeToFileOrStdout(
-                        outputFile, JsonMapper.toJson(o, prettyPrint)));
+                    (t, o)
+                        -> UtilsKt.writeToFileOrStdout(
+                            outputFile, JsonMapper.toJson(o, prettyPrint)));
   }
 
   public static ValidateCatalogArgs validate(Integer termId, String semester,
@@ -66,7 +66,7 @@ public abstract class ValidateCatalogArgs {
         throw new IllegalArgumentException(
             "Must provide both --semester AND --year");
       }
-      term = new Term(Semester.fromCode(semester), year);
+      term = new Term(Term.semesterFromString(semester), year);
     } else {
       term = Term.fromId(termId);
     }
@@ -100,7 +100,8 @@ public abstract class ValidateCatalogArgs {
 
   public static class ByTerm extends ValidateCatalogArgs {
 
-    private ByTerm(Term term, Integer batchSize, BiConsumer<Term, Object> writer) {
+    private ByTerm(Term term, Integer batchSize,
+                   BiConsumer<Term, Object> writer) {
       super(term, batchSize, writer);
     }
 
@@ -112,7 +113,8 @@ public abstract class ValidateCatalogArgs {
   public static class BySubject extends ValidateCatalogArgs {
     private SubjectCode c;
 
-    private BySubject(Term term, SubjectCode c, BiConsumer<Term,Object> writer) {
+    private BySubject(Term term, SubjectCode c,
+                      BiConsumer<Term, Object> writer) {
       super(term, null, writer);
       this.c = c;
     }
@@ -126,7 +128,7 @@ public abstract class ValidateCatalogArgs {
   public static class BySchool extends ValidateCatalogArgs {
     private String school;
     private BySchool(Term term, String school, Integer batchSize,
-                     BiConsumer<Term,Object> writer) {
+                     BiConsumer<Term, Object> writer) {
       super(term, batchSize, writer);
       this.school = school;
     }

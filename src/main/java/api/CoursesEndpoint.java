@@ -1,20 +1,19 @@
 package api;
 
+import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
+
+import api.models.*;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
-import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
 import models.Semester;
 import models.SubjectCode;
-import models.Term;
-import api.models.*;
-import services.SelectCourses;
-import org.slf4j.LoggerFactory;
+import nyu.Term;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
-
-import java.util.ArrayList;
-
-import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
+import org.slf4j.LoggerFactory;
+import services.SelectCourses;
 
 class CoursesEndpoint extends Endpoint {
 
@@ -96,11 +95,11 @@ class CoursesEndpoint extends Endpoint {
         return;
       }
 
-      Semester sem;
+      int sem;
       Term term;
       SubjectCode subject;
       try {
-        sem = Semester.fromCode(ctx.pathParam("semester"));
+        sem = Term.semesterFromString(ctx.pathParam("semester"));
         term = new Term(sem, year);
         subject =
             new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));

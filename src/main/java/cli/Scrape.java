@@ -2,7 +2,7 @@ package cli;
 
 import cli.validation.*;
 import models.Semester;
-import models.Term;
+import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -70,8 +70,9 @@ public class Scrape implements Runnable {
           .validate(term, semester, year, registrationNumber, school, subject,
                     batchSize, outputFile, pretty)
           .andRun((term, list, batchSize)
-                      -> UtilsKt.seqToList(Scrape_sectionKt.scrapeFromAllCatalogSection(
-                          term, list, batchSize)),
+                      -> UtilsKt.seqToList(
+                          Scrape_sectionKt.scrapeFromAllCatalogSection(
+                              term, list, batchSize)),
                   Scrape_sectionKt::scrapeFromSection);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -118,8 +119,7 @@ public class Scrape implements Runnable {
       ValidateCatalogArgs
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile, pretty)
-          .andRun(
-                  Scrape_catalogKt::scrapeFromCatalog,
+          .andRun(Scrape_catalogKt::scrapeFromCatalog,
                   Scrape_catalogKt::scrapeFromCatalog);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -173,7 +173,7 @@ public class Scrape implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Semester.fromCode(this.semester), year);
+        term = new Term(Term.semesterFromString(this.semester), year);
       } else {
         term = Term.fromId(this.term);
       }

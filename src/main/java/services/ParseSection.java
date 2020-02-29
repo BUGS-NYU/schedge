@@ -3,8 +3,6 @@ package services;
 import java.util.*;
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,8 +19,6 @@ import scraping.models.SectionAttribute;
 public class ParseSection {
   private static Logger logger =
       LoggerFactory.getLogger("services.ParseSection");
-  private static DateTimeFormatter timeParser =
-      DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
 
   public static SectionAttribute parse(@NotNull String rawData) {
     logger.info("parsing raw catalog section data into SectionAttribute...");

@@ -2,31 +2,39 @@ package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.validation.constraints.NotNull;
-import org.joda.time.DateTime;
 
 public class Meeting {
-  private DateTime
+  private LocalDateTime
       beginDate; // Begin date; contains date and time of first event.
-  private Long minutesDuration; // Duration of meeting
-  private DateTime endDate;     // When the meeting stops repeating
+  private Long minutesDuration;  // Duration of meeting
+  private LocalDateTime endDate; // When the meeting stops repeating
 
-  public Meeting(DateTime beginDate, Long minutesDuration, DateTime endDate) {
+  public static final DateTimeFormatter beginFormatter =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
+  public static final DateTimeFormatter endFormatter =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH);
+
+  public Meeting(LocalDateTime beginDate, Long minutesDuration,
+                 LocalDateTime endDate) {
     this.beginDate = beginDate;
     this.minutesDuration = minutesDuration;
     this.endDate = endDate;
   }
 
-  public @NotNull DateTime getBeginDate() { return beginDate; }
+  public @NotNull LocalDateTime getBeginDate() { return beginDate; }
 
   public @NotNull Long getMinutesDuration() { return minutesDuration; }
 
-  public @NotNull DateTime getEndDate() { return endDate; }
+  public @NotNull LocalDateTime getEndDate() { return endDate; }
 
   @JsonValue
   public @NotNull MeetingJson toJson() {
-    return new MeetingJson(beginDate.toString("MM/dd/yyyy h:mma"),
-                           minutesDuration, endDate.toString("MM/dd/yyyy"));
+    return new MeetingJson(beginDate.format(beginFormatter), minutesDuration,
+                           endDate.format(endFormatter));
   }
 
   class MeetingJson {

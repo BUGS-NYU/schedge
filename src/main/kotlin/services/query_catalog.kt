@@ -4,7 +4,7 @@ package services
 
 import com.github.kittinunf.fuel.Fuel
 import models.SubjectCode
-import models.Term
+import nyu.Term
 import mu.KotlinLogging
 import scraping.SimpleBatchedFutureEngine
 import scraping.models.CatalogQueryData

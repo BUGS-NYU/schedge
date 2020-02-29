@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import javax.validation.constraints.NotNull;
-import models.SectionStatus;
-import models.SectionType;
+import nyu.SectionStatus;
+import nyu.SectionType;
 import services.ParseCatalog;
 import services.ParseSection;
 

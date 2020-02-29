@@ -1,7 +1,7 @@
 package api.models;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 
 public class School {
   private String code;

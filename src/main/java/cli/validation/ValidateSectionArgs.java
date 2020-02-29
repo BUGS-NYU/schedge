@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import models.Semester;
 import models.SubjectCode;
-import models.Term;
+import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -66,7 +66,7 @@ public abstract class ValidateSectionArgs {
         throw new IllegalArgumentException(
             "Must provide both --semester AND --year");
       }
-      term = new Term(Semester.fromCode(semester), year);
+      term = new Term(Term.semesterFromString(semester), year);
     } else {
       term = Term.fromId(termId);
     }

@@ -2,7 +2,7 @@ package services
 
 import scraping.models.Course
 import models.SubjectCode
-import models.Term
+import nyu.Term
 import scraping.models.SectionAttribute
 import scraping.models.Subject
 import java.lang.Exception

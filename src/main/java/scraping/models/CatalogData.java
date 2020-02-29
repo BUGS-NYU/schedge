@@ -1,5 +1,6 @@
 package scraping.models;
 import models.SubjectCode;
+
 public class CatalogData {
 
   private SubjectCode subject;

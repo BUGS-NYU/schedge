@@ -5,9 +5,8 @@ import cli.validation.ValidateCatalogArgs;
 import java.sql.SQLException;
 import java.util.List;
 import kotlin.sequences.Sequence;
-import models.Semester;
 import models.SubjectCode;
-import models.Term;
+import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -129,7 +128,7 @@ public class Database implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Semester.fromCode(semester), year);
+        term = new Term(Term.semesterFromString(semester), year);
       } else {
         term = Term.fromId(termId);
       }
@@ -191,7 +190,7 @@ public class Database implements Runnable {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Semester.fromCode(this.semester), year);
+        term = new Term(Term.semesterFromString(this.semester), year);
       } else {
         term = Term.fromId(this.term);
       }

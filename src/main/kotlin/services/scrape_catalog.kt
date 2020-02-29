@@ -4,7 +4,7 @@ package services
 
 import scraping.models.Course
 import models.SubjectCode
-import models.Term
+import nyu.Term
 import mu.KLogger
 import mu.KotlinLogging
 

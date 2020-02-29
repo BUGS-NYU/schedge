@@ -2,9 +2,9 @@ package api;
 
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import org.jetbrains.annotations.NotNull;
 import models.SchoolMetadata;
 import models.SubjectCode;
+import org.jetbrains.annotations.NotNull;
 
 class SchoolsEndpoint extends Endpoint {
 

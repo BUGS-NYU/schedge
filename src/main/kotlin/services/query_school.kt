@@ -1,7 +1,7 @@
 package services
 
 import com.github.kittinunf.fuel.Fuel
-import models.Term
+import nyu.Term
 import mu.KotlinLogging
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future

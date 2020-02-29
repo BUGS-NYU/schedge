@@ -1,13 +1,6 @@
-buildscript {
-    ext.kotlin_version = '1.3.50'
-    ext.serialization_version = '0.4'
-}
-
 plugins {
     id "java"
-    id "org.jetbrains.kotlin.jvm" version "1.3.50"
     id "application"
-    id "com.github.johnrengelman.shadow" version "5.1.0"
     id 'nu.studer.jooq' version '3.0.3'
     id "org.flywaydb.flyway" version "6.1.0"
 }
@@ -36,10 +29,6 @@ repositories {
 
 dependencies {
     implementation(
-            "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
-            "org.jetbrains.kotlin:kotlin-stdlib-jdk8", // Standard library
-
-            "io.github.microutils:kotlin-logging:1.7.6", // Logging
             "org.slf4j:slf4j-api:1.7.25", // Logging
             "ch.qos.logback:logback-core:1.2.3", // Logging
             "ch.qos.logback:logback-classic:1.2.3", // Logging
@@ -53,8 +42,6 @@ dependencies {
             "org.jooq:jooq", // Database framework
             "org.jooq:jooq-meta", // Database framework
             "org.jooq:jooq-codegen", // Database framework
-
-            "com.github.kittinunf.fuel:fuel:2.2.1", // Async web requests framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
@@ -71,12 +58,6 @@ dependencies {
     )
 
     jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'
-
-    testImplementation(
-            "io.kotlintest:kotlintest-runner-junit5:3.3.2"
-    )
-
-    // standalone "org.junit.platform:junit-platform-console-standalone:1.5.2"
 }
 
 flyway {
@@ -136,20 +117,44 @@ allprojects {
     }
 }
 
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+// Using hack from https://vocon-it.com/2016/11/15/how-to-build-a-lean-jar-file-with-gradle/
+// copy dependency jars to build/libs/dependency-jars
+task copyJarsToLib(type: Copy) {
+  def toDir = ".build/libs/dependency-jars"
+
+  // create directories, if not already done:
+  file(toDir).mkdirs()
+
+  // copy jars to lib folder:
+  from configurations.compileClasspath
+  into toDir
 }
+
+jar {
+  manifest {
+    attributes (
+      'Main-Class': 'Main',
+      // add classpath to Manifest;
+      // http://stackoverflow.com/questions/30087427/add-classpath-in-manifest-file-of-jar-in-gradle
+      "Class-Path": '. dependency-jars/' + configurations.compileClasspath.collect {
+        it.getName()
+      }.join(' dependency-jars/')
+    )
+  }
+}
+
+// always call copyJarsToLib when building jars:
+jar.dependsOn copyJarsToLib
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 
 task checkFast {}
 checkFast.dependsOn += 'compileJava'
-checkFast.dependsOn += 'compileKotlin'
 
 task updateDb {}
 updateDb.dependsOn += 'flywayClean'
 updateDb.dependsOn += 'flywayMigrate'
 updateDb.dependsOn += 'generateDatabaseJooqSchemaSource'
-
-
 

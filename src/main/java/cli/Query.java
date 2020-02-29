@@ -9,8 +9,6 @@ import picocli.CommandLine;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
-import services.Query_schoolKt;
-import services.Query_sectionKt;
 import utils.Utils;
 
 /*

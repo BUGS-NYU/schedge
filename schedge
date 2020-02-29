@@ -26,10 +26,10 @@ if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
 
   echo "Running in disowned process as root..."
   sudo echo -n ""
-  sudo -E java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@ 2> "$PROJ_DIR/logging.txt" & disown
+  sudo -E java -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ 2> "$PROJ_DIR/logging.txt" & disown
   echo "$!" > "$PROJ_DIR/.pid"
 else
-  java -Djdk.httpclient.allowRestrictedHeaders=host,connection -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
+  java -Djdk.httpclient.allowRestrictedHeaders=host,connection -jar "$PROJ_DIR/.build/libs/schedge.jar" $@
 fi
 
 

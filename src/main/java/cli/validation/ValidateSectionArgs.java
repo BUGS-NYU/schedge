@@ -71,16 +71,15 @@ public abstract class ValidateSectionArgs {
     }
 
     if (subject == null && school == null) {
-      if (batchSize != null) {
-        throw new IllegalArgumentException(
-            "--batch-size doesn't make sense for a single section");
-      }
-
       if (registrationNumber == null) {
         return new ByTerm(term, batchSize, writer);
       }
       return new ByRegistrationNumber(term, registrationNumber, writer);
     } else if (school != null && subject != null) {
+      if (batchSize != null) {
+        throw new IllegalArgumentException(
+                "--batch-size doesn't make sense for a single section");
+      }
       return new BySubject(term, new SubjectCode(subject, school), batchSize,
                            writer);
     } else if (subject == null) {

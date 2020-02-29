@@ -34,7 +34,9 @@ public final class Utils {
       System.out.println(value);
     } else {
       try {
-        new BufferedWriter(new FileWriter(file)).write(value.toString() + '\n');
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        writer.write(value.toString() + "\n");
+        writer.flush();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -42,16 +44,15 @@ public final class Utils {
   }
 
   public static String readFromFileOrStdin(String file) {
-    if (file == null) {
-      return new Scanner(inReader).next("\\A");
-    } else {
+    if (file != null) {
       try {
-        return new Scanner(new BufferedReader(new FileReader(file)))
-            .next("\\A");
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+        return new Scanner(new FileReader(file)).useDelimiter("\\A")
+                .next();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
       }
     }
+    return new Scanner(inReader).useDelimiter("\\A").next();
   }
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {

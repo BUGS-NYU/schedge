@@ -1,10 +1,8 @@
 package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.List;
 import java.util.Map;
-
 import nyu.SectionStatus;
 import nyu.SectionType;
 import services.ParseSection;

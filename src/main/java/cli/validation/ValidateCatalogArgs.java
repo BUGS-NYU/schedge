@@ -6,7 +6,7 @@ import java.util.function.BiFunction;
 import nyu.SubjectCode;
 import nyu.Term;
 import services.*;
-import utils.UtilsKt;
+import utils.Utils;
 
 public abstract class ValidateCatalogArgs {
   Term term;
@@ -29,7 +29,7 @@ public abstract class ValidateCatalogArgs {
                                              String subject, Integer batchSize,
                                              String outputFile) {
     return validate(term, semester, year, school, subject, batchSize,
-                    (t, o) -> UtilsKt.writeToFileOrStdout(outputFile, o));
+                    (t, o) -> Utils.writeToFileOrStdout(outputFile, o));
   }
 
   public static ValidateCatalogArgs validate(Integer term, String semester,
@@ -39,7 +39,7 @@ public abstract class ValidateCatalogArgs {
                                              boolean prettyPrint) {
     return validate(term, semester, year, school, subject, batchSize,
                     (t, o)
-                        -> UtilsKt.writeToFileOrStdout(
+                        -> Utils.writeToFileOrStdout(
                             outputFile, JsonMapper.toJson(o, prettyPrint)));
   }
 

@@ -6,6 +6,9 @@ import scraping.models.Course
 import nyu.SubjectCode
 import nyu.Term
 import mu.KotlinLogging
+import java.util.stream.Stream
+import kotlin.streams.asSequence
+import kotlin.streams.asStream
 
 private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
 
@@ -16,7 +19,7 @@ private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")
  * @return Sequence of List of Courses
  */
 fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>,
-                      batchSize: Int? = null): Sequence<List<Course>> {
+                      batchSize: Int? = null): Stream<List<Course>> {
     return queryCatalog(term, subjectCodes, batchSize).map { rawData ->
         try {
             ParseCatalog.parse(rawData.data, rawData.subject)
@@ -24,7 +27,7 @@ fun scrapeFromCatalog(term: Term, subjectCodes: List<SubjectCode>,
             scraperLogger.warn { e.message }
             null
         }
-    }.filterNotNull()
+    }.asSequence().filterNotNull().asStream()
 }
 
 /**

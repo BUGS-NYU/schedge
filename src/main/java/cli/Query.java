@@ -8,8 +8,7 @@ import picocli.CommandLine;
 import services.Query_catalogKt;
 import services.Query_schoolKt;
 import services.Query_sectionKt;
-import utils.UtilsKt;
-
+import utils.Utils;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
           Adding multiple options for querying
@@ -66,8 +65,7 @@ public class Query implements Runnable {
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile)
           .andRun((term, list, batchSize)
-                      -> UtilsKt.seqToList(
-                          Query_catalogKt.queryCatalog(term, list, batchSize)),
+                      -> Query_catalogKt.queryCatalog(term, list, batchSize),
                   (term, subjectCode)
                       -> Query_catalogKt.queryCatalog(term, subjectCode));
       long end = System.nanoTime();
@@ -116,7 +114,7 @@ public class Query implements Runnable {
       } else {
         term = Term.fromId(this.term);
       }
-      UtilsKt.writeToFileOrStdout(
+      Utils.writeToFileOrStdout(
           outputFile, Query_sectionKt.querySection(term, registrationNumber));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
@@ -158,7 +156,7 @@ public class Query implements Runnable {
       } else {
         term = Term.fromId(this.term);
       }
-      UtilsKt.writeToFileOrStdout(outputFile, Query_schoolKt.querySchool(term));
+      Utils.writeToFileOrStdout(outputFile, Query_schoolKt.querySchool(term));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

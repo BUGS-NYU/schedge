@@ -4,6 +4,8 @@ import nyu.SubjectCode
 import nyu.Term
 import scraping.models.SectionAttribute
 import mu.KotlinLogging
+import java.util.stream.Collectors
+import java.util.stream.Stream
 
 private val scraperLogger = KotlinLogging.logger("services.scrape_section")
 
@@ -27,12 +29,12 @@ fun scrapeFromSection(term: Term, registrationNumber: Int): SectionAttribute {
  * @return List of courses
  */
 fun scrapeFromAllCatalogSection(term: Term, subjectCodes: List<SubjectCode>,
-                                batchSize: Int? = null): Sequence<SectionAttribute> {
+                                batchSize: Int? = null): Stream<SectionAttribute> {
     return querySections(term,
             ParseCatalog.parseRegistrationNumber(
-                    queryCatalog(term, subjectCodes).toList().toString()), batchSize)
+                    queryCatalog(term, subjectCodes).collect(Collectors.toList()).toString()), batchSize)
             .asIterable().map { rawData ->
                 ParseSection.parse(rawData)
-            }.asSequence()
+            }.stream()
 
 }

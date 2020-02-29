@@ -18,7 +18,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.*;
-import utils.UtilsKt;
+import utils.Utils;
 
 /**
  * Parses a catalog string in a stream.
@@ -227,7 +227,7 @@ public class ParseCatalog implements Iterator<Course> {
       Arrays.fill(daysList, Boolean.FALSE);
       for (int i = 0; i < beginDays.length() - 1; i += 2) {
         String dayString = beginDays.substring(i, i + 2);
-        int dayValue = UtilsKt.parseDayOfWeek(dayString).getValue();
+        int dayValue = Utils.parseDayOfWeek(dayString).getValue();
         logger.trace("day: {} translates to ", dayString, dayValue);
         daysList[dayValue % 7] = true;
       }

@@ -1,9 +1,8 @@
 package nyu;
 
-import static utils.UtilsKt.asResourceLines;
-
 import java.util.*;
 import java.util.stream.Collectors;
+import utils.Utils;
 
 public final class SubjectCode {
 
@@ -27,7 +26,7 @@ public final class SubjectCode {
 
   public static List<SchoolMetadata> allSchools() {
     if (schools == null) {
-      schools = asResourceLines("/schools.txt")
+      schools = Utils.asResourceLines("/schools.txt")
                     .stream()
                     .map(str -> {
                       String[] data = str.split(",", 2);
@@ -40,7 +39,7 @@ public final class SubjectCode {
 
   public static HashMap<String, ArrayList<SubjectCode>> getAvailableSubjects() {
     if (availableSubjects == null) {
-      List<String> lines = asResourceLines("/subjects.txt");
+      List<String> lines = Utils.asResourceLines("/subjects.txt");
       availableSubjects = new HashMap<>();
       lines.stream().map(str -> str.split("-")).forEach(strings -> {
         if (availableSubjects.containsKey(strings[1])) {

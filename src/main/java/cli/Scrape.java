@@ -1,12 +1,13 @@
 package cli;
 
 import cli.validation.*;
+import java.util.stream.Collectors;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import services.*;
-import utils.UtilsKt;
+import utils.Utils;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
@@ -69,9 +70,9 @@ public class Scrape implements Runnable {
           .validate(term, semester, year, registrationNumber, school, subject,
                     batchSize, outputFile, pretty)
           .andRun((term, list, batchSize)
-                      -> UtilsKt.seqToList(
-                          Scrape_sectionKt.scrapeFromAllCatalogSection(
-                              term, list, batchSize)),
+                      -> Scrape_sectionKt
+                             .scrapeFromAllCatalogSection(term, list, batchSize)
+                             .collect(Collectors.toList()),
                   Scrape_sectionKt::scrapeFromSection);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -177,21 +178,21 @@ public class Scrape implements Runnable {
         term = Term.fromId(termId);
       }
       if (school == null && subject == null) {
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               Query_schoolKt.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
                                               Query_schoolKt.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else if (school != null) {
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               Query_schoolKt.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else {
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               Query_schoolKt.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));

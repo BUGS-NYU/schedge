@@ -1,6 +1,6 @@
 package services;
 
-import static services.Query_sectionKt.*;
+import static scraping.query.QuerySection.*;
 
 import database.generated.Tables;
 import database.generated.tables.Sections;

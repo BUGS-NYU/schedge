@@ -1,19 +1,15 @@
-package scraping;
+package scraping.query;
 
 import static java.lang.Integer.max;
 import static java.lang.Integer.min;
 
 import java.net.HttpCookie;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -23,26 +19,18 @@ import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraping.SimpleBatchedFutureEngine;
 import scraping.models.CatalogQueryData;
 
 public final class QueryCatalog {
 
   private static Logger logger =
-      LoggerFactory.getLogger("scraping.QueryCatalog");
+      LoggerFactory.getLogger("scraping.query.QueryCatalog");
   private static final String ROOT_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classSearch";
-  private static final URI ROOT_URI;
-  private static final URI DATA_URI;
-  private static final HttpClient client = HttpClient.newHttpClient();
-
-  static {
-    try {
-      ROOT_URI = new URI(ROOT_URL_STRING);
-      DATA_URI = new URI("https://m.albert.nyu.edu/app/catalog/getClassSearch");
-    } catch (URISyntaxException e) {
-      throw new RuntimeException();
-    }
-  }
+  private static final URI ROOT_URI = URI.create(ROOT_URL_STRING);
+  private static final URI DATA_URI =
+      URI.create("https://m.albert.nyu.edu/app/catalog/getClassSearch");
 
   public static CatalogQueryData queryCatalog(Term term,
                                               SubjectCode subjectCode) {
@@ -88,20 +76,23 @@ public final class QueryCatalog {
     {
       @SuppressWarnings("unchecked")
       Future<HttpContext>[] contextFutures = new Future[batchSize];
+      logger.info("Sending context requests... (x{})", batchSize);
       for (int i = 0; i < batchSize; i++) {
         contextFutures[i] = getContextAsync();
       }
+      logger.info("Collecting context requests... (x{})", batchSize);
       for (int i = 0; i < batchSize; i++) {
         try {
           contexts[i] = contextFutures[i].get();
         } catch (ExecutionException | InterruptedException e) {
-          e.printStackTrace();
-          contexts[i] = null;
+          throw new RuntimeException("Failed to get HttpContext.", e);
         }
         if (contexts[i] == null)
           throw new RuntimeException("Failed to get HttpContext.");
       }
     }
+
+    logger.info("Collected context requests... (x{})", batchSize);
 
     return StreamSupport
         .stream(new SimpleBatchedFutureEngine<SubjectCode, CatalogQueryData>(
@@ -127,6 +118,7 @@ public final class QueryCatalog {
 
     HttpRequest request =
         HttpRequest.newBuilder(DATA_URI)
+            .timeout(Duration.ofSeconds(60))
             .header("Referer", ROOT_URL_STRING + "/" + term.getId())
             .header("Referrer", "${ROOT_URL}/${term.id}")
             .header("Host", "m.albert.nyu.edu")
@@ -147,8 +139,15 @@ public final class QueryCatalog {
             .POST(HttpRequest.BodyPublishers.ofString(params))
             .build();
 
-    return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+    return GetClient.getClient()
+        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
         .handleAsync((resp, throwable) -> {
+          if (resp == null) {
+            logger.error("Error (subjectCode={}): {}", subjectCode,
+                         throwable.getMessage());
+            return null;
+          }
+
           if (resp.body().equals("No classes found matching your criteria.")) {
             logger.warn(
                 "No classes found matching criteria school={}, subject={}",
@@ -161,14 +160,20 @@ public final class QueryCatalog {
   }
 
   private static Future<HttpContext> getContextAsync() {
-    logger.info("Getting CSRF token...");
+    logger.debug("Getting CSRF token...");
     HttpRequest request = HttpRequest.newBuilder(ROOT_URI)
-                              .timeout(Duration.ofSeconds(10))
+                              .timeout(Duration.ofSeconds(60))
                               .GET()
                               .build();
 
-    return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+    return GetClient.getClient()
+        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
         .handleAsync((resp, throwable) -> {
+          if (resp == null) {
+            logger.error(throwable.getMessage());
+            return null;
+          }
+
           List<HttpCookie> cookies =
               resp.headers()
                   .map()
@@ -185,7 +190,7 @@ public final class QueryCatalog {
             logger.error("Couldn't find cookie with name=CSRFCookie");
             return null;
           }
-          logger.info("Retrieved CSRF token `{}`", csrfCookie.getValue());
+          logger.debug("Retrieved CSRF token `{}`", csrfCookie.getValue());
           return new HttpContext(csrfCookie.getValue(), cookies);
         });
   }

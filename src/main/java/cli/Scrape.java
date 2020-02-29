@@ -6,6 +6,10 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.ScrapeCatalog;
+import scraping.ScrapeSection;
+import scraping.query.QuerySchool;
+import scraping.query.QuerySection;
 import services.*;
 import utils.Utils;
 
@@ -70,10 +74,9 @@ public class Scrape implements Runnable {
           .validate(term, semester, year, registrationNumber, school, subject,
                     batchSize, outputFile, pretty)
           .andRun((term, list, batchSize)
-                      -> Scrape_sectionKt
-                             .scrapeFromAllCatalogSection(term, list, batchSize)
+                      -> ScrapeSection.scrapeFromSection(term, list, batchSize)
                              .collect(Collectors.toList()),
-                  Scrape_sectionKt::scrapeFromSection);
+                  ScrapeSection::scrapeFromSection);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + "seconds");
@@ -119,8 +122,10 @@ public class Scrape implements Runnable {
       ValidateCatalogArgs
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile, pretty)
-          .andRun(Scrape_catalogKt::scrapeFromCatalog,
-                  Scrape_catalogKt::scrapeFromCatalog);
+          .andRun((term, list, batchSize)
+                      -> ScrapeCatalog.scrapeFromCatalog(term, list, batchSize)
+                             .collect(Collectors.toList()),
+                  ScrapeCatalog::scrapeFromCatalog);
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + " seconds");
@@ -180,21 +185,21 @@ public class Scrape implements Runnable {
       if (school == null && subject == null) {
         Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                              Query_schoolKt.querySchool(term)),
+                                              QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
         Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
-                                              Query_schoolKt.querySchool(term)),
+                                              QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else if (school != null) {
         Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                              Query_schoolKt.querySchool(term)),
+                                              QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else {
         Utils.writeToFileOrStdout(
             outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
-                                              Query_schoolKt.querySchool(term)),
+                                              QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       }
       long end = System.nanoTime();

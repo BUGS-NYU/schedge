@@ -34,7 +34,7 @@ public class ParseCatalog implements Iterator<Course> {
   private Element currentElement;
 
   public static List<Course> parse(String data, SubjectCode subjectCode)
-      throws IOException {
+       {
     logger.debug("parsing raw catalog data...");
     ArrayList<Course> courses = new ArrayList<>();
     new ParseCatalog(Jsoup.parse(data), subjectCode)
@@ -43,7 +43,7 @@ public class ParseCatalog implements Iterator<Course> {
   }
 
   public static List<Integer> parseRegistrationNumber(String data)
-      throws IOException {
+      {
     logger.debug("parsing raw catalog registration numbers data...");
     Document secData = Jsoup.parse(data);
     Elements fields = secData.select("div.section-content > div.section-body");
@@ -58,7 +58,7 @@ public class ParseCatalog implements Iterator<Course> {
   }
 
   private ParseCatalog(Document data, SubjectCode subjectCode)
-      throws IOException {
+    {
     elements = data.select("div.primary-head ~ *").iterator();
     this.logger = LoggerFactory.getLogger(logger.getName());
 
@@ -72,7 +72,7 @@ public class ParseCatalog implements Iterator<Course> {
       logger.error("CSS query `div.primary-head ~ *` returned "
                    + "a list whose first element was not a 'div' (subject=" +
                    subjectCode + ").");
-      throw new IOException("NYU sent back data we weren't expecting.");
+      throw new RuntimeException("NYU sent back data we weren't expecting.");
     } else if (currentElement.text().equals(
                    "No classes found matching your criteria.")) {
       currentElement = null; // We're done, nothing's here

@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 import java.util.stream.Collectors;
-import models.Semester;
 import models.SubjectCode;
 import nyu.Term;
 import org.jetbrains.annotations.NotNull;

@@ -52,7 +52,7 @@ dependencies {
 
             "io.javalin:javalin:3.5.0", // Web server framework
             "io.swagger.core.v3:swagger-core:2.0.8", // Web server docs framework
-            "cc.vileda:kotlin-openapi3-dsl:0.20.1", // Web server docs DSL framework
+            // "cc.vileda:kotlin-openapi3-dsl:0.20.1", // Web server docs DSL framework
     )
 
     jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'

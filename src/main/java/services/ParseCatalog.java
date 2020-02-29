@@ -6,7 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Arrays;
-import kotlin.text.StringsKt;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
@@ -170,19 +169,17 @@ public class ParseCatalog implements Iterator<Course> {
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
-    Iterator<String> timeTokens =
-        StringsKt.split(times, new char[] {' '}, false, 0)
-            .stream()
-            .filter(s -> !s.equals("-"))
-            .iterator();
+    Iterator<String> timeTokens = Arrays.asList(times.split(" "))
+                                      .stream()
+                                      .filter(s -> !s.equals("-"))
+                                      .iterator();
 
     // 09/03/2019 - 12/13/2019 10/11/2019
     // - 10/11/2019 11/08/2019 - 11/08/2019
-    Iterator<String> dateTokens =
-        StringsKt.split(dates, new char[] {' '}, false, 0)
-            .stream()
-            .filter(s -> !s.equals("-"))
-            .iterator();
+    Iterator<String> dateTokens = Arrays.asList(dates.split(" "))
+                                      .stream()
+                                      .filter(s -> !s.equals("-"))
+                                      .iterator();
 
     ArrayList<Meeting> meetings = new ArrayList<>();
     while (timeTokens.hasNext()) {
@@ -211,8 +208,7 @@ public class ParseCatalog implements Iterator<Course> {
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
         logger.trace("Begin date: {}, End date: {}", beginDateTime,
                      stopDateTime);
-         duration =
-            ChronoUnit.MINUTES.between(beginDateTime,stopDateTime);
+        duration = ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
         logger.trace("Duration of meeting is {} minutes", duration);
       }
 

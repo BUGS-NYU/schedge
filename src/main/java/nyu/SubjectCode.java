@@ -72,6 +72,8 @@ public final class SubjectCode {
 
   public String getAbbrev() { return subject + '-' + school; }
 
+  public String toString() { return getAbbrev(); }
+
   public static final class SchoolMetadata {
     private String code, name;
     SchoolMetadata(String code, String name) {

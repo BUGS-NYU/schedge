@@ -1,12 +1,8 @@
 package services
 
-import scraping.models.Course
-import models.SubjectCode
+import nyu.SubjectCode
 import nyu.Term
 import scraping.models.SectionAttribute
-import scraping.models.Subject
-import java.lang.Exception
-import mu.KLogger
 import mu.KotlinLogging
 
 private val scraperLogger = KotlinLogging.logger("services.scrape_section")

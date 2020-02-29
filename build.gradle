@@ -14,7 +14,8 @@ plugins {
 
 group 'BUGS-NYU'
 mainClassName = 'Main'
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 def getenv = { env_val, default_val ->
   ext.val = System.getenv(env_val)
@@ -134,9 +135,6 @@ allprojects {
         }
     }
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
 
 compileKotlin {
     kotlinOptions {

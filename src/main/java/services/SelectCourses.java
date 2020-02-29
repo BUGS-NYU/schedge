@@ -7,13 +7,11 @@ import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import models.SubjectCode;
 import nyu.SectionStatus;
 import nyu.SectionType;
+import nyu.SubjectCode;
 import nyu.Term;
 import org.joda.time.DateTime;
 import org.jooq.DSLContext;
@@ -51,8 +49,8 @@ public class SelectCourses {
       Result<Record> records = context.select()
                                    .from(Tables.COURSES)
                                    .where(COURSES.TERM_ID.eq(term.getId()),
-                                          COURSES.SUBJECT.eq(code.getSubject()),
-                                          COURSES.SCHOOL.eq(code.getSchool()))
+                                          COURSES.SUBJECT.eq(code.subject),
+                                          COURSES.SCHOOL.eq(code.school))
                                    .fetch();
       ArrayList<Course> courses = new ArrayList<>(records.size());
 

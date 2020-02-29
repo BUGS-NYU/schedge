@@ -3,21 +3,17 @@ package services
 // @CodeOrg This file should be in java/scraping
 
 import com.github.kittinunf.fuel.Fuel
-import models.SubjectCode
 import nyu.Term
 import mu.KotlinLogging
 import scraping.SimpleBatchedFutureEngine
 import scraping.models.CatalogQueryData
-import scraping.models.Course
-import scraping.models.Section
-import scraping.models.SectionAttribute
 import java.io.IOException
 import java.net.HttpCookie
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.streams.toList
+import nyu.SubjectCode
 
 private val queryLogger = KotlinLogging.logger("services.query_catalog")
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"

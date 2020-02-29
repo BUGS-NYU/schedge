@@ -1,15 +1,12 @@
 package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import javax.validation.constraints.NotNull;
+
 import nyu.SectionStatus;
 import nyu.SectionType;
-import services.ParseCatalog;
 import services.ParseSection;
 
 public class Section {

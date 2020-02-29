@@ -5,7 +5,7 @@ import cli.validation.ValidateCatalogArgs;
 import java.sql.SQLException;
 import java.util.List;
 import kotlin.sequences.Sequence;
-import models.SubjectCode;
+import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

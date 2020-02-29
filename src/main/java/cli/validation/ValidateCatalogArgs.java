@@ -1,17 +1,10 @@
 package cli.validation;
 
-import api.App;
-import api.models.Course;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import models.SubjectCode;
+import nyu.SubjectCode;
 import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 import services.*;
 import utils.UtilsKt;
 
@@ -134,7 +127,8 @@ public abstract class ValidateCatalogArgs {
 
     Object run(ScraperForList forList,
                BiFunction<Term, SubjectCode, Object> forSingleton) {
-      return forList.scrape(term, SubjectCode.allSubjects(school), batchSize);
+      return forList.scrape(term, SubjectCode.allSubjectsForSchool(school),
+                            batchSize);
     }
   }
 }

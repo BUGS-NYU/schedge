@@ -67,20 +67,12 @@ public class Database implements Runnable {
                         ((Sequence<List<scraping.models.Course>>)obj)
                             .iterator()
                             .forEachRemaining(courseList -> {
-                              try {
-                                InsertCourses.insertCourses(t, courseList);
-                              } catch (SQLException e) {
-                                e.printStackTrace();
-                              }
+                              InsertCourses.insertCourses(t, courseList);
                             });
 
                       } else {
-                        try {
-                          InsertCourses.insertCourses(
-                              t, (List<scraping.models.Course>)obj);
-                        } catch (SQLException e) {
-                          e.printStackTrace();
-                        }
+                        InsertCourses.insertCourses(
+                            t, (List<scraping.models.Course>)obj);
                       }
                     })
 

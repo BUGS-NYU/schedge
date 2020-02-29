@@ -1,5 +1,6 @@
 package nyu;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.*;
 import java.util.stream.Collectors;
 import utils.Utils;
@@ -15,13 +16,13 @@ public final class SubjectCode {
 
   public SubjectCode(String subjectCode) {
     String[] code = subjectCode.split("-", 2);
-    this.subject = code[0];
-    this.school = code[1];
+    this.subject = code[0].toUpperCase();
+    this.school = code[1].toUpperCase();
   }
 
   public SubjectCode(String subject, String school) {
-    this.subject = subject;
-    this.school = school;
+    this.subject = subject.toUpperCase();
+    this.school = school.toUpperCase();
   }
 
   public static List<SchoolMetadata> allSchools() {
@@ -70,7 +71,10 @@ public final class SubjectCode {
     return getAvailableSubjects().get(school);
   }
 
-  public String getAbbrev() { return subject + '-' + school; }
+  @JsonIgnore
+  public String getAbbrev() {
+    return subject + '-' + school;
+  }
 
   public String toString() { return getAbbrev(); }
 

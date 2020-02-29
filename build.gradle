@@ -35,8 +35,6 @@ dependencies {
 
             "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
 
-            "joda-time:joda-time:2.10.5", // Datetime
-
             "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
             "org.jooq:jooq", // Database framework

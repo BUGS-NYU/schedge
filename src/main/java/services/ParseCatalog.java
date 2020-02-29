@@ -1,6 +1,9 @@
 package services;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Arrays;
 import kotlin.text.StringsKt;
@@ -8,9 +11,6 @@ import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,12 +29,11 @@ public class ParseCatalog implements Iterator<Course> {
   private static Logger logger =
       LoggerFactory.getLogger("services.parse_catalog");
   private static DateTimeFormatter timeParser =
-      DateTimeFormat.forPattern("MM/dd/yyyy h:mma").withLocale(Locale.ENGLISH);
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
   private Iterator<Element> elements;
   private Element currentElement;
 
-  public static List<Course> parse(String data, SubjectCode subjectCode)
-       {
+  public static List<Course> parse(String data, SubjectCode subjectCode) {
     logger.debug("parsing raw catalog data...");
     ArrayList<Course> courses = new ArrayList<>();
     new ParseCatalog(Jsoup.parse(data), subjectCode)
@@ -42,8 +41,7 @@ public class ParseCatalog implements Iterator<Course> {
     return courses;
   }
 
-  public static List<Integer> parseRegistrationNumber(String data)
-      {
+  public static List<Integer> parseRegistrationNumber(String data) {
     logger.debug("parsing raw catalog registration numbers data...");
     Document secData = Jsoup.parse(data);
     Elements fields = secData.select("div.section-content > div.section-body");
@@ -57,8 +55,7 @@ public class ParseCatalog implements Iterator<Course> {
     return registrationNumbers;
   }
 
-  private ParseCatalog(Document data, SubjectCode subjectCode)
-    {
+  private ParseCatalog(Document data, SubjectCode subjectCode) {
     elements = data.select("div.primary-head ~ *").iterator();
     this.logger = LoggerFactory.getLogger(logger.getName());
 
@@ -203,25 +200,24 @@ public class ParseCatalog implements Iterator<Course> {
         continue;
       }
 
-      DateTime beginDateTime;
+      LocalDateTime beginDateTime;
       long duration;
       {
         String beginDateString = dateTokens.next();
 
-        beginDateTime = timeParser.parseDateTime(
-            beginDateString + ' ' + timeTokens.next().toUpperCase());
-        DateTime stopDateTime = timeParser.parseDateTime(
-            beginDateString + ' ' + timeTokens.next().toUpperCase());
+        beginDateTime = LocalDateTime.from(timeParser.parse(
+            beginDateString + ' ' + timeTokens.next().toUpperCase()));
+        LocalDateTime stopDateTime = LocalDateTime.from(timeParser.parse(
+            beginDateString + ' ' + timeTokens.next().toUpperCase()));
         logger.trace("Begin date: {}, End date: {}", beginDateTime,
                      stopDateTime);
-        long durationMillis =
-            stopDateTime.getMillis() - beginDateTime.getMillis();
-        duration = durationMillis / 60000;
+         duration =
+            ChronoUnit.MINUTES.between(beginDateTime,stopDateTime);
         logger.trace("Duration of meeting is {} minutes", duration);
       }
 
-      DateTime endDate =
-          timeParser.parseDateTime(dateTokens.next() + " 11:59PM");
+      LocalDateTime endDate =
+          LocalDateTime.from(timeParser.parse(dateTokens.next() + " 11:59PM"));
 
       boolean[] daysList = new boolean[7];
       Arrays.fill(daysList, Boolean.FALSE);
@@ -234,7 +230,7 @@ public class ParseCatalog implements Iterator<Course> {
 
       for (int day = 0; day < 7;
            day++, beginDateTime = beginDateTime.plusDays(1)) {
-        if (daysList[beginDateTime.getDayOfWeek() % 7]) {
+        if (daysList[beginDateTime.getDayOfWeek().getValue() % 7]) {
           meetings.add(new Meeting(beginDateTime, duration, endDate));
         }
       }

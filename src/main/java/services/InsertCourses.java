@@ -7,6 +7,7 @@ import database.generated.tables.Sections;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.ZoneOffset;
 import java.util.List;
 import nyu.SectionType;
 import nyu.Term;
@@ -25,8 +26,7 @@ public class InsertCourses {
 
   private static Logger logger =
       LoggerFactory.getLogger("services.InsertCourses");
-  public static void insertCourses(Term term, List<Course> courses)
-      throws SQLException {
+  public static void insertCourses(Term term, List<Course> courses) {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Courses COURSES = Tables.COURSES;
@@ -52,12 +52,13 @@ public class InsertCourses {
           insertSections(ctx, id, c.getSections());
         });
       }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
   }
 
   public static void insertSections(DSLContext context, int courseId,
-                                    List<Section> sections)
-      throws SQLException {
+                                    List<Section> sections) {
     Sections SECTIONS = Tables.SECTIONS;
 
     for (Section s : sections) {
@@ -87,7 +88,7 @@ public class InsertCourses {
 
   public static void insertRecitations(DSLContext context, int courseId,
                                        List<Section> sections,
-                                       int associatedWith) throws SQLException {
+                                       int associatedWith) {
     for (Section s : sections) {
       if (s.getType() == SectionType.LEC)
         throw new IllegalArgumentException(
@@ -121,8 +122,7 @@ public class InsertCourses {
   }
 
   public static void insertMeetings(DSLContext context, int sectionId,
-                                    List<Meeting> meetings)
-      throws SQLException {
+                                    List<Meeting> meetings) {
     Meetings MEETINGS = Tables.MEETINGS;
     context.delete(MEETINGS).where(MEETINGS.SECTION_ID.eq(sectionId)).execute();
 
@@ -130,9 +130,10 @@ public class InsertCourses {
       context
           .insertInto(MEETINGS, MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,
                       MEETINGS.DURATION, MEETINGS.END_DATE)
-          .values(sectionId, new Timestamp(m.getBeginDate().getMillis()),
+          .values(sectionId,
+                  Timestamp.from(m.getBeginDate().toInstant(ZoneOffset.UTC)),
                   m.getMinutesDuration(),
-                  new Timestamp(m.getEndDate().getMillis()))
+                  Timestamp.from(m.getEndDate().toInstant(ZoneOffset.UTC)))
           .execute();
     }
   }

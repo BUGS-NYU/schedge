@@ -13,7 +13,6 @@ import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
 import nyu.Term;
-import org.joda.time.DateTime;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Result;
@@ -126,9 +125,9 @@ public class SelectCourses {
 
     return records.stream()
         .map(r
-             -> new Meeting(new DateTime(r.get(MEETINGS.BEGIN_DATE).getTime()),
+             -> new Meeting(r.get(MEETINGS.BEGIN_DATE).toLocalDateTime(),
                             r.get(MEETINGS.DURATION),
-                            new DateTime(r.get(MEETINGS.END_DATE).getTime())))
+                            r.get(MEETINGS.END_DATE).toLocalDateTime()))
         .collect(Collectors.toList());
   }
 }

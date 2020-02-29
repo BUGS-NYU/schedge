@@ -1,10 +1,8 @@
 package api;
 
-import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.swagger.v3.oas.models.media.Content;
-import models.SubjectCode;
+import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 
 class SubjectsEndpoint extends Endpoint {
@@ -52,7 +50,7 @@ class SubjectsEndpoint extends Endpoint {
         ctx.json(SubjectCode.allSubjects());
       } else
         try {
-          ctx.json(SubjectCode.allSubjects(school));
+          ctx.json(SubjectCode.allSubjectsForSchool(school));
         } catch (IllegalArgumentException e) {
           ctx.json(new ApiError(e.getMessage()));
         }

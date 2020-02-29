@@ -3,9 +3,8 @@ package services
 // @CodeOrg This file should be in java/scraping
 
 import scraping.models.Course
-import models.SubjectCode
+import nyu.SubjectCode
 import nyu.Term
-import mu.KLogger
 import mu.KotlinLogging
 
 private val scraperLogger = KotlinLogging.logger("services.scrape_catalog")

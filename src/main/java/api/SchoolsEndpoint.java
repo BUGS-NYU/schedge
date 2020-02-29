@@ -2,8 +2,7 @@ package api;
 
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import models.SchoolMetadata;
-import models.SubjectCode;
+import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 
 class SchoolsEndpoint extends Endpoint {
@@ -24,7 +23,7 @@ class SchoolsEndpoint extends Endpoint {
               "This endpoint returns a list of schools.");
           openApiOperation.summary("Schools Endpoint");
         })
-        .jsonArray("200", SchoolMetadata.class,
+        .jsonArray("200", SubjectCode.SchoolMetadata.class,
                    openApiParam -> { openApiParam.description("OK."); });
   }
 

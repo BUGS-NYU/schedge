@@ -3,16 +3,12 @@ package services;
 import static services.Query_sectionKt.*;
 
 import database.generated.Tables;
-import database.generated.tables.Courses;
-import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import models.SubjectCode;
+
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;

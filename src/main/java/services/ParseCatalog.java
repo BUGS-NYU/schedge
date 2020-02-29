@@ -1,14 +1,12 @@
 package services;
 
 import java.io.IOException;
-import java.time.DayOfWeek;
 import java.util.*;
 import java.util.Arrays;
 import kotlin.text.StringsKt;
-import models.SubjectCode;
 import nyu.SectionStatus;
 import nyu.SectionType;
-import nyu.Term;
+import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -154,8 +152,7 @@ public class ParseCatalog implements Iterator<Course> {
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
     }
 
-    SubjectCode subject =
-        SubjectCode.getUnchecked(text.substring(0, textIndex1));
+    SubjectCode subject = new SubjectCode(text.substring(0, textIndex1));
     String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 

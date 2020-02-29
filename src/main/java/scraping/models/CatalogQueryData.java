@@ -1,6 +1,6 @@
 package scraping.models;
 
-import models.SubjectCode;
+import nyu.SubjectCode;
 
 public class CatalogQueryData {
 

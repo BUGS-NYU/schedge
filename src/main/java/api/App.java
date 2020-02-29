@@ -1,27 +1,19 @@
 package api;
 
-import api.SubjectsEndpoint;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.javalin.plugin.openapi.ui.SwaggerOptions;
 import io.swagger.v3.oas.models.info.Info;
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.List;
 import java.util.stream.Collectors;
-import models.SubjectCode;
-import nyu.Term;
+
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import services.JsonMapper;
-import services.SelectCourses;
 
 public class App {
   public static void run() {

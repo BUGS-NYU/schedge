@@ -3,7 +3,7 @@ package api.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 import javax.validation.constraints.NotNull;
-import models.SubjectCode;
+import nyu.SubjectCode;
 
 public class Course {
 
@@ -30,11 +30,11 @@ public class Course {
 
   @JsonIgnore
   public String getSubject() {
-    return subjectCode.getSubject();
+    return subjectCode.subject;
   }
 
   @JsonIgnore
   public String getSchool() {
-    return subjectCode.getSchool();
+    return subjectCode.school;
   }
 }

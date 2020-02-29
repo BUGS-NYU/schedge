@@ -38,8 +38,6 @@ dependencies {
             "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
             "org.jooq:jooq", // Database framework
-            "org.jooq:jooq-meta", // Database framework
-            "org.jooq:jooq-codegen", // Database framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
@@ -52,7 +50,6 @@ dependencies {
 
             "io.javalin:javalin:3.5.0", // Web server framework
             "io.swagger.core.v3:swagger-core:2.0.8", // Web server docs framework
-            // "cc.vileda:kotlin-openapi3-dsl:0.20.1", // Web server docs DSL framework
     )
 
     jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'

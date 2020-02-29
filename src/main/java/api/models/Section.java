@@ -93,22 +93,46 @@ public class Section {
   public List<Section> getRecitations() {
     return recitations;
   }
-
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public Integer getWaitlistTotal() {
     return waitlistTotal;
   }
-
-  public String getCampus() { return campus; }
-  public String getSectionName() { return sectionName; }
-
-  public String getDescription() { return description; }
-  public Double getMinUnits() { return minUnits; }
-  public Double getMaxUnits() { return maxUnits; }
-  public String getInstructionMode() { return instructionMode; }
-  public String getGrading() { return grading; }
-  public String getRoomNumber() { return roomNumber; }
-  public String getPrerequisites() { return prerequisites; }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getCampus() {
+    return campus;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getSectionName() {
+    return sectionName;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getDescription() {
+    return description;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public Double getMinUnits() {
+    return minUnits;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public Double getMaxUnits() {
+    return maxUnits;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getInstructionMode() {
+    return instructionMode;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getGrading() {
+    return grading;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getRoomNumber() {
+    return roomNumber;
+  }
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  public String getPrerequisites() {
+    return prerequisites;
+  }
 
   @Override
   public boolean equals(Object o) {

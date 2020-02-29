@@ -83,6 +83,12 @@ public class ParseSection {
     courseName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
+    String location = secData.get("Room");
+    if(location.contains("Loc:")) {
+      location = location.split("Loc:")[0];
+      secData.put("Room", location);
+    }
+
     return new SectionAttribute(
         courseName.equals("") ? null : courseName,
         Integer.parseInt(secData.get("Class Number")),
@@ -92,34 +98,5 @@ public class ParseSection {
         maxUnits, secData.get("Grading"),
         secData.getOrDefault("Notes", "See Description. None otherwise"),
         secData.get("Room"));
-  }
-
-  public static Map<String, String> update(String rawData) {
-    logger.info("parsing raw catalog section data...");
-    Document doc = Jsoup.parse(rawData);
-    doc.select("a").unwrap();
-    doc.select("i").unwrap();
-    doc.select("b").unwrap();
-    Element outerDataSection = doc.selectFirst("body > section.main");
-    Element innerDataSection = outerDataSection.selectFirst("> section");
-    //      String courseName =
-    //              innerDataSection.selectFirst("> div.primary-head").text();
-    Elements dataDivs =
-        innerDataSection.select("> div.section-content.clearfix");
-    Map<String, String> secData = parseSectionAttributes(dataDivs);
-    String units = secData.get("Units");
-    String minUnits = "", maxUnits = "";
-    if (units.contains("-")) {
-      minUnits = units.split(" - ")[0];
-      maxUnits = units.split(" - ")[1].split(" ")[0];
-    } else {
-      maxUnits = units.split(" ")[0];
-    }
-    String courseName =
-        secData.containsKey("Topic") ? "" + secData.get("Topic") : "";
-    secData.put("sectionName", courseName);
-    secData.put("minUnits", minUnits);
-    secData.put("maxUnits", maxUnits);
-    return secData;
   }
 }

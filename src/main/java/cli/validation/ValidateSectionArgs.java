@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import nyu.SubjectCode;
 import nyu.Term;
 import services.*;
-import utils.UtilsKt;
+import utils.Utils;
 
 public abstract class ValidateSectionArgs {
   Term term;
@@ -30,7 +30,7 @@ public abstract class ValidateSectionArgs {
            Integer registrationNumber, String school, String subject,
            Integer batchSize, String outputFile) {
     return validate(term, semester, year, registrationNumber, school, subject,
-                    batchSize, o -> UtilsKt.writeToFileOrStdout(outputFile, o));
+                    batchSize, o -> Utils.writeToFileOrStdout(outputFile, o));
   }
 
   public static ValidateSectionArgs
@@ -40,7 +40,7 @@ public abstract class ValidateSectionArgs {
     return validate(term, semester, year, registrationNumber, school, subject,
                     batchSize,
                     o
-                    -> UtilsKt.writeToFileOrStdout(
+                    -> Utils.writeToFileOrStdout(
                         outputFile, JsonMapper.toJson(o, prettyPrint)));
   }
 

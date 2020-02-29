@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import services.*;
-import utils.UtilsKt;
+import utils.Utils;
 
 @CommandLine.
 Command(name = "db",
@@ -206,7 +206,7 @@ public class Database implements Runnable {
       }
 
       GetConnection.close();
-      UtilsKt.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
+      Utils.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

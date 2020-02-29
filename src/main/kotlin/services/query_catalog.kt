@@ -14,6 +14,8 @@ import java.util.concurrent.Future
 import kotlin.math.max
 import kotlin.math.min
 import nyu.SubjectCode
+import java.util.stream.Stream
+import kotlin.streams.asStream
 
 private val queryLogger = KotlinLogging.logger("services.query_catalog")
 private const val ROOT_URL = "https://m.albert.nyu.edu/app/catalog/classSearch"
@@ -29,7 +31,7 @@ fun queryCatalog(term: Term, subjectCode: SubjectCode): CatalogQueryData {
 
 
 fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
-                 batchSizeNullable: Int? = null): Sequence<CatalogQueryData> {
+                 batchSizeNullable: Int? = null): Stream<CatalogQueryData> {
     if (subjectCodes.size > 1) {
         queryLogger.debug { "querying catalog for term=$term with multiple subjects..." }
     }
@@ -43,7 +45,7 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
             batchSize
     ) { subjectCode, idx ->
         queryCatalog(term, subjectCode, contexts[idx])
-    }.asSequence().filterNotNull()
+    }.asSequence().filterNotNull().asStream()
 }
 
 /**

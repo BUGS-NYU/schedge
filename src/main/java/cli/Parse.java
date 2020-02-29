@@ -12,8 +12,7 @@ import services.JsonMapper;
 import services.ParseCatalog;
 import services.ParseSchoolSubjects;
 import services.ParseSection;
-import utils.UtilsKt;
-
+import utils.Utils;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
@@ -57,9 +56,9 @@ public class Parse implements Runnable {
     @Override
     public void run() {
       long start = System.nanoTime();
-      String input = UtilsKt.readFromFileOrStdin(inputFile);
+      String input = Utils.readFromFileOrStdin(inputFile);
       SectionAttribute output = ParseSection.parse(input);
-      UtilsKt.writeToFileOrStdout(
+      Utils.writeToFileOrStdout(
           outputFile, JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;
@@ -94,9 +93,9 @@ public class Parse implements Runnable {
     public void run() {
       try {
         long start = System.nanoTime();
-        String input = UtilsKt.readFromFileOrStdin(inputFile);
+        String input = Utils.readFromFileOrStdin(inputFile);
         List<Course> output = ParseCatalog.parse(input, null);
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             JsonMapper.toJson(output, Boolean.parseBoolean(pretty)),
             outputFile);
         long end = System.nanoTime();
@@ -144,27 +143,27 @@ public class Parse implements Runnable {
     @Override
     public void run() {
       long start = System.nanoTime();
-      String input = UtilsKt.readFromFileOrStdin(inputFile);
+      String input = Utils.readFromFileOrStdin(inputFile);
       if (school == null && subject == null) {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
-        UtilsKt.writeToFileOrStdout(
+        Utils.writeToFileOrStdout(
             JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
             outputFile);
 
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
-            outputFile);
+        Utils.writeToFileOrStdout(
+            outputFile,
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
       } else if (subject == null) {
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)),
-            outputFile);
+        Utils.writeToFileOrStdout(
+            outputFile,
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
       } else {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
-        UtilsKt.writeToFileOrStdout(
-            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
-            outputFile);
+        Utils.writeToFileOrStdout(
+            outputFile,
+            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)));
       }
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;

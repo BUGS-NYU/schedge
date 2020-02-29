@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.info.Info;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

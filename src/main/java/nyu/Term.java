@@ -9,14 +9,7 @@ public final class Term {
   public static final int SUMMER = 6;
   public static final int FALL = 8;
 
-  public Term(int semester, int year, Object unused) {
-    assert semester == 2 || semester == 4 || semester == 6 ||
-        semester == 8 : "Semester was invalid: " + semester;
-    assert year >= 0 : "Year value was invalid: " + year;
-
-    this.semester = semester;
-    this.year = year;
-  }
+  public Term(String sem, int year) { this(semesterFromString(sem), year); }
 
   public Term(int semester, int year) {
     assert semester == 2 || semester == 4 || semester == 6 ||
@@ -24,12 +17,12 @@ public final class Term {
     assert year >= 1900 : "Year was invalid: " + year;
 
     this.semester = semester;
-    this.year = year;
+    this.year = year - 1900;
   }
 
   public static Term fromId(int id) {
     int semester = id % 10;
-    return new Term(semester, id - semester);
+    return new Term(semester, id / 10 + 1900);
   }
 
   public static int semesterFromString(String sem) {
@@ -66,7 +59,7 @@ public final class Term {
     }
   }
 
-  public int getId() { return (year - 1900) * 10 + semester; }
+  public int getId() { return year * 10 + semester; }
 
   public String toString() {
     return "Term(" + semesterToString(semester) + ',' + (year + 1900) + ")";

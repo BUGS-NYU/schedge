@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import models.Semester;
 import models.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -66,7 +65,7 @@ public abstract class ValidateCatalogArgs {
         throw new IllegalArgumentException(
             "Must provide both --semester AND --year");
       }
-      term = new Term(Term.semesterFromString(semester), year);
+      term = new Term(semester, year);
     } else {
       term = Term.fromId(termId);
     }

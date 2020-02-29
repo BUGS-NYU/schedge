@@ -7,7 +7,6 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
-import models.Semester;
 import models.SubjectCode;
 import nyu.Term;
 import org.jetbrains.annotations.NotNull;
@@ -95,12 +94,10 @@ class CoursesEndpoint extends Endpoint {
         return;
       }
 
-      int sem;
       Term term;
       SubjectCode subject;
       try {
-        sem = Term.semesterFromString(ctx.pathParam("semester"));
-        term = new Term(sem, year);
+        term = new Term(ctx.pathParam("semester"), year);
         subject =
             new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
       } catch (IllegalArgumentException e) {

@@ -1,7 +1,6 @@
 package cli;
 
 import cli.validation.*;
-import models.Semester;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,7 +136,7 @@ public class Scrape implements Runnable {
     private Logger logger = LoggerFactory.getLogger("scrape.school");
 
     @CommandLine.Option(names = "--term", description = "term to query from")
-    private Integer term;
+    private Integer termId;
     @CommandLine.
     Option(names = "--semester", description = "semester: ja, sp, su, or fa")
     private String semester;
@@ -165,17 +164,17 @@ public class Scrape implements Runnable {
     public void run() {
       long start = System.nanoTime();
       Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
+      if (termId == null && semester == null && year == null) {
         throw new IllegalArgumentException(
             "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
+      } else if (termId == null) {
+        if (semester == null || year == null) {
           throw new IllegalArgumentException(
               "Must provide both --semester AND --year");
         }
-        term = new Term(Term.semesterFromString(this.semester), year);
+        term = new Term(semester, year);
       } else {
-        term = Term.fromId(this.term);
+        term = Term.fromId(termId);
       }
       if (school == null && subject == null) {
         UtilsKt.writeToFileOrStdout(

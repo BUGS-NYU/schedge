@@ -29,7 +29,7 @@ if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   sudo -E java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@ 2> "$PROJ_DIR/logging.txt" & disown
   echo "$!" > "$PROJ_DIR/.pid"
 else
-  java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
+  java -Djdk.httpclient.allowRestrictedHeaders=host,connection -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
 fi
 
 

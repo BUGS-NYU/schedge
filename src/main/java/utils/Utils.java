@@ -16,7 +16,7 @@ public final class Utils {
       new BufferedReader(new InputStreamReader(System.in));
 
   public static List<String> asResourceLines(String path) {
-    InputStream resource = Object.class.getResourceAsStream(path);
+    InputStream resource = Utils.class.getResourceAsStream(path);
 
     if (resource == null)
       throw new IllegalArgumentException("Resource doesn't exist: " + path);

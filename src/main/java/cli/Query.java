@@ -1,14 +1,17 @@
 package cli;
 
 import cli.validation.*;
+import java.util.stream.Collectors;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.QueryCatalog;
 import services.Query_catalogKt;
 import services.Query_schoolKt;
 import services.Query_sectionKt;
 import utils.Utils;
+
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
           Adding multiple options for querying
@@ -65,9 +68,10 @@ public class Query implements Runnable {
           .validate(term, semester, year, school, subject, batchSize,
                     outputFile)
           .andRun((term, list, batchSize)
-                      -> Query_catalogKt.queryCatalog(term, list, batchSize),
+                      -> QueryCatalog.queryCatalog(term, list, batchSize)
+                             .collect(Collectors.toList()),
                   (term, subjectCode)
-                      -> Query_catalogKt.queryCatalog(term, subjectCode));
+                      -> QueryCatalog.queryCatalog(term, subjectCode));
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
     }

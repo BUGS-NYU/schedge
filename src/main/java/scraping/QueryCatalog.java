@@ -44,9 +44,29 @@ public final class QueryCatalog {
     }
   }
 
-  private Stream<CatalogQueryData> queryCatalog(Term term,
-                                                List<SubjectCode> subjectCodes,
-                                                Integer batchSizeNullable) {
+  public static CatalogQueryData queryCatalog(Term term,
+                                              SubjectCode subjectCode) {
+    CatalogQueryData queryData = null;
+    try {
+      queryData =
+          queryCatalog(term, subjectCode, getContextAsync().get()).get();
+    } catch (ExecutionException | InterruptedException e) {
+      throw new RuntimeException(
+          "No classes found matching criteria school=" + subjectCode.school +
+              ", subject=" + subjectCode.getAbbrev(),
+          e);
+    }
+
+    if (queryData == null)
+      throw new RuntimeException(
+          "No classes found matching criteria school=" + subjectCode.school +
+          ", subject=" + subjectCode.getAbbrev());
+    return queryData;
+  }
+
+  public static Stream<CatalogQueryData>
+  queryCatalog(Term term, List<SubjectCode> subjectCodes,
+               Integer batchSizeNullable) {
     if (subjectCodes.isEmpty())
       throw new IllegalArgumentException(
           "Need to provide at least one subject!");
@@ -94,7 +114,7 @@ public final class QueryCatalog {
         .filter(i -> i != null);
   }
 
-  private Future<CatalogQueryData>
+  private static Future<CatalogQueryData>
   queryCatalog(Term term, SubjectCode subjectCode, HttpContext context) {
     logger.info("querying catalog for term=" + term +
                 " and subject=" + subjectCode + "...");
@@ -115,7 +135,7 @@ public final class QueryCatalog {
             .header("Content-Type",
                     "application/x-www-form-urlencoded; charset=UTF-8")
             .header("X-Requested-With", "XMLHttpRequest")
-            .header("Content-Length", "129")
+            // .header("Content-Length", "129")
             .header("Origin", "https://m.albert.nyu.edu")
             .header("DNT", "1")
             .header("Connection", "keep-alive")
@@ -165,6 +185,7 @@ public final class QueryCatalog {
             logger.error("Couldn't find cookie with name=CSRFCookie");
             return null;
           }
+          logger.info("Retrieved CSRF token `{}`", csrfCookie.getValue());
           return new HttpContext(csrfCookie.getValue(), cookies);
         });
   }

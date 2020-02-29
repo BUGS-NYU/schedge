@@ -14,7 +14,7 @@ import utils.UtilsKt;
 */
 @CommandLine.
 Command(name = "scrape",
-        synopsisSubcommandLabel = "(master | catalog | sections | school)",
+        synopsisSubcommandLabel = "(catalog | sections | school)",
         subcommands = {Scrape.Catalog.class, Scrape.Sections.class,
                        Scrape.School.class})
 public class Scrape implements Runnable {

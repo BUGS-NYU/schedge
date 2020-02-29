@@ -3,6 +3,9 @@ package scraping;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 /**
@@ -14,7 +17,7 @@ import org.slf4j.Logger;
  * @author Albert Liu
  */
 public class SimpleBatchedFutureEngine<Input, Output>
-    implements Iterator<Output> {
+    implements Iterator<Output>, Iterable<Output> {
 
   static long DEFAULT_TIMEOUT = 10;
 
@@ -95,6 +98,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
 
   public boolean hasNext() { return pendingRequests > 0; }
 
+  // @TODO Remove null checks from all of the methods in this class
   public Output checkMailboxes() {
     for (int i = 0; i < pendingRequests; i++) {
       Future<Output> future = mailboxes.get(i);
@@ -121,7 +125,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
     if (pendingRequests <= 0)
       throw new NoSuchElementException();
 
-    Output fetchedResult = null;
+    Output fetchedResult;
     while (pendingRequests > 0) {
       fetchedResult = checkMailboxes();
       if (fetchedResult != null) {
@@ -134,6 +138,13 @@ public class SimpleBatchedFutureEngine<Input, Output>
       }
     }
 
-    return fetchedResult;
+    return null;
   }
+
+
+    @NotNull
+    @Override
+    public Iterator<Output> iterator() {
+        return this;
+    }
 }

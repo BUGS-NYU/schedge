@@ -45,7 +45,7 @@ fun queryCatalog(term: Term, subjectCodes: List<SubjectCode>,
             batchSize
     ) { subjectCode, idx ->
         queryCatalog(term, subjectCode, contexts[idx])
-    }.asSequence().filterNotNull().asStream()
+    }.iterator().asSequence().filterNotNull().asStream()
 }
 
 /**

@@ -60,6 +60,6 @@ fun querySections(term: Term, registrationNumbers: List<Int>,
             batchSize
     ) { registrationNumber, _ ->
         querySectionAsync(term, registrationNumber)
-    }.asSequence().filterNotNull()
+    }.iterator().asSequence().filterNotNull()
 }
 

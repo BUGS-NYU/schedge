@@ -10,8 +10,8 @@ COPY --chown=gradle:gradle ./.build/libs/schedge.jar .build/libs/schedge.jar
 # COPY --chown=gradle:gradle build.gradle build.gradle
 # RUN gradle build --no-daemon
 
-# COPY --chown=gradle:gradle docker-entry.sh docker-entry.sh
-# COPY --chown=gradle:gradle schedge schedge
+COPY --chown=gradle:gradle docker-entry.sh docker-entry.sh
+COPY --chown=gradle:gradle schedge schedge
 
 EXPOSE 8080
 

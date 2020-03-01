@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "application"
-    id 'nu.studer.jooq' version '3.0.3'
+    id 'nu.studer.jooq' version '4.1'
     id "org.flywaydb.flyway" version "6.2.4"
 }
 

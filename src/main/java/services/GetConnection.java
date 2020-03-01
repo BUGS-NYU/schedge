@@ -26,9 +26,10 @@ public class GetConnection {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
       config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
-      config.setPassword(getEnvDefault("DB_PASSWORD", "docker"));
+      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
       config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://localhost:5432/schedge"));
+          "JDBC_URL",
+          "jdbc:sqlite:" + System.getProperty("user.dir") + "/tables.db"));
       dataSource = new HikariDataSource(config);
     }
 

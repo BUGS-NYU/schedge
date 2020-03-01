@@ -2,6 +2,8 @@
 
 PROJ_DIR="$(dirname "$0")"
 
+cd "$PROJ_DIR"
+
 if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   shift
   if [ -f "$PROJ_DIR/.pid" ]; then

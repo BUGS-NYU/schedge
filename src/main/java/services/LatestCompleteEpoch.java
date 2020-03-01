@@ -23,15 +23,20 @@ public final class LatestCompleteEpoch {
   public static int getLatestEpoch(Connection conn, Term term) {
     DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
     Epochs EPOCHS = Tables.EPOCHS;
-    Record r = context.select(max(EPOCHS.ID))
-                   .from(EPOCHS)
-                   .where(EPOCHS.COMPLETED_AT.isNotNull())
-                   .limit(1)
-                   .fetchOne();
+    Integer e = context.select(max(EPOCHS.ID))
+                    .from(EPOCHS)
+                    .where(EPOCHS.COMPLETED_AT.isNotNull(),
+                           EPOCHS.TERM_ID.eq(term.getId()))
+                    .limit(1)
+                    .fetchOne()
+                    .getValue(max(EPOCHS.ID));
 
-    if (r == null)
+    if (e == null) {
+      logger.info("Couldn't find epoch for term=" + term);
       return -1;
-    else
-      return r.getValue(max(EPOCHS.ID));
+    } else {
+      logger.info("found epoch=" + e + " for term=" + term);
+      return e;
+    }
   }
 }

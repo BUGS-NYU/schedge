@@ -37,7 +37,7 @@ dependencies {
             // "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
 
-            "org.jooq:jooq", // Database framework
+            "org.jooq:jooq:3.9.0", // Database framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 

@@ -5,6 +5,7 @@ package database.generated;
 
 
 import database.generated.tables.Courses;
+import database.generated.tables.Epochs;
 import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
@@ -29,6 +30,11 @@ public class Tables {
      * The table <code>courses</code>.
      */
     public static final Courses COURSES = Courses.COURSES;
+
+    /**
+     * The table <code>epochs</code>.
+     */
+    public static final Epochs EPOCHS = Epochs.EPOCHS;
 
     /**
      * The table <code>flyway_schema_history</code>.

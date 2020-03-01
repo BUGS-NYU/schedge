@@ -4,6 +4,7 @@ import static scraping.query.QuerySection.*;
 
 import database.generated.Tables;
 import database.generated.tables.Sections;
+import database.models.SectionID;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -38,8 +39,9 @@ public class UpdateSections {
     }
   }
 
-  public static void updateSections(Term term, Integer batchSizeNullable)
-      throws SQLException {
+  public static void updateSections(Term term, int epoch,
+                                    Iterator<SectionID> sectionIds,
+                                    Integer batchSizeNullable) {
     try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
       Sections SECTIONS = Tables.SECTIONS;
@@ -58,13 +60,15 @@ public class UpdateSections {
               .iterator();
 
       Iterator<SaveState> sectionAttributes = new SimpleBatchedFutureEngine<>(
-          registrationNumbers,
-          batchSizeNullable == null ? 40 : batchSizeNullable,
-          (saveState,
-           __) -> querySectionAsync(term, saveState.registrationNumber, str -> {
-            saveState.data = str;
-            return saveState;
-          }));
+          sectionIds, batchSizeNullable == null ? 40 : batchSizeNullable,
+          (sectionID, __)
+              -> querySectionAsync(
+                  term, sectionID.registrationNumber,
+                  str
+                  -> new SaveState(sectionID.id, sectionID.registrationNumber,
+                                   str)
+
+                      ));
 
       while (sectionAttributes.hasNext()) {
         SaveState save = sectionAttributes.next();
@@ -98,6 +102,8 @@ public class UpdateSections {
             .where(SECTIONS.ID.eq(save.id))
             .execute();
       }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
   }
 }

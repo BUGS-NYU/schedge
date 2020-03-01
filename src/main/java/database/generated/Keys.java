@@ -5,10 +5,12 @@ package database.generated;
 
 
 import database.generated.tables.Courses;
+import database.generated.tables.Epochs;
 import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 import database.generated.tables.records.CoursesRecord;
+import database.generated.tables.records.EpochsRecord;
 import database.generated.tables.records.FlywaySchemaHistoryRecord;
 import database.generated.tables.records.MeetingsRecord;
 import database.generated.tables.records.SectionsRecord;
@@ -45,6 +47,10 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<CoursesRecord> PK_COURSES = UniqueKeys0.PK_COURSES;
+    public static final UniqueKey<EpochsRecord> PK_EPOCHS = UniqueKeys0.PK_EPOCHS;
+    public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_1 = UniqueKeys0.SQLITE_AUTOINDEX_EPOCHS_1;
+    public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_2 = UniqueKeys0.SQLITE_AUTOINDEX_EPOCHS_2;
+    public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_3 = UniqueKeys0.SQLITE_AUTOINDEX_EPOCHS_3;
     public static final UniqueKey<FlywaySchemaHistoryRecord> PK_FLYWAY_SCHEMA_HISTORY = UniqueKeys0.PK_FLYWAY_SCHEMA_HISTORY;
     public static final UniqueKey<MeetingsRecord> PK_MEETINGS = UniqueKeys0.PK_MEETINGS;
     public static final UniqueKey<SectionsRecord> PK_SECTIONS = UniqueKeys0.PK_SECTIONS;
@@ -53,6 +59,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<CoursesRecord, EpochsRecord> FK_COURSES_EPOCHS_1 = ForeignKeys0.FK_COURSES_EPOCHS_1;
     public static final ForeignKey<MeetingsRecord, SectionsRecord> FK_MEETINGS_SECTIONS_1 = ForeignKeys0.FK_MEETINGS_SECTIONS_1;
     public static final ForeignKey<SectionsRecord, CoursesRecord> FK_SECTIONS_COURSES_1 = ForeignKeys0.FK_SECTIONS_COURSES_1;
     public static final ForeignKey<SectionsRecord, SectionsRecord> FK_SECTIONS_SECTIONS_1 = ForeignKeys0.FK_SECTIONS_SECTIONS_1;
@@ -63,12 +70,17 @@ public class Keys {
 
     private static class UniqueKeys0 {
         public static final UniqueKey<CoursesRecord> PK_COURSES = Internal.createUniqueKey(Courses.COURSES, "pk_courses", new TableField[] { Courses.COURSES.ID }, true);
+        public static final UniqueKey<EpochsRecord> PK_EPOCHS = Internal.createUniqueKey(Epochs.EPOCHS, "pk_epochs", new TableField[] { Epochs.EPOCHS.ID }, true);
+        public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_1 = Internal.createUniqueKey(Epochs.EPOCHS, "sqlite_autoindex_epochs_1", new TableField[] { Epochs.EPOCHS.ID }, true);
+        public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_2 = Internal.createUniqueKey(Epochs.EPOCHS, "sqlite_autoindex_epochs_2", new TableField[] { Epochs.EPOCHS.STARTED_AT }, true);
+        public static final UniqueKey<EpochsRecord> SQLITE_AUTOINDEX_EPOCHS_3 = Internal.createUniqueKey(Epochs.EPOCHS, "sqlite_autoindex_epochs_3", new TableField[] { Epochs.EPOCHS.COMPLETED_AT }, true);
         public static final UniqueKey<FlywaySchemaHistoryRecord> PK_FLYWAY_SCHEMA_HISTORY = Internal.createUniqueKey(FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, "pk_flyway_schema_history", new TableField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK }, true);
         public static final UniqueKey<MeetingsRecord> PK_MEETINGS = Internal.createUniqueKey(Meetings.MEETINGS, "pk_meetings", new TableField[] { Meetings.MEETINGS.ID }, true);
         public static final UniqueKey<SectionsRecord> PK_SECTIONS = Internal.createUniqueKey(Sections.SECTIONS, "pk_sections", new TableField[] { Sections.SECTIONS.ID }, true);
     }
 
     private static class ForeignKeys0 {
+        public static final ForeignKey<CoursesRecord, EpochsRecord> FK_COURSES_EPOCHS_1 = Internal.createForeignKey(Keys.PK_EPOCHS, Courses.COURSES, "fk_courses_epochs_1", new TableField[] { Courses.COURSES.EPOCH }, true);
         public static final ForeignKey<MeetingsRecord, SectionsRecord> FK_MEETINGS_SECTIONS_1 = Internal.createForeignKey(Keys.PK_SECTIONS, Meetings.MEETINGS, "fk_meetings_sections_1", new TableField[] { Meetings.MEETINGS.SECTION_ID }, true);
         public static final ForeignKey<SectionsRecord, CoursesRecord> FK_SECTIONS_COURSES_1 = Internal.createForeignKey(Keys.PK_COURSES, Sections.SECTIONS, "fk_sections_courses_1", new TableField[] { Sections.SECTIONS.COURSE_ID }, true);
         public static final ForeignKey<SectionsRecord, SectionsRecord> FK_SECTIONS_SECTIONS_1 = Internal.createForeignKey(Keys.PK_SECTIONS, Sections.SECTIONS, "fk_sections_sections_1", new TableField[] { Sections.SECTIONS.ASSOCIATED_WITH }, true);

@@ -5,7 +5,6 @@ package database.generated.tables;
 
 
 import database.generated.DefaultSchema;
-import database.generated.Indexes;
 import database.generated.Keys;
 import database.generated.tables.records.CoursesRecord;
 
@@ -16,10 +15,9 @@ import javax.annotation.processing.Generated;
 
 import org.jooq.Field;
 import org.jooq.ForeignKey;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -42,7 +40,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses extends TableImpl<CoursesRecord> {
 
-    private static final long serialVersionUID = -761283035;
+    private static final long serialVersionUID = 1949298943;
 
     /**
      * The reference instance of <code>courses</code>
@@ -61,6 +59,11 @@ public class Courses extends TableImpl<CoursesRecord> {
      * The column <code>courses.id</code>.
      */
     public final TableField<CoursesRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>courses.epoch</code>.
+     */
+    public final TableField<CoursesRecord, Integer> EPOCH = createField(DSL.name("epoch"), org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>courses.name</code>.
@@ -126,11 +129,6 @@ public class Courses extends TableImpl<CoursesRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.COURSES_IDX);
-    }
-
-    @Override
     public UniqueKey<CoursesRecord> getPrimaryKey() {
         return Keys.PK_COURSES;
     }
@@ -138,6 +136,15 @@ public class Courses extends TableImpl<CoursesRecord> {
     @Override
     public List<UniqueKey<CoursesRecord>> getKeys() {
         return Arrays.<UniqueKey<CoursesRecord>>asList(Keys.PK_COURSES);
+    }
+
+    @Override
+    public List<ForeignKey<CoursesRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<CoursesRecord, ?>>asList(Keys.FK_COURSES_EPOCHS_1);
+    }
+
+    public Epochs epochs() {
+        return new Epochs(this, Keys.FK_COURSES_EPOCHS_1);
     }
 
     @Override
@@ -167,11 +174,11 @@ public class Courses extends TableImpl<CoursesRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Integer, String, String, String, String, Integer> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row7<Integer, Integer, String, String, String, String, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

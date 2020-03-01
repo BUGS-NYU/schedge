@@ -22,9 +22,10 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Courses implements Serializable {
 
-    private static final long serialVersionUID = -1689885263;
+    private static final long serialVersionUID = 120061412;
 
     private final Integer id;
+    private final Integer epoch;
     private final String  name;
     private final String  school;
     private final String  subject;
@@ -33,6 +34,7 @@ public class Courses implements Serializable {
 
     public Courses(Courses value) {
         this.id = value.id;
+        this.epoch = value.epoch;
         this.name = value.name;
         this.school = value.school;
         this.subject = value.subject;
@@ -42,6 +44,7 @@ public class Courses implements Serializable {
 
     public Courses(
         Integer id,
+        Integer epoch,
         String  name,
         String  school,
         String  subject,
@@ -49,6 +52,7 @@ public class Courses implements Serializable {
         Integer termId
     ) {
         this.id = id;
+        this.epoch = epoch;
         this.name = name;
         this.school = school;
         this.subject = subject;
@@ -58,6 +62,10 @@ public class Courses implements Serializable {
 
     public Integer getId() {
         return this.id;
+    }
+
+    public Integer getEpoch() {
+        return this.epoch;
     }
 
     public String getName() {
@@ -85,6 +93,7 @@ public class Courses implements Serializable {
         StringBuilder sb = new StringBuilder("Courses (");
 
         sb.append(id);
+        sb.append(", ").append(epoch);
         sb.append(", ").append(name);
         sb.append(", ").append(school);
         sb.append(", ").append(subject);

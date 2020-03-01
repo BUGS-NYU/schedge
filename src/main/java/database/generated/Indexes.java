@@ -4,7 +4,6 @@
 package database.generated;
 
 
-import database.generated.tables.Courses;
 import database.generated.tables.FlywaySchemaHistory;
 import database.generated.tables.Sections;
 
@@ -32,9 +31,7 @@ public class Indexes {
     // INDEX definitions
     // -------------------------------------------------------------------------
 
-    public static final Index COURSES_IDX = Indexes0.COURSES_IDX;
     public static final Index FLYWAY_SCHEMA_HISTORY_S_IDX = Indexes0.FLYWAY_SCHEMA_HISTORY_S_IDX;
-    public static final Index SECTION_IDX = Indexes0.SECTION_IDX;
     public static final Index SECTIONS_ASSOCIATED_WITH = Indexes0.SECTIONS_ASSOCIATED_WITH;
 
     // -------------------------------------------------------------------------
@@ -42,9 +39,7 @@ public class Indexes {
     // -------------------------------------------------------------------------
 
     private static class Indexes0 {
-        public static Index COURSES_IDX = Internal.createIndex("courses_idx", Courses.COURSES, new OrderField[] { Courses.COURSES.TERM_ID, Courses.COURSES.SCHOOL, Courses.COURSES.SUBJECT, Courses.COURSES.DEPT_COURSE_ID }, true);
         public static Index FLYWAY_SCHEMA_HISTORY_S_IDX = Internal.createIndex("flyway_schema_history_s_idx", FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, new OrderField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.SUCCESS }, false);
-        public static Index SECTION_IDX = Internal.createIndex("section_idx", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.COURSE_ID, Sections.SECTIONS.SECTION_CODE }, true);
         public static Index SECTIONS_ASSOCIATED_WITH = Internal.createIndex("sections_associated_with", Sections.SECTIONS, new OrderField[] { Sections.SECTIONS.ASSOCIATED_WITH }, false);
     }
 }

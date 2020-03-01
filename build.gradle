@@ -162,14 +162,22 @@ task checkFast {}
 checkFast.dependsOn += 'compileJava'
 
 class UpdateDbTask extends DefaultTask {
-  @InputDirectory
-  String inputDirectory;
 
-  @OutputFile
-  String tables;
+    @InputDirectory
+    String inputDirectory;
 
-  @TaskAction
-  def update() {}
+    String tables;
+
+    UpdateDbTask() {
+        outputs.upToDateWhen {
+          new File(tables).exists()
+        }
+    }
+
+
+    @TaskAction
+    def update() {
+    }
 }
 
 task updateDb(type: UpdateDbTask) {

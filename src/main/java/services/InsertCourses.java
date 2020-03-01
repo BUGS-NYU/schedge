@@ -45,7 +45,8 @@ public class InsertCourses {
                                   COURSES.TERM_ID)
                        .values(c.getName(), c.getSchool(), c.getSubject(),
                                c.getDeptCourseId(), term.getId())
-                       .onDuplicateKeyUpdate()
+                       .onConflict(COURSES.SCHOOL, COURSES.SUBJECT, COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
+                       .doUpdate()
                        .set(COURSES.NAME, c.getName())
                        .returning(COURSES.ID)
                        .fetchOne()
@@ -72,7 +73,8 @@ public class InsertCourses {
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
                       s.getInstructor(), s.getType().ordinal(),
                       s.getStatus().ordinal(), s.getWaitlistTotal())
-              .onDuplicateKeyUpdate()
+              .onConflict(SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE)
+              .doUpdate()
               .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
               .set(SECTIONS.INSTRUCTOR, s.getInstructor())
               .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())
@@ -110,7 +112,8 @@ public class InsertCourses {
                            s.getSectionCode(), s.getInstructor(),
                            s.getType().ordinal(), s.getStatus().ordinal(),
                            s.getWaitlistTotal(), associatedWith)
-                   .onDuplicateKeyUpdate()
+                   .onConflict(SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE)
+                   .doUpdate()
                    .set(SECTIONS.REGISTRATION_NUMBER, s.getRegistrationNumber())
                    .set(SECTIONS.INSTRUCTOR, s.getInstructor())
                    .set(SECTIONS.SECTION_TYPE, s.getType().ordinal())

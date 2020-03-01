@@ -144,8 +144,25 @@ targetCompatibility = JavaVersion.VERSION_1_8
 task checkFast {}
 checkFast.dependsOn += 'compileJava'
 
-task updateDb {}
-updateDb.dependsOn += 'flywayClean'
-updateDb.dependsOn += 'flywayMigrate'
-updateDb.dependsOn += 'generateDatabaseJooqSchemaSource'
+class UpdateDbTask extends DefaultTask {
+  @InputDirectory
+  String inputDirectory;
+
+  @OutputFile
+  String tables;
+
+  @TaskAction
+  def update() {}
+}
+
+task updateDb(type: UpdateDbTask) {
+  inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/migrations"
+  tables = "${buildscript.sourceFile.absoluteFile.parent}/tables.db";
+  doLast {
+      flywayClean.runTask()
+      flywayMigrate.runTask()
+      generateDatabaseJooqSchemaSource.generate()
+  }
+}
+compileJava.dependsOn += updateDb
 

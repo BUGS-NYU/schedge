@@ -12,13 +12,13 @@
 You'll need to install a few applications to contribute to this project:
 
 - Git
-- Postgres<sup>1</sup>
+- SQLite<sup>1</sup>
 - Java/Kotlin
 - Gradle
 
 Some of this can be handled for you using the Intellij Idea IDE.
 
-<small><sup>1</sup>You only need PostGres to develop on portions of the project
+<small><sup>1</sup>You only need SQLite to develop on portions of the project
 that use the database; if you don't think you'll be doing that, then you dont need
 to worry about it.</small>
 
@@ -29,12 +29,12 @@ to worry about it.</small>
 - Select Git from the drop down menu
 - Use the URL for this repository ( https://github.com/A1Liu/schedge ).
 
-You'll need to use the command line instructions to install Postgres<sup>1<sup>,
+You'll need to use the command line instructions to install SQLite<sup>1<sup>,
 but everything else should be handled for you.
 
 [intellij-download]: https://www.jetbrains.com/idea/download/index.html
 
-<small><sup>1</sup>You only need PostGres to develop on portions of the project
+<small><sup>1</sup>You only need SQLite to develop on portions of the project
 that use the database; if you don't think you'll be doing that, then you dont need
 to worry about it.</small>
 
@@ -50,13 +50,8 @@ Type the following into the terminal:
 # Install Git
 sudo apt install git-all
 
-# Install Postgres
-sudo sh -c 'echo \
-  "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main"
-  >> /etc/apt/sources.list.d/pgdg.list'
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo apt-get update
-sudo apt-get install postgresql-10
+# Install SQLite
+sudo apt-get install sqlite3
 
 # Install Java
 sudo apt install openjdk-8-jdk openjdk-8-jre
@@ -92,12 +87,12 @@ Git is a version control system and helps manage the project. Learn
 brew install git
 ```
 
-Postgresql is used as the database for Schedge. Read more about it
-[here](https://www.postgresql.org/about/)
+SQLite is used as the database for Schedge. Read more about it
+[here](https://www.sqlite.org/index.html)
 
 ```shell script
-# Install postgresql. postgresql is for the database
-brew install postgresql
+# Install SQLite.
+brew install sqlite
 ```
 
 Java codes handle I/O and parsing the data. Read the
@@ -200,11 +195,7 @@ CLI is somewhat similar. It reads the inputs from the users but there are only s
 subcommands defined in the project. We have provided them for Schedge that would quickly
 allow you to query, scrape and parse Albert data. So shall we open the terminal and begin?
 
-### Setting Up the PostGres Database
-- Run `pg_ctl -D /usr/local/var/postgres start`
-- Login to the database using `psql -d postgres`
-  - `CREATE DATABASE schedge;`
-  - `CREATE USER schedge WITH SUPERUSER;`
+### Setting Up the SQLite Database
 - Run `gradle updateDb`
 
 ## Build

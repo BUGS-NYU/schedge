@@ -108,6 +108,23 @@ allprojects {
     }
 }
 
+// https://github.com/jorgeejgonzalez/fermat/wiki/Creating-Standalone-Jar-Using-Gradle
+task fatJar(type: Jar, dependsOn: test) {
+    baseName = project.name + '-with-dependencies'
+
+    manifest {
+        attributes 'Main-Class': 'Main'
+    }
+
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    with jar
+}
+
 // Using hack from https://vocon-it.com/2016/11/15/how-to-build-a-lean-jar-file-with-gradle/
 // copy dependency jars to build/libs/dependency-jars
 task copyJarsToLib(type: Copy) {

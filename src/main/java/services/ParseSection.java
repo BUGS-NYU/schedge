@@ -2,7 +2,6 @@ package services;
 
 import java.util.*;
 import java.util.regex.Pattern;
-
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
@@ -46,9 +45,9 @@ public class ParseSection {
 
     Elements elements = doc.select("a");
     String link = null;
-    for(Element element : elements) {
+    for (Element element : elements) {
       String el = element.attr("href");
-      if(el.contains("mapBuilding")) {
+      if (el.contains("mapBuilding")) {
         link = el;
       }
     }
@@ -108,58 +107,65 @@ public class ParseSection {
         secData.get("Room"));
   }
 
-
-  public static void parseBuilding(Map<String, String> secData, String link) {
+  public static Map<String, String> getBuilding() {
     List<String> lines = Utils.asResourceLines("/building.txt");
     Map<String, String> buildings = new HashMap<>();
-    lines.stream().map(str -> str.split(",",2)).forEach(strings -> {
+    lines.stream().map(str -> str.split(",", 2)).forEach(strings -> {
       buildings.put(strings[0], strings[1]);
     });
+    return buildings;
+  }
+
+  public static boolean checkDigit(String location) {
+    return Pattern.compile("[0-9]").matcher(location).find();
+  }
+
+  public static void parseBuilding(Map<String, String> secData, String link) {
+    Map<String, String> buildings = getBuilding();
 
     String location = secData.get("Room");
     String room = "";
     String building = null;
 
-    if(location.contains("Loc") || location.contains("Loc:")) {
+    if (location.contains("Loc") || location.contains("Loc:")) {
       location = location.split("Loc")[0];
-      if(Pattern.compile( "[0-9]" ).matcher(location).find()) {
-        location = location.strip();
-        if(location.contains("Rm:")) {
-            String[] arrs = location.split("Rm:");
-            if(arrs.length == 2) {
-                room = location.split("Rm:")[1];
-            }
-        } else if(location.contains("Rm")) {
-            String[] arrs = location.split("Rm");
-            if(arrs.length == 2) {
-                room = location.split("Rm")[1];
-            }
-        } else if(location.contains("Room:")) {
-            String[] arrs = location.split("Room:");
-            if(arrs.length == 2) {
-                room = location.split("Room:")[1];
-            }
-        } else if(location.contains("Room")) {
-            String[] arrs = location.split("Room");
-            if(arrs.length == 2) {
-                room = location.split("Room")[1];
-            }
+      location = location.strip();
+      if (checkDigit(location)) {
+        if (location.contains("Rm:")) {
+          String[] arrs = location.split("Rm:");
+          if (arrs.length == 2) {
+            room = location.split("Rm:")[1];
+          }
+        } else if (location.contains("Rm")) {
+          String[] arrs = location.split("Rm");
+          if (arrs.length == 2) {
+            room = location.split("Rm")[1];
+          }
+        } else if (location.contains("Room:")) {
+          String[] arrs = location.split("Room:");
+          if (arrs.length == 2) {
+            room = location.split("Room:")[1];
+          }
+        } else if (location.contains("Room")) {
+          String[] arrs = location.split("Room");
+          if (arrs.length == 2) {
+            room = location.split("Room")[1];
+          }
         }
       }
 
-      if(link != null) {
+      if (link != null) {
         link = link.substring(link.lastIndexOf("/") + 1);
-        if(buildings.containsKey(link)) {
+        if (buildings.containsKey(link)) {
           building = buildings.get(link);
         }
       }
 
-      if(!room.equals("") && building != null) {
+      if (!room.equals("") && building != null) {
         secData.put("Room", building + " - Room:" + room);
       } else {
         secData.put("Room", location);
       }
     }
-
   }
 }

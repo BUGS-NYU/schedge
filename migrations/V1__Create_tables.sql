@@ -8,8 +8,8 @@
 
 CREATE TABLE courses (
   id                  integer                     NOT NULL,
-epoch               int REFERENCES epochs(id)
-                        ON DELETE CASCADE         NOT NULL,
+  epoch               int REFERENCES epochs(id)
+                          ON DELETE CASCADE       NOT NULL,
   name                varchar(128)                NOT NULL,
   school              varchar(4)                  NOt NULL,
   subject             varchar(6)                  NOT NULL,

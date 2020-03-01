@@ -21,8 +21,8 @@ public class Section {
   // values that need to be updated
   private String campus;
   private String description;
-  private Double minUnits;
-  private Double maxUnits;
+  private Float minUnits;
+  private Float maxUnits;
   private String instructionMode;
   private String grading;
   private String roomNumber;
@@ -51,7 +51,7 @@ public class Section {
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal, String campus, String description,
-                 Double minUnits, Double maxUnits, String instructionMode,
+                 Float minUnits, Float maxUnits, String instructionMode,
                  String grading, String roomNumber, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
@@ -110,11 +110,11 @@ public class Section {
     return description;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Double getMinUnits() {
+  public Float getMinUnits() {
     return minUnits;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Double getMaxUnits() {
+  public Float getMaxUnits() {
     return maxUnits;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)

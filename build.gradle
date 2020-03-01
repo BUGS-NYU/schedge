@@ -2,7 +2,7 @@ plugins {
     id "java"
     id "application"
     id 'nu.studer.jooq' version '3.0.3'
-    id "org.flywaydb.flyway" version "6.1.0"
+    id "org.flywaydb.flyway" version "6.2.4"
 }
 
 group 'BUGS-NYU'
@@ -17,10 +17,8 @@ def getenv = { env_val, default_val ->
   } else return ext.val
 }
 
-def dbUsername = getenv("DB_USERNAME", "schedge")
-def dbPassword = getenv("DB_PASSWORD", "docker")
-def dbUrl = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
-def dbDriver = 'org.postgresql.Driver'
+def dbUrl = "jdbc:sqlite:${buildscript.sourceFile.absoluteFile.parent}/tables.db"
+def dbDriver = 'org.sqlite.JDBC'
 
 repositories {
     mavenCentral()
@@ -35,8 +33,10 @@ dependencies {
 
             "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
 
-            "org.postgresql:postgresql:42.2.8.jre7", // Database driver
+            "org.xerial:sqlite-jdbc:3.8.7",
+            // "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
+
             "org.jooq:jooq", // Database framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
@@ -52,14 +52,12 @@ dependencies {
             "io.swagger.core.v3:swagger-core:2.0.8", // Web server docs framework
     )
 
-    jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'
+    jooqRuntime "org.xerial:sqlite-jdbc:3.8.7"
 }
 
 flyway {
   driver = dbDriver
   url = dbUrl
-  user = dbUsername
-  password = dbPassword
   locations = ['filesystem:migrations']
 }
 
@@ -71,15 +69,13 @@ jooq {
     jdbc {
       driver = dbDriver
       url = dbUrl
-      user = dbUsername
-      password = dbPassword
     }
     generator {
       database {
-        name = 'org.jooq.meta.postgres.PostgresDatabase'
+        name = 'org.jooq.meta.sqlite.SQLiteDatabase'
         includes = '.*'
         excludes = ''
-        inputSchema = 'public'
+        // inputSchema = 'main'
       }
 
       generate {

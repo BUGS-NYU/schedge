@@ -44,7 +44,7 @@ public class SelectCourses {
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       Courses COURSES = Tables.COURSES;
-      DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
       Result<Record> records = context.select()
                                    .from(Tables.COURSES)
                                    .where(COURSES.TERM_ID.eq(term.getId()),

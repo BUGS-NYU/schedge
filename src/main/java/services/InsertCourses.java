@@ -13,6 +13,7 @@ import nyu.SectionType;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class InsertCourses {
       LoggerFactory.getLogger("services.InsertCourses");
   public static void insertCourses(Term term, List<Course> courses) {
     try (Connection conn = GetConnection.getConnection()) {
-      DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
       Courses COURSES = Tables.COURSES;
       for (Course c : courses) {
         context.transaction(config -> {

@@ -49,7 +49,7 @@ public final class Utils {
         return new Scanner(new FileReader(file)).useDelimiter("\\A")
                 .next();
       } catch (FileNotFoundException e) {
-        e.printStackTrace();
+        throw new RuntimeException(e);
       }
     }
     return new Scanner(inReader).useDelimiter("\\A").next();

@@ -109,12 +109,25 @@ public class ParseSection {
         secData.get("Room"));
   }
 
+<<<<<<< HEAD:src/main/java/scraping/parse/ParseSection.java
   public static void parseBuilding(Map<String, String> secData, String link) {
+=======
+  public static Map<String, String> getBuilding() {
+>>>>>>> update:src/main/java/services/ParseSection.java
     List<String> lines = Utils.asResourceLines("/building.txt");
     Map<String, String> buildings = new HashMap<>();
     lines.stream().map(str -> str.split(",", 2)).forEach(strings -> {
       buildings.put(strings[0], strings[1]);
     });
+    return buildings;
+  }
+
+  public static boolean checkDigit(String location) {
+    return Pattern.compile("[0-9]").matcher(location).find();
+  }
+
+  public static void parseBuilding(Map<String, String> secData, String link) {
+    Map<String, String> buildings = getBuilding();
 
     String location = secData.get("Room");
     String room = "";
@@ -122,8 +135,8 @@ public class ParseSection {
 
     if (location.contains("Loc") || location.contains("Loc:")) {
       location = location.split("Loc")[0];
-      if (Pattern.compile("[0-9]").matcher(location).find()) {
-        location = location.strip();
+      location = location.strip();
+      if (checkDigit(location)) {
         if (location.contains("Rm:")) {
           String[] arrs = location.split("Rm:");
           if (arrs.length == 2) {

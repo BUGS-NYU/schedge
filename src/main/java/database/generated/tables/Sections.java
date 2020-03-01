@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections extends TableImpl<SectionsRecord> {
 
-    private static final long serialVersionUID = -1725306754;
+    private static final long serialVersionUID = 818490655;
 
     /**
      * The reference instance of <code>sections</code>
@@ -192,7 +192,7 @@ public class Sections extends TableImpl<SectionsRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.SECTION_IDX, Indexes.SECTIONS_ASSOCIATED_WITH);
+        return Arrays.<Index>asList(Indexes.SECTIONS_ASSOCIATED_WITH);
     }
 
     @Override

@@ -24,13 +24,19 @@ import org.slf4j.LoggerFactory;
 public class SelectCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.select_courses");
+      LoggerFactory.getLogger("services.SelectCourses");
 
   public static List<Course> selectCourses(Term term, List<SubjectCode> codes) {
+    int epoch;
+    try (Connection conn = GetConnection.getConnection()) {
+      epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
     return codes.stream()
         .map(code -> {
           try {
-            return selectCourses(term, code);
+            return selectCourses(term, epoch, code);
           } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -40,17 +46,19 @@ public class SelectCourses {
         .collect(Collectors.toList());
   }
 
-  public static List<Course> selectCourses(Term term, SubjectCode code)
+  private static List<Course> selectCourses(Term term, int epoch,
+                                           SubjectCode code)
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       Courses COURSES = Tables.COURSES;
       DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
-      Result<Record> records = context.select()
-                                   .from(Tables.COURSES)
-                                   .where(COURSES.TERM_ID.eq(term.getId()),
-                                          COURSES.SUBJECT.eq(code.subject),
-                                          COURSES.SCHOOL.eq(code.school))
-                                   .fetch();
+      Result<Record> records =
+          context.select()
+              .from(Tables.COURSES)
+              .where(COURSES.TERM_ID.eq(term.getId()),
+                     COURSES.SUBJECT.eq(code.subject),
+                     COURSES.SCHOOL.eq(code.school), COURSES.EPOCH.eq(epoch))
+              .fetch();
       ArrayList<Course> courses = new ArrayList<>(records.size());
 
       for (Record r : records) {

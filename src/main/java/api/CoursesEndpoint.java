@@ -7,6 +7,8 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jetbrains.annotations.NotNull;
@@ -107,7 +109,7 @@ class CoursesEndpoint extends Endpoint {
       }
 
       ctx.status(200);
-      ctx.json(SelectCourses.selectCourses(term, subject));
+      ctx.json(SelectCourses.selectCourses(term, Arrays.asList(subject)));
     };
   }
 }

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import org.jetbrains.annotations.NotNull;
 
 /**
-This class get connection to the Postgresql database using JDBC Driver
+ * This class get connection to the SQLite database using JDBC Driver
  */
 public class GetConnection {
 
@@ -25,11 +25,10 @@ public class GetConnection {
   public static Connection getConnection() throws SQLException {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
-      config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
-      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
-      config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL",
-          "jdbc:sqlite:" + System.getProperty("user.dir") + "/tables.db"));
+      config.setUsername("schedge");
+      config.setPassword("");
+      config.setJdbcUrl("jdbc:sqlite:" + System.getProperty("user.dir") +
+                        "/tables.db");
       dataSource = new HikariDataSource(config);
     }
 

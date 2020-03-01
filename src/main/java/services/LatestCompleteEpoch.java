@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import nyu.Term;
 import org.jooq.DSLContext;
+import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -22,12 +23,15 @@ public final class LatestCompleteEpoch {
   public static int getLatestEpoch(Connection conn, Term term) {
     DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
     Epochs EPOCHS = Tables.EPOCHS;
-    return context.select(max(EPOCHS.ID))
-        .from(EPOCHS)
-        .where(EPOCHS.COMPLETED_AT.isNotNull())
-        .limit(1)
-        .fetch()
-        .get(0)
-        .component1();
+    Record r = context.select(max(EPOCHS.ID))
+                   .from(EPOCHS)
+                   .where(EPOCHS.COMPLETED_AT.isNotNull())
+                   .limit(1)
+                   .fetchOne();
+
+    if (r == null)
+      return -1;
+    else
+      return r.getValue(max(EPOCHS.ID));
   }
 }

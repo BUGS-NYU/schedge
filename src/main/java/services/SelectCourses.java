@@ -30,6 +30,8 @@ public class SelectCourses {
     int epoch;
     try (Connection conn = GetConnection.getConnection()) {
       epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+      if (epoch == -1)
+        return Collections.emptyList();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -47,7 +49,7 @@ public class SelectCourses {
   }
 
   private static List<Course> selectCourses(Term term, int epoch,
-                                           SubjectCode code)
+                                            SubjectCode code)
       throws SQLException {
     try (Connection conn = GetConnection.getConnection()) {
       Courses COURSES = Tables.COURSES;

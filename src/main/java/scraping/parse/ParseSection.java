@@ -20,7 +20,11 @@ import utils.Utils;
  */
 public class ParseSection {
   private static Logger logger =
-      LoggerFactory.getLogger("scraping.parse.ParseSection");
+      LoggerFactory.getLogger("services.ParseSection");
+  private static DateTimeFormatter timeParser =
+      DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
+  private static List<String> list = Utils.asResourceLines("/building.txt");
+  private static Pattern pattern = Pattern.compile("[0-9]");
 
   public static SectionAttribute parse(@NotNull String rawData) {
     logger.debug("parsing raw catalog section data into SectionAttribute...");
@@ -109,25 +113,11 @@ public class ParseSection {
         secData.get("Room"));
   }
 
-<<<<<<< HEAD:src/main/java/scraping/parse/ParseSection.java
   public static void parseBuilding(Map<String, String> secData, String link) {
-=======
-  public static Map<String, String> getBuilding() {
->>>>>>> update:src/main/java/services/ParseSection.java
-    List<String> lines = Utils.asResourceLines("/building.txt");
     Map<String, String> buildings = new HashMap<>();
-    lines.stream().map(str -> str.split(",", 2)).forEach(strings -> {
+    list.stream().map(str -> str.split(",", 2)).forEach(strings -> {
       buildings.put(strings[0], strings[1]);
     });
-    return buildings;
-  }
-
-  public static boolean checkDigit(String location) {
-    return Pattern.compile("[0-9]").matcher(location).find();
-  }
-
-  public static void parseBuilding(Map<String, String> secData, String link) {
-    Map<String, String> buildings = getBuilding();
 
     String location = secData.get("Room");
     String room = "";
@@ -136,26 +126,26 @@ public class ParseSection {
     if (location.contains("Loc") || location.contains("Loc:")) {
       location = location.split("Loc")[0];
       location = location.strip();
-      if (checkDigit(location)) {
+      if (pattern.matcher(location).find()) {
         if (location.contains("Rm:")) {
           String[] arrs = location.split("Rm:");
           if (arrs.length == 2) {
-            room = location.split("Rm:")[1];
+            room = arrs[1];
           }
         } else if (location.contains("Rm")) {
           String[] arrs = location.split("Rm");
           if (arrs.length == 2) {
-            room = location.split("Rm")[1];
+            room = arrs[1];
           }
         } else if (location.contains("Room:")) {
           String[] arrs = location.split("Room:");
           if (arrs.length == 2) {
-            room = location.split("Room:")[1];
+            room = arrs[1];
           }
         } else if (location.contains("Room")) {
           String[] arrs = location.split("Room");
           if (arrs.length == 2) {
-            room = location.split("Room")[1];
+            room = arrs[1];
           }
         }
       }

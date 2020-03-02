@@ -8,9 +8,8 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
+import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
-import scraping.query.QuerySection;
-import services.*;
 import utils.Utils;
 
 /*
@@ -184,21 +183,21 @@ public class Scrape implements Runnable {
       }
       if (school == null && subject == null) {
         Utils.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
         Utils.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
+            outputFile, Utils.toJson(ParseSchoolSubjects.parseSubject(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else if (school != null) {
         Utils.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else {
         Utils.writeToFileOrStdout(
-            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       }

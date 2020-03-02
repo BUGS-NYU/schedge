@@ -1,8 +1,9 @@
-package services;
+package database;
 
 import static org.jooq.impl.DSL.listAgg;
 
 import api.models.*;
+import database.epochs.LatestCompleteEpoch;
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
 public class SelectCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.SelectCourses");
+      LoggerFactory.getLogger("database.SelectCourses");
 
   public static List<Course> selectCourses(Term term, List<SubjectCode> codes) {
     int epoch;

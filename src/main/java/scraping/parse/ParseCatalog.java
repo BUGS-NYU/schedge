@@ -1,4 +1,4 @@
-package services;
+package scraping.parse;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

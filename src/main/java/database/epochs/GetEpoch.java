@@ -1,4 +1,4 @@
-package services;
+package database.epochs;
 
 import database.generated.Tables;
 import database.generated.tables.Epochs;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public final class GetEpoch {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.GetEpoch");
+      LoggerFactory.getLogger("database.epochs.GetEpoch");
 
   public static int getEpoch(Connection conn, Term term) {
     DSLContext context = DSL.using(conn, SQLDialect.SQLITE);

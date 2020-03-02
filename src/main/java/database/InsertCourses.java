@@ -1,4 +1,4 @@
-package services;
+package database;
 
 import database.generated.Tables;
 import database.generated.tables.Courses;
@@ -28,7 +28,7 @@ import scraping.models.*;
 public class InsertCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.InsertCourses");
+      LoggerFactory.getLogger("database.InsertCourses");
 
   public static ArrayList<SectionID> insertCourses(Term term, int epoch,
                                                    List<Course> courses) {

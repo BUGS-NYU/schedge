@@ -1,6 +1,7 @@
 package api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
@@ -132,6 +133,13 @@ public class Section {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public String getPrerequisites() {
     return prerequisites;
+  }
+
+  public void addRecitation(Section s) {
+    if (recitations == null) {
+      recitations = new ArrayList<>();
+    }
+    recitations.add(s);
   }
 
   @Override

@@ -80,7 +80,7 @@ public class ParseSection {
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
     String location = secData.get("Room");
-    if(location.contains("Loc:")) {
+    if (location.contains("Loc:")) {
       location = location.split("Loc:")[0];
       secData.put("Room", location);
     }

@@ -1,6 +1,10 @@
 package scraping.parse;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -10,6 +14,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
+import utils.Utils;
 
 /**
  * Parses a section string.
@@ -19,6 +24,16 @@ import scraping.models.SectionAttribute;
 public class ParseSection {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.parse.ParseSection");
+  private static DateTimeFormatter timeParser =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma");
+  private static Pattern pattern = Pattern.compile("[0-9]");
+
+  private static List<String> list = Utils.asResourceLines("/building.txt");
+  private static Map<String, String> buildings =
+      list.stream()
+          .map(str -> str.split(",", 2))
+          .collect(
+              Collectors.toMap(strings -> strings[0], strings -> strings[1]));
 
   public static SectionAttribute parse(@NotNull String rawData) {
     logger.debug("parsing raw catalog section data into SectionAttribute...");
@@ -37,11 +52,19 @@ public class ParseSection {
       return null; // the course doesn't exist
     }
 
+    Elements elements = doc.select("a");
+    String link = null;
+    for (Element element : elements) {
+      String el = element.attr("href");
+      if (el.contains("mapBuilding")) {
+        link = el;
+      }
+    }
+
     doc.select("a").unwrap();
     doc.select("i").unwrap();
     doc.select("b").unwrap();
     Element outerDataSection = doc.selectFirst("body > section.main");
-    Element header = outerDataSection.selectFirst("> header.page-header");
     Element innerDataSection = outerDataSection.selectFirst("> section");
     Element courseNameDiv = innerDataSection.selectFirst("> div.primary-head");
     String courseName = courseNameDiv.text();
@@ -49,7 +72,7 @@ public class ParseSection {
         innerDataSection.select("> div.section-content.clearfix");
     Map<String, String> secData = parseSectionAttributes(dataDivs);
 
-    return parsingElements(secData, courseName);
+    return parsingElements(secData, courseName, link);
   }
 
   static @NotNull Map<String, String>
@@ -66,7 +89,7 @@ public class ParseSection {
   }
 
   public static @NotNull SectionAttribute
-  parsingElements(Map<String, String> secData, String courseName) {
+  parsingElements(Map<String, String> secData, String courseName, String link) {
     String units = secData.get("Units");
     float minUnits = 0, maxUnits;
     if (units.contains("-")) {
@@ -79,11 +102,7 @@ public class ParseSection {
     courseName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
-    String location = secData.get("Room");
-    if (location.contains("Loc:")) {
-      location = location.split("Loc:")[0];
-      secData.put("Room", location);
-    }
+    parseBuilding(secData, link);
 
     return new SectionAttribute(
         courseName.equals("") ? null : courseName,
@@ -94,5 +113,52 @@ public class ParseSection {
         maxUnits, secData.get("Grading"),
         secData.getOrDefault("Notes", "See Description. None otherwise"),
         secData.get("Room"));
+  }
+
+  public static void parseBuilding(Map<String, String> secData, String link) {
+    String location = secData.get("Room");
+    String room = "";
+    String building = null;
+
+    if (location.contains("Loc") || location.contains("Loc:")) {
+      location = location.split("Loc")[0];
+      location = location.strip();
+      if (pattern.matcher(location).find()) {
+        if (location.contains("Rm:")) {
+          String[] arrs = location.split("Rm:");
+          if (arrs.length == 2) {
+            room = arrs[1];
+          }
+        } else if (location.contains("Rm")) {
+          String[] arrs = location.split("Rm");
+          if (arrs.length == 2) {
+            room = arrs[1];
+          }
+        } else if (location.contains("Room:")) {
+          String[] arrs = location.split("Room:");
+          if (arrs.length == 2) {
+            room = arrs[1];
+          }
+        } else if (location.contains("Room")) {
+          String[] arrs = location.split("Room");
+          if (arrs.length == 2) {
+            room = arrs[1];
+          }
+        }
+      }
+
+      if (link != null) {
+        link = link.substring(link.lastIndexOf("/") + 1);
+        if (buildings.containsKey(link)) {
+          building = buildings.get(link);
+        }
+      }
+
+      if (!room.equals("") && building != null) {
+        secData.put("Room", building + " - Room:" + room);
+      } else {
+        secData.put("Room", location);
+      }
+    }
   }
 }

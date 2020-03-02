@@ -1,0 +1,350 @@
+108B,108 Broadway
+10AP,10 Astor Place
+10WP,10 Washington Place
+110F,110 Fifth Avenue
+110W,110 West 3rd Street Residence
+113U,113 University Place
+11ST,41 East 11th Street, 7th Floor
+12WV,12 Waverly Place
+130M,130 MacDougal Street
+133M,130 MacDougal Street
+137M,130 MacDougal Street
+14AWM,14A Washington Mews
+142M,142 Mulberry Street
+145F,145 Fourth Avenue
+14UP,14 University Place
+14WA,14 Wall Street, Tandon School of Engineering
+15MTC,15 MetroTech Center, Tandon School of Engineering
+15ST,345 East 15th Street
+1633,1633 Broadway
+194M,194 Mercer Street
+199L,199 Lafayette Street
+19UP,19 University Place
+19W4,19 West 4th Street
+19WS,19 Washington Square North
+1E78,The Institute of Fine Arts, 1 East 78th Street
+1WP,1 Washington Place
+1WSN,1 Washington Square North
+20CS,20 Cooper Square
+214M,214 Mercer Street
+230S,230 Sullivan Street Residence
+239T,239 Thompson Street
+240G,240 Greene Street
+240M,240 Mercer Street
+245S,245 Sullivan Street
+246G,246 Greene Street
+25W4,25 West 4th Street
+25WV,25 Waverly Place
+269M,269 Mercer Street
+285M,285 Mercer Street
+295L,295 Lafayette Street
+29WW,29 Washington Square East
+2AVE,111 Second Avenue
+2BWY,2 Broadway, Tandon School of Engineering
+2MTC,2 MetroTech Center
+2ST,2nd Street Residence Hall
+2UP,2 University Place
+2WSN,2 Washington Square North
+3-5W,3-5 Washington Place
+333A,33 Third Avenue
+342E,342 East 26th Street, Room 200A
+345E,345 East 24th Street
+380S,380 Second Avenue, 4th Floor
+383L,383 Lafayette Street
+3AVN,Third Avenue North Dormitory
+3WSN,3 Washington Square North
+411L,411 Lafayette Street
+412W,412 West 42nd Street, Playwright Theatre
+420W,420 West 42nd Street
+423E,Veterans Administration Hospital, 423 East 23rd Street
+440L,440 Lafayette Street
+44CP,44 Central Park West
+48CS,48 Cooper Square
+4E14,4 E. 14th St
+4WP,4 Washington Place
+4WSN,4 Washington Square North
+50WS,50 Washington Square South
+51WS,51 Washington Square South
+53WS,53 Washington Square South
+55BS,55 Broad Street, Tandon School of Engineering
+55BW,55 Broadway, Tandon School of Engineering
+5WP,5 Washington Place
+5WSN,5 Washington Square North
+60FA,60 Fifth Avenue
+622B,622 Broadway
+665B,665 Broadway
+686B,686 Broadway
+6WP,6 Washington Place
+715B,715 Broadway
+719B,719 Broadway
+721B,721 Broadway
+725B,725 Broadway
+726B,726 Broadway
+730B,730 Broadway
+75VA,75 Varick Street (At Canal Street)
+770B,770 Broadway
+7E12,7 East 12th Street, Fairchild Building
+7ST,7th Street Residence Hall
+80WS,80 Washington Square East Gallery
+838B,838 Broadway
+85W3,85 West Third Street
+890B,890 Broadway
+AHCT,Allied Health Center
+ALUM,Alumni Hall
+AMAR,American Arbitration Association
+ARC,Academic Resource Center / 18 Washington Place
+BARN,Barney Building
+BCHS,Baruch College High School
+BDFS,6 Bedford Square, London
+BERK,Berkley School
+BOBS,Bobst Library, 70 Washington Sq South
+BOST,24 Bond Street
+BRBK,Birkbeck College, London
+BRIT,British Institute - Florence
+BRNF,Bronfman Center
+BROM,Broome Street Residence Hall
+BRTN,Brittany Hall
+BRWN,Brown Building
+BSCI,Basic Science Building, 433 First Avenue
+BSTT,Bassett Building, Tandon School of Engineering, Long Island
+BUTR,Butterick Building
+BXPH,Bronx Psychiatric Hospital
+CANT,Cantor Film Center, 36 East 8th Street
+CARD,Cardozo Law
+CARL,Carlyle Court Residence Hall
+CASA,24 West 12th Street, Casa Italiana
+CENT,Centro Linguistico - Florence
+CHAN,Chan House
+CIWW,Courant Institute / Warren Weaver Hall
+COLE,Coles Sports and Recreation Center
+COLU,Columbia University
+COOP,Cooper Union
+CORL,Coral Tower Residence Hall
+CSAE,Center for Science and Engineering, Abu Dhabi
+CVEN,Civil Engineering Building, Tandon School of Engineering
+CUNY,CUNY - City University of New York
+DAGA,D’Agostino Hall
+DALT,Dalton School
+DBN,Dibner Building, Tandon School of Engineering
+DEUT,Deutsches Haus
+DIBN,Dibner Building, Tandon School of Engineering
+DOMN,Dominican College
+DOWL,Dowling College
+DUKE,Duke House
+E15,115 East 15th Street
+E34,317 East 34th Street
+E7,38-40 East 7th Street
+EAST,East Building
+EDUC,Education Building
+ERIN,Ireland House
+FHBG,Fuchsberg Hall, 249 Sullivan Street
+FORD,Fordham University
+FOUN,Founders Hall
+FRND,Friends Seminary
+FURH,J. Furman Hall
+GCASL,Global Center for Academic & Spiritual Life / 238 Thompson Street
+GEOG,Geography Building, Shanghai
+GIBB,Katherine Gibbs
+GODD,Paulette Goddard Hall, 45 West 4th Street
+GRAM,Gramercy Green Residence Hall
+GWCH,Greenwich Hotel
+GYMN,Gymnasium, Tandon School of Engineering, Long Island
+HADY,Hayden Hall
+HEBU,Hebrew Union College
+HJTD,Hospital for Joint Diseases
+ICPH,International Center for Photography
+IFST,Institute of French Studies
+IRMD,Institute of Rehabilitation Medicine
+ISAW,Institute for the Study of the Ancient World
+JABS,Jacobs Academic Building, Tandon School of Engineering
+JCBS,Jacobs Building, Tandon School of Engineering
+KAPL,Kaplan Education Center, 16 Cooper Square
+KEVO,Kevorkian Center
+KIMB,Kimball Hall
+KIMM,Helen and Martin Kimmel University Center, 60 Washington Sq South
+KING,Kings College, London
+KJCC,King Juan Carlos Center
+KMEC,Henry Kaufman Management Education Center
+LENX,Lenox Hill Hospital, 77th Street & Park Avenue
+LFAY,80 Lafayette Street Residence Hall
+LINC,Lincoln Center
+LIOM,Lab Institute of Merchandising
+LITE,Lighthouse, 111 East 59th Street
+LNZA,Lanza
+LSTC,539-541 LaGuardia Place Co-Op, Student Technology Center
+LYCM,Lyceum - Florence
+MANV,Manhattanville
+MAVA,Manhattan Village Academy, 43 West 22nd Street
+MECH,Mechanics Institute
+MEDS,NYU Medical Center
+MEYR,Meyer Hall, 4 Washington Place
+MIDC,NYU Midtown Center
+MNBD,Main Building, Tandon School of Engineering, Long Island
+MTMU,Metropolitan Museum of Art
+NOF,Nursing Off-Campus Clinical Site Click here for more details
+NTCT,Norman Thomas High School
+NYBG,New York Botanical Garden
+OFFC,Off-Campus
+OIOC,63 Downing Street
+ONAS,58 West 10th Street
+ONLI,On-Line
+PALL,The Palladium Residence Hall
+PANX,Pless Annex
+PHYS,Physics Building, Shanghai
+PLSS,Pless Building
+POST,C.W. Post
+PREV,Preventative Medicine Building
+PRSS,Press Building
+PUBL,Public Health
+PUER,Puerto Rico
+RGSH,Rogers Hall, Tandon School of Engineering
+RUBN,Rubin Hall, 35 Fifth Avenue
+RUSK,Rusk Institute, East 34th Street & First Avenue
+SAGC,Saadiyat Golf Club
+SAHS,Satellite Academy High School
+SALW,Sarah Lawrence College
+SASS,Sasseti
+SFOR,Sterling Forest
+SHDS,Schwartz Hall of Dental Science
+SHIM,Shimkin Hall
+SILV,Silver Center for Arts & Science, 100 Washington Sq East
+SLHB,Schwartz Lecture Hall Building
+SNHS,Senior House Residence Hall
+SHUL,Senate House, University of London, London
+SOAA,Tisch School of the Arts Asia / Singapore
+SOAS,School of Oriental and African Studies, London
+SOJS,SOJ Studio
+STAQ,St. Thomas Aquinas College
+STAT,Staten Island
+STRC,Stern College
+STUY,Stuyvesant Town
+SUNY,Suny College of Optometry
+SYAC,157-161 Gloucester St, Sydney, Australia
+TBA,To Be Arranged
+TRB,Translational Research Building, 227 East 30th Street
+THOM,Thompson Center, 238 Thompson Street
+TISC,Tisch Hall, 40 West 4th Street
+TRIN,100 Trinity Place
+UHAL,University Hall, 110 E. 14 St.
+ULIV,Ulivi
+UTSL,Building 4, Harris St & Thomas St, Sydney, Australia
+VAND,Vanderbilt Hall
+VERN,58 West 10th Street
+VIAC,Viacom Center
+VIVO,Vivo Institute
+VNAT,Villa Natalia
+W13S,West 13th Street Residence Hall
+W36,19 West 36th Street
+W42,416 West 42nd Street
+W56,130 West 56th Street
+WAGN,Wagner College
+WAVE,Waverly Building, 24 Waverly Place
+WEIN,Weinstein Residence Hall, 11 University Place
+WEIS,Weissman Building
+WISE,Wise Community Center
+WMEW,Washington Mews
+WMNB,Westchester Main Building, Tandon School of Engineering Westchester
+WOOL,Woolworth Building
+WSQV,Washington Square Village
+AD,Abu Dhabi
+AF,South Africa
+AM,Amsterdam
+AR,Africa
+AT,Athens
+AU,Austria
+BA,Buenos Aires
+BC,Branch At Dominican
+BD,Budapest
+BE,Bermuda
+BK,Berkley School
+BL,Berlin
+BR,Britain
+BS,Brussels
+BU,Bulgaria
+BZ,Brazil
+CA,Cantor Film Center
+CB,Cuba
+CE,Chile
+CH,China
+CL,Cardoza Law
+CN,Canada
+CR,Costa Rica
+CS,Cooper Square, 48 Cooper Square
+CT,Cape Town
+CU,Cooper Union, 51 Astor Place
+CW,C.W. Post
+CY,City Hall
+DA,Dalton School, 108 East 89th Street
+DB,Dublin
+DC,Dental Center, 421 First Avenue
+DW,Dowling
+EN,England
+FA,Inst. Of Fine Arts, 1 East 78th Street
+FC,15th Street Center, 345 East 15th Street
+FL,Florence
+FR,France
+FS,Friends Seminar, 222 East 16th Street
+GE,Genoa
+GH,Ghana
+GR,Greece
+HC,Hebrew Union College, 1 West 4th Street
+HI,Hawaii
+HT,Hong Kong & Taiwan
+IS,Israel
+IT,Italy
+JD,Hospital for Joint Diseases
+KG,Katherine Gibbs
+LH,Lighthouse, 111 East 59th Street
+LM,Lab Inst of Merchandising
+LO,London
+LP,La Pietra
+MC,NYU Medical Center, 550 First Avenue
+MH,Manhattanville
+MI,Mechanics Institute
+MM,Metropolitan Museum of Art
+MS,Mount Sinai Medical Center
+MT,Midtown Center, 11 West 42nd Street
+MV,Manhattan Village Academy, 43 West 22nd Street
+MX,Mexico
+NE,Netherlands
+NI,Nice
+NT,Norman Thomas, 111 East 33rd Street
+OC,Off-Campus
+OR,Orlando
+PE,Peru
+PG,Prague
+PI,Pisa
+PO,Cracow
+PR,Puerto Rico
+PS,Paris
+PT,Pretoria
+PU,Stern Graduate at Purchase
+RU,Russia
+SA,Study Abroad
+SB,Salzburg
+SC,Stern College, 245 Lexington Avenue
+SF,Sterling Forest
+SG,Singapore
+SH,Shanghai
+SI,Staten Island
+SL,Sarah Lawrence
+SN,Senegal
+SP,Spain
+SQ,St. Thomas Aquinas College
+ST,Stevens Institute of Technology
+SU,Suny College of Optometry, 33 West 42nd Street
+SV,Slovakia
+SW,Sweden
+SZ,Switzerland
+TA,Tel Aviv
+TC,SCPS Test Center, 50 Cooper Square, Room 300
+TU,Tuscany
+UG,Uganda
+VE,Venice
+VI,Viacom Center
+VK,75 Varick Street (At Canal St.)
+VN,Vietnam
+WA,Wagner College
+WC,Wise Community Center, 123 East 55th Street
+WS,Washington Square
+WW,Woolworth Building, 15 Barclay Street

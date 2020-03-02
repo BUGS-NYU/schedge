@@ -7,8 +7,8 @@ plugins {
 
 group 'BUGS-NYU'
 mainClassName = 'Main'
-sourceCompatibility = JavaVersion.VERSION_12
-targetCompatibility = JavaVersion.VERSION_12
+// sourceCompatibility = JavaVersion.VERSION_12
+// targetCompatibility = JavaVersion.VERSION_12
 
 def dbUrl = "jdbc:sqlite:${buildscript.sourceFile.absoluteFile.parent}/tables.db"
 def dbDriver = 'org.sqlite.JDBC'

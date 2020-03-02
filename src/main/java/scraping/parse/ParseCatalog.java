@@ -59,7 +59,7 @@ public class ParseCatalog implements Iterator<Course> {
     this.logger = LoggerFactory.getLogger(logger.getName());
 
     if (!elements.hasNext()) {
-      logger.warn(
+      logger.debug(
           "CSS query `div.primary-head ~ *` returned no values (subject=" +
           subjectCode + ").");
       currentElement = null;

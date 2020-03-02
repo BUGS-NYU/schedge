@@ -26,10 +26,14 @@ public final class SubjectCode {
   }
 
   public void checkValid() {
-    if (!getAvailableSubjects().containsKey(school) ||
-        !getAvailableSubjects().get(school).contains(subject))
-      throw new IllegalArgumentException("Subject '" + this.toString() +
-                                         "' is not valid!");
+    if (!getAvailableSubjects().containsKey(school))
+      throw new IllegalArgumentException("School code '" + school +
+                                         "' in subject '" + this.toString() +
+                                         "' is not valid");
+    if (!getAvailableSubjects().get(school).contains(subject))
+      throw new IllegalArgumentException("School '" + school +
+                                         "' doesn't contain subject '" +
+                                         this.toString() + "'");
   }
 
   public static List<SchoolMetadata> allSchools() {

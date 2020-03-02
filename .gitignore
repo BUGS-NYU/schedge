@@ -23,3 +23,6 @@ tables.db
 
 src/main/java/database/generated
 src/main/resources/keystore.jks
+
+/local/*
+!/local/.gitkeep

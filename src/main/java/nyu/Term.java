@@ -59,6 +59,20 @@ public final class Term {
     }
   }
 
+  public Term prevTerm() {
+    if (semester == JANUARY)
+      return new Term(FALL, year - 1);
+    else
+      return new Term(semester - 2, year);
+  }
+
+  public Term nextTerm() {
+    if (semester == FALL)
+      return new Term(JANUARY, year + 1);
+    else
+      return new Term(semester + 2, year);
+  }
+
   public int getId() { return year * 10 + semester; }
 
   public String toString() {

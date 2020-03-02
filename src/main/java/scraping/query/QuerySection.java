@@ -1,22 +1,19 @@
 package scraping.query;
 
-import static java.lang.Integer.max;
-import static java.lang.Integer.min;
+import nyu.Term;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
+import org.asynchttpclient.uri.Uri;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scraping.SimpleBatchedFutureEngine;
 
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scraping.SimpleBatchedFutureEngine;
 
 public final class QuerySection {
   private static Logger logger =
@@ -75,22 +72,22 @@ public final class QuerySection {
       throw new IllegalArgumentException(
           "Registration numbers aren't negative!");
 
-    HttpRequest request =
-        HttpRequest
-            .newBuilder(URI.create(DATA_URL_STRING + term.getId() + "/" +
-                                   registrationNumber))
-            .timeout(Duration.ofSeconds(60))
+    Request request =
+        new RequestBuilder()
+                .setUri(Uri.create(DATA_URL_STRING + term.getId() + "/" +
+                        registrationNumber))
+            .setRequestTimeout(60000)
             .build();
 
-    return GetClient.getClient()
-        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
-        .handleAsync((resp, throwable) -> {
+    return GetClient.getClient().executeRequest(request).toCompletableFuture().handleAsync(
+            (resp, throwable) -> {
           if (resp == null) {
-            logger.error("Error (registrationNumber={}): {}",
-                         registrationNumber, throwable.getMessage());
-            return null;
+              logger.error("Error (registrationNumber={}): {}",
+                      registrationNumber, throwable.getMessage());
+              return null;
           }
-          return transform.apply(resp.body());
-        });
+          return transform.apply(resp.getResponseBody());
+      }
+    );
   }
 }

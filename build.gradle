@@ -35,14 +35,17 @@ dependencies {
 
             "me.tongfei:progressbar:0.8.1", // Progress bar
 
+            "org.asynchttpclient:async-http-client-bom:2.10.5",
+            "org.asynchttpclient:async-http-client:2.10.5", // Async Http Client
+
             "info.picocli:picocli:4.1.4", // Command line args
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-databind:2.4.1", // JSON
-            "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.9", // JSON
 
             "io.javalin:javalin:3.5.0", // Web server framework
-            "io.swagger.core.v3:swagger-core:2.0.8", // Web server docs framework
+            "io.swagger.core.v3:swagger-core:2.0.9", // Web server docs framework
+            "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1", // JSON
     )
 
     jooqRuntime "org.xerial:sqlite-jdbc:3.30.1"

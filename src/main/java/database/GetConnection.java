@@ -2,10 +2,9 @@ package database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.jetbrains.annotations.NotNull;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class get connection to the SQLite database using JDBC Driver
@@ -29,7 +28,7 @@ public class GetConnection {
       config.setUsername("schedge");
       config.setPassword("");
       config.setJdbcUrl("jdbc:sqlite:" + System.getProperty("user.dir") +
-                        "/tables.db");
+                        "/local/tables.db");
       dataSource = new HikariDataSource(config);
     }
 

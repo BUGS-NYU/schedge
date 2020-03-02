@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
@@ -37,7 +38,16 @@ public class App {
         Javalin
             .create(config -> {
               config.enableCorsForAllOrigins();
-              config.server(App::createServer);
+              config.server(() -> {
+                Server server = new Server();
+                ServerConnector sslConnector =
+                    new ServerConnector(server, getSslContextFactory());
+                sslConnector.setPort(443);
+                ServerConnector connector = new ServerConnector(server);
+                connector.setPort(80);
+                server.setConnectors(new Connector[] {sslConnector, connector});
+                return server;
+              });
               String description =
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
@@ -73,22 +83,7 @@ public class App {
     new CoursesEndpoint().addTo(app);
   }
 
-  // Copied directly from Javalin example
-  private static Server createServer() {
-    Server server = new Server();
-
-    ServerConnector connector = new ServerConnector(server);
-    connector.setPort(80);
-    server.addConnector(connector);
-
-    // HTTP Configuration
-    HttpConfiguration httpConfig = new HttpConfiguration();
-    httpConfig.setSendServerVersion(false);
-    httpConfig.setSecureScheme("https");
-    httpConfig.setSecurePort(443);
-
-    // SSL Context Factory for HTTPS and HTTP/2
-
+  private static SslContextFactory getSslContextFactory() {
     SslContextFactory sslContextFactory = new SslContextFactory.Server();
 
     URL resource = Utils.class.getResource("/keystore.jks");
@@ -99,34 +94,9 @@ public class App {
       logger.info("Using keystore for HTTPS");
     }
 
-    sslContextFactory.setKeyStorePath(
-        resource.toExternalForm()); // replace with your real keystore
-    sslContextFactory.setKeyStorePassword(
-        "password"); // replace with your real password
-    sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
-    sslContextFactory.setProvider("Conscrypt");
-
-    // HTTPS Configuration
-    HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
-    httpsConfig.addCustomizer(new SecureRequestCustomizer());
-
-    // HTTP/2 Connection Factory
-    HTTP2ServerConnectionFactory h2 =
-        new HTTP2ServerConnectionFactory(httpsConfig);
-    ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
-    alpn.setDefaultProtocol("h2");
-
-    // SSL Connection Factory
-    SslConnectionFactory ssl =
-        new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
-
-    // HTTP/2 Connector
-    ServerConnector http2Connector = new ServerConnector(
-        server, ssl, alpn, h2, new HttpConnectionFactory(httpsConfig));
-    http2Connector.setPort(443);
-    server.addConnector(http2Connector);
-
-    return server;
+    sslContextFactory.setKeyStorePath(resource.toExternalForm());
+    sslContextFactory.setKeyStorePassword("password");
+    return sslContextFactory;
   }
 }
 

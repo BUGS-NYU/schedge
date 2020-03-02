@@ -10,7 +10,7 @@ mainClassName = 'Main'
 // sourceCompatibility = JavaVersion.VERSION_12
 // targetCompatibility = JavaVersion.VERSION_12
 
-def dbUrl = "jdbc:sqlite:${buildscript.sourceFile.absoluteFile.parent}/tables.db"
+def dbUrl = "jdbc:sqlite:${buildscript.sourceFile.absoluteFile.parent}/local/tables.db"
 def dbDriver = 'org.sqlite.JDBC'
 
 repositories {
@@ -180,7 +180,7 @@ class UpdateDbTask extends DefaultTask {
 
 task updateDb(type: UpdateDbTask) {
     inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/migrations"
-    tables = "${buildscript.sourceFile.absoluteFile.parent}/tables.db";
+    tables = "${buildscript.sourceFile.absoluteFile.parent}/local/tables.db";
 
     run {
         flywayMigrate.runTask()

@@ -46,11 +46,9 @@ public final class QuerySection {
   public static Stream<String> querySections(Term term,
                                              List<Integer> registrationNumbers,
                                              Integer batchSizeNullable) {
-    int batchSize =
-        batchSizeNullable != null
-            ? batchSizeNullable
-            : max(5, min(registrationNumbers.size() / 5,
-                         50)); // @Performance what should this number be?
+    int batchSize = batchSizeNullable != null
+                        ? batchSizeNullable
+                        : 100; // @Performance what should this number be?
 
     return StreamSupport
         .stream(new SimpleBatchedFutureEngine<>(
@@ -71,8 +69,8 @@ public final class QuerySection {
                                                 int registrationNumber,
                                                 Function<String, T> transform) {
 
-    logger.info("Querying section in term=" + term +
-                " with registrationNumber=" + registrationNumber + "...");
+    logger.debug("Querying section in term=" + term +
+                 " with registrationNumber=" + registrationNumber + "...");
     if (registrationNumber < 0)
       throw new IllegalArgumentException(
           "Registration numbers aren't negative!");

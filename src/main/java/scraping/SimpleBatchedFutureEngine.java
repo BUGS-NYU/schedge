@@ -28,7 +28,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
   private BiFunction<Input, Integer, Future<Output>> callback;
 
   public SimpleBatchedFutureEngine(
-      List<Input> inputData, int batchSize,
+      Iterable<Input> inputData, int batchSize,
       BiFunction<Input, Integer, Future<Output>> callback) {
     this(inputData.iterator(), batchSize, callback);
   }
@@ -51,7 +51,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
    * and an index into the batch.
    */
   public SimpleBatchedFutureEngine(
-      List<Input> inputData, int batchSize, long timeout,
+      Iterable<Input> inputData, int batchSize, long timeout,
       BiFunction<Input, Integer, Future<Output>> callback) {
     this(inputData.iterator(), batchSize, timeout, callback);
   }

@@ -1,13 +1,6 @@
 package cli;
 
 import api.App;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import database.GetConnection;
 import database.InsertCourses;
 import database.SelectCourses;
@@ -15,6 +8,15 @@ import database.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetEpoch;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
+import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -85,11 +87,18 @@ public class Database implements Runnable {
         throw new RuntimeException(e);
       }
 
-        Iterator<SectionID> s = ScrapeCatalog
-                .scrapeFromCatalog(term, SubjectCode.allSubjects(), batchSize)
-                .flatMap(courseList
-                        -> InsertCourses.insertCourses(term, epoch, courseList).stream())
-                .iterator();
+      Iterator<SectionID> s =
+          ScrapeCatalog
+              .scrapeFromCatalog(term,
+                                 new ProgressBarWrappedIterable<>(
+                                     SubjectCode.allSubjects(),
+                                     new ProgressBarBuilder().setStyle(
+                                         ProgressBarStyle.ASCII)),
+                                 batchSize)
+              .flatMap(courseList
+                       -> InsertCourses.insertCourses(term, epoch, courseList)
+                              .stream())
+              .iterator();
       UpdateSections.updateSections(term, epoch, s, batchSizeSections);
 
       try (Connection conn = GetConnection.getConnection()) {
@@ -154,9 +163,8 @@ public class Database implements Runnable {
       if (school == null) {
         courses = SelectCourses.selectCourses(term, SubjectCode.allSubjects());
       } else {
-          courses = SelectCourses.selectCourses(
-              term, Arrays.asList(new SubjectCode(subject, school)));
-
+        courses = SelectCourses.selectCourses(
+            term, Arrays.asList(new SubjectCode(subject, school)));
       }
 
       GetConnection.close();

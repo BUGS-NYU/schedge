@@ -9,6 +9,11 @@
     <logger name="services.query_catalog" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>
+
+    <logger name="org.jooq.Constants" level="WARN">
+      <appender-ref ref="STDERR" />
+    </logger>
+
     <!-- <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>

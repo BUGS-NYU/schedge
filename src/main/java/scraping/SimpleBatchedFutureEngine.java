@@ -1,7 +1,5 @@
 package scraping;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -9,6 +7,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.
@@ -25,6 +24,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
 
   private int pendingRequests;
   private long timeout;
+  private boolean iteratorHasNext;
   private ArrayList<Future<Output>> mailboxes;
   private Iterator<Input> inputData;
   private BiFunction<Input, Integer, Future<Output>> callback;
@@ -77,7 +77,8 @@ public class SimpleBatchedFutureEngine<Input, Output>
 
     this.mailboxes = new ArrayList<>();
 
-    for (int count = 0; inputData.hasNext() && count < batchSize; count++)
+    for (int count = 0;
+         (iteratorHasNext = inputData.hasNext()) && count < batchSize; count++)
       this.mailboxes.add(callback.apply(inputData.next(), count));
 
     this.pendingRequests = this.mailboxes.size();
@@ -107,7 +108,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
       if (future.isDone()) {
 
         Output value = getFuture(future);
-        if (inputData.hasNext()) {
+        if (iteratorHasNext && (iteratorHasNext = inputData.hasNext())) {
           mailboxes.set(i, callback.apply(inputData.next(), i));
         } else {
           pendingRequests--;
@@ -143,10 +144,9 @@ public class SimpleBatchedFutureEngine<Input, Output>
     return null;
   }
 
-
-    @NotNull
-    @Override
-    public Iterator<Output> iterator() {
-        return this;
-    }
+  @NotNull
+  @Override
+  public Iterator<Output> iterator() {
+    return this;
+  }
 }

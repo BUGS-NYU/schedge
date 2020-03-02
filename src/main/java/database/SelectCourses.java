@@ -8,6 +8,13 @@ import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
@@ -19,14 +26,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class SelectCourses {
 
@@ -170,6 +169,7 @@ public class SelectCourses {
     final Float maxUnits;
     final String grading;
     final String location;
+    final String notes;
     final String prerequisites;
 
     CourseSectionRow(Record row,
@@ -199,6 +199,7 @@ public class SelectCourses {
       instructionMode = row.get(SECTIONS.INSTRUCTION_MODE);
       grading = row.get(SECTIONS.GRADING);
       location = row.get(SECTIONS.LOCATION);
+      notes = row.get(SECTIONS.NOTES);
       prerequisites = row.get(SECTIONS.PREREQUISITES);
     }
 
@@ -207,7 +208,7 @@ public class SelectCourses {
                          sectionType, sectionStatus, meetings, null,
                          sectionName, waitlistTotal, campus, description,
                          minUnits, maxUnits, instructionMode, grading, location,
-                         prerequisites);
+                         notes, prerequisites);
     }
   }
 }

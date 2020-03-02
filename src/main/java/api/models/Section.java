@@ -26,7 +26,7 @@ public class Section {
   private Float maxUnits;
   private String instructionMode;
   private String grading;
-  private String roomNumber;
+  private String location;
   private String prerequisites;
 
   public Section(int registrationNumber, String sectionCode, String instructor,
@@ -53,7 +53,7 @@ public class Section {
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal, String campus, String description,
                  Float minUnits, Float maxUnits, String instructionMode,
-                 String grading, String roomNumber, String prerequisites) {
+                 String grading, String location, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
@@ -74,7 +74,7 @@ public class Section {
     this.maxUnits = maxUnits;
     this.instructionMode = instructionMode;
     this.grading = grading;
-    this.roomNumber = roomNumber;
+    this.location = location;
     this.prerequisites = prerequisites;
   }
 
@@ -127,8 +127,8 @@ public class Section {
     return grading;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getRoomNumber() {
-    return roomNumber;
+  public String getLocation() {
+    return location;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public String getPrerequisites() {
@@ -161,7 +161,7 @@ public class Section {
         Objects.equals(maxUnits, section.maxUnits) &&
         Objects.equals(instructionMode, section.instructionMode) &&
         Objects.equals(grading, section.grading) &&
-        Objects.equals(roomNumber, section.roomNumber) &&
+        Objects.equals(location, section.location) &&
         Objects.equals(prerequisites, section.prerequisites);
   }
 
@@ -170,6 +170,6 @@ public class Section {
     return Objects.hash(sectionName, registrationNumber, sectionCode,
                         instructor, type, status, waitlistTotal, campus,
                         description, minUnits, maxUnits, instructionMode,
-                        grading, roomNumber, prerequisites);
+                        grading, location, prerequisites);
   }
 }

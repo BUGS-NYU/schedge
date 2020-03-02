@@ -19,7 +19,7 @@ public class SectionAttribute {
   private Float minUnits;
   private Float maxUnits;
   private String grading;
-  private String room;
+  private String location;
   private String prerequisites;
   // private List<Meeting> meetings; //dup. Ignore for now
 
@@ -27,7 +27,7 @@ public class SectionAttribute {
                           SectionStatus status, String campus,
                           String description, String instructorMode,
                           String instructor, Float minUnits, Float maxUnits,
-                          String grading, String prerequisites, String room) {
+                          String grading, String prerequisites, String location) {
     this.courseName = courseName;
     this.registrationNumber = registrationNumber;
     this.status = status;
@@ -39,7 +39,7 @@ public class SectionAttribute {
     this.maxUnits = maxUnits;
     this.grading = grading;
     this.prerequisites = prerequisites;
-    this.room = room;
+    this.location = location;
   }
 
   public String getCourseName() { return courseName; }
@@ -64,5 +64,5 @@ public class SectionAttribute {
 
   public String getPrerequisites() { return prerequisites; }
 
-  public String getRoom() { return room; }
+  public String getLocation() { return location; }
 }

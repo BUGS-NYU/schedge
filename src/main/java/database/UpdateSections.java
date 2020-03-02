@@ -95,7 +95,7 @@ public class UpdateSections {
             .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())
             .set(SECTIONS.MIN_UNITS, s.getMinUnits())
             .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
-            .set(SECTIONS.ROOM_NUMBER, s.getRoom())
+            .set(SECTIONS.LOCATION, s.getLocation())
             .set(SECTIONS.GRADING, s.getGrading())
             .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
             .where(SECTIONS.ID.eq(save.id))

@@ -22,7 +22,7 @@ import javax.annotation.processing.Generated;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Sections implements Serializable {
 
-    private static final long serialVersionUID = -2038559352;
+    private static final long serialVersionUID = -542362377;
 
     private final Integer id;
     private final Integer registrationNumber;
@@ -41,7 +41,7 @@ public class Sections implements Serializable {
     private final String  notes;
     private final String  instructionMode;
     private final String  grading;
-    private final String  roomNumber;
+    private final String  location;
     private final String  prerequisites;
 
     public Sections(Sections value) {
@@ -62,7 +62,7 @@ public class Sections implements Serializable {
         this.notes = value.notes;
         this.instructionMode = value.instructionMode;
         this.grading = value.grading;
-        this.roomNumber = value.roomNumber;
+        this.location = value.location;
         this.prerequisites = value.prerequisites;
     }
 
@@ -84,7 +84,7 @@ public class Sections implements Serializable {
         String  notes,
         String  instructionMode,
         String  grading,
-        String  roomNumber,
+        String  location,
         String  prerequisites
     ) {
         this.id = id;
@@ -104,7 +104,7 @@ public class Sections implements Serializable {
         this.notes = notes;
         this.instructionMode = instructionMode;
         this.grading = grading;
-        this.roomNumber = roomNumber;
+        this.location = location;
         this.prerequisites = prerequisites;
     }
 
@@ -176,8 +176,8 @@ public class Sections implements Serializable {
         return this.grading;
     }
 
-    public String getRoomNumber() {
-        return this.roomNumber;
+    public String getLocation() {
+        return this.location;
     }
 
     public String getPrerequisites() {
@@ -205,7 +205,7 @@ public class Sections implements Serializable {
         sb.append(", ").append(notes);
         sb.append(", ").append(instructionMode);
         sb.append(", ").append(grading);
-        sb.append(", ").append(roomNumber);
+        sb.append(", ").append(location);
         sb.append(", ").append(prerequisites);
 
         sb.append(")");

@@ -38,7 +38,7 @@ CREATE TABLE sections (
   notes               text,
   instruction_mode    varchar(32),
   grading             varchar(48),
-  room_number         varchar(128),
+  location            varchar(128),
   prerequisites       varchar,
 
   PRIMARY KEY (id)

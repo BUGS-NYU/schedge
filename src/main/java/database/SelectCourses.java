@@ -165,7 +165,7 @@ public class SelectCourses {
     final Float minUnits;
     final Float maxUnits;
     final String grading;
-    final String room;
+    final String location;
     final String prerequisites;
 
     CourseSectionRow(Record row,
@@ -194,7 +194,7 @@ public class SelectCourses {
       maxUnits = row.get(SECTIONS.MAX_UNITS);
       instructionMode = row.get(SECTIONS.INSTRUCTION_MODE);
       grading = row.get(SECTIONS.GRADING);
-      room = row.get(SECTIONS.ROOM_NUMBER);
+      location = row.get(SECTIONS.LOCATION);
       prerequisites = row.get(SECTIONS.PREREQUISITES);
     }
 
@@ -202,7 +202,7 @@ public class SelectCourses {
       return new Section(registrationNumber, sectionCode, instructor,
                          sectionType, sectionStatus, meetings, null,
                          sectionName, waitlistTotal, campus, description,
-                         minUnits, maxUnits, instructionMode, grading, room,
+                         minUnits, maxUnits, instructionMode, grading, location,
                          prerequisites);
     }
   }

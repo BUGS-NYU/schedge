@@ -18,16 +18,6 @@ public class Section {
   private List<Section> recitations;
   private Integer waitlistTotal;
 
-  // values that need to be updated
-  private String campus = null;
-  private String description = null;
-  private Double minUnits = null;
-  private Double maxUnits = null;
-  private String instructionMode = null;
-  private String grading = null;
-  private String roomNumber = null;
-  private String prerequisites = null;
-
   public Section(int registrationNumber, String sectionCode, String instructor,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
@@ -50,19 +40,11 @@ public class Section {
 
   public String getSectionName() { return sectionName; }
   public int getRegistrationNumber() { return registrationNumber; }
-  public Double getMinUnits() { return minUnits; }
-  public Double getMaxUnits() { return maxUnits; }
   public String getSectionCode() { return sectionCode; }
   public String getInstructor() { return instructor; }
   public SectionType getType() { return type; }
   public SectionStatus getStatus() { return status; }
   public List<Meeting> getMeetings() { return meetings; }
-  public String getCampus() { return campus; }
-  public String getDescription() { return description; }
-  public String getInstructionMode() { return instructionMode; }
-  public String getGrading() { return grading; }
-  public String getRoomNumber() { return roomNumber; }
-  public String getPrerequisites() { return prerequisites; }
   public List<Section> getRecitations() { return recitations; }
   public Integer getWaitlistTotal() { return waitlistTotal; }
 }

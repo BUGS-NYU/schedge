@@ -10,13 +10,6 @@ mainClassName = 'Main'
 sourceCompatibility = JavaVersion.VERSION_12
 targetCompatibility = JavaVersion.VERSION_12
 
-def getenv = { env_val, default_val ->
-  ext.val = System.getenv(env_val)
-  if (ext.val == null) {
-    return default_val
-  } else return ext.val
-}
-
 def dbUrl = "jdbc:sqlite:${buildscript.sourceFile.absoluteFile.parent}/tables.db"
 def dbDriver = 'org.sqlite.JDBC'
 
@@ -36,13 +29,11 @@ dependencies {
             "org.xerial:sqlite-jdbc:3.30.1",
             // "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
-
             "org.jooq:jooq:3.13.1", // Database framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
             "info.picocli:picocli:4.1.4", // Command line args
-
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-databind:2.4.1", // JSON
@@ -154,10 +145,6 @@ jar {
 // always call copyJarsToLib when building jars:
 jar.dependsOn copyJarsToLib
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-
 task checkFast {}
 checkFast.dependsOn += 'compileJava'
 
@@ -166,6 +153,7 @@ class UpdateDbTask extends DefaultTask {
     @InputDirectory
     String inputDirectory;
 
+    @OutputFile
     String tables;
 
     UpdateDbTask() {
@@ -173,8 +161,6 @@ class UpdateDbTask extends DefaultTask {
           new File(tables).exists()
         }
     }
-
-
     @TaskAction
     def update() {
     }

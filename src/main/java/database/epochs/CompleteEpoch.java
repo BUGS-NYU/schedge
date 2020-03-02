@@ -1,25 +1,17 @@
 package database.epochs;
 
 import database.generated.Tables;
-import database.generated.tables.Courses;
 import database.generated.tables.Epochs;
-import database.generated.tables.Meetings;
-import database.generated.tables.Sections;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.List;
-import nyu.SectionType;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
-import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.models.*;
+
+import java.sql.Connection;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 public final class CompleteEpoch {
 

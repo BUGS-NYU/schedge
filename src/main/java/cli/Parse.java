@@ -1,7 +1,5 @@
 package cli;
 
-import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -12,6 +10,9 @@ import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
 import utils.JsonMapper;
 import utils.Utils;
+
+import java.util.List;
+import java.util.Map;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code

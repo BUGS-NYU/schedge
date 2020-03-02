@@ -1,12 +1,14 @@
 package scraping;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.BiFunction;
 
 /**
  * This class handles batch resoltion of futures.

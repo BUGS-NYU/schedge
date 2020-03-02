@@ -1,9 +1,12 @@
 package scraping.parse;
 
+<<<<<<< HEAD
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+=======
+>>>>>>> optimized imports
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -14,6 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
 import utils.Utils;
+
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Parses a section string.

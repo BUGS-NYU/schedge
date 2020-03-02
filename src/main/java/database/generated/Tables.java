@@ -4,11 +4,7 @@
 package database.generated;
 
 
-import database.generated.tables.Courses;
-import database.generated.tables.Epochs;
-import database.generated.tables.FlywaySchemaHistory;
-import database.generated.tables.Meetings;
-import database.generated.tables.Sections;
+import database.generated.tables.*;
 
 import javax.annotation.processing.Generated;
 

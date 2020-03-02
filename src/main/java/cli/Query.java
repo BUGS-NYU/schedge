@@ -1,7 +1,6 @@
 package cli;
 
-import cli.validation.*;
-import java.util.stream.Collectors;
+import cli.validation.ValidateCatalogArgs;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,8 @@ import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
 import utils.Utils;
+
+import java.util.stream.Collectors;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.

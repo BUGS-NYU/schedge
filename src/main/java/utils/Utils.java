@@ -1,16 +1,10 @@
 package utils;
 
 import java.io.*;
-import java.net.URL;
 import java.time.DayOfWeek;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import scraping.models.SectionAttribute;
 
 public final class Utils {
 

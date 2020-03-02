@@ -1,13 +1,25 @@
 package database;
 
-import static org.jooq.impl.DSL.listAgg;
-
-import api.models.*;
+import api.models.Course;
+import api.models.Meeting;
+import api.models.Section;
 import database.epochs.LatestCompleteEpoch;
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
+import nyu.SectionStatus;
+import nyu.SectionType;
+import nyu.SubjectCode;
+import nyu.Term;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record4;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -15,14 +27,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import nyu.SectionStatus;
-import nyu.SectionType;
-import nyu.SubjectCode;
-import nyu.Term;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SelectCourses {
 

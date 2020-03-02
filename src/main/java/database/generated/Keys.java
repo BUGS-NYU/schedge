@@ -4,23 +4,14 @@
 package database.generated;
 
 
-import database.generated.tables.Courses;
-import database.generated.tables.Epochs;
-import database.generated.tables.FlywaySchemaHistory;
-import database.generated.tables.Meetings;
-import database.generated.tables.Sections;
-import database.generated.tables.records.CoursesRecord;
-import database.generated.tables.records.EpochsRecord;
-import database.generated.tables.records.FlywaySchemaHistoryRecord;
-import database.generated.tables.records.MeetingsRecord;
-import database.generated.tables.records.SectionsRecord;
-
-import javax.annotation.processing.Generated;
-
+import database.generated.tables.*;
+import database.generated.tables.records.*;
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.Internal;
+
+import javax.annotation.processing.Generated;
 
 
 /**

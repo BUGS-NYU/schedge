@@ -1,12 +1,13 @@
 package cli.validation;
 
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import nyu.SubjectCode;
 import nyu.Term;
 import utils.JsonMapper;
 import utils.Utils;
+
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 public abstract class ValidateCatalogArgs {
   Term term;

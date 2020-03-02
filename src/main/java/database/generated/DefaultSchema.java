@@ -4,20 +4,14 @@
 package database.generated;
 
 
-import database.generated.tables.Courses;
-import database.generated.tables.Epochs;
-import database.generated.tables.FlywaySchemaHistory;
-import database.generated.tables.Meetings;
-import database.generated.tables.Sections;
-
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.processing.Generated;
-
+import database.generated.tables.*;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
+
+import javax.annotation.processing.Generated;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**

@@ -1,13 +1,14 @@
 package cli.validation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import nyu.SubjectCode;
 import nyu.Term;
 import utils.JsonMapper;
 import utils.Utils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 public abstract class ValidateSectionArgs {
   Term term;

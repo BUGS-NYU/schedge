@@ -4,9 +4,8 @@
 package database.generated.tables.pojos;
 
 
-import java.io.Serializable;
-
 import javax.annotation.processing.Generated;
+import java.io.Serializable;
 
 
 /**

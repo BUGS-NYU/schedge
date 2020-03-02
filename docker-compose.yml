@@ -34,18 +34,8 @@ services:
       - "traefik.http.routers.redirs.entrypoints=web"
       - "traefik.http.routers.redirs.middlewares=redirect-to-https"
 
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_PASSWORD:
-      POSTGRES_DB: schedge
-      POSTGRES_USER: schedge
-
   api:
     build: .
-    environment:
-      JDBC_URL: jdbc:postgresql://db:5432/schedge
     ports:
       - "8001:80"
     labels:

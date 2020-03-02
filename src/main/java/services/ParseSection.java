@@ -2,6 +2,8 @@ package services;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
@@ -25,8 +27,14 @@ public class ParseSection {
       LoggerFactory.getLogger("services.ParseSection");
   private static DateTimeFormatter timeParser =
       DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
-  private static List<String> list = Utils.asResourceLines("/building.txt");
   private static Pattern pattern = Pattern.compile("[0-9]");
+
+  private static List<String> list = Utils.asResourceLines("/building.txt");
+  private static Map<String, String> buildings =
+      list.stream()
+          .map(str -> str.split(",", 2))
+          .collect(
+              Collectors.toMap(strings -> strings[0], strings -> strings[1]));
 
   public static SectionAttribute parse(@NotNull String rawData) {
     logger.info("parsing raw catalog section data into SectionAttribute...");
@@ -58,7 +66,6 @@ public class ParseSection {
     doc.select("i").unwrap();
     doc.select("b").unwrap();
     Element outerDataSection = doc.selectFirst("body > section.main");
-    Element header = outerDataSection.selectFirst("> header.page-header");
     Element innerDataSection = outerDataSection.selectFirst("> section");
     Element courseNameDiv = innerDataSection.selectFirst("> div.primary-head");
     String courseName = courseNameDiv.text();
@@ -110,11 +117,6 @@ public class ParseSection {
   }
 
   public static void parseBuilding(Map<String, String> secData, String link) {
-    Map<String, String> buildings = new HashMap<>();
-    list.stream().map(str -> str.split(",", 2)).forEach(strings -> {
-      buildings.put(strings[0], strings[1]);
-    });
-
     String location = secData.get("Room");
     String room = "";
     String building = null;

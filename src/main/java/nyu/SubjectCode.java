@@ -25,6 +25,13 @@ public final class SubjectCode {
     this.school = school.toUpperCase();
   }
 
+  public void checkValid() {
+    if (!getAvailableSubjects().containsKey(school) ||
+        !getAvailableSubjects().get(school).contains(subject))
+      throw new IllegalArgumentException("Subject '" + this.toString() +
+                                         "' is not valid!");
+  }
+
   public static List<SchoolMetadata> allSchools() {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")

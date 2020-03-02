@@ -2,6 +2,12 @@ package scraping.query;
 
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.asynchttpclient.Request;
@@ -11,13 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.SimpleBatchedFutureEngine;
 import scraping.models.CatalogQueryData;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class QueryCatalog {
 
@@ -177,7 +176,7 @@ public final class QueryCatalog {
             logger.error("Couldn't find cookie with name=CSRFCookie");
             return null;
           }
-          logger.info("Retrieved CSRF token `{}`", csrfCookie.value());
+          logger.debug("Retrieved CSRF token `{}`", csrfCookie.value());
           return new HttpContext(csrfCookie.value(), cookies);
         });
   }

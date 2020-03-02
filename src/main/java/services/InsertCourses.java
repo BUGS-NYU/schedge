@@ -105,10 +105,12 @@ public class InsertCourses {
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
                           SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
                           SECTIONS.INSTRUCTOR, SECTIONS.SECTION_TYPE,
-                          SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL)
+                          SECTIONS.SECTION_STATUS, SECTIONS.WAITLIST_TOTAL,
+                          SECTIONS.ASSOCIATED_WITH)
               .values(s.getRegistrationNumber(), courseId, s.getSectionCode(),
                       s.getInstructor(), s.getType().ordinal(),
-                      s.getStatus().ordinal(), s.getWaitlistTotal())
+                      s.getStatus().ordinal(), s.getWaitlistTotal(),
+                      associatedWith)
               .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
               .fetchOne();
       SectionID state = new SectionID(r.get(SECTIONS.ID),

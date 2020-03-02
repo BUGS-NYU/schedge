@@ -45,7 +45,7 @@ public class App {
                 // sslConnector.setPort(443);
                 ServerConnector connector = new ServerConnector(server);
                 connector.setPort(80);
-                server.setConnectors(new Connector[] {sslConnector, connector});
+                server.setConnectors(new Connector[] {connector});
                 return server;
               });
               String description =
@@ -88,7 +88,7 @@ public class App {
     URL resource = Utils.class.getResource("/keystore.jks");
     if (resource == null) {
       logger.info("Couldn't find keystore at src/main/resources/keystore.jks");
-      return server;
+      return sslContextFactory;
     } else {
       logger.info("Using keystore for HTTPS");
     }

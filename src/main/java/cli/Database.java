@@ -8,16 +8,8 @@ import database.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetEpoch;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
-import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import me.tongfei.progressbar.wrapped.ProgressBarWrappedInputStream;
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
 import nyu.SubjectCode;
 import nyu.Term;
@@ -25,9 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
-import scraping.models.Course;
 import utils.JsonMapper;
 import utils.Utils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 @CommandLine.
 Command(name = "db",

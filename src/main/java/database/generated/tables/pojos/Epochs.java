@@ -4,10 +4,9 @@
 package database.generated.tables.pojos;
 
 
+import javax.annotation.processing.Generated;
 import java.io.Serializable;
 import java.sql.Timestamp;
-
-import javax.annotation.processing.Generated;
 
 
 /**

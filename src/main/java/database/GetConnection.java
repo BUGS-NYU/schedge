@@ -2,9 +2,10 @@ package database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class get connection to the SQLite database using JDBC Driver

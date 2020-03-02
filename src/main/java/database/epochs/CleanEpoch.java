@@ -3,16 +3,15 @@ package database.epochs;
 import database.GetConnection;
 import database.generated.Tables;
 import database.generated.tables.Epochs;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.Instant;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public final class CleanEpoch {
 

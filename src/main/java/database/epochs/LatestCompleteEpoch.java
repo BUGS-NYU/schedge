@@ -1,19 +1,17 @@
 package database.epochs;
 
-import static org.jooq.impl.DSL.max;
-
 import database.generated.Tables;
 import database.generated.tables.Epochs;
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.time.Instant;
 import nyu.Term;
 import org.jooq.DSLContext;
-import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+
+import static org.jooq.impl.DSL.max;
 
 public final class LatestCompleteEpoch {
 

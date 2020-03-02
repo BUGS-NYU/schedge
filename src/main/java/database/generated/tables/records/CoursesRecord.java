@@ -5,14 +5,13 @@ package database.generated.tables.records;
 
 
 import database.generated.tables.Courses;
-
-import javax.annotation.processing.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record7;
 import org.jooq.Row7;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.processing.Generated;
 
 
 /**

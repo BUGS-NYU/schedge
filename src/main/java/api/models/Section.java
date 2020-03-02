@@ -1,12 +1,13 @@
 package api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import nyu.SectionStatus;
+import nyu.SectionType;
+
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
-import nyu.SectionStatus;
-import nyu.SectionType;
 
 public class Section {
   private String sectionName;

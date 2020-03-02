@@ -1,14 +1,8 @@
 package database;
 
-import static scraping.query.QuerySection.*;
-
 import database.generated.Tables;
 import database.generated.tables.Sections;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.stream.StreamSupport;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -16,8 +10,15 @@ import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.SimpleBatchedFutureEngine;
-import scraping.models.*;
+import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.stream.StreamSupport;
+
+import static scraping.query.QuerySection.querySectionAsync;
 
 /**
  * This class insert courses into the Postgresql database based on

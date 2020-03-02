@@ -4,13 +4,12 @@
 package database.generated;
 
 
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.processing.Generated;
-
 import org.jooq.Schema;
 import org.jooq.impl.CatalogImpl;
+
+import javax.annotation.processing.Generated;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**

@@ -1,9 +1,9 @@
 package scraping.models;
 
-import java.util.List;
-
 import nyu.SectionStatus;
 import nyu.SectionType;
+
+import java.util.List;
 
 public class Section {
   private String sectionName;

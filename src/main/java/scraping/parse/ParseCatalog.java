@@ -1,11 +1,5 @@
 package scraping.parse;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.Arrays;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
@@ -16,8 +10,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.models.*;
+import scraping.models.Course;
+import scraping.models.Meeting;
+import scraping.models.Section;
 import utils.Utils;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 /**
  * Parses a catalog string in a stream.

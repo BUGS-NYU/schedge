@@ -3,10 +3,10 @@ package api.models;
 import com.fasterxml.jackson.annotation.JsonValue;
 import utils.JsonSerializable;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import javax.validation.constraints.NotNull;
 
 public class Meeting implements JsonSerializable {
   private LocalDateTime

@@ -30,12 +30,10 @@ public final class SubjectCode {
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
                                          "' is not valid");
-    if (!getAvailableSubjects().get(school).contains(this)) {
-      System.err.println(availableSubjects);
+    if (!getAvailableSubjects().get(school).contains(this))
       throw new IllegalArgumentException("School '" + school +
                                          "' doesn't contain subject '" +
                                          this.toString() + "'");
-    }
   }
 
   public static List<SchoolMetadata> allSchools() {

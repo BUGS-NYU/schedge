@@ -40,9 +40,9 @@ public class App {
               config.enableCorsForAllOrigins();
               config.server(() -> {
                 Server server = new Server();
-                ServerConnector sslConnector =
-                    new ServerConnector(server, getSslContextFactory());
-                sslConnector.setPort(443);
+                // ServerConnector sslConnector =
+                //     new ServerConnector(server, getSslContextFactory());
+                // sslConnector.setPort(443);
                 ServerConnector connector = new ServerConnector(server);
                 connector.setPort(80);
                 server.setConnectors(new Connector[] {sslConnector, connector});
@@ -85,7 +85,6 @@ public class App {
 
   private static SslContextFactory getSslContextFactory() {
     SslContextFactory sslContextFactory = new SslContextFactory.Server();
-
     URL resource = Utils.class.getResource("/keystore.jks");
     if (resource == null) {
       logger.info("Couldn't find keystore at src/main/resources/keystore.jks");
@@ -101,14 +100,9 @@ public class App {
 }
 
 abstract class Endpoint {
-
-  @NotNull abstract String getPath();
-
-  @NotNull
+  abstract String getPath();
   abstract OpenApiDocumentation configureDocs(OpenApiDocumentation docs);
-
-  @NotNull abstract Handler getHandler();
-
+  abstract Handler getHandler();
   public final void addTo(Javalin app) {
     app.get(getPath(),
             OpenApiBuilder.documented(configureDocs(OpenApiBuilder.document()),
@@ -117,15 +111,7 @@ abstract class Endpoint {
 }
 
 class ApiError {
-  // private int status;
   private String message;
-
-  ApiError(String message) {
-    // this.status = status;
-    this.message = message;
-  }
-
-  // public int getStatus() { return status; }
-
+  ApiError(String message) { this.message = message; }
   public String getMessage() { return message; }
 }

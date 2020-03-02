@@ -3,6 +3,7 @@ package api;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
 
 import api.models.*;
+import database.SelectCourses;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
@@ -13,7 +14,6 @@ import nyu.Term;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import database.SelectCourses;
 
 class CoursesEndpoint extends Endpoint {
 
@@ -101,6 +101,7 @@ class CoursesEndpoint extends Endpoint {
         term = new Term(ctx.pathParam("semester"), year);
         subject =
             new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
+        subject.checkValid();
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));

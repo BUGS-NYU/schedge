@@ -1,8 +1,7 @@
 package scraping.models;
 
-import nyu.SectionStatus;
-
 import javax.validation.constraints.NotNull;
+import nyu.SectionStatus;
 
 // Duplicate variables can be removed later on
 
@@ -21,14 +20,15 @@ public class SectionAttribute {
   private Float maxUnits;
   private String grading;
   private String location;
+  private String notes;
   private String prerequisites;
-  // private List<Meeting> meetings; //dup. Ignore for now
 
   public SectionAttribute(String courseName, int registrationNumber,
                           SectionStatus status, String campus,
                           String description, String instructorMode,
                           String instructor, Float minUnits, Float maxUnits,
-                          String grading, String prerequisites, String location) {
+                          String grading, String notes, String prerequisites,
+                          String location) {
     this.courseName = courseName;
     this.registrationNumber = registrationNumber;
     this.status = status;
@@ -39,6 +39,7 @@ public class SectionAttribute {
     this.minUnits = minUnits;
     this.maxUnits = maxUnits;
     this.grading = grading;
+    this.notes = notes;
     this.prerequisites = prerequisites;
     this.location = location;
   }
@@ -62,6 +63,8 @@ public class SectionAttribute {
   public Float getMaxUnits() { return maxUnits; }
 
   public String getGrading() { return grading; }
+
+  public String getNotes() { return notes; }
 
   public String getPrerequisites() { return prerequisites; }
 

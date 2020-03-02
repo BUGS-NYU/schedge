@@ -8,6 +8,11 @@ import database.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetEpoch;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
@@ -17,14 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
+import scraping.query.GetClient;
 import utils.JsonMapper;
 import utils.Utils;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 @CommandLine.
 Command(name = "db",
@@ -109,6 +109,8 @@ public class Database implements Runnable {
       }
       long end = System.nanoTime();
       logger.info((end - start) / 1000000000 + " seconds");
+      GetClient.close();
+      GetConnection.close();
     }
   }
 
@@ -168,12 +170,12 @@ public class Database implements Runnable {
             term, Arrays.asList(new SubjectCode(subject, school)));
       }
 
-      GetConnection.close();
       Utils.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info(duration + " seconds");
+      GetConnection.close();
     }
   }
 

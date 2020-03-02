@@ -1,8 +1,14 @@
 package database;
 
+import static scraping.query.QuerySection.querySectionAsync;
+
 import database.generated.Tables;
 import database.generated.tables.Sections;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.stream.StreamSupport;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -12,13 +18,6 @@ import org.slf4j.LoggerFactory;
 import scraping.SimpleBatchedFutureEngine;
 import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.stream.StreamSupport;
-
-import static scraping.query.QuerySection.querySectionAsync;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -98,6 +97,7 @@ public class UpdateSections {
             .set(SECTIONS.MAX_UNITS, s.getMaxUnits())
             .set(SECTIONS.LOCATION, s.getLocation())
             .set(SECTIONS.GRADING, s.getGrading())
+            .set(SECTIONS.NOTES, s.getNotes())
             .set(SECTIONS.PREREQUISITES, s.getPrerequisites())
             .where(SECTIONS.ID.eq(save.id))
             .execute();

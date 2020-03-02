@@ -13,9 +13,11 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import me.tongfei.progressbar.wrapped.ProgressBarWrappedInputStream;
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
 import nyu.SubjectCode;
 import nyu.Term;
@@ -23,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
+import scraping.models.Course;
 import utils.JsonMapper;
 import utils.Utils;
 
@@ -87,14 +90,15 @@ public class Database implements Runnable {
         throw new RuntimeException(e);
       }
 
+      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
+      ProgressBarBuilder barBuilder =
+          new ProgressBarBuilder().setStyle(ProgressBarStyle.ASCII);
       Iterator<SectionID> s =
           ScrapeCatalog
-              .scrapeFromCatalog(term,
-                                 new ProgressBarWrappedIterable<>(
-                                     SubjectCode.allSubjects(),
-                                     new ProgressBarBuilder().setStyle(
-                                         ProgressBarStyle.ASCII)),
-                                 batchSize)
+              .scrapeFromCatalog(
+                  term,
+                  new ProgressBarWrappedIterable<>(allSubjects, barBuilder),
+                  batchSize)
               .flatMap(courseList
                        -> InsertCourses.insertCourses(term, epoch, courseList)
                               .stream())

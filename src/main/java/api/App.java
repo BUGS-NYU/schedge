@@ -95,12 +95,14 @@ public class App {
     if (resource == null) {
       logger.info("Couldn't find keystore at src/main/resources/keystore.jks");
       return server;
+    } else {
+      logger.info("Using keystore for HTTPS");
     }
 
     sslContextFactory.setKeyStorePath(
         resource.toExternalForm()); // replace with your real keystore
     sslContextFactory.setKeyStorePassword(
-        ""); // replace with your real password
+        "password"); // replace with your real password
     sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
     sslContextFactory.setProvider("Conscrypt");
 

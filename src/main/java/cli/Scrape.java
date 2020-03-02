@@ -10,6 +10,7 @@ import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
+import utils.JsonMapper;
 import utils.Utils;
 
 /*
@@ -183,21 +184,21 @@ public class Scrape implements Runnable {
       }
       if (school == null && subject == null) {
         Utils.writeToFileOrStdout(
-            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
         Utils.writeToFileOrStdout(
-            outputFile, Utils.toJson(ParseSchoolSubjects.parseSubject(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSubject(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else if (school != null) {
         Utils.writeToFileOrStdout(
-            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       } else {
         Utils.writeToFileOrStdout(
-            outputFile, Utils.toJson(ParseSchoolSubjects.parseSchool(
+            outputFile, JsonMapper.toJson(ParseSchoolSubjects.parseSchool(
                                               QuerySchool.querySchool(term)),
                                           Boolean.parseBoolean(pretty)));
       }

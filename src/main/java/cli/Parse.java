@@ -10,6 +10,7 @@ import scraping.models.SectionAttribute;
 import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
+import utils.JsonMapper;
 import utils.Utils;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
@@ -57,7 +58,7 @@ public class Parse implements Runnable {
       String input = Utils.readFromFileOrStdin(inputFile);
       SectionAttribute output = ParseSection.parse(input);
       Utils.writeToFileOrStdout(
-          outputFile, Utils.toJson(output, Boolean.parseBoolean(pretty)));
+          outputFile, JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;
       logger.info(duration + " seconds");
@@ -93,7 +94,7 @@ public class Parse implements Runnable {
       String input = Utils.readFromFileOrStdin(inputFile);
       List<Course> output = ParseCatalog.parse(input, null);
       Utils.writeToFileOrStdout(
-          Utils.toJson(output, Boolean.parseBoolean(pretty)), outputFile);
+          JsonMapper.toJson(output, Boolean.parseBoolean(pretty)), outputFile);
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;
       logger.info(duration + " seconds");
@@ -141,22 +142,22 @@ public class Parse implements Runnable {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
         Utils.writeToFileOrStdout(
-            Utils.toJson(schools, Boolean.parseBoolean(pretty)),
+            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
             outputFile);
 
         Utils.writeToFileOrStdout(
             outputFile,
-            Utils.toJson(subjects, Boolean.parseBoolean(pretty)));
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
       } else if (subject == null) {
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
         Utils.writeToFileOrStdout(
             outputFile,
-            Utils.toJson(subjects, Boolean.parseBoolean(pretty)));
+            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
       } else {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
         Utils.writeToFileOrStdout(
             outputFile,
-            Utils.toJson(schools, Boolean.parseBoolean(pretty)));
+            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)));
       }
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;

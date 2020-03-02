@@ -16,9 +16,6 @@ public final class Utils {
 
   private static BufferedReader inReader =
       new BufferedReader(new InputStreamReader(System.in));
-    private static ObjectMapper objMapper =
-        new ObjectMapper().setPropertyNamingStrategy(
-            PropertyNamingStrategy.SNAKE_CASE);
 
     public static List<String> asResourceLines(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
@@ -78,33 +75,4 @@ public final class Utils {
     }
   }
 
-    public static String toJson(Object o) { return toJson(o, false); }
-
-    public static void toJsonFile(String fileName, Object o) {
-      toJsonFile(fileName, o, false);
-    }
-
-    public static String toJson(Object o, boolean prettyPrint) {
-      try {
-        if (prettyPrint)
-          return objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
-        else
-          return objMapper.writeValueAsString(o);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-
-    public static void toJsonFile(String fileName, Object o,
-                                    boolean prettyPrint) {
-      try {
-        if (prettyPrint)
-          objMapper.writerWithDefaultPrettyPrinter().writeValue(
-              new File(fileName), o);
-        else
-          objMapper.writeValue(new File(fileName), o);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
 }

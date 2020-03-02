@@ -13,7 +13,7 @@ import nyu.Term;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import services.SelectCourses;
+import database.SelectCourses;
 
 class CoursesEndpoint extends Endpoint {
 

@@ -1,14 +1,19 @@
 package cli;
 
 import api.App;
-import cli.validation.ValidateCatalogArgs;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
+import database.GetConnection;
+import database.InsertCourses;
+import database.SelectCourses;
+import database.UpdateSections;
+import database.epochs.CompleteEpoch;
+import database.epochs.GetEpoch;
 import database.models.SectionID;
 import nyu.SubjectCode;
 import nyu.Term;
@@ -16,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
-import scraping.query.QuerySchool;
-import services.*;
 import utils.Utils;
 
 @CommandLine.
@@ -156,7 +159,7 @@ public class Database implements Runnable {
       }
 
       GetConnection.close();
-      Utils.writeToFileOrStdout(outputFile, JsonMapper.toJson(courses));
+      Utils.writeToFileOrStdout(outputFile, Utils.toJson(courses));
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

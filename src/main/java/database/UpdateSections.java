@@ -1,4 +1,4 @@
-package services;
+package database;
 
 import static scraping.query.QuerySection.*;
 
@@ -7,9 +7,7 @@ import database.generated.tables.Sections;
 import database.models.SectionID;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.stream.StreamSupport;
 import nyu.Term;
 import org.jooq.DSLContext;
@@ -19,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.SimpleBatchedFutureEngine;
 import scraping.models.*;
+import scraping.parse.ParseSection;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -26,7 +25,7 @@ import scraping.models.*;
  */
 public class UpdateSections {
   private static Logger logger =
-      LoggerFactory.getLogger("services.UpdateSections");
+      LoggerFactory.getLogger("database.UpdateSections");
 
   private static class SaveState {
     int id;

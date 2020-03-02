@@ -7,13 +7,11 @@ import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.models.CatalogQueryData;
-import scraping.models.Course;
 import scraping.models.SectionAttribute;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySection;
-import services.ParseCatalog;
-import services.ParseSection;
+import scraping.parse.ParseCatalog;
+import scraping.parse.ParseSection;
 
 public class ScrapeSection {
   private static Logger logger =

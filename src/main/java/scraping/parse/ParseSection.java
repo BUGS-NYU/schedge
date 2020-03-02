@@ -1,4 +1,4 @@
-package services;
+package scraping.parse;
 
 import java.util.*;
 import nyu.SectionStatus;
@@ -18,7 +18,7 @@ import scraping.models.SectionAttribute;
  */
 public class ParseSection {
   private static Logger logger =
-      LoggerFactory.getLogger("services.ParseSection");
+      LoggerFactory.getLogger("scraping.parse.ParseSection");
 
   public static SectionAttribute parse(@NotNull String rawData) {
     logger.debug("parsing raw catalog section data into SectionAttribute...");

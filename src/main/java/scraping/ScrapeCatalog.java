@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import scraping.models.CatalogQueryData;
 import scraping.models.Course;
 import scraping.query.QueryCatalog;
-import services.ParseCatalog;
+import scraping.parse.ParseCatalog;
 
 public class ScrapeCatalog {
   private static Logger logger =

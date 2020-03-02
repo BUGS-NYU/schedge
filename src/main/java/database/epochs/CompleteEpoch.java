@@ -1,4 +1,4 @@
-package services;
+package database.epochs;
 
 import database.generated.Tables;
 import database.generated.tables.Courses;
@@ -24,7 +24,7 @@ import scraping.models.*;
 public final class CompleteEpoch {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.CompleteEpoch");
+      LoggerFactory.getLogger("database.epochs.CompleteEpoch");
 
   public static void completeEpoch(Connection conn, Term term, int id) {
     DSLContext context = DSL.using(conn, SQLDialect.SQLITE);

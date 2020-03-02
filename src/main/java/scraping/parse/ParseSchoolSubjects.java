@@ -1,4 +1,4 @@
-package services;
+package scraping.parse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class ParseSchoolSubjects {
   private static Logger logger =
-      LoggerFactory.getLogger("services.ParseSection");
+      LoggerFactory.getLogger("scraping.parse.ParseSection");
 
   public static @NotNull String parseSchoolSubject(String rawData) {
     logger.info("parsing raw school data...");

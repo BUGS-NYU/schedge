@@ -6,7 +6,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import nyu.SubjectCode;
 import nyu.Term;
-import services.*;
 import utils.Utils;
 
 public abstract class ValidateSectionArgs {
@@ -41,7 +40,7 @@ public abstract class ValidateSectionArgs {
                     batchSize,
                     o
                     -> Utils.writeToFileOrStdout(
-                        outputFile, JsonMapper.toJson(o, prettyPrint)));
+                        outputFile, Utils.toJson(o, prettyPrint)));
   }
 
   public static ValidateSectionArgs

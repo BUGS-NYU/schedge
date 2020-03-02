@@ -1,4 +1,4 @@
-package services;
+package database.epochs;
 
 import static org.jooq.impl.DSL.max;
 
@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 public final class LatestCompleteEpoch {
 
   private static Logger logger =
-      LoggerFactory.getLogger("services.LatestCompleteEpoch");
+      LoggerFactory.getLogger("database.epochs.LatestCompleteEpoch");
 
   public static int getLatestEpoch(Connection conn, Term term) {
     DSLContext context = DSL.using(conn, SQLDialect.SQLITE);

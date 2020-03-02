@@ -5,7 +5,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import nyu.SubjectCode;
 import nyu.Term;
-import services.*;
 import utils.Utils;
 
 public abstract class ValidateCatalogArgs {
@@ -40,7 +39,7 @@ public abstract class ValidateCatalogArgs {
     return validate(term, semester, year, school, subject, batchSize,
                     (t, o)
                         -> Utils.writeToFileOrStdout(
-                            outputFile, JsonMapper.toJson(o, prettyPrint)));
+                            outputFile, Utils.toJson(o, prettyPrint)));
   }
 
   public static ValidateCatalogArgs validate(Integer termId, String semester,

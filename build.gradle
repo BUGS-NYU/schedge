@@ -110,7 +110,7 @@ allprojects {
 
 // https://github.com/jorgeejgonzalez/fermat/wiki/Creating-Standalone-Jar-Using-Gradle
 task fatJar(type: Jar, dependsOn: test) {
-    baseName = project.name + '-with-dependencies'
+    archiveBaseName = project.name + '-with-dependencies'
 
     manifest {
         attributes 'Main-Class': 'Main'

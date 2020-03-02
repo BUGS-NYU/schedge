@@ -46,18 +46,20 @@ public final class QuerySection {
   public static Stream<String> querySections(Term term,
                                              List<Integer> registrationNumbers,
                                              Integer batchSizeNullable) {
-    int batchSize = batchSizeNullable != null ? batchSizeNullable : 50;
-                        : max(5, min(registrationNumbers.size() / 5, 50)); // @Performance what should this number be?
+    int batchSize =
+        batchSizeNullable != null
+            ? batchSizeNullable
+            : max(5, min(registrationNumbers.size() / 5,
+                         50)); // @Performance what should this number be?
 
-                        return StreamSupport
-                            .stream(new SimpleBatchedFutureEngine<>(
-                                        registrationNumbers, batchSize,
-                                        (registrationNumber, __)
-                                            -> querySectionAsync(
-                                                term, registrationNumber))
-                                        .spliterator(),
-                                    false)
-                            .filter(i -> i != null);
+    return StreamSupport
+        .stream(new SimpleBatchedFutureEngine<>(
+                    registrationNumbers, batchSize,
+                    (registrationNumber,
+                     __) -> querySectionAsync(term, registrationNumber))
+                    .spliterator(),
+                false)
+        .filter(i -> i != null);
   }
 
   public static Future<String> querySectionAsync(Term term,

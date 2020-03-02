@@ -49,7 +49,6 @@
 333A,33 Third Avenue
 342E,342 East 26th Street, Room 200A
 345E,345 East 24th Street
-3-5W,3-5 Washington Place
 380S,380 Second Avenue, 4th Floor
 383L,383 Lafayette Street
 3AVN,Third Avenue North Dormitory

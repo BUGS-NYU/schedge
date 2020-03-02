@@ -30,10 +30,12 @@ public final class SubjectCode {
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
                                          "' is not valid");
-    if (!getAvailableSubjects().get(school).contains(subject))
+    if (!getAvailableSubjects().get(school).contains(this)) {
+      System.err.println(availableSubjects);
       throw new IllegalArgumentException("School '" + school +
                                          "' doesn't contain subject '" +
                                          this.toString() + "'");
+    }
   }
 
   public static List<SchoolMetadata> allSchools() {
@@ -88,6 +90,15 @@ public final class SubjectCode {
   }
 
   public String toString() { return getAbbrev(); }
+
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    SubjectCode that = (SubjectCode)o;
+    return this.school.equals(that.school) && this.subject.equals(that.subject);
+  }
 
   public static final class SchoolMetadata {
     private String code, name;

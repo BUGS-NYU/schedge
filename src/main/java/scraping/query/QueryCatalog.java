@@ -1,26 +1,23 @@
 package scraping.query;
 
-import static java.lang.Integer.max;
-import static java.lang.Integer.min;
+import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
+import nyu.SubjectCode;
+import nyu.Term;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
+import org.asynchttpclient.uri.Uri;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scraping.SimpleBatchedFutureEngine;
+import scraping.models.CatalogQueryData;
 
-import java.net.HttpCookie;
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import nyu.SubjectCode;
-import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scraping.SimpleBatchedFutureEngine;
-import scraping.models.CatalogQueryData;
 
 public final class QueryCatalog {
 
@@ -28,9 +25,9 @@ public final class QueryCatalog {
       LoggerFactory.getLogger("scraping.query.QueryCatalog");
   private static final String ROOT_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classSearch";
-  private static final URI ROOT_URI = URI.create(ROOT_URL_STRING);
-  private static final URI DATA_URI =
-      URI.create("https://m.albert.nyu.edu/app/catalog/getClassSearch");
+  private static final Uri ROOT_URI = Uri.create(ROOT_URL_STRING);
+  private static final Uri DATA_URI =
+      Uri.create("https://m.albert.nyu.edu/app/catalog/getClassSearch");
 
   public static CatalogQueryData queryCatalog(Term term,
                                               SubjectCode subjectCode) {
@@ -104,32 +101,34 @@ public final class QueryCatalog {
         term.getId(), subjectCode.school, subjectCode.getAbbrev());
 
     logger.debug("Params are {}.", params);
-
-    HttpRequest request =
-        HttpRequest.newBuilder(DATA_URI)
-            .timeout(Duration.ofSeconds(60))
-            .header("Referer", ROOT_URL_STRING + "/" + term.getId())
-            .header("Referrer", "${ROOT_URL}/${term.id}")
-            .header("Host", "m.albert.nyu.edu")
-            .header("Accept-Language", "en-US,en;q=0.5")
-            .header("Accept-Encoding", "gzip, deflate, br")
-            .header("Content-Type",
-                    "application/x-www-form-urlencoded; charset=UTF-8")
-            .header("X-Requested-With", "XMLHttpRequest")
+    Request request =
+        new RequestBuilder()
+            .setUri(DATA_URI)
+            .setRequestTimeout(60000)
+            .setHeader("Referer", ROOT_URL_STRING + "/" + term.getId())
+            .setHeader("Referrer", "${ROOT_URL}/${term.id}")
+            .setHeader("Host", "m.albert.nyu.edu")
+            .setHeader("Accept-Language", "en-US,en;q=0.5")
+            .setHeader("Accept-Encoding", "gzip, deflate, br")
+            .setHeader("Content-Type",
+                       "application/x-www-form-urlencoded; charset=UTF-8")
+            .setHeader("X-Requested-With", "XMLHttpRequest")
             // .header("Content-Length", "129")
-            .header("Origin", "https://m.albert.nyu.edu")
-            .header("DNT", "1")
-            .header("Connection", "keep-alive")
-            .header("Referer",
-                    "https://m.albert.nyu.edu/app/catalog/classSearch")
-            .header("Cookie", context.cookies.stream()
-                                  .map(it -> it.toString())
-                                  .collect(Collectors.joining(";")))
-            .POST(HttpRequest.BodyPublishers.ofString(params))
+            .setHeader("Origin", "https://m.albert.nyu.edu")
+            .setHeader("DNT", "1")
+            .setHeader("Connection", "keep-alive")
+            .setHeader("Referer",
+                       "https://m.albert.nyu.edu/app/catalog/classSearch")
+            .setHeader("Cookie", context.cookies.stream()
+                                     .map(it -> it.name() + '=' + it.value())
+                                     .collect(Collectors.joining("; ")))
+            .setMethod("POST")
+            .setBody(params)
             .build();
 
     return GetClient.getClient()
-        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        .executeRequest(request)
+        .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
             logger.error("Error (subjectCode={}): {}", subjectCode,
@@ -137,58 +136,57 @@ public final class QueryCatalog {
             return null;
           }
 
-          if (resp.body().equals("No classes found matching your criteria.")) {
+          if (resp.getResponseBody().equals(
+                  "No classes found matching your criteria.")) {
             logger.warn(
                 "No classes found matching criteria school={}, subject={}",
                 subjectCode.school, subjectCode.getAbbrev());
             return null;
           } else {
-            return new CatalogQueryData(subjectCode, resp.body());
+            return new CatalogQueryData(subjectCode, resp.getResponseBody());
           }
         });
   }
 
   private static Future<HttpContext> getContextAsync() {
     logger.debug("Getting CSRF token...");
-    HttpRequest request = HttpRequest.newBuilder(ROOT_URI)
-                              .timeout(Duration.ofSeconds(60))
-                              .GET()
-                              .build();
+    Request request =
+        new RequestBuilder().setUri(ROOT_URI).setMethod("GET").build();
 
     return GetClient.getClient()
-        .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        .executeRequest(request)
+        .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
             logger.error(throwable.getMessage());
             return null;
           }
 
-          List<HttpCookie> cookies =
-              resp.headers()
-                  .map()
-                  .getOrDefault("Set-Cookie", new ArrayList<>())
+          List<Cookie> cookies =
+              resp.getHeaders()
+                  .getAll("Set-Cookie")
                   .stream()
-                  .flatMap(cookieList -> HttpCookie.parse(cookieList).stream())
+                  .map(cookie -> ClientCookieDecoder.STRICT.decode(cookie))
                   .collect(Collectors.toList());
-          HttpCookie csrfCookie =
+          Cookie csrfCookie =
               cookies.stream()
-                  .filter(cookie -> cookie.getName().equals("CSRFCookie"))
+                  .filter(cookie -> cookie.name().equals("CSRFCookie"))
                   .findAny()
                   .orElse(null);
           if (csrfCookie == null) {
             logger.error("Couldn't find cookie with name=CSRFCookie");
             return null;
           }
-          logger.debug("Retrieved CSRF token `{}`", csrfCookie.getValue());
-          return new HttpContext(csrfCookie.getValue(), cookies);
+          logger.info("Retrieved CSRF token `{}`", csrfCookie.value());
+          return new HttpContext(csrfCookie.value(), cookies);
         });
   }
 
   private static class HttpContext {
     final String csrfToken;
-    final List<HttpCookie> cookies;
+    final List<Cookie> cookies;
 
-    HttpContext(String tok, List<HttpCookie> cookies) {
+    HttpContext(String tok, List<Cookie> cookies) {
       this.csrfToken = tok;
       this.cookies = cookies;
     }

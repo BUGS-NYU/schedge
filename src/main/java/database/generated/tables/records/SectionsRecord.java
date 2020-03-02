@@ -28,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implements Record19<Integer, Integer, Integer, String, String, Integer, Integer, Integer, Integer, String, Float, Float, String, String, String, String, String, String, String> {
 
-    private static final long serialVersionUID = 2103018603;
+    private static final long serialVersionUID = 203244862;
 
     /**
      * Setter for <code>sections.id</code>.
@@ -286,17 +286,17 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
     }
 
     /**
-     * Setter for <code>sections.room_number</code>.
+     * Setter for <code>sections.location</code>.
      */
-    public SectionsRecord setRoomNumber(String value) {
+    public SectionsRecord setLocation(String value) {
         set(17, value);
         return this;
     }
 
     /**
-     * Getter for <code>sections.room_number</code>.
+     * Getter for <code>sections.location</code>.
      */
-    public String getRoomNumber() {
+    public String getLocation() {
         return (String) get(17);
     }
 
@@ -425,7 +425,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
 
     @Override
     public Field<String> field18() {
-        return Sections.SECTIONS.ROOM_NUMBER;
+        return Sections.SECTIONS.LOCATION;
     }
 
     @Override
@@ -520,7 +520,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
 
     @Override
     public String component18() {
-        return getRoomNumber();
+        return getLocation();
     }
 
     @Override
@@ -615,7 +615,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
 
     @Override
     public String value18() {
-        return getRoomNumber();
+        return getLocation();
     }
 
     @Override
@@ -727,7 +727,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
 
     @Override
     public SectionsRecord value18(String value) {
-        setRoomNumber(value);
+        setLocation(value);
         return this;
     }
 
@@ -775,7 +775,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
     /**
      * Create a detached, initialised SectionsRecord
      */
-    public SectionsRecord(Integer id, Integer registrationNumber, Integer courseId, String sectionCode, String instructor, Integer sectionType, Integer sectionStatus, Integer associatedWith, Integer waitlistTotal, String sectionName, Float minUnits, Float maxUnits, String campus, String description, String notes, String instructionMode, String grading, String roomNumber, String prerequisites) {
+    public SectionsRecord(Integer id, Integer registrationNumber, Integer courseId, String sectionCode, String instructor, Integer sectionType, Integer sectionStatus, Integer associatedWith, Integer waitlistTotal, String sectionName, Float minUnits, Float maxUnits, String campus, String description, String notes, String instructionMode, String grading, String location, String prerequisites) {
         super(Sections.SECTIONS);
 
         set(0, id);
@@ -795,7 +795,7 @@ public class SectionsRecord extends UpdatableRecordImpl<SectionsRecord> implemen
         set(14, notes);
         set(15, instructionMode);
         set(16, grading);
-        set(17, roomNumber);
+        set(17, location);
         set(18, prerequisites);
     }
 }

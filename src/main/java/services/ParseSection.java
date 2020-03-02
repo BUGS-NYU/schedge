@@ -21,7 +21,7 @@ public class ParseSection {
       LoggerFactory.getLogger("services.ParseSection");
 
   public static SectionAttribute parse(@NotNull String rawData) {
-    logger.info("parsing raw catalog section data into SectionAttribute...");
+    logger.debug("parsing raw catalog section data into SectionAttribute...");
 
     rawData = rawData.trim();
 

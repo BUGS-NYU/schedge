@@ -87,7 +87,7 @@ public class UpdateSections {
           continue;
         }
 
-        logger.info("Adding section information...");
+        logger.debug("Adding section information...");
 
         context.update(SECTIONS)
             .set(SECTIONS.SECTION_NAME, s.getCourseName())

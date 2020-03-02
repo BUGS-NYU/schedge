@@ -2,6 +2,7 @@ package api;
 
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
+import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
@@ -32,22 +33,21 @@ public class App {
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
   public static void run() {
-    // @TODO Use https://javalin.io/plugins/openapi#getting-started as guide for
-    // documenting API, then use Redoc for docs generation
     Javalin app =
         Javalin
             .create(config -> {
               config.enableCorsForAllOrigins();
               config.server(() -> {
                 Server server = new Server();
-                // ServerConnector sslConnector =
-                //     new ServerConnector(server, getSslContextFactory());
-                // sslConnector.setPort(443);
+                ServerConnector sslConnector =
+                    new ServerConnector(server, getSslContextFactory());
+                sslConnector.setPort(443);
                 ServerConnector connector = new ServerConnector(server);
                 connector.setPort(80);
                 server.setConnectors(new Connector[] {connector});
                 return server;
               });
+              config.addStaticFiles("./local", Location.EXTERNAL);
               String description =
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
@@ -76,7 +76,7 @@ public class App {
                                            ctx -> {
                                              ctx.contentType("text/html");
                                              ctx.result(docs);
-                                           }));
+                                            }));
 
     new SubjectsEndpoint().addTo(app);
     new SchoolsEndpoint().addTo(app);

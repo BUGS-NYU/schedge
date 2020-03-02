@@ -33,6 +33,8 @@ dependencies {
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
+            "me.tongfei:progressbar:0.8.1", // Progress bar
+
             "info.picocli:picocli:4.1.4", // Command line args
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
@@ -156,24 +158,27 @@ class UpdateDbTask extends DefaultTask {
     @OutputFile
     String tables;
 
-    UpdateDbTask() {
-        outputs.upToDateWhen {
-          new File(tables).exists()
-        }
-    }
+    @Internal
+    Closure run;
+
+    UpdateDbTask() {}
+
     @TaskAction
     def update() {
+        if (!new File(tables).exists())
+            run()
     }
 }
 
 task updateDb(type: UpdateDbTask) {
-  inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/migrations"
-  tables = "${buildscript.sourceFile.absoluteFile.parent}/tables.db";
-  doLast {
-      flywayClean.runTask()
-      flywayMigrate.runTask()
-      generateDatabaseJooqSchemaSource.generate()
-  }
+    inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/migrations"
+    tables = "${buildscript.sourceFile.absoluteFile.parent}/tables.db";
+
+    run {
+        flywayMigrate.runTask()
+        generateDatabaseJooqSchemaSource.generate()
+    }
 }
+
 compileJava.dependsOn += updateDb
 

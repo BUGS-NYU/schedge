@@ -22,7 +22,7 @@ public class ScrapeCatalog {
    * @return Sequence of List of Courses
    */
   public static Stream<List<Course>>
-  scrapeFromCatalog(Term term, List<SubjectCode> subjectCodes,
+  scrapeFromCatalog(Term term, Iterable<SubjectCode> subjectCodes,
                     Integer batchSize) {
     return QueryCatalog.queryCatalog(term, subjectCodes, batchSize)
         .map(rawData -> {

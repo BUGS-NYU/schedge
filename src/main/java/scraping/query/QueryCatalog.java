@@ -53,24 +53,14 @@ public final class QueryCatalog {
   }
 
   public static Stream<CatalogQueryData>
-  queryCatalog(Term term, List<SubjectCode> subjectCodes,
+  queryCatalog(Term term, Iterable<SubjectCode> subjectCodes,
                Integer batchSizeNullable) {
-    if (subjectCodes.isEmpty())
-      throw new IllegalArgumentException(
-          "Need to provide at least one subject!");
-    if (subjectCodes.size() > 1) {
-      logger.debug("querying catalog for term={} with multiple subjects...",
-                   term);
-    } else {
-      logger.debug("querying catalog for term={} and subject={}", term,
-                   subjectCodes.get(0));
-    }
+    logger.debug("querying catalog for term={} with multiple subjects...",
+                 term);
 
-    int batchSize =
-        batchSizeNullable != null
-            ? batchSizeNullable
-            : max(5, min(subjectCodes.size() / 5,
-                         20)); // @Performance What should this number be?
+    int batchSize = batchSizeNullable != null
+                        ? batchSizeNullable
+                        : 20; // @Performance What should this number be?
 
     HttpContext[] contexts = new HttpContext[batchSize];
     {
@@ -95,11 +85,10 @@ public final class QueryCatalog {
     logger.info("Collected context requests... (x{})", batchSize);
 
     return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<SubjectCode, CatalogQueryData>(
+        .stream(new SimpleBatchedFutureEngine<>(
                     subjectCodes, batchSize,
-                    (subjectCode, idx) -> {
-                      return queryCatalog(term, subjectCode, contexts[idx]);
-                    })
+                    (subjectCode,
+                     idx) -> queryCatalog(term, subjectCode, contexts[idx]))
                     .spliterator(),
                 false)
         .filter(i -> i != null);
@@ -107,8 +96,8 @@ public final class QueryCatalog {
 
   private static Future<CatalogQueryData>
   queryCatalog(Term term, SubjectCode subjectCode, HttpContext context) {
-    logger.info("querying catalog for term=" + term +
-                " and subject=" + subjectCode + "...");
+    logger.debug("querying catalog for term=" + term +
+                 " and subject=" + subjectCode + "...");
 
     String params = String.format(
         "CSRFToken=%s&term=%d&acad_group=%s&subject=%s", context.csrfToken,

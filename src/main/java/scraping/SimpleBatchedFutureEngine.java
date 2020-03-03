@@ -25,7 +25,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
   private int pendingRequests;
   private long timeout;
   private boolean iteratorHasNext;
-  private ArrayList<Future<Output>> mailboxes;
+  private Object[] mailboxes;
   private Iterator<Input> inputData;
   private BiFunction<Input, Integer, Future<Output>> callback;
 
@@ -75,15 +75,17 @@ public class SimpleBatchedFutureEngine<Input, Output>
     if (batchSize < 0)
       throw new IllegalArgumentException("batchSize must be positive!");
 
-    this.mailboxes = new ArrayList<>();
+    this.mailboxes = new Object[batchSize];
 
-    for (int count = 0;
-         (iteratorHasNext = inputData.hasNext()) && count < batchSize; count++)
-      this.mailboxes.add(callback.apply(inputData.next(), count));
-
-    this.pendingRequests = this.mailboxes.size();
+    for (pendingRequests = 0;
+         (iteratorHasNext = inputData.hasNext()) && pendingRequests < batchSize;
+         pendingRequests++) {
+      mailboxes[pendingRequests] =
+          callback.apply(inputData.next(), pendingRequests);
+    }
     this.inputData = inputData;
     this.callback = callback;
+    this.timeout = timeout;
   }
 
   private static <E> E getFuture(Future<E> future) {
@@ -104,16 +106,17 @@ public class SimpleBatchedFutureEngine<Input, Output>
   // @TODO Remove null checks from all of the methods in this class
   public Output checkMailboxes() {
     for (int i = 0; i < pendingRequests; i++) {
-      Future<Output> future = mailboxes.get(i);
+      @SuppressWarnings("unchecked")
+      Future<Output> future = (Future<Output>)mailboxes[i];
       if (future.isDone()) {
 
         Output value = getFuture(future);
         if (iteratorHasNext && (iteratorHasNext = inputData.hasNext())) {
-          mailboxes.set(i, callback.apply(inputData.next(), i));
+          mailboxes[i] = callback.apply(inputData.next(), i);
         } else {
           pendingRequests--;
-          mailboxes.set(i, mailboxes.get(pendingRequests));
-          mailboxes.remove(pendingRequests);
+          mailboxes[i] = mailboxes[pendingRequests];
+          mailboxes[pendingRequests] = null;
         }
 
         if (value != null)

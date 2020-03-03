@@ -14,6 +14,17 @@
       <appender-ref ref="STDERR" />
     </logger>
 
+    <logger name="io.netty" level="INFO">
+      <appender-ref ref="STDERR" />
+    </logger>
+    <logger name="org.asynchttpclient.netty" level="INFO">
+      <appender-ref ref="STDERR" />
+    </logger>
+
+    <logger name="com.zaxxer.hikari" level="INFO">
+      <appender-ref ref="STDERR" />
+    </logger>
+
     <!-- <logger name="com.zaxxer.hikari.pool.HikariPool" level="INFO" additivity="false">
         <appender-ref ref="STDERR"/>
     </logger>

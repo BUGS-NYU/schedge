@@ -27,14 +27,14 @@ import utils.Utils;
  */
 public class ParseCatalog implements Iterator<Course> {
   private static Logger logger =
-      LoggerFactory.getLogger("services.parse_catalog");
+      LoggerFactory.getLogger("services.ParseCatalog");
   private static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
   private Iterator<Element> elements;
   private Element currentElement;
 
   public static List<Course> parse(String data, SubjectCode subjectCode) {
-    logger.debug("parsing raw catalog data...");
+    logger.trace("parsing raw catalog data...");
     ArrayList<Course> courses = new ArrayList<>();
     new ParseCatalog(Jsoup.parse(data), subjectCode)
         .forEachRemaining(c -> courses.add(c));
@@ -42,7 +42,7 @@ public class ParseCatalog implements Iterator<Course> {
   }
 
   public static List<Integer> parseRegistrationNumber(String data) {
-    logger.debug("parsing raw catalog registration numbers data...");
+    logger.trace("parsing raw catalog registration numbers data...");
     Document secData = Jsoup.parse(data);
     Elements fields = secData.select("div.section-content > div.section-body");
     ArrayList<Integer> registrationNumbers = new ArrayList<>();
@@ -57,7 +57,6 @@ public class ParseCatalog implements Iterator<Course> {
 
   private ParseCatalog(Document data, SubjectCode subjectCode) {
     elements = data.select("div.primary-head ~ *").iterator();
-    this.logger = LoggerFactory.getLogger(logger.getName());
 
     if (!elements.hasNext()) {
       logger.warn(
@@ -72,6 +71,7 @@ public class ParseCatalog implements Iterator<Course> {
       throw new RuntimeException("NYU sent back data we weren't expecting.");
     } else if (currentElement.text().equals(
                    "No classes found matching your criteria.")) {
+      logger.debug("No classes found for subject=" + subjectCode);
       currentElement = null; // We're done, nothing's here
     }
   }
@@ -90,7 +90,7 @@ public class ParseCatalog implements Iterator<Course> {
   SectionMetadata parseSectionNode(Element anchorTag) throws IOException {
     HashMap<String, String> sectionData = sectionFieldTable(
         anchorTag.select("div.section-content > div.section-body"));
-    logger.debug("Section field strings are: {}", sectionData);
+    logger.trace("Section field strings are: {}", sectionData);
 
     int registrationNumber;
     String sectionCode;
@@ -166,7 +166,7 @@ public class ParseCatalog implements Iterator<Course> {
 
   List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
-    logger.debug("Parsing section times data...");
+    logger.trace("Parsing section times data...");
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
 
@@ -207,10 +207,10 @@ public class ParseCatalog implements Iterator<Course> {
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
         LocalDateTime stopDateTime = LocalDateTime.from(timeParser.parse(
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
-        logger.trace("Begin date: {}, End date: {}", beginDateTime,
-                     stopDateTime);
+        // logger.trace("Begin date: {}, End date: {}", beginDateTime,
+        //             stopDateTime);
         duration = ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
-        logger.trace("Duration of meeting is {} minutes", duration);
+        // logger.trace("Duration of meeting is {} minutes", duration);
       }
 
       LocalDateTime endDate =
@@ -221,7 +221,7 @@ public class ParseCatalog implements Iterator<Course> {
       for (int i = 0; i < beginDays.length() - 1; i += 2) {
         String dayString = beginDays.substring(i, i + 2);
         int dayValue = Utils.parseDayOfWeek(dayString).getValue();
-        logger.trace("day: {} translates to ", dayString, dayValue);
+        // logger.trace("day: {} translates to ", dayString, dayValue);
         daysList[dayValue % 7] = true;
       }
 
@@ -232,7 +232,7 @@ public class ParseCatalog implements Iterator<Course> {
         }
       }
     }
-    logger.trace("Meetings are: {}", meetings);
+    // logger.trace("Meetings are: {}", meetings);
 
     return meetings;
   }

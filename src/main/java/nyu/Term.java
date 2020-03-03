@@ -1,5 +1,7 @@
 package nyu;
 
+import java.util.Objects;
+
 public final class Term {
   public final int semester;
   public final int year;
@@ -78,4 +80,18 @@ public final class Term {
   public String toString() {
     return "Term(" + semesterToString(semester) + ',' + (year + 1900) + ")";
   }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Term term = (Term) o;
+        return semester == term.semester &&
+                year == term.year;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(semester, year);
+    }
 }

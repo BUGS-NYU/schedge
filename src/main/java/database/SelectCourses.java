@@ -33,26 +33,23 @@ public class SelectCourses {
       LoggerFactory.getLogger("database.SelectCourses");
 
   public static List<Course> selectCourses(Term term, List<SubjectCode> codes) {
-    int epoch;
     try (Connection conn = GetConnection.getConnection()) {
-      epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+      int epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
       if (epoch == -1)
         Collections.emptyList();
       return codes.stream()
-          .flatMap(code -> selectCourses(term, epoch, code))
+          .flatMap(code -> selectCourses(conn, term, epoch, code))
           .collect(Collectors.toList());
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private static Stream<Course> selectCourses(Term term, int epoch,
+  public static Stream<Course> selectCourses(Connection conn, Term term, int epoch,
                                               SubjectCode code) {
     Courses COURSES = Tables.COURSES;
     Sections SECTIONS = Tables.SECTIONS;
     Meetings MEETINGS = Tables.MEETINGS;
-
-    try (Connection conn = GetConnection.getConnection()) {
       DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
 
       Stream<Record4<Integer, Timestamp, Long, Timestamp>> meetingRecordStream =
@@ -140,9 +137,6 @@ public class SelectCourses {
           -> sections.get(row.associatedWith).addRecitation(row.getSection()));
 
       return courses.entrySet().stream().map(entry -> entry.getValue());
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private static class CourseSectionRow {

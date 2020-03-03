@@ -5,10 +5,7 @@ import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.security.auth.Subject;
 import nyu.SubjectCode;
-import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -16,8 +13,6 @@ import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
-import utils.JsonMapper;
-import utils.Utils;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse

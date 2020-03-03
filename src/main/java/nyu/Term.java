@@ -14,9 +14,6 @@ public final class Term {
   public Term(String sem, int year) { this(semesterFromString(sem), year); }
 
   public Term(int semester, int year) {
-    assert semester == 2 || semester == 4 || semester == 6 ||
-        semester == 8 : "Semester was invalid: " + semester;
-    assert year >= 1900 : "Year was invalid: " + year;
 
     this.semester = semester;
     this.year = year - 1900;
@@ -25,6 +22,13 @@ public final class Term {
   public static Term fromId(int id) {
     int semester = id % 10;
     return new Term(semester, id / 10 + 1900);
+  }
+
+  public void checkTerm() {
+    if (year < 0)
+      throw new IllegalArgumentException("Year was invalid: " + year);
+    if (semester != 2 && semester != 4 && semester != 6 && semester != 8)
+      throw new IllegalArgumentException("Semester was invalid: " + semester);
   }
 
   public static int semesterFromString(String sem) {
@@ -81,17 +85,18 @@ public final class Term {
     return "Term(" + semesterToString(semester) + ',' + (year + 1900) + ")";
   }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Term term = (Term) o;
-        return semester == term.semester &&
-                year == term.year;
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Term term = (Term)o;
+    return semester == term.semester && year == term.year;
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(semester, year);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(semester, year);
+  }
 }

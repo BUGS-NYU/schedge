@@ -1,16 +1,14 @@
 package cli;
 
-import cli.validation.ValidateCatalogArgs;
-import nyu.Term;
+import cli.templates.OutputFileMixin;
+import cli.templates.SubjectCodeMixin;
+import cli.templates.TermMixin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
-import utils.Utils;
-
-import java.util.stream.Collectors;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
@@ -18,11 +16,11 @@ import java.util.stream.Collectors;
    @Help: Add annotations, comments to code
 */
 @CommandLine.Command(name = "query",
-                     synopsisSubcommandLabel = "(catalog | section | school)",
-                     subcommands = {Query.Catalog.class, Query.Section.class,
-                                    Query.School.class})
+                     synopsisSubcommandLabel = "(catalog | section | school)")
 public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+
+  private static Logger logger = LoggerFactory.getLogger("cli.Query");
 
   @Override
   public void run() {
@@ -37,44 +35,21 @@ public class Query implements Runnable {
       optionListHeading = "%nOptions:%n", header = "Query catalog",
       description =
           "Query catalog based on term, subject codes, or school for one or multiple subjects/schools")
-  static class Catalog implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("query.catalog");
+  public void
+  catalog(@CommandLine.Mixin TermMixin term,
+          @CommandLine.Mixin SubjectCodeMixin subjectCodes,
+          @CommandLine.
+          Option(names = "--batch-size",
+                 description = "batch size if query more than one catalog")
+          Integer batchSize,
+          @CommandLine.Mixin OutputFileMixin outputFile) {
 
-    @CommandLine.Option(names = "--term", description = "term to query from")
-    private Integer term;
-    @CommandLine.
-    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
-    private String semester;
-    @CommandLine.Option(names = "--year", description = "year to scrape from")
-    private Integer year;
-    @CommandLine.
-    Option(names = "--school", description = "school code: UA, UT, UY, etc")
-    private String school;
-    @CommandLine.
-    Option(names = "--subject",
-           description = "subject code: CSCI(Computer Science), MA(Math), etc")
-    private String subject;
-    @CommandLine.
-    Option(names = "--batch-size",
-           description = "batch size if query more than one catalog")
-    private Integer batchSize;
-    @CommandLine.
-    Option(names = "--output-file", description = "output file to write to")
-    private String outputFile;
+    long start = System.nanoTime();
 
-    public void run() {
-      long start = System.nanoTime();
-      ValidateCatalogArgs
-          .validate(term, semester, year, school, subject, batchSize,
-                    outputFile)
-          .andRun((term, list, batchSize)
-                      -> QueryCatalog.queryCatalog(term, list, batchSize)
-                             .collect(Collectors.toList()),
-                  (term, subjectCode)
-                      -> QueryCatalog.queryCatalog(term, subjectCode));
-      long end = System.nanoTime();
-      logger.info((end - start) / 1000000000 + " seconds");
-    }
+    outputFile.writeOutput(QueryCatalog.queryCatalog(
+        term.getTerm(), subjectCodes.getSubjectCodes(), batchSize));
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 
   // @ToDo: Adding query section for multiple sections
@@ -84,45 +59,18 @@ public class Query implements Runnable {
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Query section",
           description = "Query section based on registration number")
-  static class Section implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("query.section");
-
-    @CommandLine.Option(names = "--term", description = "term to query from")
-    private Integer term;
-    @CommandLine.
-    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
-    private String semester;
-    @CommandLine.Option(names = "--year", description = "year to scrape from")
-    private Integer year;
-    @CommandLine.
-    Option(names = "--registration-number",
-           description = "registration number for specific catalog",
-           required = true)
-    private Integer registrationNumber;
-    @CommandLine.
-    Option(names = "--output-file", description = "output file to write to")
-    private String outputFile;
-
-    public void run() {
-      long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(this.semester, year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      Utils.writeToFileOrStdout(
-          outputFile, QuerySection.querySection(term, registrationNumber));
-      long end = System.nanoTime();
-      logger.info((end - start) / 1000000000 + " seconds");
-    }
+  public void
+  section(@CommandLine.Mixin TermMixin term,
+          @CommandLine.
+          Option(names = "--registration-number",
+                 description = "registration number for specific catalog",
+                 required = true) Integer registrationNumber,
+          @CommandLine.Mixin OutputFileMixin outputFile) {
+    long start = System.nanoTime();
+    outputFile.writeOutput(
+        QuerySection.querySection(term.getTerm(), registrationNumber));
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 
   @CommandLine.
@@ -131,38 +79,12 @@ public class Query implements Runnable {
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Query school",
           description = "Query school based on term")
-  static class School implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("query.school");
-
-    @CommandLine.Option(names = "--term", description = "term to query from")
-    private Integer term;
-    @CommandLine.
-    Option(names = "--semester", description = "semester: ja, sp, su, or fa")
-    private String semester;
-    @CommandLine.Option(names = "--year", description = "year to scrape from")
-    private Integer year;
-    @CommandLine.
-    Option(names = "--output-file", description = "output file to write to")
-    private String outputFile;
-
-    public void run() {
-      long start = System.nanoTime();
-      Term term;
-      if (this.term == null && this.semester == null && this.year == null) {
-        throw new IllegalArgumentException(
-            "Must provide at least one. Either --term OR --semester AND --year");
-      } else if (this.term == null) {
-        if (this.semester == null || this.year == null) {
-          throw new IllegalArgumentException(
-              "Must provide both --semester AND --year");
-        }
-        term = new Term(this.semester, year);
-      } else {
-        term = Term.fromId(this.term);
-      }
-      Utils.writeToFileOrStdout(outputFile, QuerySchool.querySchool(term));
-      long end = System.nanoTime();
-      logger.info((end - start) / 1000000000 + " seconds");
-    }
+  public void
+  school(@CommandLine.Mixin TermMixin term,
+         @CommandLine.Mixin OutputFileMixin outputFile) {
+    long start = System.nanoTime();
+    outputFile.writeOutput(QuerySchool.querySchool(term.getTerm()));
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 }

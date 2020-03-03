@@ -27,12 +27,6 @@ services:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
-    labels:
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https" 
-      # Redirects all traffic to HTTPS
-      - "traefik.http.routers.redirs.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.redirs.entrypoints=web"
-      - "traefik.http.routers.redirs.middlewares=redirect-to-https"
 
   api:
     build: .
@@ -40,6 +34,10 @@ services:
       - "8001:80"
     labels:
       - "traefik.enable=true"
+      - "traefik.http.routers.api-insecure.rule=Host(`schedge.torchnyu.com`)"
+      - "traefik.http.routers.api-insecure.entrypoints=web"
+      - "traefik.http.routers.api-insecure.middlewares=redirect"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.api.rule=Host(`schedge.torchnyu.com`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls.certresolver=mytlschallenge"

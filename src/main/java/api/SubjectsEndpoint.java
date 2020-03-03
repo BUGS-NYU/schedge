@@ -36,7 +36,7 @@ class SubjectsEndpoint extends Endpoint {
                 openApiParam.description(
                     "The school provided was not a valid school.");
               })
-        .jsonArray("200", SubjectCode.class,
+        .jsonArray("200", SubjectCode.SubjectMetadata.class,
                    openApiParam -> { openApiParam.description("OK."); });
   }
 

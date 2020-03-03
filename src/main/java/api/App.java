@@ -76,7 +76,7 @@ public class App {
                                            ctx -> {
                                              ctx.contentType("text/html");
                                              ctx.result(docs);
-                                            }));
+                                           }));
 
     new SubjectsEndpoint().addTo(app);
     new SchoolsEndpoint().addTo(app);

@@ -13,7 +13,6 @@ import database.epochs.GetEpoch;
 import database.models.SectionID;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import me.tongfei.progressbar.ProgressBarBuilder;
@@ -26,8 +25,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.query.GetClient;
-import utils.JsonMapper;
-import utils.Utils;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")

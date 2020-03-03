@@ -2,18 +2,13 @@ package cli;
 
 import cli.templates.InputFileMixin;
 import cli.templates.OutputFileMixin;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.models.Course;
-import scraping.models.SectionAttribute;
 import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
-import utils.JsonMapper;
-import utils.Utils;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code

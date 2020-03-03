@@ -1,6 +1,6 @@
 GS,Silver School of Social Work
 UN,Rory Meyers College of Nursing
-UT,Tisch School of the Arts - Graduate
+UT,Tisch School of the Arts
 UA,College of Arts and Science
 GE,Steinhardt School of Culture, Education, and Human Development - Graduate
 GT,Tisch School of the Arts - Graduate

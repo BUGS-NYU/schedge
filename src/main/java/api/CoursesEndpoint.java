@@ -84,7 +84,6 @@ class CoursesEndpoint extends Endpoint {
   @NotNull
   @Override
   Handler getHandler() {
-    Logger logger = LoggerFactory.getLogger("app.courses");
     return ctx -> {
       ctx.contentType("application/json");
 

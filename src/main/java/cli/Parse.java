@@ -1,5 +1,9 @@
 package cli;
 
+import cli.templates.InputFileMixin;
+import cli.templates.OutputFileMixin;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -10,20 +14,17 @@ import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
 import utils.JsonMapper;
 import utils.Utils;
-
-import java.util.List;
-import java.util.Map;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
 @CommandLine.Command(name = "parse",
                      synopsisSubcommandLabel = "(catalog | section | school)",
-                     subcommands = {Parse.Catalog.class, Parse.Section.class,
-                                    Parse.School.class})
+                     subcommands = {Parse.School.class})
 public class Parse implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
+  Logger logger = LoggerFactory.getLogger("cli.Parse");
   @Override
   public void run() {
     throw new CommandLine.ParameterException(spec.commandLine(),
@@ -35,35 +36,16 @@ public class Parse implements Runnable {
           synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Parse catalog",
-          description = "Parse catalog based on term, subject codes, "
+          description = "Parse section based on term, subject codes, "
                         + "or school for one or multiple subjects/schools")
-  public static class Section implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("parse.section");
-
-    @CommandLine.Option(names = "--pretty", defaultValue = "false")
-    private String pretty;
-    @CommandLine.
-    Option(names = "--input-file",
-           description =
-               "intput file to read from. If none provided, read from stdout")
-    private String inputFile;
-    @CommandLine.
-    Option(names = "--output-file",
-           description =
-               "output file to write to. If none provided, write to stdout")
-    private String outputFile;
-
-    @Override
-    public void run() {
-      long start = System.nanoTime();
-      String input = Utils.readFromFileOrStdin(inputFile);
-      SectionAttribute output = ParseSection.parse(input);
-      Utils.writeToFileOrStdout(
-          outputFile, JsonMapper.toJson(output, Boolean.parseBoolean(pretty)));
-      long end = System.nanoTime();
-      long duration = (end - start) / 1000000000;
-      logger.info(duration + " seconds");
-    }
+  public void
+  section(@CommandLine.Mixin InputFileMixin in,
+          @CommandLine.Mixin OutputFileMixin out) {
+    long start = System.nanoTime();
+    out.writeOutput(ParseSection.parse(in.getInput()));
+    long end = System.nanoTime();
+    long duration = (end - start) / 1000000000;
+    logger.info(duration + " seconds");
   }
 
   @CommandLine.Command(
@@ -73,33 +55,14 @@ public class Parse implements Runnable {
       optionListHeading = "%nOptions:%n", header = "Parse catalog",
       description =
           "Parse catalog based on input file. If not provided, read from stdin")
-  public static class Catalog implements Runnable {
-    private Logger logger = LoggerFactory.getLogger("parse.catalog");
-
-    @CommandLine.Option(names = "--pretty", defaultValue = "false")
-    private String pretty;
-    @CommandLine.
-    Option(names = "--input-file",
-           description =
-               "intput file to read from. If none provided, read from stdout")
-    private String inputFile;
-    @CommandLine.
-    Option(names = "--output-file",
-           description =
-               "output file to write to. If none provided, write to stdout")
-    private String outputFile;
-
-    @Override
-    public void run() {
-      long start = System.nanoTime();
-      String input = Utils.readFromFileOrStdin(inputFile);
-      List<Course> output = ParseCatalog.parse(input, null);
-      Utils.writeToFileOrStdout(
-          JsonMapper.toJson(output, Boolean.parseBoolean(pretty)), outputFile);
-      long end = System.nanoTime();
-      long duration = (end - start) / 1000000000;
-      logger.info(duration + " seconds");
-    }
+  public void
+  catalog(@CommandLine.Mixin InputFileMixin in,
+          @CommandLine.Mixin OutputFileMixin out) {
+    long start = System.nanoTime();
+    out.writeOutput(ParseCatalog.parse(in.getInput(), null));
+    long end = System.nanoTime();
+    long duration = (end - start) / 1000000000;
+    logger.info(duration + " seconds");
   }
 
   // @ToDo: Fix this with two options
@@ -122,43 +85,34 @@ public class Parse implements Runnable {
         description =
             "Enter no if not want. If none provided, will read the subject values")
     private String subject;
-    @CommandLine.Option(names = "--pretty", defaultValue = "false")
-    private String pretty;
-    @CommandLine.
-    Option(names = "--input-file",
-           description =
-               "intput file to read from. If none provided, read from stdout")
-    private String inputFile;
-    @CommandLine.
-    Option(names = "--output-file",
-           description =
-               "output file to write to. If none provided, write to stdout")
-    private String outputFile;
+    @CommandLine.Mixin private InputFileMixin inputFile;
+    @CommandLine.Mixin private OutputFileMixin outputFile;
+
+    private static class SchoolSubjectPair {
+      Map<String, String> schools, subjects;
+      SchoolSubjectPair(Map<String, String> subjects,
+                        Map<String, String> schools) {
+        this.schools = schools;
+        this.subjects = subjects;
+      }
+      Map<String, String> getSchools() { return schools; }
+      Map<String, String> getSubjects() { return subjects; }
+    }
 
     @Override
     public void run() {
       long start = System.nanoTime();
-      String input = Utils.readFromFileOrStdin(inputFile);
+      String input = inputFile.getInput();
       if (school == null && subject == null) {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
-        Utils.writeToFileOrStdout(
-            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)),
-            outputFile);
-
-        Utils.writeToFileOrStdout(
-            outputFile,
-            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
+        outputFile.writeOutput(new SchoolSubjectPair(subjects, schools));
       } else if (subject == null) {
         Map<String, String> subjects = ParseSchoolSubjects.parseSubject(input);
-        Utils.writeToFileOrStdout(
-            outputFile,
-            JsonMapper.toJson(subjects, Boolean.parseBoolean(pretty)));
+        outputFile.writeOutput(subjects);
       } else {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
-        Utils.writeToFileOrStdout(
-            outputFile,
-            JsonMapper.toJson(schools, Boolean.parseBoolean(pretty)));
+        outputFile.writeOutput(schools);
       }
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;

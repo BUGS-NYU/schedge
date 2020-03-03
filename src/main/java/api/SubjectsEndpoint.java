@@ -47,10 +47,10 @@ class SubjectsEndpoint extends Endpoint {
       String school = ctx.queryParam("school");
       ctx.contentType("application/json");
       if (school == null) {
-        ctx.json(SubjectCode.allSubjects());
+        ctx.json(SubjectCode.allSubjectInfo());
       } else
         try {
-          ctx.json(SubjectCode.allSubjectsForSchool(school));
+          ctx.json(SubjectCode.allSubjectInfoForSchool(school));
         } catch (IllegalArgumentException e) {
           ctx.json(new ApiError(e.getMessage()));
         }

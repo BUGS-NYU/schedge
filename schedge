@@ -7,7 +7,7 @@ cd "$PROJ_DIR"
 if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   shift
   if [ -f "$PROJ_DIR/.pid" ]; then
-    cat "$PROJ_DIR/.pid" | sudo xargs kill
+    (cat "$PROJ_DIR/.pid" | sudo xargs kill) || exit
     rm "$PROJ_DIR/.pid" 2>/dev/null
   else
     echo "Nothing to kill!"
@@ -23,11 +23,11 @@ fi
 
 if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   if [ -f "$PROJ_DIR/.pid" ]; then
-    cat "$PROJ_DIR/.pid" | sudo xargs kill
+    (cat "$PROJ_DIR/.pid" | sudo xargs kill) || exit
   fi
 
   echo "Running in disowned process as root..."
-  sudo echo -n ""
+  sudo echo -n "" || exit
   sudo -E java -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ 2> "$PROJ_DIR/logging.txt" & disown
   echo "$!" > "$PROJ_DIR/.pid"
   echo "Open logging.txt in order to see logs of the program."

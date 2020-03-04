@@ -8,9 +8,14 @@ import database.GetConnection;
 import database.InsertCourses;
 import database.SelectCourses;
 import database.UpdateSections;
+import database.epochs.CleanEpoch;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetEpoch;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -20,11 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
@@ -111,6 +111,32 @@ public class Database implements Runnable {
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
+  }
+
+  @CommandLine.
+  Command(name = "clean", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Serve data",
+          description = "Clean epochs")
+  public void
+  clean(@CommandLine.Mixin TermMixin termMixin,
+        @CommandLine.Option(names = "--epoch",
+                            description = "The epoch to clean") Integer epoch) {
+    Term term = termMixin.getTermAllowNull();
+    if (epoch == null && term == null) {
+      logger.info("Cleaning incomplete epochs...");
+      CleanEpoch.cleanIncompleteEpochs();
+    } else if (epoch != null && term == null) {
+      logger.info("Cleaning epoch={}...", epoch);
+      CleanEpoch.cleanEpoch(epoch);
+    } else if (term != null && epoch == null) {
+      logger.info("Cleaning epochs for term={}...", term);
+      CleanEpoch.cleanEpoch(term);
+    } else {
+      System.err.println("Term and --epoch are mutually exclusive!");
+      System.exit(1);
+    }
   }
 
   @CommandLine.

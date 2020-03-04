@@ -8,8 +8,8 @@ import nyu.Term;
 import picocli.CommandLine;
 
 public final class RegistrationNumberMixin {
-  private RegistrationNumberMixin() {}
 
+  private RegistrationNumberMixin() {}
 
   @CommandLine.
   Option(names = "--school", description = "school code: UA, UT, UY, etc")
@@ -21,14 +21,18 @@ public final class RegistrationNumberMixin {
   Option(names = "--registration-number", description = "A registration number")
   private Integer registrationNumber;
 
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+
   public List<SubjectCode> getSubjectCodes() {
     if (school == null && subject == null && registrationNumber == null) {
-      throw new IllegalArgumentException(
+      throw new CommandLine.ParameterException(
+          spec.commandLine(),
           "Must provide at least one of --school, --subject, or --registration-number");
     }
     if (school == null) {
       if (subject != null) {
-        throw new IllegalArgumentException(
+        throw new CommandLine.ParameterException(
+            spec.commandLine(),
             "--subject doesn't make sense if school is null");
       }
       return SubjectCode.allSubjects();

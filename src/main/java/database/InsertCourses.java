@@ -77,8 +77,7 @@ public class InsertCourses {
                      .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
                      .fetchOne();
 
-      SectionID state = new SectionID(r.get(SECTIONS.ID),
-                                      r.get(SECTIONS.REGISTRATION_NUMBER));
+      SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID), s.getRegistrationNumber());
       states.add(state);
       insertMeetings(context, state.id, s.getMeetings());
       if (s.getRecitations() != null)
@@ -111,8 +110,7 @@ public class InsertCourses {
                       s.getWaitlistTotal(), associatedWith)
               .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
               .fetchOne();
-      SectionID state = new SectionID(r.get(SECTIONS.ID),
-                                      r.get(SECTIONS.REGISTRATION_NUMBER));
+        SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID), s.getRegistrationNumber());
       states.add(state);
       insertMeetings(context, state.id, s.getMeetings());
     }

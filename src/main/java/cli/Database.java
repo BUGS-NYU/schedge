@@ -77,7 +77,7 @@ public class Database implements Runnable {
                      -> InsertCourses.insertCourses(term, epoch, courseList)
                             .stream())
             .iterator();
-    UpdateSections.updateSections(term, epoch, s, batchSizeSections);
+    UpdateSections.updateSections(term, s, batchSizeSections);
 
     try (Connection conn = GetConnection.getConnection()) {
       CompleteEpoch.completeEpoch(conn, term, epoch);

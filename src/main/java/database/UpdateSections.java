@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.stream.StreamSupport;
+import nyu.SubjectCode;
 import nyu.Term;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -28,35 +29,23 @@ public class UpdateSections {
       LoggerFactory.getLogger("database.UpdateSections");
 
   private static class SaveState {
+    SubjectCode code;
     int id;
     int registrationNumber;
     String data;
-    SaveState(int i, int r, String d) {
+    SaveState(SubjectCode c, int i, int r, String d) {
+      code = c;
       id = i;
       registrationNumber = r;
       data = d;
     }
   }
 
-  public static void updateSections(Term term, int epoch,
-                                    Iterator<SectionID> sectionIds,
+  public static void updateSections(Term term, Iterator<SectionID> sectionIds,
                                     Integer batchSizeNullable) {
     try (Connection conn = GetConnection.getConnection()) {
-      DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
       Sections SECTIONS = Tables.SECTIONS;
-
-      Iterator<SaveState> registrationNumbers =
-          StreamSupport
-              .stream(context.select(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
-                          .from(SECTIONS)
-                          .fetch()
-                          .spliterator(),
-                      false)
-              .map(record
-                   -> new SaveState(record.get(SECTIONS.ID),
-                                    record.get(SECTIONS.REGISTRATION_NUMBER),
-                                    null))
-              .iterator();
 
       Iterator<SaveState> sectionAttributes = new SimpleBatchedFutureEngine<>(
           sectionIds, batchSizeNullable == null ? 40 : batchSizeNullable,
@@ -64,8 +53,8 @@ public class UpdateSections {
               -> querySectionAsync(
                   term, sectionID.registrationNumber,
                   str
-                  -> new SaveState(sectionID.id, sectionID.registrationNumber,
-                                   str)
+                  -> new SaveState(sectionID.subjectCode, sectionID.id,
+                                   sectionID.registrationNumber, str)
 
                       ));
 
@@ -87,6 +76,12 @@ public class UpdateSections {
         }
 
         logger.debug("Adding section information...");
+
+        for (String i : s.getInstructors()) {
+          if (i.equals("Staff"))
+            continue;
+          UpsertInstructor.upsertInstructor(context, save.code, save.id, i);
+        }
 
         context.update(SECTIONS)
             .set(SECTIONS.SECTION_NAME, s.getSectionName())

@@ -3,6 +3,7 @@ package scraping.models;
 import java.util.List;
 import nyu.SectionStatus;
 import nyu.SectionType;
+import nyu.SubjectCode;
 
 public class Section {
   private String sectionName;
@@ -13,8 +14,9 @@ public class Section {
   private List<Meeting> meetings;
   private List<Section> recitations;
   private Integer waitlistTotal;
+   private SubjectCode subjectCode;
 
-  public Section(int registrationNumber, String sectionCode, SectionType type,
+  public Section(SubjectCode code, int registrationNumber, String sectionCode, SectionType type,
                  SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal) {
@@ -23,6 +25,7 @@ public class Section {
           "If the section type isn't a lecture, it can't have recitations!");
     }
 
+    this.subjectCode = code;
     this.waitlistTotal = waitlistTotal;
     this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
@@ -41,4 +44,8 @@ public class Section {
   public List<Meeting> getMeetings() { return meetings; }
   public List<Section> getRecitations() { return recitations; }
   public Integer getWaitlistTotal() { return waitlistTotal; }
+
+    public SubjectCode getSubjectCode() {
+        return subjectCode;
+    }
 }

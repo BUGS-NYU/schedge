@@ -12,7 +12,7 @@ public class Section {
   private String sectionName;
   private int registrationNumber;
   private String sectionCode;
-  private String instructor;
+  private String[] instructors;
   private SectionType type;
   private SectionStatus status;
   private List<Meeting> meetings;
@@ -30,7 +30,7 @@ public class Section {
   private String notes;
   private String prerequisites;
 
-  public Section(int registrationNumber, String sectionCode, String instructor,
+  public Section(int registrationNumber, String sectionCode, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
 
@@ -41,7 +41,7 @@ public class Section {
 
     this.registrationNumber = registrationNumber;
     this.sectionCode = sectionCode;
-    this.instructor = instructor;
+    this.instructors = instructors;
     this.type = type;
     this.status = status;
     this.meetings = meetings;
@@ -49,7 +49,7 @@ public class Section {
     this.waitlistTotal = waitlistTotal;
   }
 
-  public Section(int registrationNumber, String sectionCode, String instructor,
+  public Section(int registrationNumber, String sectionCode, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal, String campus, String description,
@@ -65,7 +65,7 @@ public class Section {
     this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
     this.sectionCode = sectionCode;
-    this.instructor = instructor;
+    this.instructors = instructors;
     this.type = type;
     this.status = status;
     this.meetings = meetings;
@@ -85,7 +85,7 @@ public class Section {
 
   public @NotNull String getSectionCode() { return sectionCode; }
 
-  public @NotNull String getInstructor() { return instructor; }
+  public @NotNull String[] getInstructors() { return instructors; }
 
   public @NotNull SectionType getType() { return type; }
 
@@ -159,7 +159,7 @@ public class Section {
     return registrationNumber == section.registrationNumber &&
         Objects.equals(sectionName, section.sectionName) &&
         sectionCode.equals(section.sectionCode) &&
-        instructor.equals(section.instructor) && type == section.type &&
+        instructors.equals(section.instructors) && type == section.type &&
         status == section.status &&
         Objects.equals(waitlistTotal, section.waitlistTotal) &&
         Objects.equals(campus, section.campus) &&
@@ -175,7 +175,7 @@ public class Section {
   @Override
   public int hashCode() {
     return Objects.hash(sectionName, registrationNumber, sectionCode,
-                        instructor, type, status, waitlistTotal, campus,
+                        instructors, type, status, waitlistTotal, campus,
                         description, minUnits, maxUnits, instructionMode,
                         grading, location, prerequisites);
   }

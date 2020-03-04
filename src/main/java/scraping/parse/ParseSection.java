@@ -78,14 +78,14 @@ public class ParseSection {
           e.child(1).text().contains("Room")) {
         continue;
       }
-      map.put(e.child(0).text(), e.child(1).text());
+      map.put(e.child(0).text(), e.child(1).wholeText().trim());
     }
     return map;
   }
 
   public static @NotNull SectionAttribute
   parsingElements(Map<String, String> secData, String courseName, String link) {
-    String units = secData.get("Units");
+    String units = secData.get("Units").trim();
     float minUnits = 0, maxUnits;
     if (units.contains("-")) {
       minUnits = Float.parseFloat(units.split(" - ")[0]);

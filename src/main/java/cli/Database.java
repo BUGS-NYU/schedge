@@ -86,8 +86,6 @@ public class Database implements Runnable {
     }
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
-    GetClient.close();
-    GetConnection.close();
   }
 
   @CommandLine.Command(
@@ -112,7 +110,6 @@ public class Database implements Runnable {
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
-    GetConnection.close();
   }
 
   @CommandLine.

@@ -26,7 +26,7 @@ public class ScrapeSection {
    */
   public static Stream<SectionAttribute>
   scrapeFromSection(Term term, List<SubjectCode> subjectCodes,
-                    Integer batchSize) {
+                    Integer batchSize, Integer batchSizeSections) {
     return QuerySection
         .querySections(
             term,
@@ -34,7 +34,7 @@ public class ScrapeSection {
                 QueryCatalog.queryCatalog(term, subjectCodes, batchSize)
                     .collect(Collectors.toList())
                     .toString()),
-            batchSize)
+                batchSizeSections)
         .map(data -> ParseSection.parse(data));
   }
 

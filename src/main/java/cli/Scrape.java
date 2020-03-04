@@ -5,6 +5,7 @@ import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
 import java.util.List;
+import java.util.stream.Collectors;
 import nyu.SubjectCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
 import scraping.parse.ParseSchoolSubjects;
+import scraping.query.GetClient;
 import scraping.query.QuerySchool;
 
 /*
@@ -42,9 +44,13 @@ public class Scrape implements Runnable {
   sections(@CommandLine.Mixin TermMixin termMixin,
            @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
            @CommandLine.
-           Option(names = "--batch-size",
+           Option(names = "--batch-size-catalog",
                   description = "batch size if query more than one catalog")
            Integer batchSize,
+           @CommandLine.
+           Option(names = "--batch-size-sections",
+                  description = "batch size if query more than one catalog")
+           Integer batchSizeSections,
            @CommandLine.Mixin OutputFileMixin outputFileMixin) {
     long start = System.nanoTime();
     List<SubjectCode> subjectCodes = registrationNumberMixin.getSubjectCodes();
@@ -53,8 +59,11 @@ public class Scrape implements Runnable {
           termMixin.getTerm(),
           registrationNumberMixin.getRegistrationNumber()));
     } else {
-      outputFileMixin.writeOutput(ScrapeSection.scrapeFromSection(
-          termMixin.getTerm(), subjectCodes, batchSize));
+      outputFileMixin.writeOutput(
+          ScrapeSection
+              .scrapeFromSection(termMixin.getTerm(), subjectCodes, batchSize,
+                                 batchSizeSections)
+              .collect(Collectors.toList()));
     }
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
@@ -77,8 +86,11 @@ public class Scrape implements Runnable {
           Integer batchSize,
           @CommandLine.Mixin OutputFileMixin outputFileMixin) {
     long start = System.nanoTime();
-    outputFileMixin.writeOutput(ScrapeCatalog.scrapeFromCatalog(
-        termMixin.getTerm(), subjectCodeMixin.getSubjectCodes(), batchSize));
+    outputFileMixin.writeOutput(
+        ScrapeCatalog
+            .scrapeFromCatalog(termMixin.getTerm(),
+                               subjectCodeMixin.getSubjectCodes(), batchSize)
+            .collect(Collectors.toList()));
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

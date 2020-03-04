@@ -1,7 +1,8 @@
 package scraping.models;
 
-import javax.validation.constraints.NotNull;
 import nyu.SectionStatus;
+
+import javax.validation.constraints.NotNull;
 
 // Duplicate variables can be removed later on
 

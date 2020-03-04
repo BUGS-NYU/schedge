@@ -6,7 +6,6 @@ import cli.templates.TermMixin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.query.GetClient;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;

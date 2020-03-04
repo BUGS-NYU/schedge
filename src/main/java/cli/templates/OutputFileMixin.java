@@ -1,10 +1,5 @@
 package cli.templates;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import nyu.SubjectCode;
-import nyu.Term;
 import picocli.CommandLine;
 import utils.JsonMapper;
 import utils.Utils;

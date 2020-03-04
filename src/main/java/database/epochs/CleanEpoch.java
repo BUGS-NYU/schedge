@@ -20,7 +20,7 @@ public final class CleanEpoch {
 
   public static void cleanEpoch(Term term) {
     try (Connection conn = GetConnection.getConnection()) {
-      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
+      DSLContext context = DSL.using(conn, GetConnection.DIALECT);
       Epochs EPOCHS = Tables.EPOCHS;
       context.deleteFrom(EPOCHS)
           .where(EPOCHS.TERM_ID.eq(term.getId()))

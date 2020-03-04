@@ -36,7 +36,7 @@ public class Query implements Runnable {
       description =
           "Query catalog based on term, subject codes, or school for one or multiple subjects/schools")
   public void
-  catalog(@CommandLine.Mixin TermMixin term,
+  catalog(@CommandLine.Mixin TermMixin termMixin,
           @CommandLine.Mixin SubjectCodeMixin subjectCodes,
           @CommandLine.
           Option(names = "--batch-size",
@@ -47,7 +47,7 @@ public class Query implements Runnable {
     long start = System.nanoTime();
 
     outputFile.writeOutput(QueryCatalog.queryCatalog(
-        term.getTerm(), subjectCodes.getSubjectCodes(), batchSize));
+            termMixin.getTerm(), subjectCodes.getSubjectCodes(), batchSize));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -60,7 +60,7 @@ public class Query implements Runnable {
           optionListHeading = "%nOptions:%n", header = "Query section",
           description = "Query section based on registration number")
   public void
-  section(@CommandLine.Mixin TermMixin term,
+  section(@CommandLine.Mixin TermMixin termMixin,
           @CommandLine.
           Option(names = "--registration-number",
                  description = "registration number for specific catalog",
@@ -68,7 +68,7 @@ public class Query implements Runnable {
           @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
     outputFile.writeOutput(
-        QuerySection.querySection(term.getTerm(), registrationNumber));
+        QuerySection.querySection(termMixin.getTerm(), registrationNumber));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -80,10 +80,10 @@ public class Query implements Runnable {
           optionListHeading = "%nOptions:%n", header = "Query school",
           description = "Query school based on term")
   public void
-  school(@CommandLine.Mixin TermMixin term,
+  school(@CommandLine.Mixin TermMixin termMixin,
          @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
-    outputFile.writeOutput(QuerySchool.querySchool(term.getTerm()));
+    outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

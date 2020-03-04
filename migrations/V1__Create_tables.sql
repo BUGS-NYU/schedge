@@ -75,3 +75,5 @@ CREATE TABLE meetings (
 -- CREATE UNIQUE INDEX courses_idx ON courses (term_id, school, subject, dept_course_id);
 -- CREATE UNIQUE INDEX section_idx ON sections (course_id, section_code);
 CREATE INDEX sections_associated_with ON sections (associated_with);
+CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
+CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);

@@ -29,6 +29,7 @@ public class GetConnection {
       config.setPassword("");
       config.setJdbcUrl("jdbc:sqlite:" + System.getProperty("user.dir") +
                         "/local/tables.db");
+      config.addDataSourceProperty("cachePrepStmts", "false");
       dataSource = new HikariDataSource(config);
     }
 

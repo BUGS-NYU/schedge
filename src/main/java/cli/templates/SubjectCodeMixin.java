@@ -10,7 +10,6 @@ import picocli.CommandLine;
 public final class SubjectCodeMixin {
   private SubjectCodeMixin() {}
 
-
   @CommandLine.
   Option(names = "--school", description = "school code: UA, UT, UY, etc")
   private String school;
@@ -18,12 +17,13 @@ public final class SubjectCodeMixin {
   Option(names = "--subject", description = "subject code: CSCI, MATH, etc")
   private String subject;
 
-
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   public List<SubjectCode> getSubjectCodes() {
     if (school == null) {
       if (subject != null) {
-        throw new IllegalArgumentException(
+        throw new CommandLine.ParameterException(
+            spec.commandLine(),
             "--subject doesn't make sense if school is null");
       }
       return SubjectCode.allSubjects();

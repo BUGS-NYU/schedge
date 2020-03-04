@@ -91,7 +91,7 @@ public class ParseSection {
 
   public static @NotNull SectionAttribute
   parsingElements(Map<String, String> secData, String courseName, String link) {
-    String units = secData.get("Units").trim();
+    String units = secData.get("Units");
     float minUnits = 0, maxUnits;
     if (units.contains("-")) {
       minUnits = Float.parseFloat(units.split(" - ")[0]);
@@ -105,13 +105,15 @@ public class ParseSection {
 
     parseBuilding(secData, link);
 
+    String[] instructors = secData.get("Instructor(s)").split(", *\\n *\\n");
+
     return new SectionAttribute(
         courseName.equals("") ? null : courseName,
         Integer.parseInt(secData.get("Class Number")),
         SectionStatus.parseStatus(secData.get("Status")),
         secData.get("Location"), secData.get("Description"),
-        secData.get("Instruction Mode"), secData.get("Instructor(s)"), minUnits,
-        maxUnits, secData.get("Grading"), secData.getOrDefault("Notes", null),
+        secData.get("Instruction Mode"), instructors, minUnits, maxUnits,
+        secData.get("Grading"), secData.getOrDefault("Notes", null),
         secData.getOrDefault("Enrollment Requirements", null),
         secData.get("Room"));
   }

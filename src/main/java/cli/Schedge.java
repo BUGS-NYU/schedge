@@ -8,9 +8,12 @@ import picocli.CommandLine;
 */
 @CommandLine.Command(name = "schedge")
 public class Schedge {
+
+  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+
   public Schedge(String[] args) {
     if (args.length < 1) {
-      throw new IllegalArgumentException(
+      throw new CommandLine.ParameterException(spec.commandLine(),
           "Please provide command query, parse, scrape OR db");
     } else {
       new CommandLine(this)

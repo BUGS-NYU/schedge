@@ -1,11 +1,21 @@
 package database;
 
+import static org.jooq.impl.DSL.coalesce;
+import static org.jooq.impl.DSL.groupConcat;
+
 import api.models.Course;
 import api.models.Meeting;
 import api.models.Section;
 import database.epochs.LatestCompleteEpoch;
 import database.generated.Tables;
 import database.generated.tables.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
@@ -17,17 +27,6 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.groupConcat;
 
 public class SelectCourses {
 
@@ -107,15 +106,14 @@ public class SelectCourses {
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
-                    groupConcat(coalesce(INSTRUCTORS.NAME, ""), ";")
+                    groupConcat(
+                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
                         .as("section_instructors"))
             .from(COURSES)
             .leftJoin(SECTIONS)
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .leftJoin(INSTRUCTORS)
-            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID))
             .where(COURSES.TERM_ID.eq(term.getId()), COURSES.EPOCH.eq(epoch),
                    COURSES.SCHOOL.eq(code.school),
                    COURSES.SUBJECT.eq(code.subject))

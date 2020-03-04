@@ -25,7 +25,6 @@ CREATE TABLE instructors (
   subject             varchar(6)                  NOT NULL,
   rmp_rating          float,
   rmp_url             text,
-  rmp_most_helpful    text,
   PRIMARY KEY (id)
 );
 

@@ -113,7 +113,7 @@ public class ParseCatalog implements Iterator<Course> {
       throw e;
     }
     return new SectionMetadata(
-        registrationNumber, sectionCode, type, sectionData.get("Instructor"),
+        registrationNumber, sectionCode, type,
         SectionStatus.parseStatus(sectionData.get("Status")), meetings,
         sectionData.getOrDefault("Topic", ""),
         sectionData.containsKey("Wait List Total")
@@ -296,20 +296,18 @@ public class ParseCatalog implements Iterator<Course> {
     private int registrationNumber;
     private String sectionCode;
     private SectionType type;
-    private String instructor;
     private SectionStatus status;
     private List<Meeting> meetings;
     private String sectionName;
     private Integer waitlistTotal;
 
     public SectionMetadata(int registrationNumber, String sectionCode,
-                           SectionType type, String instructor,
+                           SectionType type,
                            SectionStatus status, List<Meeting> meetings,
                            String sectionName, Integer waitlistTotal) {
       this.registrationNumber = registrationNumber;
       this.sectionCode = sectionCode;
       this.type = type;
-      this.instructor = instructor;
       this.status = status;
       this.meetings = meetings;
       this.sectionName = sectionName;
@@ -349,13 +347,13 @@ public class ParseCatalog implements Iterator<Course> {
     }
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
-      return new Section(registrationNumber, sectionCode, instructor,
+      return new Section(registrationNumber, sectionCode,
                          SectionType.LEC, status, meetings, recitations,
                          sectionName, waitlistTotal);
     }
 
     Section toSectionWithoutRecitations() {
-      return new Section(registrationNumber, sectionCode, instructor, type,
+      return new Section(registrationNumber, sectionCode, type,
                          status, meetings, null, sectionName, waitlistTotal);
     }
   }

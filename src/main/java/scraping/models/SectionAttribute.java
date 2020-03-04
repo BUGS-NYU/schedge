@@ -9,7 +9,7 @@ import nyu.SectionStatus;
  * SectionAttribute to holds data for scraping catalogs' sections
  */
 public class SectionAttribute {
-  private String courseName;
+  private String sectionName;
   private int registrationNumber; // dup
   private SectionStatus status;   // dup
   private String campus;
@@ -23,13 +23,13 @@ public class SectionAttribute {
   private String notes;
   private String prerequisites;
 
-  public SectionAttribute(String courseName, int registrationNumber,
+  public SectionAttribute(String sectionName, int registrationNumber,
                           SectionStatus status, String campus,
                           String description, String instructorMode,
                           String instructor, Float minUnits, Float maxUnits,
                           String grading, String notes, String prerequisites,
                           String location) {
-    this.courseName = courseName;
+    this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
     this.status = status;
     this.campus = campus;
@@ -44,7 +44,7 @@ public class SectionAttribute {
     this.location = location;
   }
 
-  public String getCourseName() { return courseName; }
+  public String getSectionName() { return sectionName; }
 
   public @NotNull int getRegistrationNumber() { return registrationNumber; }
 

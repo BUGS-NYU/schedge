@@ -1,13 +1,13 @@
 package database;
 
+import static org.jooq.impl.DSL.*;
+
 import api.models.Course;
 import api.models.Meeting;
 import api.models.Section;
 import database.epochs.LatestCompleteEpoch;
 import database.generated.Tables;
-import database.generated.tables.Courses;
-import database.generated.tables.Meetings;
-import database.generated.tables.Sections;
+import database.generated.tables.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -19,10 +19,7 @@ import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
 import nyu.Term;
-import org.jooq.DSLContext;
-import org.jooq.Record;
-import org.jooq.Record4;
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,98 +42,121 @@ public class SelectCourses {
     }
   }
 
-  public static Stream<Course> selectCourses(Connection conn, Term term, int epoch,
-                                              SubjectCode code) {
+  public static Stream<Course> selectCourses(Connection conn, Term term,
+                                             int epoch, SubjectCode code) {
     Courses COURSES = Tables.COURSES;
     Sections SECTIONS = Tables.SECTIONS;
     Meetings MEETINGS = Tables.MEETINGS;
-      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
+    Instructors INSTRUCTORS = Tables.INSTRUCTORS;
+    IsTeachingSection IS_TEACHING_SECTION = Tables.IS_TEACHING_SECTION;
 
-      Stream<Record4<Integer, Timestamp, Long, Timestamp>> meetingRecordStream =
-          StreamSupport.stream(context
-                                   .select(MEETINGS.SECTION_ID,
-                                           MEETINGS.BEGIN_DATE,
-                                           MEETINGS.DURATION, MEETINGS.END_DATE)
-                                   .from(MEETINGS)
-                                   .innerJoin(SECTIONS)
-                                   .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
-                                   .innerJoin(COURSES)
-                                   .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-                                   .where(COURSES.TERM_ID.eq(term.getId()),
-                                          COURSES.EPOCH.eq(epoch),
-                                          COURSES.SCHOOL.eq(code.school),
-                                          COURSES.SUBJECT.eq(code.subject))
-                                   .groupBy(MEETINGS.SECTION_ID)
-                                   .fetch()
-                                   .spliterator(),
-                               false);
+    DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
 
-      HashMap<Integer, ArrayList<Meeting>> meetingRows =
-          meetingRecordStream.reduce(
-              new HashMap<>(),
-              (map, r)
-                  -> {
-                Meeting m = new Meeting(r.component2().toLocalDateTime(),
-                                        r.component3(),
-                                        r.component4().toLocalDateTime());
-                if (map.containsKey(r.component1())) {
-                  map.get(r.component1()).add(m);
+    Stream<Record4<Integer, Timestamp, Long, Timestamp>> meetingRecordStream =
+        StreamSupport.stream(
+            context
+                .select(MEETINGS.SECTION_ID, MEETINGS.BEGIN_DATE,
+                        MEETINGS.DURATION, MEETINGS.END_DATE)
+                .from(MEETINGS)
+                .innerJoin(SECTIONS)
+                .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
+                .innerJoin(COURSES)
+                .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
+                .where(COURSES.TERM_ID.eq(term.getId()),
+                       COURSES.EPOCH.eq(epoch), COURSES.SCHOOL.eq(code.school),
+                       COURSES.SUBJECT.eq(code.subject))
+                .groupBy(MEETINGS.SECTION_ID)
+                .fetch()
+                .spliterator(),
+            false);
+
+    HashMap<Integer, ArrayList<Meeting>> meetingRows =
+        meetingRecordStream.reduce(
+            new HashMap<>(),
+            (map, r)
+                -> {
+              Meeting m =
+                  new Meeting(r.component2().toLocalDateTime(), r.component3(),
+                              r.component4().toLocalDateTime());
+              if (map.containsKey(r.component1())) {
+                map.get(r.component1()).add(m);
+              } else {
+                ArrayList<Meeting> meetings = new ArrayList<>();
+                meetings.add(m);
+                map.put(r.component1(), meetings);
+              }
+              return map;
+            },
+            (map1, map2) -> {
+              for (Map.Entry<Integer, ArrayList<Meeting>> entry :
+                   map1.entrySet()) {
+                if (map2.containsKey(entry.getKey())) {
+                  map2.get(entry.getKey()).addAll(entry.getValue());
                 } else {
-                  ArrayList<Meeting> meetings = new ArrayList<>();
-                  meetings.add(m);
-                  map.put(r.component1(), meetings);
+                  map2.put(entry.getKey(), entry.getValue());
                 }
-                return map;
-              },
-              (map1, map2) -> {
-                for (Map.Entry<Integer, ArrayList<Meeting>> entry :
-                     map1.entrySet()) {
-                  if (map2.containsKey(entry.getKey())) {
-                    map2.get(entry.getKey()).addAll(entry.getValue());
-                  } else {
-                    map2.put(entry.getKey(), entry.getValue());
-                  }
-                }
-                return map2;
-              });
+              }
+              return map2;
+            });
 
-      HashMap<Integer, Section> sections = new HashMap<>();
-      HashMap<Integer, Course> courses = new HashMap<>();
-      List<CourseSectionRow> recitationRecords =
-          StreamSupport
-              .stream(context.select()
-                          .from(COURSES)
-                          .innerJoin(SECTIONS)
-                          .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
-                          .where(COURSES.TERM_ID.eq(term.getId()),
-                                 COURSES.EPOCH.eq(epoch),
-                                 COURSES.SCHOOL.eq(code.school),
-                                 COURSES.SUBJECT.eq(code.subject))
-                          .fetch()
-                          .spliterator(),
-                      false)
-              .map(r -> {
-                CourseSectionRow row = new CourseSectionRow(r, meetingRows);
+    Result<Record> records =
+        context
+            .select(COURSES.asterisk(), SECTIONS.asterisk(),
+                    groupConcat(coalesce(INSTRUCTORS.NAME, ""), ";")
+                        .as("section_instructors"))
+            .from(COURSES)
+            .leftJoin(SECTIONS)
+            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
+            .leftJoin(IS_TEACHING_SECTION)
+            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
+            .leftJoin(INSTRUCTORS)
+            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID))
+            .where(COURSES.TERM_ID.eq(term.getId()), COURSES.EPOCH.eq(epoch),
+                   COURSES.SCHOOL.eq(code.school),
+                   COURSES.SUBJECT.eq(code.subject))
+            .groupBy(SECTIONS.ID)
+            .fetch();
+    //      context
+    //        .select(COURSES.asterisk(),SECTIONS.asterisk(),
+    //                groupConcat(coalesce(INSTRUCTORS.NAME, ""),
+    //                ";").as("section_instructors"))
+    //            .from(COURSES).leftJoin(SECTIONS)
+    //            .on(SECTIONS.COURSE_ID.eq(COURSES.ID)).leftJoin(IS_TEACHING_SECTION)
+    //            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
+    //            .leftJoin(INSTRUCTORS)
+    //            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID)).where(COURSES.TERM_ID.eq(term.getId()),
+    //            COURSES.EPOCH.eq(epoch),
+    //            COURSES.SCHOOL.eq(code.school),
+    //            COURSES.SUBJECT.eq(code.subject))
+    //        .groupBy(SECTIONS.ID).fetch();
 
-                if (!courses.containsKey(row.courseId))
-                  courses.put(row.courseId,
-                              new Course(row.name, row.deptCourseId,
-                                         row.subject, new ArrayList<>()));
-                if (row.associatedWith == null) {
-                  Section s = row.getSection();
-                  sections.put(row.sectionId, s);
-                  courses.get(row.courseId).getSections().add(s);
-                }
-                return row;
-              })
-              .filter(i -> i.associatedWith != null)
-              .collect(Collectors.toList());
+    HashMap<Integer, Section> sections = new HashMap<>();
+    HashMap<Integer, Course> courses = new HashMap<>();
 
-      recitationRecords.stream().forEach(
-          row
-          -> sections.get(row.associatedWith).addRecitation(row.getSection()));
+    List<CourseSectionRow> recitationRecords =
+        StreamSupport.stream(records.spliterator(), false)
+            .map(r -> {
+              CourseSectionRow row = new CourseSectionRow(r, meetingRows);
 
-      return courses.entrySet().stream().map(entry -> entry.getValue());
+              if (!courses.containsKey(row.courseId))
+                courses.put(row.courseId,
+                            new Course(row.name, row.deptCourseId, row.subject,
+                                       new ArrayList<>()));
+              if (row.associatedWith == null) {
+                Section s = row.getSection();
+                sections.put(row.sectionId, s);
+                courses.get(row.courseId).getSections().add(s);
+              }
+              return row;
+            })
+            .filter(i -> i.associatedWith != null)
+            .collect(Collectors.toList());
+
+    recitationRecords.stream().forEach(
+        row
+        -> sections.get(row.associatedWith).addRecitation(row.getSection()));
+
+    return courses.entrySet().stream().map(entry -> entry.getValue());
   }
 
   private static class CourseSectionRow {
@@ -148,7 +168,7 @@ public class SelectCourses {
     final int sectionId;
     final int registrationNumber;
     final String sectionCode;
-    final String instructor;
+    final String[] instructors;
     final SectionType sectionType;
     final SectionStatus sectionStatus;
     final Integer associatedWith;
@@ -170,6 +190,7 @@ public class SelectCourses {
                      HashMap<Integer, ArrayList<Meeting>> meetingRows) {
       Courses COURSES = Tables.COURSES;
       Sections SECTIONS = Tables.SECTIONS;
+      Instructors INSTRUCTORS = Tables.INSTRUCTORS;
       courseId = row.get(COURSES.ID);
       name = row.get(COURSES.NAME);
       subject =
@@ -179,7 +200,9 @@ public class SelectCourses {
       sectionId = row.get(SECTIONS.ID);
       registrationNumber = row.get(SECTIONS.REGISTRATION_NUMBER);
       sectionCode = row.get(SECTIONS.SECTION_CODE);
-      instructor = row.get(SECTIONS.INSTRUCTOR);
+      String instructorString = (String)row.get("section_instructors");
+      instructors = instructorString.equals("") ? new String[] {"Staff"}
+                                                : instructorString.split(";");
       sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
       sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
       associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
@@ -198,7 +221,7 @@ public class SelectCourses {
     }
 
     public Section getSection() {
-      return new Section(registrationNumber, sectionCode, instructor,
+      return new Section(registrationNumber, sectionCode, instructors,
                          sectionType, sectionStatus, meetings, null,
                          sectionName, waitlistTotal, campus, description,
                          minUnits, maxUnits, instructionMode, grading, location,

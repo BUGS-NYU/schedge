@@ -1,23 +1,21 @@
 package scraping.models;
 
+import java.util.List;
 import nyu.SectionStatus;
 import nyu.SectionType;
-
-import java.util.List;
 
 public class Section {
   private String sectionName;
   private int registrationNumber;
   private String sectionCode;
-  private String instructor;
   private SectionType type;
   private SectionStatus status;
   private List<Meeting> meetings;
   private List<Section> recitations;
   private Integer waitlistTotal;
 
-  public Section(int registrationNumber, String sectionCode, String instructor,
-                 SectionType type, SectionStatus status, List<Meeting> meetings,
+  public Section(int registrationNumber, String sectionCode, SectionType type,
+                 SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String sectionName,
                  Integer waitlistTotal) {
     if (type != SectionType.LEC && recitations != null) {
@@ -29,7 +27,6 @@ public class Section {
     this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
     this.sectionCode = sectionCode;
-    this.instructor = instructor;
     this.type = type;
     this.status = status;
     this.meetings = meetings;
@@ -39,7 +36,6 @@ public class Section {
   public String getSectionName() { return sectionName; }
   public int getRegistrationNumber() { return registrationNumber; }
   public String getSectionCode() { return sectionCode; }
-  public String getInstructor() { return instructor; }
   public SectionType getType() { return type; }
   public SectionStatus getStatus() { return status; }
   public List<Meeting> getMeetings() { return meetings; }

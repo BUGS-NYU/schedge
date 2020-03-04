@@ -24,7 +24,6 @@ CREATE TABLE sections (
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
   section_code        varchar(5)                  NOT NULL,
-  instructor          text                        NOT NULL,
   section_type        integer                     NOT NULL,
   section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),

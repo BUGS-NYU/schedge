@@ -15,8 +15,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
+
+import me.tongfei.progressbar.*;
 import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
 import nyu.SubjectCode;
 import nyu.Term;
@@ -67,11 +67,11 @@ public class Database implements Runnable {
 
     List<SubjectCode> allSubjects = SubjectCode.allSubjects();
     ProgressBarBuilder barBuilder =
-        new ProgressBarBuilder().setStyle(ProgressBarStyle.ASCII);
+        new ProgressBarBuilder().setStyle(ProgressBarStyle.ASCII).setConsumer(new DelegatingProgressBarConsumer(System.out::println));
     Iterator<SectionID> s =
         ScrapeCatalog
             .scrapeFromCatalog(
-                term, new ProgressBarWrappedIterable<>(allSubjects, barBuilder),
+                term, ProgressBar.wrap(allSubjects, barBuilder),
                 batchSize)
             .flatMap(courseList
                      -> InsertCourses.insertCourses(term, epoch, courseList)
@@ -94,7 +94,7 @@ public class Database implements Runnable {
       parameterListHeading = "%nParameters:%n",
       optionListHeading = "%nOptions:%n", header = "Query section",
       description =
-          "QUery section based on term and registration number, OR school and subject from db")
+          "Query section based on term and registration number, OR school and subject from db")
   public void
   query(@CommandLine.Mixin TermMixin termMixin,
         @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,

@@ -58,6 +58,7 @@ CREATE TABLE is_teaching_section (
   id                  integer                     NOT NULL,
   instructor_id       integer                     NOT NULL,
   section_id          integer                     NOT NULL,
+  instructor_name     varchar(64)                 NOT NULL,
   PRIMARY KEY (id)
 );
 

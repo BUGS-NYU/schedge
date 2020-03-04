@@ -38,8 +38,9 @@ public final class UpsertInstructor {
 
     context.insertInto(IS_TEACHING_SECTION)
         .columns(IS_TEACHING_SECTION.INSTRUCTOR_ID,
-                 IS_TEACHING_SECTION.SECTION_ID)
-        .values(instructorId, sectionId)
+                 IS_TEACHING_SECTION.SECTION_ID,
+                 IS_TEACHING_SECTION.INSTRUCTOR_NAME)
+        .values(instructorId, sectionId, instructor)
         .execute();
   }
 }

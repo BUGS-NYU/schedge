@@ -11,6 +11,13 @@ import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
 import utils.Utils;
 
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 /**
  * Parses a section string.
  *

@@ -1,13 +1,23 @@
 package database;
 
-import static org.jooq.impl.DSL.*;
-
 import api.models.Course;
 import api.models.Meeting;
 import api.models.Section;
 import database.epochs.LatestCompleteEpoch;
 import database.generated.Tables;
 import database.generated.tables.*;
+import nyu.SectionStatus;
+import nyu.SectionType;
+import nyu.SubjectCode;
+import nyu.Term;
+import org.jooq.DSLContext;
+import org.jooq.Record;
+import org.jooq.Record4;
+import org.jooq.Result;
+import org.jooq.impl.DSL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -15,14 +25,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import nyu.SectionStatus;
-import nyu.SectionType;
-import nyu.SubjectCode;
-import nyu.Term;
-import org.jooq.*;
-import org.jooq.impl.DSL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import static org.jooq.impl.DSL.coalesce;
+import static org.jooq.impl.DSL.groupConcat;
 
 public class SelectCourses {
 
@@ -50,7 +55,7 @@ public class SelectCourses {
     Instructors INSTRUCTORS = Tables.INSTRUCTORS;
     IsTeachingSection IS_TEACHING_SECTION = Tables.IS_TEACHING_SECTION;
 
-    DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
+    DSLContext context = DSL.using(conn, GetConnection.DIALECT);
 
     Stream<Record4<Integer, Timestamp, Long, Timestamp>> meetingRecordStream =
         StreamSupport.stream(

@@ -3,12 +3,9 @@ package database;
 import database.generated.Tables;
 import database.generated.tables.Instructors;
 import database.generated.tables.IsTeachingSection;
-import java.sql.Connection;
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 public final class UpsertInstructor {
 

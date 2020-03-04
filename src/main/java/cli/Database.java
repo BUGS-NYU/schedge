@@ -11,20 +11,20 @@ import database.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetEpoch;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
-
-import me.tongfei.progressbar.*;
-import me.tongfei.progressbar.wrapped.ProgressBarWrappedIterable;
+import me.tongfei.progressbar.ProgressBar;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
-import scraping.query.GetClient;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
@@ -67,12 +67,13 @@ public class Database implements Runnable {
 
     List<SubjectCode> allSubjects = SubjectCode.allSubjects();
     ProgressBarBuilder barBuilder =
-        new ProgressBarBuilder().setStyle(ProgressBarStyle.ASCII).setConsumer(new DelegatingProgressBarConsumer(System.out::println));
+        new ProgressBarBuilder()
+            .setStyle(ProgressBarStyle.ASCII)
+            .setConsumer(new ConsoleProgressBarConsumer(System.out));
     Iterator<SectionID> s =
         ScrapeCatalog
-            .scrapeFromCatalog(
-                term, ProgressBar.wrap(allSubjects, barBuilder),
-                batchSize)
+            .scrapeFromCatalog(term, ProgressBar.wrap(allSubjects, barBuilder),
+                               batchSize)
             .flatMap(courseList
                      -> InsertCourses.insertCourses(term, epoch, courseList)
                             .stream())

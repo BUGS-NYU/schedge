@@ -9,8 +9,6 @@ import io.swagger.v3.oas.models.examples.Example;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;

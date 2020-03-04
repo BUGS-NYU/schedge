@@ -1,24 +1,23 @@
 package database;
 
-import static scraping.query.QuerySection.querySectionAsync;
-
 import database.generated.Tables;
 import database.generated.tables.Sections;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.stream.StreamSupport;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.SimpleBatchedFutureEngine;
 import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+
+import static scraping.query.QuerySection.querySectionAsync;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -44,7 +43,7 @@ public class UpdateSections {
   public static void updateSections(Term term, Iterator<SectionID> sectionIds,
                                     Integer batchSizeNullable) {
     try (Connection conn = GetConnection.getConnection()) {
-      DSLContext context = DSL.using(conn, SQLDialect.SQLITE);
+      DSLContext context = DSL.using(conn, GetConnection.DIALECT);
       Sections SECTIONS = Tables.SECTIONS;
 
       Iterator<SaveState> sectionAttributes = new SimpleBatchedFutureEngine<>(

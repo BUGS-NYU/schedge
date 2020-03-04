@@ -10,4 +10,11 @@ public final class Rating {
     this.rating = rating;
     this.mostHelpful = mostHelpful;
   }
+
+  // For the sake of simplicity, forget mostHelpful for now
+  public Rating(String url, float rating) {
+    this.url = url;
+    this.rating = rating;
+    this.mostHelpful = "";
+  }
 }

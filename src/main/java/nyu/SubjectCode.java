@@ -14,17 +14,17 @@ public final class SubjectCode {
   private static List<SchoolMetadata> schools;
   private static List<SubjectCode> allSubjects;
 
-  public final String subject;
+  public final String code;
   public final String school;
 
   public SubjectCode(String subjectCode) {
     String[] code = subjectCode.split("-", 2);
-    this.subject = code[0].toUpperCase();
+    this.code = code[0].toUpperCase();
     this.school = code[1].toUpperCase();
   }
 
-  public SubjectCode(String subject, String school) {
-    this.subject = subject.toUpperCase();
+  public SubjectCode(String code, String school) {
+    this.code = code.toUpperCase();
     this.school = school.toUpperCase();
   }
 
@@ -114,7 +114,7 @@ public final class SubjectCode {
 
   @JsonIgnore
   public String getAbbrev() {
-    return subject + '-' + school;
+    return code + '-' + school;
   }
 
   public String toString() { return getAbbrev(); }
@@ -125,7 +125,7 @@ public final class SubjectCode {
     if (o == null || getClass() != o.getClass())
       return false;
     SubjectCode that = (SubjectCode)o;
-    return this.school.equals(that.school) && this.subject.equals(that.subject);
+    return this.school.equals(that.school) && this.code.equals(that.code);
   }
 
   public static final class SubjectMetadata {

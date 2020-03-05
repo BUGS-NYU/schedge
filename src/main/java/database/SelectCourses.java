@@ -67,7 +67,7 @@ public class SelectCourses {
                 .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
                 .where(COURSES.TERM_ID.eq(term.getId()),
                        COURSES.EPOCH.eq(epoch), COURSES.SCHOOL.eq(code.school),
-                       COURSES.SUBJECT.eq(code.subject))
+                       COURSES.SUBJECT.eq(code.code))
                 .groupBy(MEETINGS.SECTION_ID)
                 .fetch()
                 .spliterator(),
@@ -115,7 +115,7 @@ public class SelectCourses {
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
             .where(COURSES.TERM_ID.eq(term.getId()), COURSES.EPOCH.eq(epoch),
                    COURSES.SCHOOL.eq(code.school),
-                   COURSES.SUBJECT.eq(code.subject))
+                   COURSES.SUBJECT.eq(code.code))
             .groupBy(SECTIONS.ID)
             .fetch();
 
@@ -123,7 +123,9 @@ public class SelectCourses {
     HashMap<Integer, Course> courses = new HashMap<>();
 
     List<CourseSectionRow> recitationRecords =
-        StreamSupport.stream(records.spliterator(), false) // @Performance Should this be true?
+        StreamSupport
+            .stream(records.spliterator(),
+                    false) // @Performance Should this be true?
             .map(r -> {
               CourseSectionRow row = new CourseSectionRow(r, meetingRows);
 

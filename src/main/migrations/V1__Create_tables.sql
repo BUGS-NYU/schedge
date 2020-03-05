@@ -23,8 +23,8 @@ CREATE TABLE instructors (
   name                varchar(64)                 NOT NULL,
   school              varchar(4)                  NOT NULL,
   subject             varchar(6)                  NOT NULL,
-  rmp_rating          float,
-  rmp_url             text,
+  rmp_rating          real,
+  rmp_tid             integer,
   PRIMARY KEY (id)
 );
 

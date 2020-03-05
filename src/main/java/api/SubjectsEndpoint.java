@@ -50,7 +50,7 @@ class SubjectsEndpoint extends Endpoint {
         ctx.json(SubjectCode.allSubjectInfo());
       } else
         try {
-          ctx.json(SubjectCode.allSubjectInfoForSchool(school));
+          ctx.json(SubjectCode.allSubjectInfoForSchool(school.toUpperCase()));
         } catch (IllegalArgumentException e) {
           ctx.json(new ApiError(e.getMessage()));
         }

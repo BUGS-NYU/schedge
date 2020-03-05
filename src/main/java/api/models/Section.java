@@ -1,17 +1,16 @@
 package api.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import nyu.SectionStatus;
-import nyu.SectionType;
-
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import nyu.SectionStatus;
+import nyu.SectionType;
 
 public class Section {
   private int registrationNumber;
-  private String sectionCode;
+  private String code;
   private String[] instructors;
   private SectionType type;
   private SectionStatus status;
@@ -31,7 +30,7 @@ public class Section {
   private String notes;
   private String prerequisites;
 
-  public Section(int registrationNumber, String sectionCode, String[] instructors,
+  public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
 
@@ -41,7 +40,7 @@ public class Section {
     }
 
     this.registrationNumber = registrationNumber;
-    this.sectionCode = sectionCode;
+    this.code = code;
     this.instructors = instructors;
     this.type = type;
     this.status = status;
@@ -50,13 +49,12 @@ public class Section {
     this.waitlistTotal = waitlistTotal;
   }
 
-  public Section(int registrationNumber, String sectionCode, String[] instructors,
+  public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, String name,
-                 Integer waitlistTotal, String campus, String description,
-                 Float minUnits, Float maxUnits, String instructionMode,
-                 String grading, String location, String notes,
-                 String prerequisites) {
+                 List<Section> recitations, String name, Integer waitlistTotal,
+                 String campus, String description, Float minUnits,
+                 Float maxUnits, String instructionMode, String grading,
+                 String location, String notes, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
@@ -65,7 +63,7 @@ public class Section {
     this.waitlistTotal = waitlistTotal;
     this.name = name;
     this.registrationNumber = registrationNumber;
-    this.sectionCode = sectionCode;
+    this.code = code;
     this.instructors = instructors;
     this.type = type;
     this.status = status;
@@ -84,7 +82,7 @@ public class Section {
 
   public @NotNull int getRegistrationNumber() { return registrationNumber; }
 
-  public @NotNull String getSectionCode() { return sectionCode; }
+  public @NotNull String getCode() { return code; }
 
   public @NotNull String[] getInstructors() { return instructors; }
 
@@ -158,8 +156,7 @@ public class Section {
       return false;
     Section section = (Section)o;
     return registrationNumber == section.registrationNumber &&
-        Objects.equals(name, section.name) &&
-        sectionCode.equals(section.sectionCode) &&
+        Objects.equals(name, section.name) && code.equals(section.code) &&
         instructors.equals(section.instructors) && type == section.type &&
         status == section.status &&
         Objects.equals(waitlistTotal, section.waitlistTotal) &&
@@ -175,9 +172,9 @@ public class Section {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, registrationNumber, sectionCode,
-                        instructors, type, status, waitlistTotal, campus,
-                        description, minUnits, maxUnits, instructionMode,
-                        grading, location, prerequisites);
+    return Objects.hash(name, registrationNumber, code, instructors, type,
+                        status, waitlistTotal, campus, description, minUnits,
+                        maxUnits, instructionMode, grading, location,
+                        prerequisites);
   }
 }

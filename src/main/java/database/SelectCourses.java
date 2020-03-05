@@ -51,7 +51,6 @@ public class SelectCourses {
     Courses COURSES = Tables.COURSES;
     Sections SECTIONS = Tables.SECTIONS;
     Meetings MEETINGS = Tables.MEETINGS;
-    Instructors INSTRUCTORS = Tables.INSTRUCTORS;
     IsTeachingSection IS_TEACHING_SECTION = Tables.IS_TEACHING_SECTION;
 
     DSLContext context = DSL.using(conn, GetConnection.DIALECT);
@@ -72,7 +71,7 @@ public class SelectCourses {
                 .groupBy(MEETINGS.SECTION_ID)
                 .fetch()
                 .spliterator(),
-            false);
+            false); // @Performance Should this be true?
 
     HashMap<Integer, ArrayList<Meeting>> meetingRows =
         meetingRecordStream.reduce(
@@ -119,25 +118,12 @@ public class SelectCourses {
                    COURSES.SUBJECT.eq(code.subject))
             .groupBy(SECTIONS.ID)
             .fetch();
-    //      context
-    //        .select(COURSES.asterisk(),SECTIONS.asterisk(),
-    //                groupConcat(coalesce(INSTRUCTORS.NAME, ""),
-    //                ";").as("section_instructors"))
-    //            .from(COURSES).leftJoin(SECTIONS)
-    //            .on(SECTIONS.COURSE_ID.eq(COURSES.ID)).leftJoin(IS_TEACHING_SECTION)
-    //            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-    //            .leftJoin(INSTRUCTORS)
-    //            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID)).where(COURSES.TERM_ID.eq(term.getId()),
-    //            COURSES.EPOCH.eq(epoch),
-    //            COURSES.SCHOOL.eq(code.school),
-    //            COURSES.SUBJECT.eq(code.subject))
-    //        .groupBy(SECTIONS.ID).fetch();
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
     List<CourseSectionRow> recitationRecords =
-        StreamSupport.stream(records.spliterator(), false)
+        StreamSupport.stream(records.spliterator(), false) // @Performance Should this be true?
             .map(r -> {
               CourseSectionRow row = new CourseSectionRow(r, meetingRows);
 

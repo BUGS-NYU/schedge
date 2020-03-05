@@ -61,7 +61,7 @@ dependencies {
 flyway {
   driver = dbDriver
   url = dbUrl
-  locations = ['filesystem:migrations']
+  locations = ['filesystem:src/main/migrations']
 }
 
 jooq {
@@ -181,7 +181,7 @@ class UpdateDbTask extends DefaultTask {
 }
 
 task updateDb(type: UpdateDbTask) {
-    inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/migrations"
+    inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/src/main/migrations"
     tables = "${buildscript.sourceFile.absoluteFile.parent}/local/tables.db";
 
     run {

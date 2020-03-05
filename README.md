@@ -9,7 +9,7 @@ out their schedules, and eventually to also do some of that for them.
 API Docs: https://schedge.torchnyu.com
 
 ## Contributing
-Please take a look at [contributing guide](CONTRIBUTING.md). It will provide you 
+Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provide you 
 a general overview of the project and how to contribute.
 
 ## API Documentation

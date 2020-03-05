@@ -1,4 +1,4 @@
-AELS,UF,Academic Engl for Liberal Stdy
+AELS,UF,Academic English for Liberal Study
 ACCT,GB,Accounting
 ACCT,UB,Accounting
 ACE,UE,Advanced College Essay

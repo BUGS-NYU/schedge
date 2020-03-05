@@ -39,7 +39,7 @@ CREATE TABLE sections (
   associated_with     integer REFERENCES sections(id),
 
   waitlist_total      integer,
-  section_name        text,
+  name                text,
   min_units           float,
   max_units           float,
   campus              varchar(100),

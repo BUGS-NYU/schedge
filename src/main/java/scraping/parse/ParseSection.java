@@ -1,5 +1,11 @@
 package scraping.parse;
 
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
@@ -10,13 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
 import utils.Utils;
-
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Parses a section string.
@@ -90,8 +89,9 @@ public class ParseSection {
     return map;
   }
 
-  public static @NotNull SectionAttribute
-  parsingElements(Map<String, String> secData, String courseName, String link) {
+  public static @NotNull
+  SectionAttribute parsingElements(Map<String, String> secData,
+                                   String sectionName, String link) {
     String units = secData.get("Units");
     float minUnits = 0, maxUnits;
     if (units.contains("-")) {
@@ -101,7 +101,7 @@ public class ParseSection {
       maxUnits = Float.parseFloat(units.split(" ")[0]);
     }
 
-    courseName +=
+    sectionName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
     String location = secData.get("Room");
@@ -115,7 +115,7 @@ public class ParseSection {
     String[] instructors = secData.get("Instructor(s)").split(", *\\n *\\n");
 
     return new SectionAttribute(
-        courseName.equals("") ? null : courseName,
+        sectionName.equals("") ? null : sectionName,
         Integer.parseInt(secData.get("Class Number")),
         SectionStatus.parseStatus(secData.get("Status")),
         secData.get("Location"), secData.get("Description"),

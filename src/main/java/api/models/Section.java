@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Section {
-  private String sectionName;
   private int registrationNumber;
   private String sectionCode;
   private String[] instructors;
@@ -21,6 +20,7 @@ public class Section {
   private Integer waitlistTotal;
 
   // values that need to be updated
+  private String name;
   private String campus;
   private String description;
   private Float minUnits;
@@ -52,7 +52,7 @@ public class Section {
 
   public Section(int registrationNumber, String sectionCode, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, String sectionName,
+                 List<Section> recitations, String name,
                  Integer waitlistTotal, String campus, String description,
                  Float minUnits, Float maxUnits, String instructionMode,
                  String grading, String location, String notes,
@@ -63,7 +63,7 @@ public class Section {
     }
 
     this.waitlistTotal = waitlistTotal;
-    this.sectionName = sectionName;
+    this.name = name;
     this.registrationNumber = registrationNumber;
     this.sectionCode = sectionCode;
     this.instructors = instructors;
@@ -107,8 +107,8 @@ public class Section {
     return campus;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getSectionName() {
-    return sectionName;
+  public String getName() {
+    return name;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public String getDescription() {
@@ -158,7 +158,7 @@ public class Section {
       return false;
     Section section = (Section)o;
     return registrationNumber == section.registrationNumber &&
-        Objects.equals(sectionName, section.sectionName) &&
+        Objects.equals(name, section.name) &&
         sectionCode.equals(section.sectionCode) &&
         instructors.equals(section.instructors) && type == section.type &&
         status == section.status &&
@@ -175,7 +175,7 @@ public class Section {
 
   @Override
   public int hashCode() {
-    return Objects.hash(sectionName, registrationNumber, sectionCode,
+    return Objects.hash(name, registrationNumber, sectionCode,
                         instructors, type, status, waitlistTotal, campus,
                         description, minUnits, maxUnits, instructionMode,
                         grading, location, prerequisites);

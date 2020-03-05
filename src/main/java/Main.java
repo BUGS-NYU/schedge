@@ -7,11 +7,10 @@ public class Main {
       try {
           new Schedge(args);
       } catch (Exception e) {
+          e.printStackTrace();
+      } finally {
           GetConnection.close();
           GetClient.close();
-          throw e;
       }
-      GetConnection.close();
-      GetClient.close();
   }
 }

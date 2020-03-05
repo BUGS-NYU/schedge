@@ -22,14 +22,13 @@ public final class GetRatings {
   private static final String RMP_URL =
       "https://www.ratemyprofessors.com/search.jsp?query=";
 
-  // Look at Later
     public static Stream<String> getRatings(Iterator<String> names, Integer
     batchSizeNullable) {
       int batchSize = batchSizeNullable != null
               ? batchSizeNullable
               : 100; // @Performance what should this number be?
       return StreamSupport
-              .stream(new SimpleBatchedFutureEngine<String, String>(
+              .stream(new SimpleBatchedFutureEngine<>(
                               names, batchSize,
                               (name,
                                __) -> {

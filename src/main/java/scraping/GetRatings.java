@@ -1,6 +1,7 @@
 package scraping;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
@@ -22,24 +23,28 @@ public final class GetRatings {
       "https://www.ratemyprofessors.com/search.jsp?query=";
 
   // Look at Later
-  //  public static Stream<String> getRatings(Stream<String> names, Integer
-  //  batchSizeNullable) {
-  //    int batchSize = batchSizeNullable != null
-  //            ? batchSizeNullable
-  //            : 100; // @Performance what should this number be?
-  //    return StreamSupport
-  //            .stream(new SimpleBatchedFutureEngine<String, String>(
-  //                            names, batchSize,
-  //                            (name,
-  //                             __) -> {
-  //                              return queryRatingAsync(name);
-  //                            })
-  //                            .spliterator(),
-  //                    false)
-  //            .filter(i -> i != null);
-  //  }
+    public static Stream<String> getRatings(Iterator<String> names, Integer
+    batchSizeNullable) {
+      int batchSize = batchSizeNullable != null
+              ? batchSizeNullable
+              : 100; // @Performance what should this number be?
+      return StreamSupport
+              .stream(new SimpleBatchedFutureEngine<String, String>(
+                              names, batchSize,
+                              (name,
+                               __) -> {
+                                try {
+                                  return queryRatingAsync(name);
+                                } catch (Exception e) {
+                                  throw new RuntimeException(e);
+                                }
+                              })
+                              .spliterator(),
+                      false)
+              .filter(i -> i != null);
+    }
 
-  public static Future<String> queryRatingAsync(String name) throws Exception {
+  private static Future<String> queryRatingAsync(String name) throws Exception {
     String link = parseLink(getLinkAsync(name).get());
     if (link == null)
       return null;

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# https://www.wissel.net/blog/2018/03/letsencrypt-java-keystore.html
+
 sudo certbot renew
 
 cat /etc/letsencrypt/live/schedge.torchnyu.com/*.pem > fullcert.pem

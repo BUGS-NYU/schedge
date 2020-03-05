@@ -197,7 +197,7 @@ public class SelectCourses {
       associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
       meetings = meetingRows.get(row.get(SECTIONS.ID));
       waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
-      sectionName = row.get(SECTIONS.SECTION_NAME);
+      sectionName = row.get(SECTIONS.NAME);
       campus = row.get(SECTIONS.CAMPUS);
       description = row.get(SECTIONS.DESCRIPTION);
       minUnits = row.get(SECTIONS.MIN_UNITS);

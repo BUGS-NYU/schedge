@@ -83,7 +83,7 @@ public class UpdateSections {
         }
 
         context.update(SECTIONS)
-            .set(SECTIONS.SECTION_NAME, s.getSectionName())
+            .set(SECTIONS.NAME, s.getSectionName())
             .set(SECTIONS.CAMPUS, s.getCampus())
             .set(SECTIONS.DESCRIPTION, s.getDescription())
             .set(SECTIONS.INSTRUCTION_MODE, s.getInstructionMode())

@@ -8,6 +8,10 @@ import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.info.Info;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.stream.Collectors;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -15,11 +19,6 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.stream.Collectors;
 
 public class App {
 
@@ -32,12 +31,18 @@ public class App {
               config.enableCorsForAllOrigins();
               config.server(() -> {
                 Server server = new Server();
-                ServerConnector sslConnector =
-                    new ServerConnector(server, getSslContextFactory());
-                sslConnector.setPort(443);
                 ServerConnector connector = new ServerConnector(server);
                 connector.setPort(80);
-                server.setConnectors(new Connector[] {connector});
+                SslContextFactory sslContextFactory = getSslContextFactory();
+                if (sslContextFactory != null) {
+                  ServerConnector sslConnector =
+                      new ServerConnector(server, sslContextFactory);
+                  sslConnector.setPort(443);
+                  server.setConnectors(
+                      new Connector[] {sslConnector, connector});
+                } else {
+                  server.setConnectors(new Connector[] {connector});
+                }
                 return server;
               });
               config.addStaticFiles("./local", Location.EXTERNAL);
@@ -81,7 +86,7 @@ public class App {
     URL resource = Utils.class.getResource("/keystore.jks");
     if (resource == null) {
       logger.info("Couldn't find keystore at src/main/resources/keystore.jks");
-      return sslContextFactory;
+      return null;
     } else {
       logger.info("Using keystore for HTTPS");
     }

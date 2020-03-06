@@ -25,7 +25,8 @@ public enum SectionType {
   GUI, // Guided Study (Tandon)
   NCR, // Non-Credit (Tandon)
   PRP, // Preparatory
-  MAM; // Maintaining Marticulation
+  MAM, // Maintaining Marticulation
+  NCH;
 
   @JsonValue
   public String getName() {

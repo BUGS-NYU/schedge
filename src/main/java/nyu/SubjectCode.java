@@ -15,17 +15,17 @@ public final class SubjectCode {
   private static List<SchoolMetadata> schools;
   private static List<SubjectCode> allSubjects;
 
-  public final String subject;
+  public final String code;
   public final String school;
 
   public SubjectCode(String subjectCode) {
     String[] code = subjectCode.split("-", 2);
-    this.subject = code[0].toUpperCase();
+    this.code = code[0].toUpperCase();
     this.school = code[1].toUpperCase();
   }
 
-  public SubjectCode(String subject, String school) {
-    this.subject = subject.toUpperCase();
+  public SubjectCode(String code, String school) {
+    this.code = code.toUpperCase();
     this.school = school.toUpperCase();
   }
 
@@ -76,7 +76,7 @@ public final class SubjectCode {
   public static Map<String, List<SubjectCode>> getAvailableSubjects() {
     if (availableSubjects == null) {
       Function<List<SubjectMetadata>, List<SubjectCode>> f =
-          e -> e.stream().map(it -> it.getCode()).collect(Collectors.toList());
+          e -> e.stream().map(it -> it.getSubjectCode()).collect(Collectors.toList());
       availableSubjects = getAvailableSubjectInfo().entrySet().stream().collect(
           Collectors.toMap(Map.Entry::getKey, e -> f.apply(e.getValue())));
     }
@@ -115,7 +115,7 @@ public final class SubjectCode {
 
   @JsonIgnore
   public String getAbbrev() {
-    return subject + '-' + school;
+    return code + '-' + school;
   }
 
   public String toString() { return getAbbrev(); }
@@ -126,24 +126,24 @@ public final class SubjectCode {
     if (o == null || getClass() != o.getClass())
       return false;
     SubjectCode that = (SubjectCode)o;
-    return this.school.equals(that.school) && this.subject.equals(that.subject);
+    return this.school.equals(that.school) && this.code.equals(that.code);
   }
 
   public static final class SubjectMetadata {
-    private String subject, school, name;
+    private String code, school, name;
     SubjectMetadata(String csv) {
       String[] values = csv.split(",", 3);
       if (values.length < 3)
         System.err.println(csv);
-      subject = values[0];
+      code = values[0];
       school = values[1];
       name = values[2];
     }
     @JsonIgnore
-    SubjectCode getCode() {
-      return new SubjectCode(subject, school);
+    SubjectCode getSubjectCode() {
+      return new SubjectCode(code, school);
     }
-    public String getSubject() { return subject; }
+    public String getCode() { return code; }
     public String getSchool() { return school; }
     public String getName() { return name; }
   }

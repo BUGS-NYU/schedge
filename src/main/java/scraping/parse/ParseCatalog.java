@@ -119,7 +119,6 @@ public class ParseCatalog implements Iterator<Course> {
     return new SectionMetadata(
         subjectCode, registrationNumber, sectionCode, type,
         SectionStatus.parseStatus(sectionData.get("Status")), meetings,
-        sectionData.getOrDefault("Topic", ""),
         sectionData.containsKey("Wait List Total")
             ? Integer.parseInt(sectionData.get("Wait List Total"))
             : null);
@@ -303,20 +302,18 @@ public class ParseCatalog implements Iterator<Course> {
     private SectionType type;
     private SectionStatus status;
     private List<Meeting> meetings;
-    private String sectionName;
     private Integer waitlistTotal;
 
     public SectionMetadata(SubjectCode code, int registrationNumber,
                            String sectionCode, SectionType type,
                            SectionStatus status, List<Meeting> meetings,
-                           String sectionName, Integer waitlistTotal) {
+                           Integer waitlistTotal) {
       this.code = code;
       this.registrationNumber = registrationNumber;
       this.sectionCode = sectionCode;
       this.type = type;
       this.status = status;
       this.meetings = meetings;
-      this.sectionName = sectionName;
       this.waitlistTotal = waitlistTotal;
     }
 
@@ -354,13 +351,13 @@ public class ParseCatalog implements Iterator<Course> {
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
       return new Section(code, registrationNumber, sectionCode, SectionType.LEC,
-                         status, meetings, recitations, sectionName,
+                         status, meetings, recitations,
                          waitlistTotal);
     }
 
     Section toSectionWithoutRecitations() {
       return new Section(code, registrationNumber, sectionCode, type, status,
-                         meetings, null, sectionName, waitlistTotal);
+                         meetings, null, waitlistTotal);
     }
   }
 

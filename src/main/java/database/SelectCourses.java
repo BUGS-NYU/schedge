@@ -52,7 +52,6 @@ public class SelectCourses {
     Courses COURSES = Tables.COURSES;
     Sections SECTIONS = Tables.SECTIONS;
     Meetings MEETINGS = Tables.MEETINGS;
-    Instructors INSTRUCTORS = Tables.INSTRUCTORS;
     IsTeachingSection IS_TEACHING_SECTION = Tables.IS_TEACHING_SECTION;
 
     DSLContext context = DSL.using(conn, GetConnection.DIALECT);
@@ -69,11 +68,11 @@ public class SelectCourses {
                 .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
                 .where(COURSES.TERM_ID.eq(term.getId()),
                        COURSES.EPOCH.eq(epoch), COURSES.SCHOOL.eq(code.school),
-                       COURSES.SUBJECT.eq(code.subject))
+                       COURSES.SUBJECT.eq(code.code))
                 .groupBy(MEETINGS.SECTION_ID)
                 .fetch()
                 .spliterator(),
-            false);
+            false); // @Performance Should this be true?
 
     HashMap<Integer, ArrayList<Meeting>> meetingRows =
         meetingRecordStream.reduce(
@@ -107,39 +106,27 @@ public class SelectCourses {
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
-                    groupConcat(coalesce(INSTRUCTORS.NAME, ""), ";")
+                    groupConcat(
+                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
                         .as("section_instructors"))
             .from(COURSES)
             .leftJoin(SECTIONS)
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .leftJoin(INSTRUCTORS)
-            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID))
             .where(COURSES.TERM_ID.eq(term.getId()), COURSES.EPOCH.eq(epoch),
                    COURSES.SCHOOL.eq(code.school),
-                   COURSES.SUBJECT.eq(code.subject))
+                   COURSES.SUBJECT.eq(code.code))
             .groupBy(SECTIONS.ID)
             .fetch();
-    //      context
-    //        .select(COURSES.asterisk(),SECTIONS.asterisk(),
-    //                groupConcat(coalesce(INSTRUCTORS.NAME, ""),
-    //                ";").as("section_instructors"))
-    //            .from(COURSES).leftJoin(SECTIONS)
-    //            .on(SECTIONS.COURSE_ID.eq(COURSES.ID)).leftJoin(IS_TEACHING_SECTION)
-    //            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-    //            .leftJoin(INSTRUCTORS)
-    //            .on(INSTRUCTORS.ID.eq(IS_TEACHING_SECTION.INSTRUCTOR_ID)).where(COURSES.TERM_ID.eq(term.getId()),
-    //            COURSES.EPOCH.eq(epoch),
-    //            COURSES.SCHOOL.eq(code.school),
-    //            COURSES.SUBJECT.eq(code.subject))
-    //        .groupBy(SECTIONS.ID).fetch();
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
     List<CourseSectionRow> recitationRecords =
-        StreamSupport.stream(records.spliterator(), false)
+        StreamSupport
+            .stream(records.spliterator(),
+                    false) // @Performance Should this be true?
             .map(r -> {
               CourseSectionRow row = new CourseSectionRow(r, meetingRows);
 
@@ -213,7 +200,7 @@ public class SelectCourses {
       associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
       meetings = meetingRows.get(row.get(SECTIONS.ID));
       waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
-      sectionName = row.get(SECTIONS.SECTION_NAME);
+      sectionName = row.get(SECTIONS.NAME);
       campus = row.get(SECTIONS.CAMPUS);
       description = row.get(SECTIONS.DESCRIPTION);
       minUnits = row.get(SECTIONS.MIN_UNITS);

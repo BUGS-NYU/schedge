@@ -13,10 +13,6 @@ public class ConsoleProgressBarConsumer implements ProgressBarConsumer {
     private final PrintStream out;
     private final Terminal terminal = getTerminal();
 
-    public ConsoleProgressBarConsumer() {
-        this(System.err);
-    }
-
     public ConsoleProgressBarConsumer(PrintStream out) {
         this.out = out;
     }

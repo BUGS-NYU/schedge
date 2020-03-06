@@ -1,4 +1,4 @@
- CREATE TABLE epochs (
+CREATE TABLE epochs (
   id                  integer                       NOT NULL UNIQUE,
   started_at          timestamp                     NOT NULL UNIQUE,
   completed_at        timestamp                     UNIQUE,
@@ -23,9 +23,8 @@ CREATE TABLE instructors (
   name                varchar(64)                 NOT NULL,
   school              varchar(4)                  NOT NULL,
   subject             varchar(6)                  NOT NULL,
-  rmp_rating          float,
-  rmp_url             text,
-  rmp_most_helpful    text,
+  rmp_rating          real,
+  rmp_tid             integer,
   PRIMARY KEY (id)
 );
 
@@ -40,7 +39,7 @@ CREATE TABLE sections (
   associated_with     integer REFERENCES sections(id),
 
   waitlist_total      integer,
-  section_name        text,
+  name                text,
   min_units           float,
   max_units           float,
   campus              varchar(100),
@@ -58,6 +57,7 @@ CREATE TABLE is_teaching_section (
   id                  integer                     NOT NULL,
   instructor_id       integer                     NOT NULL,
   section_id          integer                     NOT NULL,
+  instructor_name     varchar(64)                 NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -71,7 +71,6 @@ CREATE TABLE meetings (
   PRIMARY KEY (id)
 );
 
-
--- CREATE UNIQUE INDEX courses_idx ON courses (term_id, school, subject, dept_course_id);
--- CREATE UNIQUE INDEX section_idx ON sections (course_id, section_code);
 CREATE INDEX sections_associated_with ON sections (associated_with);
+CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
+CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);

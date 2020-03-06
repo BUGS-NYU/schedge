@@ -31,7 +31,7 @@ public final class Course {
 
   @JsonIgnore
   public String getSubject() {
-    return subjectCode.subject;
+    return subjectCode.code;
   }
 
   @JsonIgnore

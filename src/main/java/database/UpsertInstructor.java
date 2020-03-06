@@ -18,7 +18,7 @@ public final class UpsertInstructor {
     Record1<Integer> instructorRecord =
         context.select(INSTRUCTORS.ID)
             .from(INSTRUCTORS)
-            .where(INSTRUCTORS.SUBJECT.eq(subject.subject),
+            .where(INSTRUCTORS.SUBJECT.eq(subject.code),
                    INSTRUCTORS.SCHOOL.eq(subject.school),
                    INSTRUCTORS.NAME.eq(instructor))
             .fetchOne();
@@ -28,7 +28,7 @@ public final class UpsertInstructor {
       instructorId = context
                          .insertInto(INSTRUCTORS, INSTRUCTORS.NAME,
                                      INSTRUCTORS.SUBJECT, INSTRUCTORS.SCHOOL)
-                         .values(instructor, subject.subject, subject.school)
+                         .values(instructor, subject.code, subject.school)
                          .returning(INSTRUCTORS.ID)
                          .fetchOne()
                          .component1();
@@ -38,8 +38,9 @@ public final class UpsertInstructor {
 
     context.insertInto(IS_TEACHING_SECTION)
         .columns(IS_TEACHING_SECTION.INSTRUCTOR_ID,
-                 IS_TEACHING_SECTION.SECTION_ID)
-        .values(instructorId, sectionId)
+                 IS_TEACHING_SECTION.SECTION_ID,
+                 IS_TEACHING_SECTION.INSTRUCTOR_NAME)
+        .values(instructorId, sectionId, instructor)
         .execute();
   }
 }

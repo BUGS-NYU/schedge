@@ -1,16 +1,16 @@
 package scraping.models;
 
 public final class Rating {
-  public final long url;
+  public final long teacherId;
   public final float rating;
 
   // For the sake of simplicity, forget mostHelpful for now
-  public Rating(long url, float rating) {
-    this.url = url;
+  public Rating(long teacherId, float rating) {
+    this.teacherId = teacherId;
     this.rating = rating;
   }
 
   public String toString() {
-    return "URL: " + this.url + ", Rating: " + this.rating;
+    return "URL: " + this.teacherId + ", Rating: " + this.rating;
   }
 }

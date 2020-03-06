@@ -1,12 +1,13 @@
 package scraping;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.

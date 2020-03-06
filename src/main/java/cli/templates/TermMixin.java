@@ -3,8 +3,6 @@ package cli.templates;
 import nyu.Term;
 import picocli.CommandLine;
 
-import java.lang.reflect.Parameter;
-
 public class TermMixin {
 
     @CommandLine.Spec private CommandLine.Model.CommandSpec spec;

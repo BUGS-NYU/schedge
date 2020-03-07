@@ -33,9 +33,9 @@ public final class Search implements Runnable {
   Option(names = "--result-size", description = "Maximum number of results")
   private Integer resultSize;
   private @CommandLine.Mixin OutputFileMixin outputFileMixin;
-  private String[] args;
 
-  @CommandLine.Option(names="--query", description="Query to execute.")
+  @CommandLine.Option(names = "--query", description = "Query to execute.")
+  private String query;
   private static Logger logger = LoggerFactory.getLogger("cli.Search");
 
   @Override
@@ -44,8 +44,8 @@ public final class Search implements Runnable {
     Term term = termMixin.getTerm();
     GetConnection.withContext(context -> {
       int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
-      List<Integer> result = SearchCourses.searchCourses(
-          epoch, String.join(" ", args), resultSize);
+      List<Integer> result =
+          SearchCourses.searchCourses(epoch, query, resultSize);
       List<Course> courses = SelectCoursesBySectionId.selectCoursesBySectionId(
           context, epoch, result);
       outputFileMixin.writeOutput(courses);

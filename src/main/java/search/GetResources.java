@@ -25,7 +25,7 @@ public class GetResources {
   // @Performance We need to eventually be able to delete indices, using AtomicInteger to be thread safe
   private static HashMap<Integer,SearchContext> contexts = new HashMap<>();
 
-  public static SearchContext getSearchContext(int epoch) {
+  private static SearchContext getSearchContext(int epoch) {
       synchronized (contexts) {
           if (contexts.containsKey(epoch)) {
               return contexts.get(epoch);
@@ -38,17 +38,25 @@ public class GetResources {
       }
   }
 
-  public static class SearchContext implements AutoCloseable {
-      public final int epoch;
+  public static IndexWriter getWriter(int epoch) {
+      try {
+          return new IndexWriter(getSearchContext(epoch).index, config);
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
+  public static IndexSearcher getSearcher(int epoch) {
+      return getSearchContext(epoch).getSearcher();
+  }
+
+  private static class SearchContext implements AutoCloseable {
       private final Directory index;
-      public final IndexWriter writer;
       private IndexSearcher searcher = null;
 
       SearchContext(int epoch) {
-          this.epoch = epoch;
           try {
               index = new SimpleFSDirectory(Paths.get(System.getProperty("user.dir"), "index", Integer.toString(epoch)));
-              writer = new IndexWriter(index, config);
           } catch (IOException e) {
               throw new RuntimeException(e);
           }

@@ -8,6 +8,7 @@ import database.courses.SelectCourseSectionRows;
 import database.courses.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
 import database.models.CourseSectionRow;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -43,7 +44,13 @@ public final class Search implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     GetConnection.withContext(context -> {
-      int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      if (epoch == null) {
+          logger.warn("No completed epoch for term=" + term);
+        outputFileMixin.writeOutput(Collections.emptyList());
+        return;
+      }
+
       List<Integer> result =
           SearchCourses.searchCourses(epoch, query, resultSize);
       List<Course> courses = SelectCoursesBySectionId.selectCoursesBySectionId(
@@ -70,7 +77,13 @@ public final class Search implements Runnable {
             .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
     GetConnection.withContext(context -> {
-      int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+
+      if (epoch == null) {
+        logger.warn("No completed epoch for term=" + term);
+        return;
+      }
+
       Stream<CourseSectionRow> rows =
           StreamSupport
               .stream(ProgressBar.wrap(SubjectCode.allSubjects(), barBuilder)

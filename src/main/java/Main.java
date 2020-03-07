@@ -1,6 +1,5 @@
 import cli.Schedge;
 import database.GetConnection;
-import scraping.GetRatings;
 import scraping.query.GetClient;
 
 public class Main {

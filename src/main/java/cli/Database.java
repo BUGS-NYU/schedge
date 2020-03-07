@@ -10,8 +10,12 @@ import database.SelectCourses;
 import database.UpdateSections;
 import database.epochs.CleanEpoch;
 import database.epochs.CompleteEpoch;
-import database.epochs.GetEpoch;
+import database.epochs.GetNewEpoch;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -21,11 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
@@ -58,34 +57,29 @@ public class Database implements Runnable {
          Integer batchSizeSections) {
     Term term = termMixin.getTerm();
     long start = System.nanoTime();
-    int epoch;
-    try (Connection conn = GetConnection.getConnection()) {
+    GetConnection.withContext(context -> {
+      int epoch = GetNewEpoch.getNewEpoch(context, term);
+      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
+      ProgressBarBuilder barBuilder =
+          new ProgressBarBuilder()
+              .setStyle(ProgressBarStyle.ASCII)
+              .setConsumer(new ConsoleProgressBarConsumer(System.out));
+      Iterator<SectionID> s =
+          ScrapeCatalog
+              .scrapeFromCatalog(
+                  term, ProgressBar.wrap(allSubjects, barBuilder), batchSize)
+              .flatMap(courseList
+                       -> InsertCourses
+                              .insertCourses(context, term, epoch, courseList)
+                              .stream())
+              .iterator();
+      UpdateSections.updateSections(context, term, s, batchSizeSections);
 
-      epoch = GetEpoch.getEpoch(conn, term);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+      CompleteEpoch.completeEpoch(context, term, epoch);
     }
 
-    List<SubjectCode> allSubjects = SubjectCode.allSubjects();
-    ProgressBarBuilder barBuilder =
-        new ProgressBarBuilder()
-            .setStyle(ProgressBarStyle.ASCII)
-            .setConsumer(new ConsoleProgressBarConsumer(System.out));
-    Iterator<SectionID> s =
-        ScrapeCatalog
-            .scrapeFromCatalog(term, ProgressBar.wrap(allSubjects, barBuilder),
-                               batchSize)
-            .flatMap(courseList
-                     -> InsertCourses.insertCourses(term, epoch, courseList)
-                            .stream())
-            .iterator();
-    UpdateSections.updateSections(term, s, batchSizeSections);
+    );
 
-    try (Connection conn = GetConnection.getConnection()) {
-      CompleteEpoch.completeEpoch(conn, term, epoch);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -106,8 +100,10 @@ public class Database implements Runnable {
         Integer batchSize,
         @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
-    outputFile.writeOutput(SelectCourses.selectCourses(
-        termMixin.getTerm(), subjectCodeMixin.getSubjectCodes()));
+    GetConnection.withContext(
+        context
+        -> outputFile.writeOutput(SelectCourses.selectCourses(
+            context, termMixin.getTerm(), subjectCodeMixin.getSubjectCodes())));
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

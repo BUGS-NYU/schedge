@@ -2,6 +2,7 @@ package api;
 
 import api.models.Course;
 import api.models.Section;
+import database.GetConnection;
 import database.SelectCourses;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
@@ -108,7 +109,10 @@ class CoursesEndpoint extends Endpoint {
       }
 
       ctx.status(200);
-      ctx.json(SelectCourses.selectCourses(term, Arrays.asList(subject)));
+        Object output = GetConnection.withContextReturning(context ->
+            SelectCourses.selectCourses(context, term, Arrays.asList(subject))
+        );
+      ctx.json(output);
     };
   }
 }

@@ -13,7 +13,8 @@ public class Schedge {
 
   public Schedge(String[] args) {
     if (args.length < 1) {
-      throw new CommandLine.ParameterException(spec.commandLine(),
+      throw new CommandLine.ParameterException(
+          spec.commandLine(),
           "Please provide command query, parse, scrape OR db");
     } else {
       new CommandLine(this)
@@ -21,6 +22,7 @@ public class Schedge {
           .addSubcommand("parse", new CommandLine(new Parse()))
           .addSubcommand("scrape", new CommandLine(new Scrape()))
           .addSubcommand("db", new CommandLine(new Database()))
+          .addSubcommand("search", new CommandLine(new Search()))
           .execute(args);
     }
   }

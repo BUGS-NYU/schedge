@@ -15,7 +15,7 @@ public class SearchCourses {
     public static List<Integer> searchCourses(int epoch, String queryString, Integer totalNullable) {
 
         IndexSearcher searcher = GetResources.getSearcher(epoch);
-        QueryParser qParser = new MultiFieldQueryParser(new String[]{"name", "description", "instructors", "subject", "school"}, GetResources.analyzer);
+        QueryParser qParser = new MultiFieldQueryParser(new String[]{"name", "description", "instructors"}, GetResources.analyzer);
         Query query;
         try {
             query = qParser.parse(queryString);

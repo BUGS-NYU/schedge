@@ -1,5 +1,8 @@
 package cli;
 
+import actions.CleanData;
+import actions.ScrapeTerm;
+import actions.UpdateData;
 import api.App;
 import cli.templates.OutputFileMixin;
 import cli.templates.SubjectCodeMixin;
@@ -14,8 +17,18 @@ import database.epochs.GetNewEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
 import database.models.SectionID;
+
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -32,6 +45,10 @@ public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
+    private static ProgressBarBuilder barBuilder =
+            new ProgressBarBuilder()
+                    .setStyle(ProgressBarStyle.ASCII)
+                    .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
   @Override
   public void run() {
@@ -55,31 +72,8 @@ public class Database implements Runnable {
          @CommandLine.Option(names = "--batch-size-sections",
                              description = "batch size for querying sections")
          Integer batchSizeSections) {
-    Term term = termMixin.getTerm();
     long start = System.nanoTime();
-    GetConnection.withContext(context -> {
-      int epoch = GetNewEpoch.getNewEpoch(context, term);
-      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
-      ProgressBarBuilder barBuilder =
-          new ProgressBarBuilder()
-              .setStyle(ProgressBarStyle.ASCII)
-              .setConsumer(new ConsoleProgressBarConsumer(System.out));
-      Iterator<SectionID> s =
-          ScrapeCatalog
-              .scrapeFromCatalog(
-                  term, ProgressBar.wrap(allSubjects, barBuilder), batchSize)
-              .flatMap(courseList
-                       -> InsertCourses
-                              .insertCourses(context, term, epoch, courseList)
-                              .stream())
-              .iterator();
-      UpdateSections.updateSections(context, term, s, batchSizeSections);
-
-      CompleteEpoch.completeEpoch(context, term, epoch);
-    }
-
-    );
-
+    ScrapeTerm.scrapeTerm(termMixin.getTerm(), batchSize, batchSizeSections, subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -97,10 +91,6 @@ public class Database implements Runnable {
     long start = System.nanoTime();
     GetConnection.withContext(context -> {
       List<SubjectCode> allSubjects = SubjectCode.allSubjects();
-      ProgressBarBuilder barBuilder =
-          new ProgressBarBuilder()
-              .setStyle(ProgressBarStyle.ASCII)
-              .setConsumer(new ConsoleProgressBarConsumer(System.out));
       UpdateInstructors.updateInstructors(
           context,
           ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
@@ -153,19 +143,21 @@ public class Database implements Runnable {
         @CommandLine.Option(names = "--epoch",
                             description = "The epoch to clean") Integer epoch) {
     Term term = termMixin.getTermAllowNull();
-    if (epoch == null && term == null) {
-      logger.info("Cleaning incomplete epochs...");
-      CleanEpoch.cleanIncompleteEpochs();
-    } else if (epoch != null && term == null) {
-      logger.info("Cleaning epoch={}...", epoch);
-      CleanEpoch.cleanEpoch(epoch);
-    } else if (term != null && epoch == null) {
-      logger.info("Cleaning epochs for term={}...", term);
-      CleanEpoch.cleanEpoch(term);
-    } else {
-      System.err.println("Term and --epoch are mutually exclusive!");
-      System.exit(1);
-    }
+    GetConnection.withContext(context -> {
+        if (epoch == null && term == null) {
+            logger.info("Cleaning incomplete epochs...");
+            CleanEpoch.cleanIncompleteEpochs(context);
+        } else if (epoch != null && term == null) {
+            logger.info("Cleaning epoch={}...", epoch);
+            CleanEpoch.cleanEpoch(context, epoch);
+        } else if (term != null && epoch == null) {
+            logger.info("Cleaning epochs for term={}...", term);
+            CleanEpoch.cleanEpochs(context, term);
+        } else {
+            throw new CommandLine.ParameterException(spec.commandLine(), "Term and --epoch are mutually exclusive!");
+        }
+    });
+
   }
 
   @CommandLine.
@@ -176,6 +168,11 @@ public class Database implements Runnable {
           description = "Serve data through an API")
   public void
   serve() {
+      ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+      executor.scheduleAtFixedRate(() -> {
+          CleanData.cleanData();
+          UpdateData.updateData();
+      }, 0L, 1L, TimeUnit.DAYS);
     App.run();
   }
 }

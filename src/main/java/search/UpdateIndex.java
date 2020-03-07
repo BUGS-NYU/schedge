@@ -14,6 +14,8 @@ public class UpdateIndex {
   public static void
   updateIndex(int epoch,
               Stream<CourseSectionRow> rows) {
+      if (GetResources.alreadyUpdated(epoch))
+          return;
     IndexWriter writer =
         GetResources.getWriter(epoch);
     rows.forEach(row -> {

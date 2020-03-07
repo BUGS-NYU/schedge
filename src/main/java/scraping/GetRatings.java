@@ -1,8 +1,6 @@
 package scraping;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -18,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.Rating;
 import scraping.query.GetClient;
+import utils.SimpleBatchedFutureEngine;
 
 public final class GetRatings {
 

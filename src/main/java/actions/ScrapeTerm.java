@@ -1,10 +1,10 @@
 package actions;
 
-import static database.SelectCourseSectionRows.*;
+import static database.courses.SelectCourseSectionRows.*;
 
 import database.GetConnection;
-import database.InsertCourses;
-import database.UpdateSections;
+import database.courses.InsertCourses;
+import database.courses.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
 import database.models.CourseSectionRow;

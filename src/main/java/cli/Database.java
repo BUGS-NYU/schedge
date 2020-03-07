@@ -4,16 +4,15 @@ import api.App;
 import cli.templates.OutputFileMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
-import database.GetConnection;
-import database.InsertCourses;
-import database.SelectCourses;
-import database.UpdateSections;
+import database.*;
+import database.courses.InsertCourses;
+import database.courses.SelectCourses;
+import database.courses.UpdateSections;
 import database.epochs.CleanEpoch;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
+import database.instructors.UpdateInstructors;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 import me.tongfei.progressbar.ProgressBar;
@@ -84,6 +83,36 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
+  @CommandLine.
+  Command(name = "rmp", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Scrape section from db",
+          description = "Update instructors using RMP")
+  public void
+  rmp(@CommandLine.Option(names = "--batch-size",
+                          description = "batch size for querying RMP")
+      Integer batchSize) {
+    long start = System.nanoTime();
+    GetConnection.withContext(context -> {
+      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
+      ProgressBarBuilder barBuilder =
+          new ProgressBarBuilder()
+              .setStyle(ProgressBarStyle.ASCII)
+              .setConsumer(new ConsoleProgressBarConsumer(System.out));
+      UpdateInstructors.updateInstructors(
+          context,
+          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
+                           barBuilder),
+          batchSize);
+    }
+
+    );
+
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
+  }
+
   @CommandLine.Command(
       name = "query", sortOptions = false, headerHeading = "Usage:%n%n",
       synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
@@ -94,10 +123,6 @@ public class Database implements Runnable {
   public void
   query(@CommandLine.Mixin TermMixin termMixin,
         @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
-        @CommandLine.
-        Option(names = "--batch-size",
-               description = "batch size if query more than one catalog")
-        Integer batchSize,
         @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
     GetConnection.withContext(

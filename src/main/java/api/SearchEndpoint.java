@@ -1,22 +1,19 @@
 package api;
 
-import static database.SelectCoursesBySectionId.*;
+import static database.courses.SelectCoursesBySectionId.*;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
 
 import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
-import database.SelectCourses;
 import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import nyu.SubjectCode;
 import nyu.Term;
-import org.jetbrains.annotations.NotNull;
 import search.SearchCourses;
 
 class SearchEndpoint extends Endpoint {

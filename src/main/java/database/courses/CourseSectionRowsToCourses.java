@@ -1,4 +1,4 @@
-package database;
+package database.courses;
 
 import api.models.Course;
 import api.models.Section;

@@ -1,4 +1,4 @@
-package database;
+package database.courses;
 
 import database.generated.Tables;
 import database.generated.tables.Courses;
@@ -29,7 +29,7 @@ import scraping.models.Section;
 public class InsertCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("database.InsertCourses");
+      LoggerFactory.getLogger("database.courses.InsertCourses");
 
   public static ArrayList<SectionID> insertCourses(DSLContext context,
                                                    Term term, int epoch,

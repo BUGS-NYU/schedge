@@ -2,6 +2,7 @@ package utils;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -29,7 +30,14 @@ public class SimpleBatchedFutureEngine<Input, Output>
   private Iterator<Input> inputData;
   private BiFunction<Input, Integer, Future<Output>> callback;
 
-  public SimpleBatchedFutureEngine(
+
+    public SimpleBatchedFutureEngine(
+            SimpleBatchedFutureEngine<? extends Object, Input> inputData, int batchSize,
+            BiFunction<Input, Integer, Future<Output>> callback) {
+        this(inputData.iterator(), batchSize, callback);
+    }
+
+    public SimpleBatchedFutureEngine(
       Iterable<Input> inputData, int batchSize,
       BiFunction<Input, Integer, Future<Output>> callback) {
     this(inputData.iterator(), batchSize, callback);
@@ -104,7 +112,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
   public boolean hasNext() { return pendingRequests > 0; }
 
   // @TODO Remove null checks from all of the methods in this class
-  private Output checkMailboxes() {
+  private Optional<Output> checkMailboxes() {
     for (int i = 0; i < pendingRequests; i++) {
       @SuppressWarnings("unchecked")
       Future<Output> future = (Future<Output>)mailboxes[i];
@@ -119,8 +127,8 @@ public class SimpleBatchedFutureEngine<Input, Output>
           mailboxes[pendingRequests] = null;
         }
 
-        if (value != null)
-          return value;
+        if (value == null) return Optional.empty();
+        else return Optional.of(value);
       }
     }
     return null;
@@ -131,11 +139,11 @@ public class SimpleBatchedFutureEngine<Input, Output>
     if (pendingRequests <= 0)
       throw new NoSuchElementException();
 
-    Output fetchedResult;
+    Optional<Output> fetchedResult;
     while (pendingRequests > 0) {
       fetchedResult = checkMailboxes();
       if (fetchedResult != null) {
-        return fetchedResult;
+        return fetchedResult.orElse(null);
       } else {
         try {
           Thread.sleep(timeout);

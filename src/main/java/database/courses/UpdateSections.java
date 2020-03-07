@@ -1,17 +1,16 @@
-package database;
+package database.courses;
 
 import static scraping.query.QuerySection.querySectionAsync;
 
+import database.instructors.UpsertInstructor;
 import database.generated.Tables;
 import database.generated.tables.Sections;
 import database.models.SectionID;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.Iterator;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
@@ -24,7 +23,7 @@ import utils.SimpleBatchedFutureEngine;
  */
 public class UpdateSections {
   private static Logger logger =
-      LoggerFactory.getLogger("database.UpdateSections");
+      LoggerFactory.getLogger("database.courses.UpdateSections");
 
   private static class SaveState {
     SubjectCode code;
@@ -57,17 +56,20 @@ public class UpdateSections {
 
     while (sectionAttributes.hasNext()) {
       SaveState save = sectionAttributes.next();
-      SectionAttribute s = null;
+
+      if (save == null)
+        continue;
+
+      SectionAttribute s;
       try {
         s = ParseSection.parse(save.data);
-
       } catch (NullPointerException e) {
-        logger.warn("Parse error on registrationNumber: " +
+        logger.warn("Parse error on registrationNumber=" +
                     save.registrationNumber);
         throw e;
       }
       if (s == null) {
-        logger.warn("Parse error on registrationNumber: " +
+        logger.warn("Parse error on registrationNumber=" +
                     save.registrationNumber);
         continue;
       }

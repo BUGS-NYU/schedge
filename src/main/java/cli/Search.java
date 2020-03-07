@@ -35,6 +35,7 @@ public final class Search implements Runnable {
   private @CommandLine.Mixin OutputFileMixin outputFileMixin;
   private String[] args;
 
+  @CommandLine.Option(names="--query", description="Query to execute.")
   private static Logger logger = LoggerFactory.getLogger("cli.Search");
 
   @Override

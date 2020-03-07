@@ -8,10 +8,6 @@ import database.courses.SelectCourseSectionRows;
 import database.courses.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
 import database.models.CourseSectionRow;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -22,6 +18,11 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import search.SearchCourses;
 import search.UpdateIndex;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @CommandLine.Command(name = "search", synopsisSubcommandLabel = "label",
                      description = "Search in term.")

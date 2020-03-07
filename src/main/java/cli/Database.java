@@ -7,28 +7,11 @@ import api.App;
 import cli.templates.OutputFileMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
-import database.*;
-import database.courses.InsertCourses;
+import database.GetConnection;
 import database.courses.SelectCourses;
-import database.courses.UpdateSections;
 import database.epochs.CleanEpoch;
-import database.epochs.CompleteEpoch;
-import database.epochs.GetNewEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
-import database.models.SectionID;
-
-import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Timer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -37,7 +20,11 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.ScrapeCatalog;
+
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")

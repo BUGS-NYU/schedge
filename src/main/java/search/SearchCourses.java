@@ -1,16 +1,13 @@
 package search;
 
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
 
 public class SearchCourses {
   private static QueryParser nameQueryParser =

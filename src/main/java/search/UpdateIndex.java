@@ -1,13 +1,13 @@
 package search;
 
+import database.models.CourseSectionRow;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexWriter;
+
 import java.io.IOException;
 import java.util.stream.Stream;
-
-import database.models.CourseSectionRow;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryparser.xml.builders.BoostingTermBuilder;
-import org.apache.lucene.search.BoostAttribute;
 
 public class UpdateIndex {
 

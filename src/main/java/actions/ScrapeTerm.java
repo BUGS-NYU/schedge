@@ -1,16 +1,18 @@
 package actions;
 
+import static database.SelectCourseSectionRows.*;
+
 import database.GetConnection;
 import database.InsertCourses;
-import database.SelectCourseSectionRows;
 import database.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
+import database.models.CourseSectionRow;
 import database.models.SectionID;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 import nyu.SubjectCode;
 import nyu.Term;
 import scraping.ScrapeCatalog;
@@ -33,11 +35,9 @@ public final class ScrapeTerm {
 
       UpdateSections.updateSections(context, term, s, batchSizeSections);
 
-      Stream<SelectCourseSectionRows.CourseSectionRow> rows =
-          StreamSupport.stream(SubjectCode.allSubjects().spliterator(), false)
-              .flatMap(code
-                       -> SelectCourseSectionRows.selectCourseSectionRows(
-                           context, epoch, code));
+      Stream<CourseSectionRow> rows =
+          SubjectCode.allSubjects().stream().flatMap(
+              code -> selectCourseSectionRows(context, epoch, code));
       UpdateIndex.updateIndex(epoch, rows);
 
       CompleteEpoch.completeEpoch(context, term, epoch);

@@ -7,11 +7,12 @@ import database.GetConnection;
 import database.SelectCourseSectionRows;
 import database.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
-import java.sql.Connection;
-import java.sql.SQLException;
+
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import database.models.CourseSectionRow;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -79,7 +80,7 @@ public final class Search implements Runnable {
 
     GetConnection.withContext(context -> {
       int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
-      Stream<SelectCourseSectionRows.CourseSectionRow> rows =
+      Stream<CourseSectionRow> rows =
           StreamSupport
               .stream(ProgressBar.wrap(SubjectCode.allSubjects(), barBuilder)
                           .spliterator(),

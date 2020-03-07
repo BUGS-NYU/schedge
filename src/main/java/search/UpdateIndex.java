@@ -1,22 +1,17 @@
 package search;
 
-import database.GetConnection;
-import database.SelectCourseSectionRows;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.stream.Stream;
-import nyu.SubjectCode;
-import nyu.Term;
+
+import database.models.CourseSectionRow;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 
 public class UpdateIndex {
 
   public static void
   updateIndex(int epoch,
-              Stream<SelectCourseSectionRows.CourseSectionRow> rows) {
+              Stream<CourseSectionRow> rows) {
     IndexWriter writer =
         GetResources.getWriter(epoch);
     rows.forEach(row -> {

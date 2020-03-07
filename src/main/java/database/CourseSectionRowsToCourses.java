@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
+
+import database.models.CourseSectionRow;
 
 public class CourseSectionRowsToCourses {
   public static Stream<Course> courseSectionRowsToCourses(
-      Stream<SelectCourseSectionRows.CourseSectionRow> rows) {
+      Stream<CourseSectionRow> rows) {
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
-    List<SelectCourseSectionRows.CourseSectionRow> recitationRecords =
+    List<CourseSectionRow> recitationRecords =
         rows.map(row -> {
               if (!courses.containsKey(row.courseId))
                 courses.put(row.courseId,

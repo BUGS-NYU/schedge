@@ -80,6 +80,7 @@ public class App {
     new SubjectsEndpoint().addTo(app);
     new SchoolsEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
+    new SearchEndpoint().addTo(app);
   }
 
   private static SslContextFactory getSslContextFactory() {

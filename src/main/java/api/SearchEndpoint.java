@@ -1,21 +1,25 @@
 package api;
 
+import static database.SelectCoursesBySectionId.*;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
 
 import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
 import database.SelectCourses;
+import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jetbrains.annotations.NotNull;
+import search.SearchCourses;
 
-class CoursesEndpoint extends Endpoint {
+class SearchEndpoint extends Endpoint {
 
   enum SemesterCode {
     su,
@@ -24,15 +28,15 @@ class CoursesEndpoint extends Endpoint {
     ja;
   }
 
-  String getPath() { return "/:year/:semester/:school/:subject"; }
+  String getPath() { return "/:year/:semester/search"; }
 
   OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
           // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
-              "This endpoint returns a list of courses for a specific year, semester, school, and subject.");
-          openApiOperation.summary("Courses Endpoint");
+              "This endpoint returns a list of courses for a year and semester, given search terms.");
+          openApiOperation.summary("Search Endpoint");
         })
         .pathParam("year", Integer.class,
                    openApiParam -> {
@@ -42,17 +46,16 @@ class CoursesEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
-        .pathParam(
-            "school", String.class,
+        .queryParam("query", String.class,
+                    openApiParam -> {
+                      openApiParam.description(
+                          "A query string to pass to the search engine.");
+                    })
+        .queryParam(
+            "limit", String.class,
             openApiParam -> {
               openApiParam.description(
-                  "Must be a valid school code. Take a look at the docs for the schools endpoint for more information.");
-            })
-        .pathParam(
-            "subject", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid subject code. Take a look at the docs for the subjects endpoint for more information.");
+                  "The maximum number of results to return. Capped at 200.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -87,23 +90,46 @@ class CoursesEndpoint extends Endpoint {
       }
 
       Term term;
-      SubjectCode subject;
       try {
         term = new Term(ctx.pathParam("semester"), year);
-        subject =
-            new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
-        subject.checkValid();
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
         return;
       }
 
+      String args = ctx.queryParam("query");
+      if (args == null) {
+        ctx.status(400);
+        ctx.json(new ApiError("Need to provide a query messager."));
+        return;
+      }
+
+      String resultSizeString = ctx.queryParam("limit");
+
+      Integer resultSizeValue;
+      try {
+        resultSizeValue = resultSizeString == null
+                              ? null
+                              : Integer.parseInt(resultSizeString);
+        if (resultSizeValue != null && resultSizeValue > 200)
+          resultSizeValue = 200;
+
+      } catch (NumberFormatException e) {
+        ctx.status(400);
+        ctx.json(new ApiError("Limit needs to be an integer."));
+        return;
+      }
+
+      Integer resultSize = resultSizeValue;
       ctx.status(200);
-      Object output = GetConnection.withContextReturning(
-          context
-          -> SelectCourses.selectCourses(context, term,
-                                         Arrays.asList(subject)));
+      Object output = GetConnection.withContextReturning(context -> {
+        int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+        List<Integer> result =
+            SearchCourses.searchCourses(epoch, args, resultSize);
+
+        return selectCoursesBySectionId(context, epoch, result);
+      });
       ctx.json(output);
     };
   }

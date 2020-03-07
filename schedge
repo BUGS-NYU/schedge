@@ -22,12 +22,14 @@ if [ -f "$PROJ_DIR/.env" ]; then
 fi
 
 if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
-  if [ -f "$PROJ_DIR/.pid" ]; then
-    (cat "$PROJ_DIR/.pid" | sudo xargs kill) || exit
-  fi
-
   echo "Running in disowned process as root..."
   sudo echo -n "" || exit
+
+  if [ -f "$PROJ_DIR/.pid" ]; then
+    (cat "$PROJ_DIR/.pid" | sudo xargs kill)
+    rm .pid
+  fi
+
   sudo -E java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
     -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ \
     2> "$PROJ_DIR/logging.txt" & disown

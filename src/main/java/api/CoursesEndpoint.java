@@ -5,7 +5,7 @@ import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType
 import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
-import database.SelectCourses;
+import database.courses.SelectCourses;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import nyu.SubjectCode;
 import nyu.Term;
-import org.jetbrains.annotations.NotNull;
 
 class CoursesEndpoint extends Endpoint {
 

@@ -14,62 +14,69 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
 
 public final class GetRatings {
 
-  private static Logger logger =
-      LoggerFactory.getLogger("scraping.rating.GetRatings");
+  private static Logger logger = LoggerFactory.getLogger("scraping.GetRatings");
   private static final String RMP_ROOT_URL =
       "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=";
   private static final String RMP_URL =
       "https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolID=675&query=";
 
-  private static class FirstScrapeResult {
-    long link;
-    float rating;
-
-    public FirstScrapeResult(long link, float rating) {
-      this.link = link;
-      this.rating = rating;
-    }
-  }
-
-  public static Stream<Rating> getRatings(Iterator<String> names,
+  public static Stream<Rating> getRatings(Iterator<Instructor> names,
                                           Integer batchSizeNullable) {
-    return getScrapeResult(names, batchSizeNullable)
-        .map(firstScrapeResult
-             -> new Rating(firstScrapeResult.link, firstScrapeResult.rating));
-  }
-
-  private static Stream<FirstScrapeResult>
-  getScrapeResult(Iterator<String> names, Integer batchSizeNullable) {
     int batchSize = batchSizeNullable != null
                         ? batchSizeNullable
-                        : 100; // @Performance what should this number be?
-    return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<>(
-                    names, batchSize,
-                    (name, __) -> {
-                      try {
-                        String link = parseLink(getLinkAsync(name).get());
-                        return queryRatingAsync(link);
-                      } catch (Exception e) {
-                        throw new RuntimeException(e);
-                      }
-                    })
-                    .spliterator(),
-                false)
+                        : 50; // @Performance what should this number be?
+
+    // @TODO Change this to actually be correct in terms of types used
+    SimpleBatchedFutureEngine<Instructor, Instructor> instructorResults =
+        new SimpleBatchedFutureEngine<>(
+            names, batchSize, (instructor, __) -> getLinkAsync(instructor));
+
+    SimpleBatchedFutureEngine<Instructor, Rating> engine =
+        new SimpleBatchedFutureEngine<>(
+            instructorResults, batchSize, (instructor, __) -> {
+              try {
+                return queryRatingAsync(instructor.name, instructor.id);
+              } catch (Exception e) {
+                throw new RuntimeException(e);
+              }
+            });
+
+    return StreamSupport.stream(engine.spliterator(), false)
         .filter(i -> i != null);
   }
 
-  public static Future<String> getLinkAsync(String name) {
-    return getLink(name, str -> str);
+  public static Future<Instructor> getLinkAsync(Instructor instructor) {
+    String param = instructor.name.replaceAll("\\s+", "+");
+    Request request = new RequestBuilder()
+                          .setUri(Uri.create(RMP_URL + param))
+                          .setRequestTimeout(60000)
+                          .setMethod("GET")
+                          .build();
+    return GetClient.getClient()
+        .executeRequest(request)
+        .toCompletableFuture()
+        .handleAsync((resp, throwable) -> {
+          if (resp == null) {
+            logger.error(throwable.getMessage());
+            return null;
+          }
+          String link = parseLink(resp.getResponseBody());
+          if (link == null)
+            ;
+          // logger.warn("Instructor query " + instructor.name +
+          //             " returned no results.");
+          return new Instructor(instructor.id, link);
+        });
   }
 
-  private static Future<FirstScrapeResult> queryRatingAsync(String url) {
+  private static Future<Rating> queryRatingAsync(String url, int id) {
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_ROOT_URL + url))
                           .setRequestTimeout(60000)
@@ -85,42 +92,25 @@ public final class GetRatings {
             return null;
           }
           if (url == null) {
-            return new FirstScrapeResult(0, 0);
+            // logger.warn("URL is null for id=" + id);
+            return new Rating(id, -1, -1.0f);
           }
-          return new FirstScrapeResult(
-              Long.parseLong(url),
-              Float.parseFloat(parseRating(resp.getResponseBody())));
+
+          return new Rating(id, Integer.parseInt(url),
+                            parseRating(resp.getResponseBody()));
         });
   }
 
-  private static <T> Future<T> getLink(String name,
-                                       Function<String, T> transform) {
-    String param = name.replaceAll("\\s+", "+");
-    Request request = new RequestBuilder()
-                          .setUri(Uri.create(RMP_URL + param))
-                          .setRequestTimeout(60000)
-                          .setMethod("GET")
-                          .build();
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error(throwable.getMessage());
-            return null;
-          }
-          return transform.apply(resp.getResponseBody());
-        });
-  }
-
-  private static String parseRating(String rawData) {
+  private static Float parseRating(String rawData) {
     rawData = rawData.trim();
     if (rawData == null || rawData.equals("")) {
-      logger.warn("Got bad data: empty string");
+      // logger.warn("Got bad data: empty string");
       return null;
     }
     Document doc = Jsoup.parse(rawData);
     Element body = doc.selectFirst("div#root");
+    if (body == null)
+      return null;
     Element ratingBody =
         body.selectFirst("div.TeacherInfo__StyledTeacher-ti1fio-1.fIlNyU");
     Element ratingInnerBody = ratingBody.selectFirst("div").selectFirst(
@@ -129,7 +119,7 @@ public final class GetRatings {
         ratingInnerBody
             .selectFirst("div.RatingValue__Numerator-qw8sqy-2.gxuTRq")
             .html();
-    return ratingValue;
+    return Float.parseFloat(ratingValue);
   }
 
   private static String parseLink(String rawData) {
@@ -149,7 +139,7 @@ public final class GetRatings {
     Element listings = resBox.selectFirst("div.listings-wrap");
 
     if (listings == null) {
-      logger.warn("No search Result");
+      // logger.warn("No search Result");
       return null;
     }
 

@@ -1,4 +1,4 @@
-package database;
+package database.courses;
 
 import static database.generated.Tables.*;
 

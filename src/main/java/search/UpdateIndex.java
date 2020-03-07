@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexWriter;
 import org.jooq.DSLContext;
 import org.jooq.impl.DSL;
 
@@ -16,8 +17,8 @@ public class UpdateIndex {
   public static void
   updateIndex(int epoch,
               Stream<SelectCourseSectionRows.CourseSectionRow> rows) {
-    GetResources.SearchContext searchContext =
-        GetResources.getSearchContext(epoch);
+    IndexWriter writer =
+        GetResources.getWriter(epoch);
     rows.forEach(row -> {
       Document doc = new Document();
       doc.add(new TextField("name",
@@ -37,14 +38,14 @@ public class UpdateIndex {
       doc.add(new StringField("school", row.subject.school, Field.Store.YES));
 
       try {
-        searchContext.writer.addDocument(doc);
+        writer.addDocument(doc);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     });
 
     try {
-      searchContext.writer.close();
+      writer.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

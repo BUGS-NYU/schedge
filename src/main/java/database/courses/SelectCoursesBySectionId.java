@@ -18,7 +18,7 @@ public class SelectCoursesBySectionId {
                            List<Integer> sectionIds) {
     Stream<CourseSectionRow> rows =
         SelectCourseSectionRows.selectCourseSectionRows(
-            context, COURSES.EPOCH.eq(epoch), SECTIONS.ID.in(sectionIds));
+            context, COURSES.EPOCH.eq(epoch), SECTIONS.ID.in(sectionIds).or(SECTIONS.ASSOCIATED_WITH.in(sectionIds)));
     return CourseSectionRowsToCourses.courseSectionRowsToCourses(rows).collect(
         Collectors.toList());
   }

@@ -5,6 +5,12 @@ import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 import database.models.SectionID;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import nyu.SectionType;
 import nyu.Term;
 import org.jooq.DSLContext;
@@ -16,13 +22,6 @@ import scraping.models.Course;
 import scraping.models.Meeting;
 import scraping.models.Section;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class insert courses into the Postgresql database based on
  * the data scraped from Albert Mobile
@@ -32,33 +31,28 @@ public class InsertCourses {
   private static Logger logger =
       LoggerFactory.getLogger("database.InsertCourses");
 
-  public static ArrayList<SectionID> insertCourses(Term term, int epoch,
+  public static ArrayList<SectionID> insertCourses(DSLContext context,
+                                                   Term term, int epoch,
                                                    List<Course> courses) {
-    try (Connection conn = GetConnection.getConnection()) {
-      DSLContext context = DSL.using(conn, GetConnection.DIALECT);
-      Courses COURSES = Tables.COURSES;
+    Courses COURSES = Tables.COURSES;
 
-      ArrayList<SectionID> states = new ArrayList<>();
-      for (Course c : courses) {
-        context.transaction(config -> {
-          DSLContext ctx = DSL.using(config);
+    ArrayList<SectionID> states = new ArrayList<>();
+    for (Course c : courses) {
+      context.transaction(config -> {
+        DSLContext ctx = DSL.using(config);
 
-          int id =
-              ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
-                             COURSES.SCHOOL, COURSES.SUBJECT,
-                             COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
-                  .values(epoch, c.getName(), c.getSchool(), c.getSubject(),
-                          c.getDeptCourseId(), term.getId())
-                  .returning(COURSES.ID)
-                  .fetchOne()
-                  .getValue(COURSES.ID);
-          insertSections(ctx, id, c.getSections(), states);
-        });
-      }
-      return states;
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
+        int id = ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
+                                COURSES.SCHOOL, COURSES.SUBJECT,
+                                COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
+                     .values(epoch, c.getName(), c.getSchool(), c.getSubject(),
+                             c.getDeptCourseId(), term.getId())
+                     .returning(COURSES.ID)
+                     .fetchOne()
+                     .getValue(COURSES.ID);
+        insertSections(ctx, id, c.getSections(), states);
+      });
     }
+    return states;
   }
 
   public static void insertSections(DSLContext context, int courseId,
@@ -78,7 +72,8 @@ public class InsertCourses {
                      .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
                      .fetchOne();
 
-      SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID), s.getRegistrationNumber());
+      SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID),
+                                      s.getRegistrationNumber());
       states.add(state);
       insertMeetings(context, state.id, s.getMeetings());
       if (s.getRecitations() != null)
@@ -111,7 +106,8 @@ public class InsertCourses {
                       s.getWaitlistTotal(), associatedWith)
               .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
               .fetchOne();
-        SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID), s.getRegistrationNumber());
+      SectionID state = new SectionID(s.getSubjectCode(), r.get(SECTIONS.ID),
+                                      s.getRegistrationNumber());
       states.add(state);
       insertMeetings(context, state.id, s.getMeetings());
     }

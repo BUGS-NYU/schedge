@@ -25,3 +25,4 @@ src/main/java/database/generated
 src/main/resources/keystore.jks
 
 /local/*
+/index/*

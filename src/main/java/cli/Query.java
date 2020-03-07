@@ -45,9 +45,8 @@ public class Query implements Runnable {
           @CommandLine.Mixin OutputFileMixin outputFile) {
 
     long start = System.nanoTime();
-
     outputFile.writeOutput(QueryCatalog.queryCatalog(
-            termMixin.getTerm(), subjectCodes.getSubjectCodes(), batchSize));
+        termMixin.getTerm(), subjectCodes.getSubjectCodes(), batchSize));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

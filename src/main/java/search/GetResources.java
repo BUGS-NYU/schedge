@@ -35,9 +35,17 @@ public class GetResources {
                      Integer.toString(epoch));
   }
 
+    public static File getIndexFileForEpoch(int epoch) {
+        return new File(String.valueOf(getIndexPathForEpoch(epoch)));
+    }
+
+  public static boolean alreadyUpdated(int epoch) {
+    return getIndexFileForEpoch(epoch).exists();
+  }
+
   private static SearchContext getSearchContext(int epoch) {
     synchronized (contexts) {
-      if (contexts.containsKey(epoch)) {
+      if (contexts.containsKey(epoch) && alreadyUpdated(epoch)) {
         return contexts.get(epoch);
       } else {
         SearchContext context = new SearchContext(epoch);
@@ -45,6 +53,14 @@ public class GetResources {
         return context;
       }
     }
+  }
+
+  public static void closeIndex(int epoch) {
+      synchronized (contexts) {
+          if (contexts.containsKey(epoch)) {
+              contexts.remove(epoch);
+          }
+      }
   }
 
   public static IndexWriter getWriter(int epoch) {
@@ -56,7 +72,7 @@ public class GetResources {
   }
 
   public static IndexSearcher getSearcher(int epoch) {
-    if (new File(String.valueOf(getIndexPathForEpoch(epoch))).exists()) {
+    if (alreadyUpdated(epoch)) {
       return getSearchContext(epoch).getSearcher();
     }
     logger.warn("Writer hasn't built index yet for reader of epoch=" + epoch);

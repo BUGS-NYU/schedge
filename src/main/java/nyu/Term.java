@@ -1,5 +1,6 @@
 package nyu;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Term {
@@ -29,6 +30,40 @@ public final class Term {
       throw new IllegalArgumentException("Year was invalid: " + year);
     if (semester != 2 && semester != 4 && semester != 6 && semester != 8)
       throw new IllegalArgumentException("Semester was invalid: " + semester);
+  }
+
+  // @TODO Make this more accurate
+  public static int getSemester(LocalDateTime time) {
+      switch (time.getMonth()) {
+          case JANUARY:
+              return JANUARY;
+          case FEBRUARY:
+          case MARCH:
+          case APRIL:
+          case MAY:
+              return SPRING;
+          case JUNE:
+          case JULY:
+          case AUGUST:
+              return SUMMER;
+          case SEPTEMBER:
+          case OCTOBER:
+          case NOVEMBER:
+          case DECEMBER:
+              return FALL;
+          default:
+              throw new RuntimeException("Did they add another month? month=" + time.getMonth());
+      }
+  }
+
+  public static int getCurrentSemester() {
+      return getSemester(LocalDateTime.now());
+  }
+
+  public static Term getCurrentTerm() {
+      LocalDateTime now = LocalDateTime.now();
+      int year = now.getYear();
+      return new Term(getSemester(now), year);
   }
 
   public static int semesterFromString(String sem) {

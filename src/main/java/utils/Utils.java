@@ -70,13 +70,12 @@ public final class Utils {
     }
   }
 
-    void deleteFile(File f) throws IOException {
+    public static boolean deleteFile(File f) {
         if (f.isDirectory()) {
             for (File c : f.listFiles())
                 deleteFile(c);
         }
-        if (!f.delete())
-            throw new FileNotFoundException("Failed to delete file: " + f);
+        return f.delete();
     }
 
 }

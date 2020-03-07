@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 import database.models.CourseSectionRow;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryparser.xml.builders.BoostingTermBuilder;
+import org.apache.lucene.search.BoostAttribute;
 
 public class UpdateIndex {
 
@@ -16,9 +18,10 @@ public class UpdateIndex {
         GetResources.getWriter(epoch);
     rows.forEach(row -> {
       Document doc = new Document();
-      doc.add(new TextField("name",
-                            row.sectionName == null ? "" : row.sectionName,
-                            Field.Store.YES));
+      Field nameField = new TextField("name",
+              row.sectionName == null ? "" : row.sectionName,
+              Field.Store.YES);
+      doc.add(nameField);
       doc.add(new TextField("description",
                             row.description == null ? "" : row.description,
                             Field.Store.YES));

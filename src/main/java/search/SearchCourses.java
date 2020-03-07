@@ -1,42 +1,50 @@
 package search;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class SearchCourses {
 
-    public static List<Integer> searchCourses(int epoch, String queryString, Integer totalNullable) {
+  public static List<Integer> searchCourses(int epoch, String queryString,
+                                            Integer totalNullable) {
 
-        IndexSearcher searcher = GetResources.getSearcher(epoch);
-        QueryParser qParser = new MultiFieldQueryParser(new String[]{"name", "description", "instructors"}, GetResources.analyzer);
-        Query query;
-        try {
-            query = qParser.parse(queryString);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+    IndexSearcher searcher = GetResources.getSearcher(epoch);
+    TermQuery nameQuery = new TermQuery(new Term("name", queryString));
+    TermQuery descQuery = new TermQuery(new Term("description", queryString));
+    TermQuery instrQuery = new TermQuery(new Term("instructors", queryString));
 
-        ScoreDoc[] hits;
-        int total = totalNullable != null ? totalNullable : 100;
-        try {
-            hits = searcher.search(query, total).scoreDocs;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    Query query =
+        new BooleanQuery.Builder()
+            .add(new BoostQuery(nameQuery, 2.0f), BooleanClause.Occur.SHOULD)
+            .add(new BoostQuery(instrQuery, 1.1f), BooleanClause.Occur.SHOULD)
+            .add(descQuery, BooleanClause.Occur.SHOULD)
+            .build();
 
-        return Stream.of(hits).map(hit -> {
-            try {
-                return searcher.doc(hit.doc);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }).map(doc -> Integer.parseInt(doc.get("id"))).collect(Collectors.toList());
+    ScoreDoc[] hits;
+    int total = totalNullable != null ? totalNullable : 100;
+    try {
+      hits = searcher.search(query, total).scoreDocs;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+
+    return Stream.of(hits)
+        .map(hit -> {
+          try {
+            return searcher.doc(hit.doc);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .map(doc -> Integer.parseInt(doc.get("id")))
+        .collect(Collectors.toList());
+  }
 }

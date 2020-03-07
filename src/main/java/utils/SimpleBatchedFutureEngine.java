@@ -1,6 +1,4 @@
-package scraping;
-
-import org.jetbrains.annotations.NotNull;
+package utils;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -8,6 +6,8 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.
@@ -104,7 +104,7 @@ public class SimpleBatchedFutureEngine<Input, Output>
   public boolean hasNext() { return pendingRequests > 0; }
 
   // @TODO Remove null checks from all of the methods in this class
-  public Output checkMailboxes() {
+  private Output checkMailboxes() {
     for (int i = 0; i < pendingRequests; i++) {
       @SuppressWarnings("unchecked")
       Future<Output> future = (Future<Output>)mailboxes[i];

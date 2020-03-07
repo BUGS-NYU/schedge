@@ -6,7 +6,7 @@ import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.SimpleBatchedFutureEngine;
+import utils.SimpleBatchedFutureEngine;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

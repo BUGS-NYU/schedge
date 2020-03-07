@@ -2,7 +2,6 @@ package database.courses;
 
 import api.models.Course;
 import database.epochs.LatestCompleteEpoch;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,11 +16,8 @@ public class SelectCourses {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectCourses");
 
-  public static List<Course> selectCourses(DSLContext context, Term term,
+  public static List<Course> selectCourses(DSLContext context, int epoch,
                                            List<SubjectCode> codes) {
-    int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
-    if (epoch == -1)
-      Collections.emptyList();
     return codes.stream()
         .flatMap(code -> selectCourses(context, epoch, code))
         .collect(Collectors.toList());

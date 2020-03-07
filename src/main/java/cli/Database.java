@@ -11,6 +11,7 @@ import database.courses.UpdateSections;
 import database.epochs.CleanEpoch;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
+import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
 import database.models.SectionID;
 import java.util.Iterator;
@@ -125,10 +126,16 @@ public class Database implements Runnable {
         @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
         @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
-    GetConnection.withContext(
-        context
-        -> outputFile.writeOutput(SelectCourses.selectCourses(
-            context, termMixin.getTerm(), subjectCodeMixin.getSubjectCodes())));
+    GetConnection.withContext(context -> {
+      Term term = termMixin.getTerm();
+      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      if (epoch == null) {
+        logger.warn("No completed epoch for term=" + term);
+        return;
+      }
+      outputFile.writeOutput(SelectCourses.selectCourses(
+          context, epoch, subjectCodeMixin.getSubjectCodes()));
+    });
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

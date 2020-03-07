@@ -6,11 +6,13 @@ import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
 import database.courses.SelectCourses;
+import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import nyu.SubjectCode;
 import nyu.Term;
 
@@ -99,10 +101,14 @@ class CoursesEndpoint extends Endpoint {
       }
 
       ctx.status(200);
-      Object output = GetConnection.withContextReturning(
-          context
-          -> SelectCourses.selectCourses(context, term,
-                                         Arrays.asList(subject)));
+      Object output = GetConnection.withContextReturning(context -> {
+        Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+        if (epoch == null) {
+          return Collections.emptyList();
+        }
+        return SelectCourses.selectCourses(context, epoch,
+                                           Arrays.asList(subject));
+      });
       ctx.json(output);
     };
   }

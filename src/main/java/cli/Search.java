@@ -7,12 +7,10 @@ import database.GetConnection;
 import database.SelectCourseSectionRows;
 import database.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
-
+import database.models.CourseSectionRow;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import database.models.CourseSectionRow;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -24,31 +22,23 @@ import picocli.CommandLine;
 import search.SearchCourses;
 import search.UpdateIndex;
 
-@CommandLine.Command(name = "search", synopsisSubcommandLabel = "label")
+@CommandLine.Command(name = "search", synopsisSubcommandLabel = "label",
+                     description = "Search in term.")
 public final class Search implements Runnable {
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+
+  private @CommandLine.Mixin TermMixin termMixin;
+  @CommandLine.
+  Option(names = "--result-size", description = "Maximum number of results")
+  private Integer resultSize;
+  private @CommandLine.Mixin OutputFileMixin outputFileMixin;
+  private String[] args;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Search");
 
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(spec.commandLine(),
-                                             "Missing required subcommand");
-  }
-
-  @CommandLine.
-  Command(name = "term", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Update search index",
-          description = "Search in term.")
-  public void
-  term(@CommandLine.Mixin TermMixin termMixin,
-       @CommandLine.Option(names = "--result-size",
-                           description = "Maximum number of results")
-       Integer resultSize,
-       @CommandLine.Mixin OutputFileMixin outputFileMixin, String... args) {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     GetConnection.withContext(context -> {

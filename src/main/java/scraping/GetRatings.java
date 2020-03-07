@@ -69,9 +69,8 @@ public final class GetRatings {
           }
           String link = parseLink(resp.getResponseBody());
           if (link == null)
-            ;
-          // logger.warn("Instructor query " + instructor.name +
-          //             " returned no results.");
+           logger.warn("Instructor query " + instructor.name +
+                       " returned no results.");
           return new Instructor(instructor.id, link);
         });
   }
@@ -92,7 +91,7 @@ public final class GetRatings {
             return null;
           }
           if (url == null) {
-            // logger.warn("URL is null for id=" + id);
+             logger.warn("URL is null for id=" + id);
             return new Rating(id, -1, -1.0f);
           }
 
@@ -104,7 +103,7 @@ public final class GetRatings {
   private static Float parseRating(String rawData) {
     rawData = rawData.trim();
     if (rawData == null || rawData.equals("")) {
-      // logger.warn("Got bad data: empty string");
+      logger.warn("Got bad data: empty string");
       return null;
     }
     Document doc = Jsoup.parse(rawData);

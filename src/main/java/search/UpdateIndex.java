@@ -29,8 +29,6 @@ public class UpdateIndex {
                                ? "Staff"
                                : String.join(" ; ", row.instructors);
       doc.add(new TextField("instructors", instructors, Field.Store.YES));
-      doc.add(new StringField("subject", row.subject.code, Field.Store.YES));
-      doc.add(new StringField("school", row.subject.school, Field.Store.YES));
 
       try {
         writer.addDocument(doc);

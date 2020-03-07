@@ -9,8 +9,6 @@ import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
 import database.models.CourseSectionRow;
 import database.models.SectionID;
-import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -25,10 +23,10 @@ import utils.Utils;
 
 public class ScrapeTerm {
 
-    public static void
-    scrapeTerm(Term term, Integer batchSize, Integer batchSizeSections) {
-        scrapeTerm(term, batchSize, batchSizeSections, i -> i);
-    }
+  public static void scrapeTerm(Term term, Integer batchSize,
+                                Integer batchSizeSections) {
+    scrapeTerm(term, batchSize, batchSizeSections, i -> i);
+  }
 
   public static void
   scrapeTerm(Term term, Integer batchSize, Integer batchSizeSections,

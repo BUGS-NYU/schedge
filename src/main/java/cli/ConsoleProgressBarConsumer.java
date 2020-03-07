@@ -1,10 +1,11 @@
 package cli;
 
-import java.io.IOException;
-import java.io.PrintStream;
 import me.tongfei.progressbar.ProgressBarConsumer;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+
+import java.io.IOException;
+import java.io.PrintStream;
 
 public class ConsoleProgressBarConsumer implements ProgressBarConsumer {
 

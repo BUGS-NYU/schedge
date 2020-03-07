@@ -1,15 +1,13 @@
 package database.instructors;
 
-import static database.generated.Tables.INSTRUCTORS;
+import org.jooq.DSLContext;
+import scraping.GetRatings;
+import scraping.models.Instructor;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import scraping.GetRatings;
-import scraping.models.Instructor;
+import static database.generated.Tables.INSTRUCTORS;
 
 public class UpdateInstructors {
 

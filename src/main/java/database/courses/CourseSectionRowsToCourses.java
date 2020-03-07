@@ -3,6 +3,7 @@ package database.courses;
 import api.models.Course;
 import api.models.Section;
 import database.models.CourseSectionRow;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

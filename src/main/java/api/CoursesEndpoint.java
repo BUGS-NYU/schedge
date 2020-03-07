@@ -1,7 +1,5 @@
 package api;
 
-import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-
 import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
@@ -10,11 +8,14 @@ import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
+import nyu.SubjectCode;
+import nyu.Term;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import nyu.SubjectCode;
-import nyu.Term;
+
+import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
 
 class CoursesEndpoint extends Endpoint {
 

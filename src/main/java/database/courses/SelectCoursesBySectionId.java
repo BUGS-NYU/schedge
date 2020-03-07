@@ -1,15 +1,15 @@
 package database.courses;
 
-import static database.generated.Tables.*;
-
 import api.models.Course;
+import database.models.CourseSectionRow;
+import org.jooq.DSLContext;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import database.models.CourseSectionRow;
-import org.jooq.DSLContext;
+import static database.generated.Tables.COURSES;
+import static database.generated.Tables.SECTIONS;
 
 public class SelectCoursesBySectionId {
 

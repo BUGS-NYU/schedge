@@ -1,19 +1,14 @@
 package database.epochs;
 
-import database.GetConnection;
-import database.generated.Tables;
-import database.generated.tables.Epochs;
 import nyu.Term;
 import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Timestamp;
-import static database.generated.Tables.*;
 import java.time.Instant;
+
+import static database.generated.Tables.EPOCHS;
 
 public final class GetNewEpoch {
 

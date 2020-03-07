@@ -4,6 +4,7 @@ RUN mkdir -p /home/gradle/schedge/.build/libs
 WORKDIR /home/gradle/schedge
 
 COPY --chown=gradle:gradle ./local local
+COPY --chown=gradle:gradle ./index index
 COPY --chown=gradle:gradle ./.build/libs .build/libs
 
 # COPY --chown=gradle:gradle src src

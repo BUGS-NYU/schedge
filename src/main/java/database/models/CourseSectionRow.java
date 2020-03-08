@@ -1,7 +1,7 @@
 package database.models;
 
-import api.models.Meeting;
-import api.models.Section;
+import api.v1.models.Meeting;
+import api.v1.models.Section;
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;

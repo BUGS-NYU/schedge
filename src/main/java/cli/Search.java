@@ -1,11 +1,11 @@
 package cli;
 
-import api.models.Course;
+import api.v1.models.Course;
 import cli.templates.OutputFileMixin;
 import cli.templates.TermMixin;
 import database.GetConnection;
 import database.courses.SelectCourseSectionRows;
-import database.courses.SelectCoursesBySectionId;
+import api.v1.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
 import database.models.CourseSectionRow;
 import java.util.Collections;

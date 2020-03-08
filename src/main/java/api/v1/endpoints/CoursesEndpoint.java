@@ -1,23 +1,24 @@
-package api;
+package api.v1.endpoints;
 
-import static database.courses.SelectCoursesBySectionId.selectCoursesBySectionId;
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-import static search.SearchCourses.searchCourses;
 
-import api.models.Course;
-import api.models.Section;
+import api.Endpoint;
+import api.v1.ApiError;
+import api.v1.models.Course;
+import api.v1.models.Section;
 import database.GetConnection;
+import api.v1.SelectCourses;
+import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.Collections;
 import nyu.SubjectCode;
 import nyu.Term;
 
-class SearchEndpoint extends Endpoint {
+public final class CoursesEndpoint extends Endpoint {
 
   enum SemesterCode {
     su,
@@ -26,15 +27,15 @@ class SearchEndpoint extends Endpoint {
     ja;
   }
 
-  String getPath() { return "/:year/:semester/search"; }
+  public String getPath() { return "/:year/:semester/:school/:subject"; }
 
-  OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
+  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
           // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
-              "This endpoint returns a list of courses for a year and semester, given search terms.");
-          openApiOperation.summary("Search Endpoint");
+              "This endpoint returns a list of courses for a specific year, semester, school, and subject.");
+          openApiOperation.summary("Courses Endpoint");
         })
         .pathParam("year", Integer.class,
                    openApiParam -> {
@@ -44,16 +45,17 @@ class SearchEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
-        .queryParam("query", String.class,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "A query string to pass to the search engine.");
-                    })
-        .queryParam(
-            "limit", String.class,
+        .pathParam(
+            "school", String.class,
             openApiParam -> {
               openApiParam.description(
-                  "The maximum number of sections to return. Capped at 200.");
+                  "Must be a valid school code. Take a look at the docs for the schools endpoint for more information.");
+            })
+        .pathParam(
+            "subject", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "Must be a valid subject code. Take a look at the docs for the subjects endpoint for more information.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -74,7 +76,7 @@ class SearchEndpoint extends Endpoint {
         });
   }
 
-  Handler getHandler() {
+  public Handler getHandler() {
     return ctx -> {
       ctx.contentType("application/json");
 
@@ -88,40 +90,28 @@ class SearchEndpoint extends Endpoint {
       }
 
       Term term;
+      SubjectCode subject;
       try {
         term = new Term(ctx.pathParam("semester"), year);
+        subject =
+            new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
+        subject.checkValid();
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
         return;
       }
 
-      String args = ctx.queryParam("query");
-      if (args == null) {
-        ctx.status(400);
-        ctx.json(new ApiError("Need to provide a query messager."));
-        return;
-      }
-
-      Integer resultSize;
-      try {
-        resultSize = Optional.ofNullable(ctx.queryParam("limit"))
-                         .map(Integer::parseInt)
-                         .map(i -> i > 200 ? 200 : i)
-                         .orElse(null);
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new ApiError("Limit needs to be an integer."));
-        return;
-      }
-
       ctx.status(200);
-      GetConnection.withContext(context -> {
-        int epoch = getLatestEpoch(context, term);
-        List<Integer> result = searchCourses(epoch, args, resultSize);
-
-        ctx.json(selectCoursesBySectionId(context, epoch, result));
+      Object output = GetConnection.withContextReturning(context -> {
+        Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+        if (epoch == null) {
+          return Collections.emptyList();
+        }
+        return SelectCourses.selectCourses(context, epoch,
+                                           Arrays.asList(subject));
       });
+      ctx.json(output);
     };
   }
 }

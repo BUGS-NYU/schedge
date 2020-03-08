@@ -1,7 +1,7 @@
-package database.courses;
+package api.v1;
 
-import api.models.Course;
-import api.models.Section;
+import api.v1.models.Course;
+import api.v1.models.Section;
 import database.models.CourseSectionRow;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CourseSectionRowsToCourses {
+// Abbrev for Course Section Rows
+public class CSRowsToCourses {
   public static Stream<Course>
-  courseSectionRowsToCourses(Stream<CourseSectionRow> rows) {
+  csRowsToCourses(Stream<CourseSectionRow> rows) {
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();

@@ -1,9 +1,11 @@
-package database.courses;
+package api.v1;
 
-import api.models.Course;
+import api.v1.models.Course;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import database.courses.SelectCourseSectionRows;
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -12,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class SelectCourses {
 
   private static Logger logger =
-      LoggerFactory.getLogger("database.courses.SelectCourses");
+      LoggerFactory.getLogger("api.v1.SelectCourses");
 
   public static List<Course> selectCourses(DSLContext context, int epoch,
                                            List<SubjectCode> codes) {
@@ -23,7 +25,7 @@ public class SelectCourses {
 
   public static Stream<Course> selectCourses(DSLContext context, int epoch,
                                              SubjectCode code) {
-    return CourseSectionRowsToCourses.courseSectionRowsToCourses(
+    return CSRowsToCourses.csRowsToCourses(
         SelectCourseSectionRows.selectCourseSectionRows(context, epoch, code));
   }
 }

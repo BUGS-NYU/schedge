@@ -60,41 +60,4 @@ public final class Search implements Runnable {
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
-
-  @CommandLine.
-  Command(name = "update", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Update search index",
-          description = "Update search index based on term and latest epoch.")
-  public void
-  update(@CommandLine.Mixin TermMixin termMixin) {
-    long start = System.nanoTime();
-    Term term = termMixin.getTerm();
-    ProgressBarBuilder barBuilder =
-        new ProgressBarBuilder()
-            .setStyle(ProgressBarStyle.ASCII)
-            .setConsumer(new ConsoleProgressBarConsumer(System.out));
-
-    GetConnection.withContext(context -> {
-      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
-
-      if (epoch == null) {
-        logger.warn("No completed epoch for term=" + term);
-        return;
-      }
-
-      Stream<CourseSectionRow> rows =
-          StreamSupport
-              .stream(ProgressBar.wrap(SubjectCode.allSubjects(), barBuilder)
-                          .spliterator(),
-                      false)
-              .flatMap(code
-                       -> SelectCourseSectionRows.selectCourseSectionRows(
-                           context, epoch, code));
-      UpdateIndex.updateIndex(epoch, rows);
-    });
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000000 + " seconds");
-  }
 }

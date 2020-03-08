@@ -4,6 +4,7 @@ import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 
 import database.GetConnection;
 import database.epochs.CleanEpoch;
+import java.util.function.BiFunction;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,28 +24,21 @@ public class CleanData {
     Term nextNext = current.nextTerm();
 
     Integer maxDeletableEpoch = GetConnection.withContextReturning(context -> {
+      BiFunction<Integer, Term, Integer> updateMin = (curMin, curTerm) -> {
+        Integer cur = null;
+        if (curMin == null ||
+            ((cur = getLatestEpoch(context, curTerm)) != null &&
+             cur < curMin)) {
+          return cur;
+        } else
+          return curMin;
+      };
+
       Integer min = null;
-      Integer cur = null;
-
-      if (min == null ||
-          ((cur = getLatestEpoch(context, prev)) != null && cur < min)) {
-        min = cur;
-      }
-
-      if (min == null ||
-          ((cur = getLatestEpoch(context, current)) != null && cur < min)) {
-        min = cur;
-      }
-
-      if (min == null ||
-          ((cur = getLatestEpoch(context, next)) != null && cur < min)) {
-        min = cur;
-      }
-
-      if (min == null ||
-          ((cur = getLatestEpoch(context, nextNext)) != null && cur < min)) {
-        min = cur;
-      }
+      min = updateMin.apply(min, current);
+      min = updateMin.apply(min, prev);
+      min = updateMin.apply(min, next);
+      min = updateMin.apply(min, nextNext);
 
       return min == null ? null : min - 1;
     });

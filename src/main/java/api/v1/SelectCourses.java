@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import database.courses.SelectCourseSectionRows;
+import database.courses.SelectRows;
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
@@ -26,6 +26,6 @@ public class SelectCourses {
   public static Stream<Course> selectCourses(DSLContext context, int epoch,
                                              SubjectCode code) {
     return CSRowsToCourses.csRowsToCourses(
-        SelectCourseSectionRows.selectCourseSectionRows(context, epoch, code));
+        SelectRows.selectRows(context, epoch, code));
   }
 }

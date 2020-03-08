@@ -2,7 +2,7 @@ package api.v1;
 
 import api.v1.models.Course;
 import api.v1.models.Section;
-import database.models.CourseSectionRow;
+import database.models.Row;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,12 +12,12 @@ import java.util.stream.Stream;
 // Abbrev for Course Section Rows
 public class CSRowsToCourses {
   public static Stream<Course>
-  csRowsToCourses(Stream<CourseSectionRow> rows) {
+  csRowsToCourses(Stream<Row> rows) {
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
-    List<CourseSectionRow> recitationRecords =
+    List<Row> recitationRecords =
         rows.map(row -> {
               if (!courses.containsKey(row.courseId))
                 courses.put(row.courseId,

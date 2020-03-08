@@ -13,7 +13,7 @@ import nyu.SectionType;
 import nyu.SubjectCode;
 import org.jooq.Record;
 
-public class CourseSectionRow {
+public class Row {
   public final int courseId;
   public final String name;
   public final SubjectCode subject;
@@ -30,12 +30,18 @@ public class CourseSectionRow {
   public final List<Meeting> meetings;
 
   public final String sectionName;
+  public final String campus;
+  public final String description;
+  public final String instructionMode;
   public final Float minUnits;
   public final Float maxUnits;
+  public final String grading;
   public final String location;
+  public final String notes;
+  public final String prerequisites;
 
-  public CourseSectionRow(Record row,
-                          HashMap<Integer, ArrayList<Meeting>> meetingRows) {
+  public Row(Record row,
+             HashMap<Integer, ArrayList<Meeting>> meetingRows) {
     Courses COURSES = Tables.COURSES;
     Sections SECTIONS = Tables.SECTIONS;
     Instructors INSTRUCTORS = Tables.INSTRUCTORS;
@@ -57,8 +63,14 @@ public class CourseSectionRow {
     meetings = meetingRows.get(row.get(SECTIONS.ID));
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
+    campus = null;
+    description = null;
     minUnits = row.get(SECTIONS.MIN_UNITS);
     maxUnits = row.get(SECTIONS.MAX_UNITS);
+    instructionMode = null;
+    grading = null;
     location = row.get(SECTIONS.LOCATION);
+    notes = null;
+    prerequisites = null;
   }
 }

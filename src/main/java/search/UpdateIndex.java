@@ -1,6 +1,6 @@
 package search;
 
-import database.models.CourseSectionRow;
+import database.models.Row;
 import java.io.IOException;
 import java.util.stream.Stream;
 import org.apache.lucene.document.Document;
@@ -10,7 +10,7 @@ import org.apache.lucene.index.IndexWriter;
 
 public class UpdateIndex {
 
-  public static void updateIndex(int epoch, Stream<CourseSectionRow> rows) {
+  public static void updateIndex(int epoch, Stream<Row> rows) {
     if (GetResources.alreadyUpdated(epoch))
       return;
     IndexWriter writer = GetResources.getWriter(epoch);

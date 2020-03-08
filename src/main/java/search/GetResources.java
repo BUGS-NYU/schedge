@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 public class GetResources {
 
   public final static Analyzer analyzer = new StandardAnalyzer();
-  public static IndexWriterConfig config = new IndexWriterConfig(analyzer);
   // @Performance We need to eventually be able to delete indices, using
   // AtomicInteger to be thread safe
   private static HashMap<Integer, SearchContext> contexts = new HashMap<>();
@@ -64,6 +63,7 @@ public class GetResources {
 
   public static IndexWriter getWriter(int epoch) {
     try {
+      IndexWriterConfig config = new IndexWriterConfig(analyzer);
       return new IndexWriter(getSearchContext(epoch).index, config);
     } catch (IOException e) {
       throw new RuntimeException(e);

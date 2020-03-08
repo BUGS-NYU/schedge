@@ -1,13 +1,12 @@
 package search;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.*;
 
 public class SearchCourses {
   private static QueryParser nameQueryParser =
@@ -19,9 +18,6 @@ public class SearchCourses {
 
   public static List<Integer> searchCourses(int epoch, String queryString,
                                             Integer totalNullable) {
-
-    System.err.println(queryString);
-
     IndexSearcher searcher = GetResources.getSearcher(epoch);
     Query query = null;
     try {

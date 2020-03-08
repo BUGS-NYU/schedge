@@ -27,8 +27,7 @@ dependencies {
 
             "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
 
-            "org.xerial:sqlite-jdbc:3.30.1",
-            // "org.postgresql:postgresql:42.2.8.jre7", // Database driver
+            "org.xerial:sqlite-jdbc:3.30.1", // Database
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
             "org.jooq:jooq:3.13.1", // Database framework
 
@@ -41,6 +40,8 @@ dependencies {
 
             "org.apache.lucene:lucene-core:8.4.1", // Text search
             "org.apache.lucene:lucene-queryparser:8.4.1", // Text search
+            // "org.apache.lucene:lucene-analyzers-common:8.4.1", // Text search
+            // "org.apache.lucene:lucene-analyzers:3.6.2", // Text search
 
             "info.picocli:picocli:4.1.4", // Command line args
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON

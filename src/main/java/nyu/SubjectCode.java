@@ -1,11 +1,10 @@
 package nyu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import utils.Utils;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import utils.Utils;
 
 public final class SubjectCode {
 
@@ -75,8 +74,10 @@ public final class SubjectCode {
 
   public static Map<String, List<SubjectCode>> getAvailableSubjects() {
     if (availableSubjects == null) {
-      Function<List<SubjectMetadata>, List<SubjectCode>> f =
-          e -> e.stream().map(it -> it.getSubjectCode()).collect(Collectors.toList());
+      Function<List<SubjectMetadata>, List<SubjectCode>> f = e
+          -> e.stream()
+                 .map(it -> it.getSubjectCode())
+                 .collect(Collectors.toList());
       availableSubjects = getAvailableSubjectInfo().entrySet().stream().collect(
           Collectors.toMap(Map.Entry::getKey, e -> f.apply(e.getValue())));
     }
@@ -133,8 +134,6 @@ public final class SubjectCode {
     private String code, school, name;
     SubjectMetadata(String csv) {
       String[] values = csv.split(",", 3);
-      if (values.length < 3)
-        System.err.println(csv);
       code = values[0];
       school = values[1];
       name = values[2];

@@ -5,13 +5,14 @@ import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Function;
 
 public final class Utils {
 
   private static BufferedReader inReader =
       new BufferedReader(new InputStreamReader(System.in));
 
-    public static List<String> asResourceLines(String path) {
+  public static List<String> asResourceLines(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
     if (resource == null)
@@ -40,13 +41,16 @@ public final class Utils {
   public static String readFromFileOrStdin(String file) {
     if (file != null) {
       try {
-        return new Scanner(new FileReader(file)).useDelimiter("\\A")
-                .next();
+        return new Scanner(new FileReader(file)).useDelimiter("\\A").next();
       } catch (FileNotFoundException e) {
         throw new RuntimeException(e);
       }
     }
     return new Scanner(inReader).useDelimiter("\\A").next();
+  }
+
+  public static <T, E> E map(T t, Function<T, E> f) {
+    return t != null ? f.apply(t) : null;
   }
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
@@ -70,12 +74,11 @@ public final class Utils {
     }
   }
 
-    public static boolean deleteFile(File f) {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles())
-                deleteFile(c);
-        }
-        return f.delete();
+  public static boolean deleteFile(File f) {
+    if (f.isDirectory()) {
+      for (File c : f.listFiles())
+        deleteFile(c);
     }
-
+    return f.delete();
+  }
 }

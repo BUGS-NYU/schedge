@@ -156,6 +156,7 @@ public class Database implements Runnable {
           description = "Serve data through an API")
   public void
   serve() {
+    GetConnection.initIfNecessary();
     App.run();
     while (true) {
       CleanData.cleanData();

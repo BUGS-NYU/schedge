@@ -4,7 +4,7 @@ import static database.generated.Tables.*;
 import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.groupConcat;
 
-import database.models.CourseSectionRow;
+import database.models.Row;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,19 +17,19 @@ import org.jooq.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SelectCourseSectionRows {
+public class SelectRows {
 
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectCourseSectionRows");
 
-  public static Stream<CourseSectionRow>
-  selectCourseSectionRows(DSLContext context, int epoch, SubjectCode code) {
-    return selectCourseSectionRows(context, COURSES.EPOCH.eq(epoch),
+  public static Stream<Row>
+  selectRows(DSLContext context, int epoch, SubjectCode code) {
+    return selectRows(context, COURSES.EPOCH.eq(epoch),
                                    COURSES.SCHOOL.eq(code.school),
                                    COURSES.SUBJECT.eq(code.code));
   }
-  public static Stream<CourseSectionRow>
-  selectCourseSectionRows(DSLContext context, Condition... conditions) {
+  public static Stream<Row>
+  selectRows(DSLContext context, Condition... conditions) {
     long start = System.nanoTime();
     HashMap<Integer, ArrayList<Meeting>> meetingRows =
         getMeetingsMap(context, conditions);
@@ -62,7 +62,7 @@ public class SelectCourseSectionRows {
     return StreamSupport
         .stream(records.spliterator(),
                 false) // @Performance Should this be true?
-        .map(r -> new CourseSectionRow(r, meetingRows));
+        .map(r -> new Row(r, meetingRows));
   }
 
   private static HashMap<Integer, ArrayList<Meeting>>

@@ -1,13 +1,14 @@
 package actions;
 
-import static database.courses.SelectCourseSectionRows.selectCourseSectionRows;
+import static database.courses.SelectRows.selectRows;
 
 import database.GetConnection;
 import database.courses.InsertCourses;
+import database.courses.SelectRows;
 import database.courses.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
-import database.models.CourseSectionRow;
+import database.models.Row;
 import database.models.SectionID;
 import java.util.Iterator;
 import java.util.List;
@@ -45,10 +46,10 @@ public class ScrapeTerm {
 
       UpdateSections.updateSections(context, term, s, batchSizeSections);
 
-      Stream<CourseSectionRow> rows =
+      Stream<Row> rows =
           StreamSupport
               .stream(f.apply(SubjectCode.allSubjects()).spliterator(), false)
-              .flatMap(code -> selectCourseSectionRows(context, epoch, code));
+              .flatMap(code -> SelectRows.selectRows(context, epoch, code));
 
       Utils.deleteFile(GetResources.getIndexFileForEpoch(epoch));
       UpdateIndex.updateIndex(epoch, rows);

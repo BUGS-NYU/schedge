@@ -4,24 +4,17 @@ import api.v1.models.Course;
 import cli.templates.OutputFileMixin;
 import cli.templates.TermMixin;
 import database.GetConnection;
-import database.courses.SelectCourseSectionRows;
 import api.v1.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
-import database.models.CourseSectionRow;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
-import nyu.SubjectCode;
+
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import search.SearchCourses;
-import search.UpdateIndex;
 
 @CommandLine.Command(name = "search", synopsisSubcommandLabel = "label",
                      description = "Search in term.")

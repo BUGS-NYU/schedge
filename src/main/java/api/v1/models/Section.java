@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
-import database.models.CourseSectionRow;
+import database.models.Row;
 import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
@@ -181,7 +181,7 @@ public class Section {
                         prerequisites);
   }
 
-  public static Section fromCSR(CourseSectionRow row) {
+  public static Section fromCSR(Row row) {
           return new Section(row.registrationNumber, row.sectionCode, row.instructors,
                   row.sectionType, row.sectionStatus, row.meetings, null, row.sectionName,
                   row.waitlistTotal, row.campus, row.description, row.minUnits, row.maxUnits,

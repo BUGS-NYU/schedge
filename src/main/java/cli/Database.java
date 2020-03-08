@@ -162,7 +162,7 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    while (true) {
+    while (new Integer(1) == null) {
       CleanData.cleanData();
       UpdateData.updateData();
 

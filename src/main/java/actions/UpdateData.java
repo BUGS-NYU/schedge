@@ -3,6 +3,7 @@ package actions;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scraping.query.GetClient;
 
 public final class UpdateData {
 
@@ -20,6 +21,8 @@ public final class UpdateData {
     ScrapeTerm.scrapeTerm(nextTerm, 20, 50);
     logger.info("Updating the term after next term...");
     ScrapeTerm.scrapeTerm(nextNextTerm, 20, 50);
+
+    GetClient.close();
 
     logger.info("Done updating.");
   }

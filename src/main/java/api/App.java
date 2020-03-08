@@ -1,12 +1,14 @@
 package api;
 
+import api.v1.endpoints.CoursesEndpoint;
+import api.v1.endpoints.SchoolsEndpoint;
+import api.v1.endpoints.SearchEndpoint;
+import api.v1.endpoints.SubjectsEndpoint;
 import io.javalin.Javalin;
-import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.info.Info;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -98,19 +100,5 @@ public class App {
   }
 }
 
-abstract class Endpoint {
-  abstract String getPath();
-  abstract OpenApiDocumentation configureDocs(OpenApiDocumentation docs);
-  abstract Handler getHandler();
-  public final void addTo(Javalin app) {
-    app.get(getPath(),
-            OpenApiBuilder.documented(configureDocs(OpenApiBuilder.document()),
-                                      getHandler()));
-  }
-}
 
-class ApiError {
-  private String message;
-  ApiError(String message) { this.message = message; }
-  public String getMessage() { return message; }
-}
+

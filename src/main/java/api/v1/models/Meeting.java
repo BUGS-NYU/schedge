@@ -1,4 +1,4 @@
-package api.models;
+package api.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.LocalDateTime;

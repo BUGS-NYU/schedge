@@ -1,5 +1,9 @@
 package scraping;
 
+import java.util.Iterator;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
@@ -13,11 +17,6 @@ import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
-
-import java.util.Iterator;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class GetRatings {
 
@@ -69,8 +68,8 @@ public final class GetRatings {
           }
           String link = parseLink(resp.getResponseBody());
           if (link == null)
-           logger.warn("Instructor query " + instructor.name +
-                       " returned no results.");
+            logger.warn("Instructor query " + instructor.name +
+                        " returned no results.");
           return new Instructor(instructor.id, link);
         });
   }
@@ -91,7 +90,7 @@ public final class GetRatings {
             return null;
           }
           if (url == null) {
-             logger.warn("URL is null for id=" + id);
+            logger.warn("URL is null for id=" + id);
             return new Rating(id, -1, -1.0f);
           }
 

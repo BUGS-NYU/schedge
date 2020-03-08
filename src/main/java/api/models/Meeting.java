@@ -1,12 +1,11 @@
 package api.models;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import utils.JsonSerializable;
-
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import javax.validation.constraints.NotNull;
+import utils.JsonSerializable;
 
 public class Meeting implements JsonSerializable {
   private LocalDateTime
@@ -38,12 +37,14 @@ public class Meeting implements JsonSerializable {
                            endDate.toString());
   }
 
-    @Override
-    public void toJson(StringBuilder s) {
-        s.append(String.format("{\"beginDate\":\"%s\",\"duration\":\"%s\",\"endDate\":\"%s\"}", beginDate, minutesDuration, endDate));
-    }
+  @Override
+  public void toJson(StringBuilder s) {
+    s.append(String.format(
+        "{\"beginDate\":\"%s\",\"duration\":\"%s\",\"endDate\":\"%s\"}",
+        beginDate, minutesDuration, endDate));
+  }
 
-    class MeetingJson {
+  class MeetingJson {
 
     private String beginDate;
     private long duration;

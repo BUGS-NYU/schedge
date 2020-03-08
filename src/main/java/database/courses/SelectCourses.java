@@ -1,14 +1,13 @@
 package database.courses;
 
 import api.models.Course;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SelectCourses {
 

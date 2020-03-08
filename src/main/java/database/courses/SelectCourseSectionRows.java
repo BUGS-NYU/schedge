@@ -1,20 +1,19 @@
 package database.courses;
 
+import static database.generated.Tables.*;
+import static org.jooq.impl.DSL.coalesce;
+import static org.jooq.impl.DSL.groupConcat;
+
 import api.models.Meeting;
 import database.models.CourseSectionRow;
-import nyu.SubjectCode;
-import org.jooq.*;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static database.generated.Tables.*;
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.groupConcat;
+import nyu.SubjectCode;
+import org.jooq.*;
 
 public class SelectCourseSectionRows {
 
@@ -94,5 +93,4 @@ public class SelectCourseSectionRows {
           return map2;
         });
   }
-
 }

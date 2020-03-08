@@ -1,7 +1,5 @@
 package utils;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -9,6 +7,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.
@@ -30,14 +29,13 @@ public class SimpleBatchedFutureEngine<Input, Output>
   private Iterator<Input> inputData;
   private BiFunction<Input, Integer, Future<Output>> callback;
 
+  public SimpleBatchedFutureEngine(
+      SimpleBatchedFutureEngine<? extends Object, Input> inputData,
+      int batchSize, BiFunction<Input, Integer, Future<Output>> callback) {
+    this(inputData.iterator(), batchSize, callback);
+  }
 
-    public SimpleBatchedFutureEngine(
-            SimpleBatchedFutureEngine<? extends Object, Input> inputData, int batchSize,
-            BiFunction<Input, Integer, Future<Output>> callback) {
-        this(inputData.iterator(), batchSize, callback);
-    }
-
-    public SimpleBatchedFutureEngine(
+  public SimpleBatchedFutureEngine(
       Iterable<Input> inputData, int batchSize,
       BiFunction<Input, Integer, Future<Output>> callback) {
     this(inputData.iterator(), batchSize, callback);
@@ -127,8 +125,10 @@ public class SimpleBatchedFutureEngine<Input, Output>
           mailboxes[pendingRequests] = null;
         }
 
-        if (value == null) return Optional.empty();
-        else return Optional.of(value);
+        if (value == null)
+          return Optional.empty();
+        else
+          return Optional.of(value);
       }
     }
     return null;

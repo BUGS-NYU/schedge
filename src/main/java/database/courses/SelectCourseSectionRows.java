@@ -4,7 +4,7 @@ import static database.generated.Tables.*;
 import static org.jooq.impl.DSL.coalesce;
 import static org.jooq.impl.DSL.groupConcat;
 
-import api.v1.models.Meeting;
+import nyu.Meeting;
 import database.models.CourseSectionRow;
 import java.sql.Timestamp;
 import java.util.ArrayList;

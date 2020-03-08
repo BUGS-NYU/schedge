@@ -1,15 +1,15 @@
-package api.v1.models;
+package api.v2.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import database.models.CourseSectionRow;
+import nyu.SectionStatus;
+import nyu.SectionType;
+
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.constraints.NotNull;
-
-import database.models.CourseSectionRow;
 import nyu.Meeting;
-import nyu.SectionStatus;
-import nyu.SectionType;
 
 public class Section {
   private int registrationNumber;
@@ -83,7 +83,9 @@ public class Section {
     this.prerequisites = prerequisites;
   }
 
-  public @NotNull int getRegistrationNumber() { return registrationNumber; }
+
+
+    public @NotNull int getRegistrationNumber() { return registrationNumber; }
 
   public @NotNull String getCode() { return code; }
 
@@ -181,11 +183,11 @@ public class Section {
                         prerequisites);
   }
 
-  public static Section fromCSR(CourseSectionRow row) {
-          return new Section(row.registrationNumber, row.sectionCode, row.instructors,
-                  row.sectionType, row.sectionStatus, row.meetings, null, row.sectionName,
-                  row.waitlistTotal, row.campus, row.description, row.minUnits, row.maxUnits,
-                  row.instructionMode, row.grading, row.location, row.notes,
-                  row.prerequisites);
-  }
+    public static Section fromCSR(CourseSectionRow row) {
+        return new Section(row.registrationNumber, row.sectionCode, row.instructors,
+                row.sectionType, row.sectionStatus, row.meetings, null, row.sectionName,
+                row.waitlistTotal, row.campus, row.description, row.minUnits, row.maxUnits,
+                row.instructionMode, row.grading, row.location, row.notes,
+                row.prerequisites);
+    }
 }

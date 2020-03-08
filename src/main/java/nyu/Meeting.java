@@ -1,4 +1,4 @@
-package api.v1.models;
+package nyu;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.LocalDateTime;

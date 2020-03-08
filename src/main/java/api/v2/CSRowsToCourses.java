@@ -1,8 +1,9 @@
-package api.v1;
+package api.v2;
 
-import api.v1.models.Course;
-import api.v1.models.Section;
+import api.v2.models.Course;
+import api.v2.models.Section;
 import database.models.CourseSectionRow;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

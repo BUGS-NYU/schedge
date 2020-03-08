@@ -4,11 +4,11 @@ import actions.CleanData;
 import actions.ScrapeTerm;
 import actions.UpdateData;
 import api.App;
+import api.v1.SelectCourses;
 import cli.templates.OutputFileMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
 import database.GetConnection;
-import api.v1.SelectCourses;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
@@ -124,26 +124,32 @@ public class Database implements Runnable {
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Clean epochs")
-  public void
-  clean(@CommandLine.Mixin TermMixin termMixin,
-        @CommandLine.Option(names = "--epoch",
-                            description = "The epoch to clean") Integer epoch) {
-    Term term = termMixin.getTermAllowNull();
-    GetConnection.withContext(context -> {
-      if (epoch == null && term == null) {
-        logger.info("Cleaning incomplete epochs...");
-        CleanEpoch.cleanIncompleteEpochs(context);
-      } else if (epoch != null && term == null) {
-        logger.info("Cleaning epoch={}...", epoch);
-        CleanEpoch.cleanEpoch(context, epoch);
-      } else if (term != null && epoch == null) {
-        logger.info("Cleaning epochs for term={}...", term);
-        CleanEpoch.cleanEpochs(context, term);
-      } else {
-        throw new CommandLine.ParameterException(
-            spec.commandLine(), "Term and --epoch are mutually exclusive!");
-      }
-    });
+  public static class clean implements Runnable {
+
+    @CommandLine.Mixin TermMixin termMixin;
+    @CommandLine.Option(names = "--epoch", description = "The epoch to clean")
+    Integer epoch;
+
+    @CommandLine.Spec CommandLine.Model.CommandSpec spec;
+
+    public void run() {
+      Term term = termMixin.getTermAllowNull();
+      GetConnection.withContext(context -> {
+        if (epoch == null && term == null) {
+          logger.info("Cleaning old epochs...");
+          CleanData.cleanData();
+        } else if (epoch != null && term == null) {
+          logger.info("Cleaning epoch={}...", epoch);
+          CleanEpoch.cleanEpoch(context, epoch);
+        } else if (term != null && epoch == null) {
+          logger.info("Cleaning epochs for term={}...", term);
+          CleanEpoch.cleanEpochs(context, term);
+        } else {
+          throw new CommandLine.ParameterException(
+              spec.commandLine(), "Term and --epoch are mutually exclusive!");
+        }
+      });
+    }
   }
 
   @CommandLine.

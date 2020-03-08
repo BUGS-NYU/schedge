@@ -1,7 +1,6 @@
 package database.models;
 
-import api.v1.models.Meeting;
-import api.v1.models.Section;
+import nyu.Meeting;
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
@@ -75,11 +74,5 @@ public class CourseSectionRow {
     prerequisites = row.get(SECTIONS.PREREQUISITES);
   }
 
-  public Section getSection() {
-    return new Section(registrationNumber, sectionCode, instructors,
-                       sectionType, sectionStatus, meetings, null, sectionName,
-                       waitlistTotal, campus, description, minUnits, maxUnits,
-                       instructionMode, grading, location, notes,
-                       prerequisites);
-  }
+
 }

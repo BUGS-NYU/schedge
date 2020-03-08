@@ -15,11 +15,11 @@ public final class UpdateData {
     Term nextNextTerm = nextTerm.nextTerm();
 
     logger.info("Updating current term...");
-    ScrapeTerm.scrapeTerm(currentTerm, 20, 100);
+    ScrapeTerm.scrapeTerm(currentTerm, 20, 50);
     logger.info("Updating next term...");
-    ScrapeTerm.scrapeTerm(nextTerm, 20, 100);
+    ScrapeTerm.scrapeTerm(nextTerm, 20, 50);
     logger.info("Updating the term after next term...");
-    ScrapeTerm.scrapeTerm(nextNextTerm, 20, 100);
+    ScrapeTerm.scrapeTerm(nextNextTerm, 20, 50);
 
     logger.info("Done updating.");
   }

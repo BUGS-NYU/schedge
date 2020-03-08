@@ -12,6 +12,10 @@ import database.courses.SelectCourses;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -21,21 +25,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
 public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
-    private static ProgressBarBuilder barBuilder =
-            new ProgressBarBuilder()
-                    .setStyle(ProgressBarStyle.ASCII)
-                    .setConsumer(new ConsoleProgressBarConsumer(System.out));
+  private static ProgressBarBuilder barBuilder =
+      new ProgressBarBuilder()
+          .setStyle(ProgressBarStyle.ASCII)
+          .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
   @Override
   public void run() {
@@ -60,7 +59,9 @@ public class Database implements Runnable {
                              description = "batch size for querying sections")
          Integer batchSizeSections) {
     long start = System.nanoTime();
-    ScrapeTerm.scrapeTerm(termMixin.getTerm(), batchSize, batchSizeSections, subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
+    ScrapeTerm.scrapeTerm(
+        termMixin.getTerm(), batchSize, batchSizeSections,
+        subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -131,20 +132,20 @@ public class Database implements Runnable {
                             description = "The epoch to clean") Integer epoch) {
     Term term = termMixin.getTermAllowNull();
     GetConnection.withContext(context -> {
-        if (epoch == null && term == null) {
-            logger.info("Cleaning incomplete epochs...");
-            CleanEpoch.cleanIncompleteEpochs(context);
-        } else if (epoch != null && term == null) {
-            logger.info("Cleaning epoch={}...", epoch);
-            CleanEpoch.cleanEpoch(context, epoch);
-        } else if (term != null && epoch == null) {
-            logger.info("Cleaning epochs for term={}...", term);
-            CleanEpoch.cleanEpochs(context, term);
-        } else {
-            throw new CommandLine.ParameterException(spec.commandLine(), "Term and --epoch are mutually exclusive!");
-        }
+      if (epoch == null && term == null) {
+        logger.info("Cleaning incomplete epochs...");
+        CleanEpoch.cleanIncompleteEpochs(context);
+      } else if (epoch != null && term == null) {
+        logger.info("Cleaning epoch={}...", epoch);
+        CleanEpoch.cleanEpoch(context, epoch);
+      } else if (term != null && epoch == null) {
+        logger.info("Cleaning epochs for term={}...", term);
+        CleanEpoch.cleanEpochs(context, term);
+      } else {
+        throw new CommandLine.ParameterException(
+            spec.commandLine(), "Term and --epoch are mutually exclusive!");
+      }
     });
-
   }
 
   @CommandLine.
@@ -155,11 +156,16 @@ public class Database implements Runnable {
           description = "Serve data through an API")
   public void
   serve() {
-      ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-      executor.scheduleAtFixedRate(() -> {
-          CleanData.cleanData();
-          UpdateData.updateData();
-      }, 0L, 1L, TimeUnit.DAYS);
     App.run();
+    while (true) {
+      CleanData.cleanData();
+      UpdateData.updateData();
+
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

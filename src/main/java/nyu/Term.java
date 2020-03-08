@@ -15,7 +15,6 @@ public final class Term {
   public Term(String sem, int year) { this(semesterFromString(sem), year); }
 
   public Term(int semester, int year) {
-
     this.semester = semester;
     this.year = year - 1900;
   }
@@ -34,36 +33,37 @@ public final class Term {
 
   // @TODO Make this more accurate
   public static int getSemester(LocalDateTime time) {
-      switch (time.getMonth()) {
-          case JANUARY:
-              return JANUARY;
-          case FEBRUARY:
-          case MARCH:
-          case APRIL:
-          case MAY:
-              return SPRING;
-          case JUNE:
-          case JULY:
-          case AUGUST:
-              return SUMMER;
-          case SEPTEMBER:
-          case OCTOBER:
-          case NOVEMBER:
-          case DECEMBER:
-              return FALL;
-          default:
-              throw new RuntimeException("Did they add another month? month=" + time.getMonth());
-      }
+    switch (time.getMonth()) {
+    case JANUARY:
+      return JANUARY;
+    case FEBRUARY:
+    case MARCH:
+    case APRIL:
+    case MAY:
+      return SPRING;
+    case JUNE:
+    case JULY:
+    case AUGUST:
+      return SUMMER;
+    case SEPTEMBER:
+    case OCTOBER:
+    case NOVEMBER:
+    case DECEMBER:
+      return FALL;
+    default:
+      throw new RuntimeException("Did they add another month? month=" +
+                                 time.getMonth());
+    }
   }
 
   public static int getCurrentSemester() {
-      return getSemester(LocalDateTime.now());
+    return getSemester(LocalDateTime.now());
   }
 
   public static Term getCurrentTerm() {
-      LocalDateTime now = LocalDateTime.now();
-      int year = now.getYear();
-      return new Term(getSemester(now), year);
+    LocalDateTime now = LocalDateTime.now();
+    int year = now.getYear();
+    return new Term(getSemester(now), year);
   }
 
   public static int semesterFromString(String sem) {
@@ -92,9 +92,9 @@ public final class Term {
     case 4:
       return "Spring";
     case 6:
-      return "summer";
+      return "Summer";
     case 8:
-      return "fall";
+      return "Fall";
     default:
       throw new IllegalArgumentException("Invalid semester value: " + sem);
     }
@@ -102,16 +102,16 @@ public final class Term {
 
   public Term prevTerm() {
     if (semester == JANUARY)
-      return new Term(FALL, year - 1);
+      return new Term(FALL, year + 1899);
     else
-      return new Term(semester - 2, year);
+      return new Term(semester - 2, year + 1900);
   }
 
   public Term nextTerm() {
     if (semester == FALL)
-      return new Term(JANUARY, year + 1);
+      return new Term(JANUARY, year + 1901);
     else
-      return new Term(semester + 2, year);
+      return new Term(semester + 2, year + 1900);
   }
 
   public int getId() { return year * 10 + semester; }

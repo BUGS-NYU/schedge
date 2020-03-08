@@ -5,12 +5,17 @@ import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import nyu.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import search.GetResources;
 import utils.Utils;
 
 public class CleanData {
 
+  private static Logger logger = LoggerFactory.getLogger("actions.CleanData");
   public static void cleanData() {
+
+    logger.info("Cleaning data...");
 
     Term current = Term.getCurrentTerm();
     Term prev = current.prevTerm();
@@ -18,7 +23,7 @@ public class CleanData {
     Term nextNext = current.nextTerm();
 
     Integer maxDeletableEpoch = GetConnection.withContextReturning(context -> {
-      Integer min = Integer.MAX_VALUE;
+      Integer min = null;
       Integer cur = null;
 
       if (min == null ||
@@ -41,11 +46,15 @@ public class CleanData {
         min = cur;
       }
 
-      return min - 1;
+      return min == null ? null : min - 1;
     });
 
-    if (maxDeletableEpoch == null)
+    if (maxDeletableEpoch == null) {
+      logger.info("No dead epochs found.");
       return;
+    }
+
+    logger.info("Youngest dead epoch is epoch=" + maxDeletableEpoch);
 
     GetConnection.withContext(
         context -> CleanEpoch.cleanEpochsUpTo(context, maxDeletableEpoch));

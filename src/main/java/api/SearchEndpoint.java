@@ -1,21 +1,21 @@
 package api;
 
+import static database.courses.SelectCoursesBySectionId.selectCoursesBySectionId;
+import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
+import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
+import static search.SearchCourses.searchCourses;
+
 import api.models.Course;
 import api.models.Section;
 import database.GetConnection;
-import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
-import nyu.SubjectCode;
-import nyu.Term;
-import search.SearchCourses;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static database.courses.SelectCoursesBySectionId.selectCoursesBySectionId;
-import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
+import java.util.Optional;
+import nyu.SubjectCode;
+import nyu.Term;
 
 class SearchEndpoint extends Endpoint {
 
@@ -53,7 +53,7 @@ class SearchEndpoint extends Endpoint {
             "limit", String.class,
             openApiParam -> {
               openApiParam.description(
-                  "The maximum number of results to return. Capped at 200.");
+                  "The maximum number of sections to return. Capped at 200.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -103,32 +103,25 @@ class SearchEndpoint extends Endpoint {
         return;
       }
 
-      String resultSizeString = ctx.queryParam("limit");
-
-      Integer resultSizeValue;
+      Integer resultSize;
       try {
-        resultSizeValue = resultSizeString == null
-                              ? null
-                              : Integer.parseInt(resultSizeString);
-        if (resultSizeValue != null && resultSizeValue > 200)
-          resultSizeValue = 200;
-
+        resultSize = Optional.ofNullable(ctx.queryParam("limit"))
+                         .map(Integer::parseInt)
+                         .map(i -> i > 200 ? 200 : i)
+                         .orElse(null);
       } catch (NumberFormatException e) {
         ctx.status(400);
         ctx.json(new ApiError("Limit needs to be an integer."));
         return;
       }
 
-      Integer resultSize = resultSizeValue;
       ctx.status(200);
-      Object output = GetConnection.withContextReturning(context -> {
-        int epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
-        List<Integer> result =
-            SearchCourses.searchCourses(epoch, args, resultSize);
+      GetConnection.withContext(context -> {
+        int epoch = getLatestEpoch(context, term);
+        List<Integer> result = searchCourses(epoch, args, resultSize);
 
-        return selectCoursesBySectionId(context, epoch, result);
+        ctx.json(selectCoursesBySectionId(context, epoch, result));
       });
-      ctx.json(output);
     };
   }
 }

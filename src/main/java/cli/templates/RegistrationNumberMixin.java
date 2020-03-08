@@ -1,10 +1,9 @@
 package cli.templates;
 
-import nyu.SubjectCode;
-import picocli.CommandLine;
-
 import java.util.Arrays;
 import java.util.List;
+import nyu.SubjectCode;
+import picocli.CommandLine;
 
 public final class RegistrationNumberMixin {
 

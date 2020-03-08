@@ -6,14 +6,13 @@ import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
 import org.jooq.Record;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 public class CourseSectionRow {
   public final int courseId;
@@ -78,9 +77,9 @@ public class CourseSectionRow {
 
   public Section getSection() {
     return new Section(registrationNumber, sectionCode, instructors,
-                       sectionType, sectionStatus, meetings, null,
-                       sectionName, waitlistTotal, campus, description,
-                       minUnits, maxUnits, instructionMode, grading, location,
-                       notes, prerequisites);
+                       sectionType, sectionStatus, meetings, null, sectionName,
+                       waitlistTotal, campus, description, minUnits, maxUnits,
+                       instructionMode, grading, location, notes,
+                       prerequisites);
   }
 }

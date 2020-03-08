@@ -1,15 +1,14 @@
 package database.courses;
 
+import static database.generated.Tables.COURSES;
+import static database.generated.Tables.SECTIONS;
+
 import api.models.Course;
 import database.models.CourseSectionRow;
-import org.jooq.DSLContext;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static database.generated.Tables.COURSES;
-import static database.generated.Tables.SECTIONS;
+import org.jooq.DSLContext;
 
 public class SelectCoursesBySectionId {
 
@@ -18,7 +17,9 @@ public class SelectCoursesBySectionId {
                            List<Integer> sectionIds) {
     Stream<CourseSectionRow> rows =
         SelectCourseSectionRows.selectCourseSectionRows(
-            context, COURSES.EPOCH.eq(epoch), SECTIONS.ID.in(sectionIds).or(SECTIONS.ASSOCIATED_WITH.in(sectionIds)));
+            context, COURSES.EPOCH.eq(epoch),
+            SECTIONS.ID.in(sectionIds)
+                .or(SECTIONS.ASSOCIATED_WITH.in(sectionIds)));
     return CourseSectionRowsToCourses.courseSectionRowsToCourses(rows).collect(
         Collectors.toList());
   }

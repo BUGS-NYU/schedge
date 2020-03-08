@@ -1,10 +1,9 @@
 package scraping.query;
 
+import java.io.IOException;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-
-import java.io.IOException;
 
 public final class GetClient {
   private static AsyncHttpClient client;

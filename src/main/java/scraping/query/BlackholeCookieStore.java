@@ -1,16 +1,16 @@
 package scraping.query;
 
 import io.netty.handler.codec.http.cookie.Cookie;
-import org.asynchttpclient.cookie.CookieStore;
-import org.asynchttpclient.uri.Uri;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
+import org.asynchttpclient.cookie.CookieStore;
+import org.asynchttpclient.uri.Uri;
 
 public class BlackholeCookieStore implements CookieStore {
 
-  public final static BlackholeCookieStore BLACK_HOLE = new BlackholeCookieStore();
+  public final static BlackholeCookieStore BLACK_HOLE =
+      new BlackholeCookieStore();
 
   private BlackholeCookieStore() {}
 

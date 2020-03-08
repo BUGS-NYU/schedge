@@ -1,5 +1,10 @@
 package scraping.parse;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
@@ -14,12 +19,6 @@ import scraping.models.Course;
 import scraping.models.Meeting;
 import scraping.models.Section;
 import utils.Utils;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
 
 /**
  * Parses a catalog string in a stream.
@@ -351,8 +350,7 @@ public class ParseCatalog implements Iterator<Course> {
 
     Section toLectureWithRecitations(ArrayList<Section> recitations) {
       return new Section(code, registrationNumber, sectionCode, SectionType.LEC,
-                         status, meetings, recitations,
-                         waitlistTotal);
+                         status, meetings, recitations, waitlistTotal);
     }
 
     Section toSectionWithoutRecitations() {

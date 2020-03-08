@@ -1,5 +1,8 @@
 package scraping;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -9,10 +12,6 @@ import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSection;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySection;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ScrapeSection {
   private static Logger logger =
@@ -34,7 +33,7 @@ public class ScrapeSection {
                 QueryCatalog.queryCatalog(term, subjectCodes, batchSize)
                     .collect(Collectors.toList())
                     .toString()),
-                batchSizeSections)
+            batchSizeSections)
         .map(data -> ParseSection.parse(data));
   }
 

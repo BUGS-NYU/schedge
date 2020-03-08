@@ -5,6 +5,10 @@ import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
 import database.models.SectionID;
+import java.sql.Timestamp;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import nyu.SectionType;
 import nyu.Term;
 import org.jooq.DSLContext;
@@ -15,11 +19,6 @@ import org.slf4j.LoggerFactory;
 import scraping.models.Course;
 import scraping.models.Meeting;
 import scraping.models.Section;
-
-import java.sql.Timestamp;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class insert courses into the Postgresql database based on

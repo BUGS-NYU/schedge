@@ -1,10 +1,9 @@
 package scraping.models;
 
+import java.util.List;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
-
-import java.util.List;
 
 public class Section {
   private int registrationNumber;
@@ -14,7 +13,7 @@ public class Section {
   private List<Meeting> meetings;
   private List<Section> recitations;
   private Integer waitlistTotal;
-   private SubjectCode subjectCode;
+  private SubjectCode subjectCode;
 
   public Section(SubjectCode code, int registrationNumber, String sectionCode,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
@@ -42,7 +41,5 @@ public class Section {
   public List<Section> getRecitations() { return recitations; }
   public Integer getWaitlistTotal() { return waitlistTotal; }
 
-    public SubjectCode getSubjectCode() {
-        return subjectCode;
-    }
+  public SubjectCode getSubjectCode() { return subjectCode; }
 }

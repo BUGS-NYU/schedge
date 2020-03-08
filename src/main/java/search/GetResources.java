@@ -1,9 +1,14 @@
 package search;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.StopFilter;
-import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.CachingTokenFilter;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -14,12 +19,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.SimpleFSDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
 
 public class GetResources {
 
@@ -35,9 +34,9 @@ public class GetResources {
                      Integer.toString(epoch));
   }
 
-    public static File getIndexFileForEpoch(int epoch) {
-        return new File(String.valueOf(getIndexPathForEpoch(epoch)));
-    }
+  public static File getIndexFileForEpoch(int epoch) {
+    return new File(String.valueOf(getIndexPathForEpoch(epoch)));
+  }
 
   public static boolean alreadyUpdated(int epoch) {
     return getIndexFileForEpoch(epoch).exists();
@@ -56,11 +55,11 @@ public class GetResources {
   }
 
   public static void closeIndex(int epoch) {
-      synchronized (contexts) {
-          if (contexts.containsKey(epoch)) {
-              contexts.remove(epoch);
-          }
+    synchronized (contexts) {
+      if (contexts.containsKey(epoch)) {
+        contexts.remove(epoch);
       }
+    }
   }
 
   public static IndexWriter getWriter(int epoch) {

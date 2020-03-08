@@ -1,11 +1,11 @@
 package database.instructors;
 
+import static database.generated.Tables.INSTRUCTORS;
+import static database.generated.Tables.IS_TEACHING_SECTION;
+
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
-
-import static database.generated.Tables.INSTRUCTORS;
-import static database.generated.Tables.IS_TEACHING_SECTION;
 
 public final class UpsertInstructor {
 

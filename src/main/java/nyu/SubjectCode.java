@@ -29,7 +29,7 @@ public final class SubjectCode {
     this.school = school.toUpperCase();
   }
 
-    public void checkValid() {
+  public void checkValid() {
     if (!getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +

@@ -11,8 +11,8 @@ import org.apache.lucene.search.*;
 public class SearchCourses {
   private static QueryParser nameQueryParser =
       new QueryParser("name", GetResources.analyzer);
-//  private static QueryParser descrQueryParser =
-//      new QueryParser("description", GetResources.analyzer);
+  //  private static QueryParser descrQueryParser =
+  //      new QueryParser("description", GetResources.analyzer);
   private static QueryParser instrQueryParser =
       new QueryParser("instructors", GetResources.analyzer);
 
@@ -27,8 +27,8 @@ public class SearchCourses {
                    BooleanClause.Occur.SHOULD)
               .add(new BoostQuery(instrQueryParser.parse(queryString), 1.1f),
                    BooleanClause.Occur.SHOULD)
-//              .add(descrQueryParser.parse(queryString),
-//                   BooleanClause.Occur.SHOULD)
+              //              .add(descrQueryParser.parse(queryString),
+              //                   BooleanClause.Occur.SHOULD)
               .build();
     } catch (ParseException e) {
       throw new RuntimeException(e);

@@ -4,10 +4,10 @@ import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType
 
 import api.Endpoint;
 import api.v1.ApiError;
+import api.v1.SelectCourses;
 import api.v1.models.Course;
 import api.v1.models.Section;
 import database.GetConnection;
-import api.v1.SelectCourses;
 import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;

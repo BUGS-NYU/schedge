@@ -99,6 +99,3 @@ public class App {
     return sslContextFactory;
   }
 }
-
-
-

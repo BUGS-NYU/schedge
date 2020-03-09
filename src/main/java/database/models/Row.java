@@ -62,16 +62,16 @@ public class Row {
   }
 
   public static List<Meeting> meetingList(Record row) {
-      String beginDates = row.get("begin_dates", String.class);
-      if (beginDates == null)
-          return Collections.emptyList();
-      String[] begin_dates = beginDates.split(";");
-      String[] durations = row.get("durations", String.class).split(";");
-      String[] end_dates = row.get("end_dates", String.class).split(";");
-      ArrayList<Meeting> meetings = new ArrayList<>(begin_dates.length);
-      for (int i = 0; i < begin_dates.length; i++) {
-        meetings.add(new Meeting(begin_dates[i], durations[i], end_dates[i]));
-      }
-      return meetings;
+    String beginDates = row.get("begin_dates", String.class);
+    if (beginDates == null)
+      return Collections.emptyList();
+    String[] begin_dates = beginDates.split(";");
+    String[] durations = row.get("durations", String.class).split(";");
+    String[] end_dates = row.get("end_dates", String.class).split(";");
+    ArrayList<Meeting> meetings = new ArrayList<>(begin_dates.length);
+    for (int i = 0; i < begin_dates.length; i++) {
+      meetings.add(new Meeting(begin_dates[i], durations[i], end_dates[i]));
+    }
+    return meetings;
   }
 }

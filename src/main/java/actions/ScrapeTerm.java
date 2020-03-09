@@ -47,10 +47,10 @@ public class ScrapeTerm {
 
       UpdateSections.updateSections(context, term, s, batchSizeSections);
 
-      Stream<Row> rows =
+      Stream<FullRow> rows =
           StreamSupport
               .stream(f.apply(SubjectCode.allSubjects()).spliterator(), false)
-              .flatMap(code -> SelectRows.selectRows(context, epoch, code));
+              .flatMap(code -> SelectRows.selectFullRows(context, epoch, code));
 
       Utils.deleteFile(GetResources.getIndexFileForEpoch(epoch));
       UpdateIndex.updateIndex(epoch, rows);

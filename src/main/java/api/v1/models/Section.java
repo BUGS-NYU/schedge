@@ -1,13 +1,12 @@
 package api.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import database.models.FullRow;
+import database.models.Row;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
-
-import database.models.FullRow;
-import database.models.Row;
 import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
@@ -183,9 +182,19 @@ public class Section {
   }
 
   public static Section fromRow(Row row) {
-          return new Section(row.registrationNumber, row.sectionCode, row.instructors,
-                  row.sectionType, row.sectionStatus, row.meetings, null, row.sectionName,
-                  row.waitlistTotal, null, null, row.minUnits, row.maxUnits,
-                  null,null, row.location, null, null);
+    return new Section(row.registrationNumber, row.sectionCode, row.instructors,
+                       row.sectionType, row.sectionStatus, row.meetings, null,
+                       row.sectionName, row.waitlistTotal, null, null,
+                       row.minUnits, row.maxUnits, null, null, row.location,
+                       null, null);
+  }
+
+  public static Section fromFullRow(FullRow row) {
+    return new Section(row.registrationNumber, row.sectionCode, row.instructors,
+                       row.sectionType, row.sectionStatus, row.meetings, null,
+                       row.sectionName, row.waitlistTotal, row.campus,
+                       row.description, row.minUnits, row.maxUnits,
+                       row.instructionMode, row.grading, row.location,
+                       row.notes, row.prerequisites);
   }
 }

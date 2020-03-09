@@ -2,14 +2,12 @@ package database.models;
 
 import static database.generated.Tables.*;
 
-
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import jdk.dynalink.NamedOperation;
 import nyu.Meeting;
 import nyu.SectionStatus;
@@ -44,8 +42,7 @@ public class FullRow {
   public final String notes;
   public final String prerequisites;
 
-  public FullRow(Record row,
-                 HashMap<Integer, ArrayList<Meeting>> meetingRows) {
+  public FullRow(Record row) {
     courseId = row.get(COURSES.ID);
     name = row.get(COURSES.NAME);
     subject =
@@ -61,7 +58,7 @@ public class FullRow {
     sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
     sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
     associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
-    meetings = meetingRows.get(row.get(SECTIONS.ID));
+    meetings = Row.meetingList(row);
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
     campus = row.get(SECTIONS.CAMPUS);

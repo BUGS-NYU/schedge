@@ -102,14 +102,19 @@ public final class CoursesEndpoint extends Endpoint {
         return;
       }
 
+      String fullData = ctx.queryParam("full");
+
       ctx.status(200);
       Object output = GetConnection.withContextReturning(context -> {
         Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
         if (epoch == null) {
           return Collections.emptyList();
         }
+        if (fullData != null && fullData.toLowerCase().equals("true"))
+          return SelectCourses.selectFullCourses(
+              context, epoch, Collections.singletonList(subject));
         return SelectCourses.selectCourses(context, epoch,
-                                           Arrays.asList(subject));
+                                           Collections.singletonList(subject));
       });
       ctx.json(output);
     };

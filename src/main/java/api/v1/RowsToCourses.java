@@ -2,7 +2,9 @@ package api.v1;
 
 import api.v1.models.Course;
 import api.v1.models.Section;
+import database.models.FullRow;
 import database.models.Row;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,9 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // Abbrev for Course Section Rows
-public class CSRowsToCourses {
+public class RowsToCourses {
   public static Stream<Course>
-  csRowsToCourses(Stream<Row> rows) {
+  rowsToCourses(Stream<Row> rows) {
 
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
@@ -24,7 +26,7 @@ public class CSRowsToCourses {
                             new Course(row.name, row.deptCourseId, row.subject,
                                        new ArrayList<>()));
               if (row.associatedWith == null) {
-                Section s = Section.fromCSR(row);
+                Section s = Section.fromRow(row);
                 sections.put(row.sectionId, s);
                 courses.get(row.courseId).getSections().add(s);
               }
@@ -35,7 +37,7 @@ public class CSRowsToCourses {
 
     recitationRecords.stream().forEach(
         row
-        -> sections.get(row.associatedWith).addRecitation(Section.fromCSR(row)));
+        -> sections.get(row.associatedWith).addRecitation(Section.fromRow(row)));
 
     return courses.entrySet().stream().map(entry -> entry.getValue());
   }

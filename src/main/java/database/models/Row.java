@@ -1,10 +1,13 @@
 package database.models;
 
+import static database.generated.Tables.*;
+
 import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import nyu.Meeting;
@@ -30,21 +33,11 @@ public class Row {
   public final List<Meeting> meetings;
 
   public final String sectionName;
-  public final String campus;
-  public final String description;
-  public final String instructionMode;
   public final Float minUnits;
   public final Float maxUnits;
-  public final String grading;
   public final String location;
-  public final String notes;
-  public final String prerequisites;
 
-  public Row(Record row,
-             HashMap<Integer, ArrayList<Meeting>> meetingRows) {
-    Courses COURSES = Tables.COURSES;
-    Sections SECTIONS = Tables.SECTIONS;
-    Instructors INSTRUCTORS = Tables.INSTRUCTORS;
+  public Row(Record row) {
     courseId = row.get(COURSES.ID);
     name = row.get(COURSES.NAME);
     subject =
@@ -60,17 +53,25 @@ public class Row {
     sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
     sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
     associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
-    meetings = meetingRows.get(row.get(SECTIONS.ID));
+    meetings = meetingList(row);
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
-    campus = null;
-    description = null;
     minUnits = row.get(SECTIONS.MIN_UNITS);
     maxUnits = row.get(SECTIONS.MAX_UNITS);
-    instructionMode = null;
-    grading = null;
     location = row.get(SECTIONS.LOCATION);
-    notes = null;
-    prerequisites = null;
+  }
+
+  public static List<Meeting> meetingList(Record row) {
+      String beginDates = row.get("begin_dates", String.class);
+      if (beginDates == null)
+          return Collections.emptyList();
+      String[] begin_dates = beginDates.split(";");
+      String[] durations = row.get("durations", String.class).split(";");
+      String[] end_dates = row.get("end_dates", String.class).split(";");
+      ArrayList<Meeting> meetings = new ArrayList<>(begin_dates.length);
+      for (int i = 0; i < begin_dates.length; i++) {
+        meetings.add(new Meeting(begin_dates[i], durations[i], end_dates[i]));
+      }
+      return meetings;
   }
 }

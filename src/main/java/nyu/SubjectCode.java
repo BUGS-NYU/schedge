@@ -2,6 +2,7 @@ package nyu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import utils.Utils;
@@ -9,9 +10,9 @@ import utils.Utils;
 public final class SubjectCode {
 
   private static Map<String, List<SubjectCode>> availableSubjects;
-  private static Map<String, ArrayList<SubjectMetadata>> availableSubjectInfo;
+  private static Map<String, Map<String, String>> availableSubjectInfo;
   private static List<SubjectMetadata> allSubjectInfo;
-  private static List<SchoolMetadata> schools;
+  private static Map<String, String> schools;
   private static List<SubjectCode> allSubjects;
 
   public final String code;
@@ -28,7 +29,7 @@ public final class SubjectCode {
     this.school = school.toUpperCase();
   }
 
-  public void checkValid() {
+    public void checkValid() {
     if (!getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
@@ -39,34 +40,27 @@ public final class SubjectCode {
                                          this.toString() + "'");
   }
 
-  public static List<SchoolMetadata> allSchools() {
+  public static Map<String, String> allSchools() {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
-                    .map(str -> {
-                      String[] data = str.split(",", 2);
-                      return new SchoolMetadata(data[0], data[1]);
-                    })
-                    .collect(Collectors.toList());
+                    .map(str -> str.split(",", 2))
+                    .collect(Collectors.toMap(s -> s[0], s -> s[1]));
     }
     return schools;
   }
 
-  public static Map<String, ArrayList<SubjectMetadata>>
-  getAvailableSubjectInfo() {
+  public static Map<String, Map<String, String>> getAvailableSubjectInfo() {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
       Utils.asResourceLines("/subjects.txt")
           .stream()
-          .map(it -> new SubjectMetadata(it))
+          .map(it -> it.split(","))
           .forEach(s -> {
-            if (availableSubjectInfo.containsKey(s.getSchool())) {
-              availableSubjectInfo.get(s.getSchool()).add(s);
-            } else {
-              ArrayList<SubjectMetadata> subjects = new ArrayList<>();
-              subjects.add(s);
-              availableSubjectInfo.put(s.getSchool(), subjects);
+            if (!availableSubjectInfo.containsKey(s[1])) {
+              availableSubjectInfo.put(s[1], new HashMap<>());
             }
+            availableSubjectInfo.get(s[1]).put(s[0], s[2]);
           });
     }
     return availableSubjectInfo;
@@ -74,25 +68,15 @@ public final class SubjectCode {
 
   public static Map<String, List<SubjectCode>> getAvailableSubjects() {
     if (availableSubjects == null) {
-      Function<List<SubjectMetadata>, List<SubjectCode>> f = e
-          -> e.stream()
-                 .map(it -> it.getSubjectCode())
+      BiFunction<String, Set<String>, List<SubjectCode>> f = (school, subjects)
+          -> subjects.stream()
+                 .map(it -> new SubjectCode(it, school))
                  .collect(Collectors.toList());
       availableSubjects = getAvailableSubjectInfo().entrySet().stream().collect(
-          Collectors.toMap(Map.Entry::getKey, e -> f.apply(e.getValue())));
+          Collectors.toMap(Map.Entry::getKey,
+                           e -> f.apply(e.getKey(), e.getValue().keySet())));
     }
     return availableSubjects;
-  }
-
-  public static List<SubjectMetadata> allSubjectInfo() {
-    if (allSubjectInfo == null) {
-      allSubjectInfo = getAvailableSubjectInfo()
-                           .entrySet()
-                           .stream()
-                           .flatMap(e -> e.getValue().stream())
-                           .collect(Collectors.toList());
-    }
-    return allSubjectInfo;
   }
 
   public static List<SubjectCode> allSubjects() {
@@ -106,7 +90,7 @@ public final class SubjectCode {
     return allSubjects;
   }
 
-  public static List<SubjectMetadata> allSubjectInfoForSchool(String school) {
+  public static Map<String, String> allSubjectInfoForSchool(String school) {
     return getAvailableSubjectInfo().get(school);
   }
 

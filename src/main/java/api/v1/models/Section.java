@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
+import database.models.FullRow;
 import database.models.Row;
 import nyu.Meeting;
 import nyu.SectionStatus;
@@ -181,11 +182,10 @@ public class Section {
                         prerequisites);
   }
 
-  public static Section fromCSR(Row row) {
+  public static Section fromRow(Row row) {
           return new Section(row.registrationNumber, row.sectionCode, row.instructors,
                   row.sectionType, row.sectionStatus, row.meetings, null, row.sectionName,
-                  row.waitlistTotal, row.campus, row.description, row.minUnits, row.maxUnits,
-                  row.instructionMode, row.grading, row.location, row.notes,
-                  row.prerequisites);
+                  row.waitlistTotal, null, null, row.minUnits, row.maxUnits,
+                  null,null, row.location, null, null);
   }
 }

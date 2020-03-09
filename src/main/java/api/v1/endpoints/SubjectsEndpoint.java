@@ -49,7 +49,7 @@ public final class SubjectsEndpoint extends Endpoint {
       String school = ctx.queryParam("school");
       ctx.contentType("application/json");
       if (school == null) {
-        ctx.json(SubjectCode.allSubjectInfo());
+        ctx.json(SubjectCode.getAvailableSubjectInfo());
       } else
         try {
           ctx.json(SubjectCode.allSubjectInfoForSchool(school.toUpperCase()));

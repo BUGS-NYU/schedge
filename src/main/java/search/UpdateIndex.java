@@ -1,8 +1,10 @@
 package search;
 
-import database.models.Row;
+import database.models.FullRow;
 import java.io.IOException;
 import java.util.stream.Stream;
+
+import database.models.Row;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
@@ -20,9 +22,9 @@ public class UpdateIndex {
           new TextField("name", row.sectionName == null ? "" : row.sectionName,
                         Field.Store.YES);
       doc.add(nameField);
-      doc.add(new TextField("description",
-                            row.description == null ? "" : row.description,
-                            Field.Store.YES));
+//      doc.add(new TextField("description",
+//                            row.description == null ? "" : row.description,
+//                            Field.Store.YES));
       doc.add(new TextField("id", Integer.toString(row.sectionId),
                             Field.Store.YES));
 

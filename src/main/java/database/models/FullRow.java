@@ -1,19 +1,23 @@
 package database.models;
 
-import database.generated.Tables;
+import static database.generated.Tables.*;
+
+
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import jdk.dynalink.NamedOperation;
 import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
 import org.jooq.Record;
 
-public class CourseSectionRow {
+public class FullRow {
   public final int courseId;
   public final String name;
   public final SubjectCode subject;
@@ -30,15 +34,18 @@ public class CourseSectionRow {
   public final List<Meeting> meetings;
 
   public final String sectionName;
+  public final String campus;
+  public final String description;
+  public final String instructionMode;
   public final Float minUnits;
   public final Float maxUnits;
+  public final String grading;
   public final String location;
+  public final String notes;
+  public final String prerequisites;
 
-  public CourseSectionRow(Record row,
-                          HashMap<Integer, ArrayList<Meeting>> meetingRows) {
-    Courses COURSES = Tables.COURSES;
-    Sections SECTIONS = Tables.SECTIONS;
-    Instructors INSTRUCTORS = Tables.INSTRUCTORS;
+  public FullRow(Record row,
+                 HashMap<Integer, ArrayList<Meeting>> meetingRows) {
     courseId = row.get(COURSES.ID);
     name = row.get(COURSES.NAME);
     subject =
@@ -57,8 +64,14 @@ public class CourseSectionRow {
     meetings = meetingRows.get(row.get(SECTIONS.ID));
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
+    campus = row.get(SECTIONS.CAMPUS);
+    description = row.get(SECTIONS.DESCRIPTION);
     minUnits = row.get(SECTIONS.MIN_UNITS);
     maxUnits = row.get(SECTIONS.MAX_UNITS);
+    instructionMode = row.get(SECTIONS.INSTRUCTION_MODE);
+    grading = row.get(SECTIONS.GRADING);
     location = row.get(SECTIONS.LOCATION);
+    notes = row.get(SECTIONS.NOTES);
+    prerequisites = row.get(SECTIONS.PREREQUISITES);
   }
 }

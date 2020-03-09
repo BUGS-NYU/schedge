@@ -8,6 +8,7 @@ import database.courses.SelectRows;
 import database.courses.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
+import database.models.FullRow;
 import database.models.Row;
 import database.models.SectionID;
 import java.util.Iterator;

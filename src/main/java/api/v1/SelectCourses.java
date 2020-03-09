@@ -25,7 +25,7 @@ public class SelectCourses {
 
   public static Stream<Course> selectCourses(DSLContext context, int epoch,
                                              SubjectCode code) {
-    return CSRowsToCourses.csRowsToCourses(
+    return RowsToCourses.rowsToCourses(
         SelectRows.selectRows(context, epoch, code));
   }
 }

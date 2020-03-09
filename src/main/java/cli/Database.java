@@ -22,6 +22,7 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.query.GetClient;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
@@ -60,6 +61,8 @@ public class Database implements Runnable {
     ScrapeTerm.scrapeTerm(
         termMixin.getTerm(), batchSize, batchSizeSections,
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
+    GetConnection.close();
+    GetClient.close();
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -85,6 +88,9 @@ public class Database implements Runnable {
     }
 
     );
+
+    GetConnection.close();
+    GetClient.close();
 
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
@@ -112,6 +118,8 @@ public class Database implements Runnable {
       outputFile.writeOutput(SelectCourses.selectCourses(
           context, epoch, subjectCodeMixin.getSubjectCodes()));
     });
+
+    GetConnection.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
@@ -149,6 +157,7 @@ public class Database implements Runnable {
               spec.commandLine(), "Term and --epoch are mutually exclusive!");
         }
       });
+      GetConnection.close();
     }
   }
 

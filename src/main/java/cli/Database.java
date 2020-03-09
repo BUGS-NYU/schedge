@@ -171,7 +171,7 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    while (new Integer(1) == null) {
+    while (true) {
       CleanData.cleanData();
       UpdateData.updateData();
 

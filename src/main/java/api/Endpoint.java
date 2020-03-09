@@ -6,12 +6,12 @@ import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 
 public abstract class Endpoint {
-    public abstract String getPath();
-    public abstract OpenApiDocumentation configureDocs(OpenApiDocumentation docs);
-    public abstract Handler getHandler();
-    public final void addTo(Javalin app) {
-        app.get(getPath(),
-                OpenApiBuilder.documented(configureDocs(OpenApiBuilder.document()),
-                        getHandler()));
-    }
+  public abstract String getPath();
+  public abstract OpenApiDocumentation configureDocs(OpenApiDocumentation docs);
+  public abstract Handler getHandler();
+  public final void addTo(Javalin app) {
+    app.get(getPath(),
+            OpenApiBuilder.documented(configureDocs(OpenApiBuilder.document()),
+                                      getHandler()));
+  }
 }

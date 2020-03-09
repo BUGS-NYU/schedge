@@ -29,6 +29,7 @@ public class SelectRows {
                       COURSES.SCHOOL.eq(code.school),
                       COURSES.SUBJECT.eq(code.code));
   }
+
   public static Stream<Row> selectRows(DSLContext context,
                                        Condition... conditions) {
     long start = System.nanoTime();
@@ -63,5 +64,43 @@ public class SelectRows {
         .stream(records.spliterator(),
                 false) // @Performance Should this be true?
         .map(r -> new Row(r));
+  }
+
+  public static Stream<FullRow> selectFullRows(DSLContext context, int epoch,
+                                               SubjectCode code) {
+    return selectFullRows(context, COURSES.EPOCH.eq(epoch),
+                          COURSES.SCHOOL.eq(code.school),
+                          COURSES.SUBJECT.eq(code.code));
+  }
+
+  public static Stream<FullRow> selectFullRows(DSLContext context,
+                                               Condition... conditions) {
+    long start = System.nanoTime();
+    Result<Record> records =
+        context
+            .select(COURSES.asterisk(), SECTIONS.asterisk(),
+                    groupConcat(
+                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
+                        .as("section_instructors"),
+                    groupConcat(MEETINGS.BEGIN_DATE, ";").as("begin_dates"),
+                    groupConcat(MEETINGS.DURATION, ";").as("durations"),
+                    groupConcat(MEETINGS.END_DATE, ";").as("end_dates"))
+            .from(COURSES)
+            .leftJoin(SECTIONS)
+            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
+            .leftJoin(IS_TEACHING_SECTION)
+            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
+            .leftJoin(MEETINGS)
+            .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
+            .where(conditions)
+            .groupBy(SECTIONS.ID)
+            .fetch();
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000 + " milliseconds for database");
+
+    return StreamSupport
+        .stream(records.spliterator(),
+                false) // @Performance Should this be true?
+        .map(r -> new FullRow(r));
   }
 }

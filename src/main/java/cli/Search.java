@@ -1,15 +1,13 @@
 package cli;
 
+import api.v1.SelectCoursesBySectionId;
 import api.v1.models.Course;
 import cli.templates.OutputFileMixin;
 import cli.templates.TermMixin;
 import database.GetConnection;
-import api.v1.SelectCoursesBySectionId;
 import database.epochs.LatestCompleteEpoch;
-
 import java.util.Collections;
 import java.util.List;
-
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

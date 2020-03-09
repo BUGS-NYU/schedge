@@ -2,6 +2,7 @@ package api.v1.endpoints;
 
 import api.Endpoint;
 import io.javalin.http.Handler;
+import io.javalin.plugin.openapi.dsl.DocumentedResponse;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;
@@ -21,11 +22,9 @@ public final class SchoolsEndpoint extends Endpoint {
         .operation(openApiOperation -> {
           // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
-              "This endpoint returns a list of schools.");
+              "This endpoint returns an object where keys are school codes, and values are their full names.");
           openApiOperation.summary("Schools Endpoint");
-        })
-        .jsonArray("200", SubjectCode.SchoolMetadata.class,
-                   openApiParam -> { openApiParam.description("OK."); });
+        });
   }
 
   @NotNull

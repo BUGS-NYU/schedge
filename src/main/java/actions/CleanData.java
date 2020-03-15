@@ -23,12 +23,10 @@ public class CleanData {
     Term next = current.nextTerm();
     Term nextNext = current.nextTerm();
 
-    Integer maxDeletableEpoch = GetConnection.withContextReturning(context -> {
+    Integer minLiveEpoch = GetConnection.withContextReturning(context -> {
       BiFunction<Integer, Term, Integer> updateMin = (curMin, curTerm) -> {
-        Integer cur = null;
-        if (curMin == null ||
-            ((cur = getLatestEpoch(context, curTerm)) != null &&
-             cur < curMin)) {
+        Integer cur = getLatestEpoch(context, curTerm);
+        if (curMin == null || (cur != null && cur < curMin)) {
           return cur;
         } else
           return curMin;
@@ -40,20 +38,20 @@ public class CleanData {
       min = updateMin.apply(min, next);
       min = updateMin.apply(min, nextNext);
 
-      return min == null ? null : min - 1;
+      return min;
     });
 
-    if (maxDeletableEpoch == null) {
+    if (minLiveEpoch == null) {
       logger.info("No dead epochs found.");
       return;
     }
 
-    logger.info("Youngest dead epoch is epoch=" + maxDeletableEpoch);
+    logger.info("Oldest live epoch is epoch=" + minLiveEpoch);
 
     GetConnection.withContext(
-        context -> CleanEpoch.cleanEpochsUpTo(context, maxDeletableEpoch));
+        context -> CleanEpoch.cleanEpochsUpTo(context, minLiveEpoch));
 
-    int currentEpoch = maxDeletableEpoch;
+    int currentEpoch = minLiveEpoch;
     while (Utils.deleteFile(GetResources.getIndexFileForEpoch(currentEpoch--)))
       ;
   }

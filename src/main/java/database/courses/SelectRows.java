@@ -32,7 +32,6 @@ public class SelectRows {
 
   public static Stream<Row> selectRows(DSLContext context,
                                        Condition... conditions) {
-    long start = System.nanoTime();
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.ID,
@@ -57,8 +56,6 @@ public class SelectRows {
             .where(conditions)
             .groupBy(SECTIONS.ID)
             .fetch();
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000 + " milliseconds for database");
 
     return StreamSupport
         .stream(records.spliterator(),
@@ -75,7 +72,6 @@ public class SelectRows {
 
   public static Stream<FullRow> selectFullRows(DSLContext context,
                                                Condition... conditions) {
-    long start = System.nanoTime();
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
@@ -95,8 +91,6 @@ public class SelectRows {
             .where(conditions)
             .groupBy(SECTIONS.ID)
             .fetch();
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000 + " milliseconds for database");
 
     return StreamSupport
         .stream(records.spliterator(),

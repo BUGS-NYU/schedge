@@ -42,7 +42,7 @@ public class FullRow {
   public final String notes;
   public final String prerequisites;
 
-  public FullRow(Record row) {
+  public FullRow(Record row, List<Meeting> meetings) {
     courseId = row.get(COURSES.ID);
     name = row.get(COURSES.NAME);
     subject =
@@ -58,7 +58,7 @@ public class FullRow {
     sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
     sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
     associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
-    meetings = Row.meetingList(row);
+    this.meetings = meetings;
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
     campus = row.get(SECTIONS.CAMPUS);

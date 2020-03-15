@@ -51,7 +51,7 @@ public class CleanData {
     GetConnection.withContext(
         context -> CleanEpoch.cleanEpochsUpTo(context, minLiveEpoch));
 
-    int currentEpoch = minLiveEpoch;
+    int currentEpoch = minLiveEpoch - 1;
     while (Utils.deleteFile(GetResources.getIndexFileForEpoch(currentEpoch--)))
       ;
   }

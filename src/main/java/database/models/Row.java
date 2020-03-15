@@ -37,7 +37,7 @@ public class Row {
   public final Float maxUnits;
   public final String location;
 
-  public Row(Record row) {
+  public Row(Record row, List<Meeting> meetings) {
     courseId = row.get(COURSES.ID);
     name = row.get(COURSES.NAME);
     subject =
@@ -48,30 +48,18 @@ public class Row {
     registrationNumber = row.get(SECTIONS.REGISTRATION_NUMBER);
     sectionCode = row.get(SECTIONS.SECTION_CODE);
     String instructorString = (String)row.get("section_instructors");
+    // System.err.println(row.get(SECTIONS.ID) + instructorString);
     instructors = instructorString.equals("") ? new String[] {"Staff"}
                                               : instructorString.split(";");
+
     sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
     sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
     associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
-    meetings = meetingList(row);
+    this.meetings = meetings;
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
     minUnits = row.get(SECTIONS.MIN_UNITS);
     maxUnits = row.get(SECTIONS.MAX_UNITS);
     location = row.get(SECTIONS.LOCATION);
-  }
-
-  public static List<Meeting> meetingList(Record row) {
-    String beginDates = row.get("begin_dates", String.class);
-    if (beginDates == null)
-      return Collections.emptyList();
-    String[] begin_dates = beginDates.split(";");
-    String[] durations = row.get("durations", String.class).split(";");
-    String[] end_dates = row.get("end_dates", String.class).split(";");
-    ArrayList<Meeting> meetings = new ArrayList<>(begin_dates.length);
-    for (int i = 0; i < begin_dates.length; i++) {
-      meetings.add(new Meeting(begin_dates[i], durations[i], end_dates[i]));
-    }
-    return meetings;
   }
 }

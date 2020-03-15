@@ -7,9 +7,8 @@ import static org.jooq.impl.DSL.groupConcat;
 import database.models.FullRow;
 import database.models.Row;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import nyu.Meeting;
@@ -32,6 +31,8 @@ public class SelectRows {
 
   public static Stream<Row> selectRows(DSLContext context,
                                        Condition... conditions) {
+    Map<Integer, List<Meeting>> meetingsList =
+        selectMeetings(context, conditions);
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.ID,
@@ -42,17 +43,12 @@ public class SelectRows {
                     SECTIONS.LOCATION,
                     groupConcat(
                         coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
-                        .as("section_instructors"),
-                    groupConcat(MEETINGS.BEGIN_DATE, ";").as("begin_dates"),
-                    groupConcat(MEETINGS.DURATION, ";").as("durations"),
-                    groupConcat(MEETINGS.END_DATE, ";").as("end_dates"))
+                        .as("section_instructors"))
             .from(COURSES)
             .leftJoin(SECTIONS)
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .leftJoin(MEETINGS)
-            .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
             .where(conditions)
             .groupBy(SECTIONS.ID)
             .fetch();
@@ -60,7 +56,7 @@ public class SelectRows {
     return StreamSupport
         .stream(records.spliterator(),
                 false) // @Performance Should this be true?
-        .map(r -> new Row(r));
+        .map(r -> new Row(r, meetingsList.get(r.get(SECTIONS.ID))));
   }
 
   public static Stream<FullRow> selectFullRows(DSLContext context, int epoch,
@@ -72,6 +68,8 @@ public class SelectRows {
 
   public static Stream<FullRow> selectFullRows(DSLContext context,
                                                Condition... conditions) {
+    Map<Integer, List<Meeting>> meetingsList =
+        selectMeetings(context, conditions);
     Result<Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
@@ -86,8 +84,6 @@ public class SelectRows {
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .leftJoin(MEETINGS)
-            .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
             .where(conditions)
             .groupBy(SECTIONS.ID)
             .fetch();
@@ -95,6 +91,44 @@ public class SelectRows {
     return StreamSupport
         .stream(records.spliterator(),
                 false) // @Performance Should this be true?
-        .map(r -> new FullRow(r));
+        .map(r -> new FullRow(r, meetingsList.get(r.get(SECTIONS.ID))));
+  }
+
+  private static Map<Integer, List<Meeting>>
+  selectMeetings(DSLContext context, Condition... conditions) {
+    Result<Record4<Integer, String, String, String>> records =
+        context
+            .select(SECTIONS.ID,
+                    groupConcat(MEETINGS.BEGIN_DATE, ";").as("begin_dates"),
+                    groupConcat(MEETINGS.DURATION, ";").as("durations"),
+                    groupConcat(MEETINGS.END_DATE, ";").as("end_dates"))
+            .from(COURSES)
+            .leftJoin(SECTIONS)
+            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
+            .leftJoin(MEETINGS)
+            .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
+            .where(conditions)
+            .groupBy(SECTIONS.ID)
+            .fetch();
+
+    return records.stream().collect(Collectors.toMap(
+        row
+        -> row.component1(),
+        row
+        -> meetingList(row.component2(), row.component3(), row.component4())));
+  }
+
+  private static List<Meeting>
+  meetingList(String beginString, String durationString, String endString) {
+    if (beginString == null)
+      return Collections.emptyList();
+    String[] beginDates = beginString.split(";");
+    String[] durations = durationString.split(";");
+    String[] endDates = endString.split(";");
+    ArrayList<Meeting> meetings = new ArrayList<>(beginDates.length);
+    for (int i = 0; i < beginDates.length; i++) {
+      meetings.add(new Meeting(beginDates[i], durations[i], endDates[i]));
+    }
+    return meetings;
   }
 }

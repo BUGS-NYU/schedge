@@ -10,9 +10,8 @@ import utils.Utils;
 public final class SubjectCode {
 
   private static Map<String, List<SubjectCode>> availableSubjects;
-  private static Map<String, Map<String, String>> availableSubjectInfo;
-  private static List<SubjectMetadata> allSubjectInfo;
-  private static Map<String, String> schools;
+  private static Map<String, Map<String, SubjectMetadata>> availableSubjectInfo;
+  private static Map<String, SchoolMetadata> schools;
   private static List<SubjectCode> allSubjects;
 
   public final String code;
@@ -40,17 +39,17 @@ public final class SubjectCode {
                                          this.toString() + "'");
   }
 
-  public static Map<String, String> allSchools() {
+  public static Map<String, SchoolMetadata> allSchools() {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
                     .map(str -> str.split(",", 2))
-                    .collect(Collectors.toMap(s -> s[0], s -> s[1]));
+                    .collect(Collectors.toMap(s -> s[0], s -> new SchoolMetadata(s[1])));
     }
     return schools;
   }
 
-  public static Map<String, Map<String, String>> getAvailableSubjectInfo() {
+  public static Map<String, Map<String, SubjectMetadata>> getAvailableSubjectInfo() {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
       Utils.asResourceLines("/subjects.txt")
@@ -60,7 +59,7 @@ public final class SubjectCode {
             if (!availableSubjectInfo.containsKey(s[1])) {
               availableSubjectInfo.put(s[1], new HashMap<>());
             }
-            availableSubjectInfo.get(s[1]).put(s[0], s[2]);
+            availableSubjectInfo.get(s[1]).put(s[0], new SubjectMetadata(s[2]));
           });
     }
     return availableSubjectInfo;
@@ -90,10 +89,6 @@ public final class SubjectCode {
     return allSubjects;
   }
 
-  public static Map<String, String> allSubjectInfoForSchool(String school) {
-    return getAvailableSubjectInfo().get(school);
-  }
-
   public static List<SubjectCode> allSubjectsForSchool(String school) {
     return getAvailableSubjects().get(school);
   }
@@ -115,30 +110,19 @@ public final class SubjectCode {
   }
 
   public static final class SubjectMetadata {
-    private String code, school, name;
-    SubjectMetadata(String csv) {
-      String[] values = csv.split(",", 3);
-      code = values[0];
-      school = values[1];
-      name = values[2];
+    private String name;
+    SubjectMetadata(String name) {
+      this.name = name;
     }
-    @JsonIgnore
-    SubjectCode getSubjectCode() {
-      return new SubjectCode(code, school);
-    }
-    public String getCode() { return code; }
-    public String getSchool() { return school; }
     public String getName() { return name; }
   }
 
   public static final class SchoolMetadata {
-    private String code, name;
-    SchoolMetadata(String code, String name) {
-      this.code = code;
+    private String name;
+    SchoolMetadata(String name) {
       this.name = name;
     }
 
-    public String getCode() { return code; }
     public String getName() { return name; }
 
     @Override
@@ -148,12 +132,12 @@ public final class SubjectCode {
       if (o == null || getClass() != o.getClass())
         return false;
       SchoolMetadata that = (SchoolMetadata)o;
-      return code.equals(that.code) && name.equals(that.name);
+      return name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(code, name);
+      return Objects.hash(name);
     }
   }
 }

@@ -75,10 +75,7 @@ public class SelectRows {
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
                     groupConcat(
                         coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
-                        .as("section_instructors"),
-                    groupConcat(MEETINGS.BEGIN_DATE, ";").as("begin_dates"),
-                    groupConcat(MEETINGS.DURATION, ";").as("durations"),
-                    groupConcat(MEETINGS.END_DATE, ";").as("end_dates"))
+                        .as("section_instructors"))
             .from(COURSES)
             .leftJoin(SECTIONS)
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))

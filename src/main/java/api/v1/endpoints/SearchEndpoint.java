@@ -101,7 +101,7 @@ public final class SearchEndpoint extends Endpoint {
       String args = ctx.queryParam("query");
       if (args == null) {
         ctx.status(400);
-        ctx.json(new ApiError("Need to provide a query messager."));
+        ctx.json(new ApiError("Need to provide a query."));
         return;
       }
 
@@ -113,16 +113,22 @@ public final class SearchEndpoint extends Endpoint {
                          .orElse(null);
       } catch (NumberFormatException e) {
         ctx.status(400);
-        ctx.json(new ApiError("Limit needs to be an integer."));
+        ctx.json(new ApiError("Limit needs to be a positive integer."));
         return;
       }
 
-      ctx.status(200);
       GetConnection.withContext(context -> {
-        int epoch = getLatestEpoch(context, term);
+        Integer epoch = getLatestEpoch(context, term);
+        if (epoch == null) {
+          ctx.status(404);
+          ctx.json(new ApiError("No data for query."));
+          return;
+        }
+
         List<Integer> result = searchCourses(epoch, args, resultSize);
 
         ctx.json(selectCoursesBySectionId(context, epoch, result));
+        ctx.status(200);
       });
     };
   }

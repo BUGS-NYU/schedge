@@ -32,7 +32,8 @@ if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
   fi
 
   sudo -E java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
-    -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ & disown
+    -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ \
+    2>"$PROJ_DIR/stderr.log" & disown
   echo "$!" > "$PROJ_DIR/.pid"
   echo "Open ./logging in order to see logs of the program."
 else

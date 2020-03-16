@@ -95,10 +95,9 @@ public class SelectRows {
   selectMeetings(DSLContext context, Condition... conditions) {
     Result<Record4<Integer, String, String, String>> records =
         context
-            .select(SECTIONS.ID,
-                    groupConcat(MEETINGS.BEGIN_DATE, ";").as("begin_dates"),
-                    groupConcat(MEETINGS.DURATION, ";").as("durations"),
-                    groupConcat(MEETINGS.END_DATE, ";").as("end_dates"))
+            .select(SECTIONS.ID, groupConcat(MEETINGS.BEGIN_DATE, ";"),
+                    groupConcat(MEETINGS.DURATION, ";"),
+                    groupConcat(MEETINGS.END_DATE, ";"))
             .from(COURSES)
             .leftJoin(SECTIONS)
             .on(SECTIONS.COURSE_ID.eq(COURSES.ID))

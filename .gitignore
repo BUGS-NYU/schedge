@@ -13,6 +13,9 @@
 # Ignore Gradle build output directory
 .build
 
+# Ignore logging files
+*.log
+
 /postgres/*
 !/postgres/.gitkeep
 

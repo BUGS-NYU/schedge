@@ -7,6 +7,8 @@ import java.util.stream.Stream;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SearchCourses {
   private static QueryParser nameQueryParser =
@@ -15,6 +17,9 @@ public class SearchCourses {
   //      new QueryParser("description", GetResources.analyzer);
   private static QueryParser instrQueryParser =
       new QueryParser("instructors", GetResources.analyzer);
+
+  private static final Logger logger =
+      LoggerFactory.getLogger("search.SearchCourses");
 
   public static List<Integer> searchCourses(int epoch, String queryString,
                                             Integer totalNullable) {
@@ -31,7 +36,7 @@ public class SearchCourses {
               //                   BooleanClause.Occur.SHOULD)
               .build();
     } catch (ParseException e) {
-      throw new RuntimeException(e);
+      logger.warn(e.getMessage());
     }
 
     ScoreDoc[] hits;

@@ -1,6 +1,7 @@
 package search;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public class SearchCourses {
     } catch (ParseException e) {
       logger.warn("Parsing error for query string: " + queryString);
       logger.warn(e.getMessage());
-      return;
+      return Collections.emptyList();
     } catch (RuntimeException r) {
       logger.warn("Parsing error for query string: " + queryString);
       throw r;

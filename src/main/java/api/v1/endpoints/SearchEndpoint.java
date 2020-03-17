@@ -105,7 +105,7 @@ public final class SearchEndpoint extends Endpoint {
         return;
       } else if (args.length() > 50) {
         ctx.status(400);
-        crtx.json(new ApiError("Query can be at most 50 characters long."));
+        ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
       Integer resultSize;

@@ -25,6 +25,7 @@ public class SearchCourses {
   public static List<Integer> searchCourses(int epoch, String queryString,
                                             Integer totalNullable) {
     IndexSearcher searcher = GetResources.getSearcher(epoch);
+    queryString = QueryParser.escape(queryString);
     Query query = null;
     try {
       query =
@@ -42,7 +43,9 @@ public class SearchCourses {
       return Collections.emptyList();
     } catch (RuntimeException r) {
       logger.warn("Parsing error for query string: " + queryString);
-      throw r;
+      logger.warn(r.getMessage());
+      r.printStackTrace();
+      return Collections.emptyList();
     }
 
     ScoreDoc[] hits;

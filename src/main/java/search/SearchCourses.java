@@ -38,6 +38,7 @@ public class SearchCourses {
     } catch (ParseException e) {
       logger.warn("Parsing error for query string: " + queryString);
       logger.warn(e.getMessage());
+      return;
     } catch (RuntimeException r) {
       logger.warn("Parsing error for query string: " + queryString);
       throw r;

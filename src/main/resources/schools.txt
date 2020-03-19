@@ -23,7 +23,6 @@ GP,Robert F. Wagner Graduate School of Public Service - Graduate
 DC,School of Professional Studies
 UD,College of Dentistry
 US,Silver School of Social Work
-UW,Robert F. Wagner Graduate School of Public Service
 UU,College of Global Public Health
 UH,NYU Abu Dhabi
 NT,

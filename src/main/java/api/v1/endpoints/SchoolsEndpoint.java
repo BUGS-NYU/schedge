@@ -24,12 +24,20 @@ public final class SchoolsEndpoint extends Endpoint {
           openApiOperation.description(
               "This endpoint returns an object where keys are school codes, and values are their full names.");
           openApiOperation.summary("Schools Endpoint");
+        })
+        .queryParam("query", String.class, openApiParam -> {
+          openApiParam.description(
+              "A query string to pass to the school endpoint.");
         });
   }
 
   @NotNull
   @Override
   public Handler getHandler() {
-    return ctx -> { ctx.json(SubjectCode.allSchools()); };
+    return ctx -> {
+      String args = ctx.queryParam("query");
+      System.out.println(args);
+      ctx.json(SubjectCode.allSchools(args));
+    };
   }
 }

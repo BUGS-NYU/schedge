@@ -39,17 +39,31 @@ public final class SubjectCode {
                                          this.toString() + "'");
   }
 
-  public static Map<String, SchoolMetadata> allSchools() {
+  public static Map<String, SchoolMetadata> allSchools(String school) {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
                     .map(str -> str.split(",", 2))
-                    .collect(Collectors.toMap(s -> s[0], s -> new SchoolMetadata(s[1])));
+                    .collect(Collectors.toMap(
+                        s -> s[0], s -> new SchoolMetadata(s[1])));
     }
+
+    if (school != null) {
+      if (school.equals("")) {
+        return schools;
+      } else {
+        return schools.entrySet()
+            .stream()
+            .filter(map -> map.getKey().equals(school))
+            .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
+      }
+    }
+
     return schools;
   }
 
-  public static Map<String, Map<String, SubjectMetadata>> getAvailableSubjectInfo() {
+  public static Map<String, Map<String, SubjectMetadata>>
+  getAvailableSubjectInfo() {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
       Utils.asResourceLines("/subjects.txt")
@@ -111,17 +125,13 @@ public final class SubjectCode {
 
   public static final class SubjectMetadata {
     private String name;
-    SubjectMetadata(String name) {
-      this.name = name;
-    }
+    SubjectMetadata(String name) { this.name = name; }
     public String getName() { return name; }
   }
 
   public static final class SchoolMetadata {
     private String name;
-    SchoolMetadata(String name) {
-      this.name = name;
-    }
+    SchoolMetadata(String name) { this.name = name; }
 
     public String getName() { return name; }
 

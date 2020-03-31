@@ -25,26 +25,31 @@ public final class SubjectCode {
 
   public SubjectCode(String code, String school) {
     this.code = code.toUpperCase();
-    this.school = school.toUpperCase();
+    String tmpSchool = school.toUpperCase();
+    if(tmpSchool.equals("SHU")) {
+      this.school = "UI";
+    } else {
+      this.school = tmpSchool;
+    }
   }
 
   public void checkValid() {
-    if (!getAvailableSubjects().containsKey(school))
+    if (!school.equals("UI") && !getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
-                                         "' in subject '" + this.toString() +
-                                         "' is not valid");
-    if (!getAvailableSubjects().get(school).contains(this))
+              "' in subject '" + this.toString() +
+              "' is not valid");
+    if (!school.equals("UI") && !getAvailableSubjects().get(school).contains(this))
       throw new IllegalArgumentException("School '" + school +
-                                         "' doesn't contain subject '" +
-                                         this.toString() + "'");
+              "' doesn't contain subject '" +
+              this.toString() + "'");
   }
 
   public static Map<String, SchoolMetadata> allSchools() {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")
-                    .stream()
-                    .map(str -> str.split(",", 2))
-                    .collect(Collectors.toMap(s -> s[0], s -> new SchoolMetadata(s[1])));
+              .stream()
+              .map(str -> str.split(",", 2))
+              .collect(Collectors.toMap(s -> s[0], s -> new SchoolMetadata(s[1])));
     }
     return schools;
   }
@@ -53,14 +58,14 @@ public final class SubjectCode {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
       Utils.asResourceLines("/subjects.txt")
-          .stream()
-          .map(it -> it.split(","))
-          .forEach(s -> {
-            if (!availableSubjectInfo.containsKey(s[1])) {
-              availableSubjectInfo.put(s[1], new HashMap<>());
-            }
-            availableSubjectInfo.get(s[1]).put(s[0], new SubjectMetadata(s[2]));
-          });
+              .stream()
+              .map(it -> it.split(","))
+              .forEach(s -> {
+                if (!availableSubjectInfo.containsKey(s[1])) {
+                  availableSubjectInfo.put(s[1], new HashMap<>());
+                }
+                availableSubjectInfo.get(s[1]).put(s[0], new SubjectMetadata(s[2]));
+              });
     }
     return availableSubjectInfo;
   }
@@ -68,12 +73,12 @@ public final class SubjectCode {
   public static Map<String, List<SubjectCode>> getAvailableSubjects() {
     if (availableSubjects == null) {
       BiFunction<String, Set<String>, List<SubjectCode>> f = (school, subjects)
-          -> subjects.stream()
-                 .map(it -> new SubjectCode(it, school))
-                 .collect(Collectors.toList());
+              -> subjects.stream()
+              .map(it -> new SubjectCode(it, school))
+              .collect(Collectors.toList());
       availableSubjects = getAvailableSubjectInfo().entrySet().stream().collect(
-          Collectors.toMap(Map.Entry::getKey,
-                           e -> f.apply(e.getKey(), e.getValue().keySet())));
+              Collectors.toMap(Map.Entry::getKey,
+                      e -> f.apply(e.getKey(), e.getValue().keySet())));
     }
     return availableSubjects;
   }
@@ -81,10 +86,10 @@ public final class SubjectCode {
   public static List<SubjectCode> allSubjects() {
     if (allSubjects == null) {
       allSubjects = getAvailableSubjects()
-                        .entrySet()
-                        .stream()
-                        .flatMap(entry -> entry.getValue().stream())
-                        .collect(Collectors.toList());
+              .entrySet()
+              .stream()
+              .flatMap(entry -> entry.getValue().stream())
+              .collect(Collectors.toList());
     }
     return allSubjects;
   }
@@ -95,6 +100,9 @@ public final class SubjectCode {
 
   @JsonIgnore
   public String getAbbrev() {
+    if(school.equals("UI")) {
+      return code + "-SHU";
+    }
     return code + '-' + school;
   }
 

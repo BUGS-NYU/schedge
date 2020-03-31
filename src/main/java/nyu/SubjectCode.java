@@ -25,21 +25,15 @@ public final class SubjectCode {
 
   public SubjectCode(String code, String school) {
     this.code = code.toUpperCase();
-    String tmpSchool = school.toUpperCase();
-    if (tmpSchool.equals("SHU")) {
-      this.school = "UI";
-    } else {
-      this.school = tmpSchool;
-    }
+    this.school = school.toUpperCase();
   }
 
   public void checkValid() {
-    if (!school.equals("UI") && !getAvailableSubjects().containsKey(school))
+    if (!getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
                                          "' is not valid");
-    if (!school.equals("UI") &&
-        !getAvailableSubjects().get(school).contains(this))
+    if (!getAvailableSubjects().get(school).contains(this))
       throw new IllegalArgumentException("School '" + school +
                                          "' doesn't contain subject '" +
                                          this.toString() + "'");
@@ -103,9 +97,6 @@ public final class SubjectCode {
 
   @JsonIgnore
   public String getAbbrev() {
-    if (school.equals("UI")) {
-      return code + "-SHU";
-    }
     return code + '-' + school;
   }
 

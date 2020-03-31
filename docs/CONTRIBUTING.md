@@ -121,49 +121,6 @@ Kotlin code handles scraping and querying data. Read the [documentation](https:/
 # Install Kotlin.
 brew install kotlin
 ```
-## Project Overview
-The following ASCII file structure diagram shows the most important packages and files, with comments.
-``` bash
-    .
-    ├── build.gradle                                    // Build script
-    └── src
-        └── main
-            ├── java
-            │   ├── Main.java                           // Main to run cli
-            │   ├── api                                 // Handling API endpoints and documentation
-            │   │   ├── App.java                        // Main and abstract classes of the API
-            │   │   ├── CoursesEndpoint.java            // Endpoint for course data
-            │   │   ├── SchoolsEndpoint.java            // Endpoint for schools API
-            │   │   ├── SubjectsEndpoint.java           // Endpoint for subjects API
-            │   │   └── models                          // Data objects for the API
-            │   │       └── ...
-            │   ├── cli                                 // cli - command-line interface
-            │   │   └── ...
-            │   ├── scraping
-            │   │   ├── SimpleBatchedFutureEngine.java  // Handling asynchronous scraping
-            │   │   └── models                          // Data objects for scraping
-            │   │       └── ...
-            │   └── services                            // Actions that Schedge can do
-            │       ├── GetConnection.java
-            │       ├── InsertCourses.java
-            │       ├── JsonMapper.java
-            │       ├── ParseCatalog.java
-            │       ├── ParseSchoolSubjects.java
-            │       ├── ParseSection.java
-            │       └── SelectCourses.java
-            ├── kotlin                                  // Kotlin code; mostly handles scraping
-            │   ├── models                              // Data objects for query and scraping
-            │   │   └── nyu.kt
-            │   ├── services                            // Services for scraping data asynchronously
-            │   │   ├── query_catalog.kt
-            │   │   ├── query_school.kt
-            │   │   ├── query_section.kt
-            │   │   ├── scrape_catalog.kt
-            │   │   └── scrape_section.kt
-            └── resources                               // School and subject data
-                ├── schools.txt
-                └── subjects.txt
-```
 
 ## Development
 

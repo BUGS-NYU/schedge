@@ -29,11 +29,12 @@ public final class SubjectCode {
   }
 
   public void checkValid() {
-    if (!getAvailableSubjects().containsKey(school))
+    if (!school.equals("UU") && !getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
                                          "' is not valid");
-    if (!getAvailableSubjects().get(school).contains(this))
+    if (!school.equals("UU") &&
+        !getAvailableSubjects().get(school).contains(this))
       throw new IllegalArgumentException("School '" + school +
                                          "' doesn't contain subject '" +
                                          this.toString() + "'");
@@ -44,12 +45,14 @@ public final class SubjectCode {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
                     .map(str -> str.split(",", 2))
-                    .collect(Collectors.toMap(s -> s[0], s -> new SchoolMetadata(s[1])));
+                    .collect(Collectors.toMap(
+                        s -> s[0], s -> new SchoolMetadata(s[1])));
     }
     return schools;
   }
 
-  public static Map<String, Map<String, SubjectMetadata>> getAvailableSubjectInfo() {
+  public static Map<String, Map<String, SubjectMetadata>>
+  getAvailableSubjectInfo() {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
       Utils.asResourceLines("/subjects.txt")
@@ -111,17 +114,13 @@ public final class SubjectCode {
 
   public static final class SubjectMetadata {
     private String name;
-    SubjectMetadata(String name) {
-      this.name = name;
-    }
+    SubjectMetadata(String name) { this.name = name; }
     public String getName() { return name; }
   }
 
   public static final class SchoolMetadata {
     private String name;
-    SchoolMetadata(String name) {
-      this.name = name;
-    }
+    SchoolMetadata(String name) { this.name = name; }
 
     public String getName() { return name; }
 

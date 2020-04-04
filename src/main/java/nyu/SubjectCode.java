@@ -29,11 +29,12 @@ public final class SubjectCode {
   }
 
   public void checkValid() {
-    if (!getAvailableSubjects().containsKey(school))
+    if (!school.equals("UU") && !getAvailableSubjects().containsKey(school))
       throw new IllegalArgumentException("School code '" + school +
                                          "' in subject '" + this.toString() +
                                          "' is not valid");
-    if (!getAvailableSubjects().get(school).contains(this))
+    if (!school.equals("UU") &&
+        !getAvailableSubjects().get(school).contains(this))
       throw new IllegalArgumentException("School '" + school +
                                          "' doesn't contain subject '" +
                                          this.toString() + "'");

@@ -94,10 +94,13 @@ public final class QueryCatalog {
   queryCatalog(Term term, SubjectCode subjectCode, HttpContext context) {
     logger.debug("querying catalog for term=" + term +
                  " and subject=" + subjectCode + "...");
-
+    String school = subjectCode.school;
+    if (school.equals("SHU")) {
+      school = "UI";
+    }
     String params = String.format(
         "CSRFToken=%s&term=%d&acad_group=%s&subject=%s", context.csrfToken,
-        term.getId(), subjectCode.school, subjectCode.getAbbrev());
+        term.getId(), school, subjectCode.getAbbrev());
 
     logger.debug("Params are {}.", params);
     Request request =

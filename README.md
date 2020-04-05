@@ -13,7 +13,7 @@ Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provid
 a general overview of the project and how to contribute.
 
 ## API Documentation
-The API documentation is available at https://schedge.torchnyu.com .
+The API documentation is available at https://schedge.a1liu.com .
 
 ## Commands
 The following commands are valid in Schedge:

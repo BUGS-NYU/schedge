@@ -7,8 +7,8 @@
 11ST,41 E. 11th St, 7th Floor
 12WV,12 Waverly Pl
 130M,130 MacDougal St
-133M,130 MacDougal St
-137M,130 MacDougal St
+133M,133 MacDougal St
+137M,137 MacDougal St
 14AWM,14A Washington Mews
 142M,142 Mulberry St
 145F,145 4th Ave
@@ -330,7 +330,7 @@ SI,Staten Island
 SL,Sarah Lawrence
 SN,Senegal
 SP,Spain
-SQ,St. Thomas Aquinas College
+SQ,St.Thomas Aquinas College
 ST,Stevens Institute of Technology
 SU,SUNY College of Optometry
 SV,Slovakia

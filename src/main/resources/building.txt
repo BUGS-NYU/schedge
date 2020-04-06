@@ -85,7 +85,7 @@
 770B,770 Broadway
 7E12,7 E. 12th St
 7ST,7th St Residence Hall
-80WS,80 Washington Square East Gallery
+80WS,80 WSQE
 838B,838 Broadway
 85W3,85 W. 3rd St
 890B,890 Broadway
@@ -106,7 +106,6 @@ BROM,Broome St Residence Hall
 BRTN,Brittany Hall
 BRWN,Brown Building
 BSCI,433 1st Ave
-BSTT,Bassett Building, Tandon School of Engineering, Long Island
 BUTR,Butterick Building
 BXPH,Bronx Psychiatric Hospital
 CANT,Cantor Film Center
@@ -120,7 +119,7 @@ COLE,Coles Sports and Recreation Center
 COLU,Columbia University
 COOP,Cooper Union
 CORL,Coral Tower Residence Hall
-CSAE,Center for Science and Engineering, Abu Dhabi
+CSAE,Center for Science & Engineering, Abu Dhabi
 CVEN,Civil Engineering Building, Tandon
 CUNY,CUNY
 DAGA,D’Agostino Hall
@@ -148,7 +147,6 @@ GIBB,Katherine Gibbs
 GODD,Paulette Goddard Hall
 GRAM,Gramercy Residence Hall
 GWCH,Greenwich Hotel
-GYMN,Gymnasium, Tandon, Long Island
 HADY,Hayden Hall
 HEBU,Hebrew Union College
 HJTD,Hospital for Joint Diseases
@@ -179,7 +177,6 @@ MECH,Mechanics Institute
 MEDS,NYU Medical Center
 MEYR,Meyer Hall
 MIDC,NYU Midtown Center
-MNBD,Main Building, Tandon, Long Island
 MTMU,Metropolitan Museum of Art
 NOF,Nursing Off-Campus Clinical Site
 NTCT,Norman Thomas High School
@@ -212,7 +209,7 @@ SLHB,Schwartz Lecture Hall Building
 SNHS,Senior House Residence Hall
 SHUL,Senate House, University of London, London
 SOAA,Tisch School of the Arts Asia / Singapore
-SOAS,School of Oriental and African Studies, London
+SOAS,School of Oriental & African Studies, London
 SOJS,SOJ Studio
 STAQ,St. Thomas Aquinas College
 STAT,Staten Island

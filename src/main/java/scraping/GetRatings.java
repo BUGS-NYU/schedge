@@ -52,7 +52,7 @@ public final class GetRatings {
   }
 
   private static Future<Instructor> getLinkAsync(Instructor instructor) {
-    String param = instructor.name.replaceAll("\\s+", "+");
+    String param = parseInstructorName(instructor.name);
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_URL + param))
                           .setRequestTimeout(60000)
@@ -72,6 +72,15 @@ public final class GetRatings {
                         " returned no results.");
           return new Instructor(instructor.id, link);
         });
+  }
+
+  private static String parseInstructorName(String name) {
+    String[] names = name.split("\\s+");
+    if (names.length <= 2) {
+      return name.replaceAll("\\s+", "+");
+    } else {
+      return String.join("+", names[0], names[names.length - 1]);
+    }
   }
 
   private static Future<Rating> queryRatingAsync(String url, int id) {

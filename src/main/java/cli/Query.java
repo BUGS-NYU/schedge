@@ -3,9 +3,14 @@ package cli;
 import cli.templates.OutputFileMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
+import database.GetConnection;
+import database.instructors.UpdateInstructors;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.GetRatings;
+import scraping.models.Instructor;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
@@ -15,8 +20,8 @@ import scraping.query.QuerySection;
           Adding multiple options for querying
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "query",
-                     synopsisSubcommandLabel = "(catalog | section | school | rmp)")
+@CommandLine.Command(name = "query", synopsisSubcommandLabel =
+                                         "(catalog | section | school | rmp)")
 public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
@@ -88,18 +93,21 @@ public class Query implements Runnable {
   }
 
   @CommandLine.
-          Command(name = "rmp", sortOptions = false, headerHeading = "Usage:%n%n",
+  Command(name = "rmp", sortOptions = false, headerHeading = "Usage:%n%n",
           synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
           parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Query school",
+          optionListHeading = "%nOptions:%n",
+          header = "Query rating for professors",
           description = "Query rating for professors based on term")
   public void
-  rmp(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.Mixin OutputFileMixin outputFile) {
+  rmp(@CommandLine.Mixin OutputFileMixin outputFile, Integer batchSize) {
     long start = System.nanoTime();
-    //@Todo: fix this to match
-//    outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
-
+    GetConnection.withContext(context -> {
+      List<Instructor> instructors =
+          UpdateInstructors.instructorUpdateList(context);
+      outputFile.writeOutput(
+          GetRatings.getRatings(instructors.iterator(), batchSize));
+    });
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

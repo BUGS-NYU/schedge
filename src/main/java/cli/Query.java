@@ -16,7 +16,7 @@ import scraping.query.QuerySection;
    @Help: Add annotations, comments to code
 */
 @CommandLine.Command(name = "query",
-                     synopsisSubcommandLabel = "(catalog | section | school)")
+                     synopsisSubcommandLabel = "(catalog | section | school | rmp)")
 public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
@@ -83,6 +83,23 @@ public class Query implements Runnable {
          @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
     outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
+  }
+
+  @CommandLine.
+          Command(name = "rmp", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Query school",
+          description = "Query rating for professors based on term")
+  public void
+  rmp(@CommandLine.Mixin TermMixin termMixin,
+         @CommandLine.Mixin OutputFileMixin outputFile) {
+    long start = System.nanoTime();
+    //@Todo: fix this to match
+//    outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
+
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

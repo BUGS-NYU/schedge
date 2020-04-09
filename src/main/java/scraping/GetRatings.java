@@ -34,7 +34,7 @@ public final class GetRatings {
 
     // @TODO Change this to actually be correct in terms of types used
     SimpleBatchedFutureEngine<Instructor, Instructor> instructorResults =
-        new SimpleBatchedFutureEngine<>(
+        new SimpleBatchedFutureEngine<Instructor, Instructor>(
             names, batchSize, (instructor, __) -> getLinkAsync(instructor));
 
     SimpleBatchedFutureEngine<Instructor, Rating> engine =
@@ -51,7 +51,7 @@ public final class GetRatings {
         .filter(i -> i != null);
   }
 
-  public static Future<Instructor> getLinkAsync(Instructor instructor) {
+  private static Future<Instructor> getLinkAsync(Instructor instructor) {
     String param = instructor.name.replaceAll("\\s+", "+");
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_URL + param))
@@ -116,8 +116,14 @@ public final class GetRatings {
     String ratingValue =
         ratingInnerBody
             .selectFirst("div.RatingValue__Numerator-qw8sqy-2.gxuTRq")
-            .html();
-    return Float.parseFloat(ratingValue);
+            .html()
+            .trim();
+    try {
+      return Float.parseFloat(ratingValue);
+    } catch (NumberFormatException exception) {
+      logger.warn("The instructor exist but having N/A rating");
+      return Float.valueOf("0.0");
+    }
   }
 
   private static String parseLink(String rawData) {
@@ -142,9 +148,10 @@ public final class GetRatings {
     }
 
     Element innerListings = listings.selectFirst("ul.listings");
-    Elements professors = innerListings.select("li");
+    Elements professors = innerListings.select("li.listing.PROFESSOR");
     for (Element element : professors) {
-      String school = element.selectFirst("span.sub").toString();
+      String school =
+          element.selectFirst("span.sub").toString(); //<- Bugs at this line
       if (school.contains("New York University") || school.contains("NYU")) {
         return element.selectFirst("a").attr("href").split("=")[1];
       }

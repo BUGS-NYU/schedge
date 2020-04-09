@@ -26,6 +26,20 @@ public final class GetRatings {
   private static final String RMP_URL =
       "https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolID=675&query=";
 
+  /**
+   * Two step process, first given the list of instructors,
+   * find the coressponding rmp-id. Then using the new rmp-id,
+   * query the rating.
+   * E.g:
+   * For professor "Victor Shoup":
+   * 1. We first find the rmp-id on RMP using getLinkAsync
+   * -> rmp-id: 1134872
+   * 2. We then use the rmp-id to query the rating itself
+   * -> https://www.ratemyprofessors.com/ShowRatings.jsp?tid=1134872;
+   * @param names
+   * @param batchSizeNullable
+   * @return
+   */
   public static Stream<Rating> getRatings(Iterator<Instructor> names,
                                           Integer batchSizeNullable) {
     int batchSize = batchSizeNullable != null
@@ -34,7 +48,7 @@ public final class GetRatings {
 
     // @TODO Change this to actually be correct in terms of types used
     SimpleBatchedFutureEngine<Instructor, Instructor> instructorResults =
-        new SimpleBatchedFutureEngine<Instructor, Instructor>(
+        new SimpleBatchedFutureEngine<>(
             names, batchSize, (instructor, __) -> getLinkAsync(instructor));
 
     SimpleBatchedFutureEngine<Instructor, Rating> engine =
@@ -51,6 +65,12 @@ public final class GetRatings {
         .filter(i -> i != null);
   }
 
+  /**
+   * Given at instructor, will find the coresponding
+   * rmp-id for the instructor.
+   * @param instructor
+   * @return
+   */
   private static Future<Instructor> getLinkAsync(Instructor instructor) {
     String param = parseInstructorName(instructor.name);
     Request request = new RequestBuilder()
@@ -83,6 +103,13 @@ public final class GetRatings {
     }
   }
 
+  /**
+   * Given the rmp-id, we get the rating.
+   * Rating can be either a float or N/A, in the case of N/A, we return 0.0
+   * @param url
+   * @param id
+   * @return
+   */
   private static Future<Rating> queryRatingAsync(String url, int id) {
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_ROOT_URL + url))
@@ -131,7 +158,7 @@ public final class GetRatings {
       return Float.parseFloat(ratingValue);
     } catch (NumberFormatException exception) {
       logger.warn("The instructor exist but having N/A rating");
-      return Float.valueOf("0.0");
+      return null;
     }
   }
 
@@ -152,7 +179,6 @@ public final class GetRatings {
     Element listings = resBox.selectFirst("div.listings-wrap");
 
     if (listings == null) {
-      // logger.warn("No search Result");
       return null;
     }
 

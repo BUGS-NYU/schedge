@@ -5,15 +5,30 @@ import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+
+import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
 import nyu.SubjectCode;
+import nyu.Term;
+import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
+import org.asynchttpclient.Response;
+import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
+import scraping.models.CatalogQueryData;
 import scraping.parse.ParseSchoolSubjects;
+import scraping.query.GetClient;
+import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
+
+import javax.servlet.http.HttpSession;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
@@ -103,13 +118,13 @@ public class Scrape implements Runnable {
           description = "Scrape school/subject based on term")
   public void
   school(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.Mixin OutputFileMixin outputFileMixin) {
+         @CommandLine.Mixin OutputFileMixin outputFileMixin) throws ExecutionException, InterruptedException {
     long start = System.nanoTime();
     outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
         QuerySchool.querySchool(termMixin.getTerm())));
-
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
   }
+
 }

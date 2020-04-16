@@ -1,11 +1,9 @@
 package cli;
 
 import cli.templates.*;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import nyu.Term;
 import nyu.User;
 import org.jooq.Log;
@@ -112,9 +110,9 @@ public class Query implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
-    Login.addToCart(user.getUsername(), user.getPassword(),
-            term, registrationNumberMixin.getRegistrationNumber(),
-            Context.getContextAsync(term).get());
+    Login.addToCart(user.getUsername(), user.getPassword(), term,
+                    registrationNumberMixin.getRegistrationNumber(),
+                    Context.getContextAsync(term).get());
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

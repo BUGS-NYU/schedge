@@ -4,13 +4,13 @@ import cli.templates.OutputFileMixin;
 import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
+import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
-import io.netty.handler.codec.http.cookie.Cookie;
+import javax.servlet.http.HttpSession;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.asynchttpclient.Request;
@@ -27,8 +27,6 @@ import scraping.parse.ParseSchoolSubjects;
 import scraping.query.GetClient;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
-
-import javax.servlet.http.HttpSession;
 
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
@@ -118,7 +116,8 @@ public class Scrape implements Runnable {
           description = "Scrape school/subject based on term")
   public void
   school(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.Mixin OutputFileMixin outputFileMixin) throws ExecutionException, InterruptedException {
+         @CommandLine.Mixin OutputFileMixin outputFileMixin)
+      throws ExecutionException, InterruptedException {
     long start = System.nanoTime();
     outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
         QuerySchool.querySchool(termMixin.getTerm())));
@@ -126,5 +125,4 @@ public class Scrape implements Runnable {
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
   }
-
 }

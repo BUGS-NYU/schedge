@@ -26,7 +26,6 @@ public class Context {
         .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
-            System.out.println("WHy are you here");
             return null;
           }
 

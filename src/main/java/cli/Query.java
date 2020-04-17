@@ -117,4 +117,28 @@ public class Query implements Runnable {
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
   }
+
+  @CommandLine.
+          Command(name = "delete", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
+          description = "Scrape school/subject based on term")
+  public void delete(@CommandLine.Mixin TermMixin termMixin,
+                       @CommandLine.Mixin LoginMixin loginMixin,
+                       @CommandLine.
+                               Mixin RegistrationNumberMixin registrationNumberMixin,
+                       @CommandLine.Mixin OutputFileMixin outputFileMixin)
+          throws ExecutionException, InterruptedException {
+
+    long start = System.nanoTime();
+    Term term = termMixin.getTerm();
+    User user = loginMixin.getUser();
+    Login.removeFromCart(user.getUsername(), user.getPassword(), term,
+            registrationNumberMixin.getRegistrationNumber(),
+            Context.getContextAsync(term).get());
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
 }

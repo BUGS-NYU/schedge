@@ -11,7 +11,7 @@ public final class LoginMixin {
   private LoginMixin() {}
   @CommandLine.Option(names = "--username") private String username;
   @CommandLine.
-  Option(names = "--pwd", description = "subject code: CSCI, MATH, etc")
+  Option(names = "--pwd")
   private String password;
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;

@@ -1,18 +1,16 @@
 package cli;
 
 import cli.templates.*;
-import java.util.concurrent.CompletableFuture;
+
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+
 import nyu.Term;
 import nyu.User;
-import org.jooq.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import register.AddCourses;
 import register.Context;
-import register.Login;
+import register.ShopCourses;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
@@ -110,7 +108,7 @@ public class Query implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
-    Login.addToCart(user.getUsername(), user.getPassword(), term,
+    ShopCourses.addToCart(user.getUsername(), user.getPassword(), term,
                     registrationNumberMixin.getRegistrationNumber(),
                     Context.getContextAsync(term).get());
     long end = System.nanoTime();
@@ -134,7 +132,31 @@ public class Query implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
-    Login.removeFromCart(user.getUsername(), user.getPassword(), term,
+    ShopCourses.removeFromCart(user.getUsername(), user.getPassword(), term,
+            registrationNumberMixin.getRegistrationNumber(),
+            Context.getContextAsync(term).get());
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
+
+  @CommandLine.
+          Command(name = "enroll", sortOptions = false, headerHeading = "Usage:%n%n",
+          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
+          description = "Scrape school/subject based on term")
+  public void enroll(@CommandLine.Mixin TermMixin termMixin,
+                     @CommandLine.Mixin LoginMixin loginMixin,
+                     @CommandLine.
+                             Mixin RegistrationNumberMixin registrationNumberMixin,
+                     @CommandLine.Mixin OutputFileMixin outputFileMixin)
+          throws ExecutionException, InterruptedException {
+
+    long start = System.nanoTime();
+    Term term = termMixin.getTerm();
+    User user = loginMixin.getUser();
+    ShopCourses.enrollCourse(user.getUsername(), user.getPassword(), term,
             registrationNumberMixin.getRegistrationNumber(),
             Context.getContextAsync(term).get());
     long end = System.nanoTime();

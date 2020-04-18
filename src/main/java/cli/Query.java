@@ -2,6 +2,7 @@ package cli;
 
 import cli.templates.*;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import nyu.Term;
@@ -10,7 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import register.Context;
-import register.ShopCourses;
+import register.EnrollCourses;
+import register.GetLogin;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
@@ -20,8 +22,8 @@ import scraping.query.QuerySection;
           Adding multiple options for querying
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "query", synopsisSubcommandLabel =
-                                         "(catalog | section | school | shop)")
+@CommandLine.Command(name = "query",
+                     synopsisSubcommandLabel = "(catalog | section | school)")
 public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
@@ -90,77 +92,5 @@ public class Query implements Runnable {
     outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
-  }
-
-  @CommandLine.
-  Command(name = "shop", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-          description = "Scrape school/subject based on term")
-  public void register(@CommandLine.Mixin TermMixin termMixin,
-                       @CommandLine.Mixin LoginMixin loginMixin,
-                       @CommandLine.
-                       Mixin RegistrationNumberMixin registrationNumberMixin,
-                       @CommandLine.Mixin OutputFileMixin outputFileMixin)
-      throws ExecutionException, InterruptedException {
-
-    long start = System.nanoTime();
-    Term term = termMixin.getTerm();
-    User user = loginMixin.getUser();
-    ShopCourses.addToCart(user.getUsername(), user.getPassword(), term,
-                    registrationNumberMixin.getRegistrationNumber(),
-                    Context.getContextAsync(term).get());
-    long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
-  }
-
-  @CommandLine.
-          Command(name = "delete", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-          description = "Scrape school/subject based on term")
-  public void delete(@CommandLine.Mixin TermMixin termMixin,
-                       @CommandLine.Mixin LoginMixin loginMixin,
-                       @CommandLine.
-                               Mixin RegistrationNumberMixin registrationNumberMixin,
-                       @CommandLine.Mixin OutputFileMixin outputFileMixin)
-          throws ExecutionException, InterruptedException {
-
-    long start = System.nanoTime();
-    Term term = termMixin.getTerm();
-    User user = loginMixin.getUser();
-    ShopCourses.removeFromCart(user.getUsername(), user.getPassword(), term,
-            registrationNumberMixin.getRegistrationNumber(),
-            Context.getContextAsync(term).get());
-    long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
-  }
-
-  @CommandLine.
-          Command(name = "enroll", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-          description = "Scrape school/subject based on term")
-  public void enroll(@CommandLine.Mixin TermMixin termMixin,
-                     @CommandLine.Mixin LoginMixin loginMixin,
-                     @CommandLine.
-                             Mixin RegistrationNumberMixin registrationNumberMixin,
-                     @CommandLine.Mixin OutputFileMixin outputFileMixin)
-          throws ExecutionException, InterruptedException {
-
-    long start = System.nanoTime();
-    Term term = termMixin.getTerm();
-    User user = loginMixin.getUser();
-    ShopCourses.enrollCourse(user.getUsername(), user.getPassword(), term,
-            registrationNumberMixin.getRegistrationNumber(),
-            Context.getContextAsync(term).get());
-    long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
   }
 }

@@ -23,6 +23,7 @@ public class Schedge {
           .addSubcommand("scrape", new CommandLine(new Scrape()))
           .addSubcommand("db", new CommandLine(new Database()))
           .addSubcommand("search", new CommandLine(new Search()))
+          .addSubcommand("shop", new CommandLine(new Shop()))
           .execute(args);
     }
   }

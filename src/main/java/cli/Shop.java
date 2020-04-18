@@ -13,6 +13,7 @@ import picocli.CommandLine;
 import register.AddToCart;
 import register.Context;
 import register.EnrollCourses;
+import register.ParseEnroll;
 
 @CommandLine.
 Command(name = "shop", synopsisSubcommandLabel = "(add | remove | enroll)")
@@ -104,8 +105,9 @@ public class Shop implements Runnable {
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
     try {
-      EnrollCourses.enrollCourse(user, term, registrationNumberMixin.getRegistrationNumbers(),
-                                 Context.getContextAsync(term).get());
+      String data = EnrollCourses.enrollCourse(user, term, registrationNumberMixin.getRegistrationNumbers(),
+                                 Context.getContextAsync(term).get()).get();
+      ParseEnroll.parseRegistrationNumber(data);
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }

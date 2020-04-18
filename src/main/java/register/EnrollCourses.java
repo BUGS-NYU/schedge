@@ -4,6 +4,7 @@ import static register.GetLogin.getLoginSession;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
@@ -30,13 +31,12 @@ public class EnrollCourses {
     return form;
   }
 
-  public static void enrollCourse(User user, Term term,
-                                  List<Integer> registrationNumbers,
-                                  Context.HttpContext context) {
+  public static Future<String> enrollCourse(User user, Term term,
+                                            List<Integer> registrationNumbers,
+                                            Context.HttpContext context) {
     List<Cookie> cookies = getLoginSession(user, context);
     String enrollForm =
         setUpForm(term, registrationNumbers, "&enroll=", context);
-    System.out.println(enrollForm);
     Request request =
         new RequestBuilder()
             .setUri(Uri.create(DATA_URL_STRING + term.getId()))
@@ -57,11 +57,11 @@ public class EnrollCourses {
             .setMethod("POST")
             .setBody(enrollForm)
             .build();
-    GetClient.getClient()
+    return GetClient.getClient()
         .executeRequest(request)
         .toCompletableFuture()
         .handleAsync(((resp, throwable) -> {
-          return null; // adding handler here
+          return resp.getResponseBody();
         }));
   }
 

@@ -2,13 +2,25 @@ package register;
 
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import nyu.SubjectCode;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
+import org.eclipse.jetty.websocket.server.WebSocketHandler;
+import scraping.models.CatalogQueryData;
 import scraping.query.GetClient;
+import scraping.query.QueryCatalog;
+import utils.SimpleBatchedFutureEngine;
+
+import static register.Context.getContextAsync;
 
 public class AddToCart {
   // We will do undergrad for now/ Remember to add term and registration number
@@ -17,7 +29,38 @@ public class AddToCart {
       "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/";
   private static final String ROOT_URL_STRING =
       "https://m.albert.nyu.edu/app/student/enrollmentcart/cart";
-  public static void addToCart(User user, Term term, int registrationNumber,
+
+  public static void
+  addToCart(User user, Term term, List<Integer> registrationNumbers,
+            Context.HttpContext context) {
+    int size = registrationNumbers.size();
+    Context.HttpContext[] contexts = new Context.HttpContext[size];
+    {
+      @SuppressWarnings("unchecked")
+      Future<Context.HttpContext>[] contextFutures = new Future[size];
+      for (int i = 0; i < size; i++) {
+        contextFutures[i] = getContextAsync(term);
+      }
+      for (int i = 0; i < size; i++) {
+        try {
+          contexts[i] = contextFutures[i].get();
+        } catch (ExecutionException | InterruptedException e) {
+          throw new RuntimeException("Failed to get HttpContext.", e);
+        }
+        if (contexts[i] == null)
+          throw new RuntimeException("Failed to get HttpContext.");
+      }
+    }
+
+    SimpleBatchedFutureEngine engine = new SimpleBatchedFutureEngine<>(
+            registrationNumbers, size,
+            (regNumber, idx) -> addToCart(user, term, regNumber, contexts[idx])
+    );
+
+    engine.iterator();
+  }
+
+  public static Future<String> addToCart(User user, Term term, int registrationNumber,
                                Context.HttpContext context) {
     // @TODO: Turn this into static if possible
     List<Cookie> cookies = GetLogin.getLoginSession(user, context);
@@ -50,5 +93,7 @@ public class AddToCart {
         .executeRequest(request2)
         .toCompletableFuture()
         .handleAsync(((response2, throwable) -> { return null; }));
+    // @ToDo: Handle this later
+    return null;
   }
 }

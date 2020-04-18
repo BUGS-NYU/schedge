@@ -60,9 +60,7 @@ public class EnrollCourses {
     return GetClient.getClient()
         .executeRequest(request)
         .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> {
-          return resp.getResponseBody();
-        }));
+        .handleAsync(((resp, throwable) -> { return resp.getResponseBody(); }));
   }
 
   public static void removeFromCart(User user, Term term,

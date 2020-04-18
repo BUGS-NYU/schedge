@@ -42,19 +42,19 @@ public class Shop implements Runnable {
             @CommandLine.Mixin OutputFileMixin outputFileMixin) {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
-    if(registrationNumberMixin.getRegistrationNumber() != null) {
+    if (registrationNumberMixin.getRegistrationNumber() != null) {
       try {
         AddToCart.addToCart(loginMixin.getUser(), term,
-                registrationNumberMixin.getRegistrationNumber(),
-                Context.getContextAsync(term).get());
+                            registrationNumberMixin.getRegistrationNumber(),
+                            Context.getContextAsync(term).get());
       } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
       }
     } else {
       try {
         AddToCart.addToCart(loginMixin.getUser(), term,
-                registrationNumberMixin.getRegistrationNumbers(),
-                Context.getContextAsync(term).get());
+                            registrationNumberMixin.getRegistrationNumbers(),
+                            Context.getContextAsync(term).get());
       } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
       }
@@ -79,9 +79,10 @@ public class Shop implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     try {
-      EnrollCourses.removeFromCart(loginMixin.getUser(), term,
-              registrationNumberMixin.getRegistrationNumbers(),
-                                   Context.getContextAsync(term).get());
+      EnrollCourses.removeFromCart(
+          loginMixin.getUser(), term,
+          registrationNumberMixin.getRegistrationNumbers(),
+          Context.getContextAsync(term).get());
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
@@ -105,8 +106,12 @@ public class Shop implements Runnable {
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
     try {
-      String data = EnrollCourses.enrollCourse(user, term, registrationNumberMixin.getRegistrationNumbers(),
-                                 Context.getContextAsync(term).get()).get();
+      String data =
+          EnrollCourses
+              .enrollCourse(user, term,
+                            registrationNumberMixin.getRegistrationNumbers(),
+                            Context.getContextAsync(term).get())
+              .get();
       ParseEnroll.parseRegistrationNumber(data);
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();

@@ -4,7 +4,6 @@ import cli.templates.LoginMixin;
 import cli.templates.OutputFileMixin;
 import cli.templates.RegistrationNumberMixin;
 import cli.templates.TermMixin;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import nyu.Term;
 import nyu.User;
@@ -14,7 +13,6 @@ import picocli.CommandLine;
 import register.AddToCart;
 import register.Context;
 import register.EnrollCourses;
-import register.GetLogin;
 
 @CommandLine.
 Command(name = "shop", synopsisSubcommandLabel = "(add | remove | enroll)")
@@ -41,15 +39,24 @@ public class Shop implements Runnable {
             @CommandLine.Mixin LoginMixin loginMixin,
             @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
             @CommandLine.Mixin OutputFileMixin outputFileMixin) {
-    // @ToDo: Change to allow multiple registration number
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
-    try {
-      AddToCart.addToCart(loginMixin.getUser(), term,
-                          registrationNumberMixin.getRegistrationNumber(),
-                          Context.getContextAsync(term).get());
-    } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
+    if(registrationNumberMixin.getRegistrationNumber() != null) {
+      try {
+        AddToCart.addToCart(loginMixin.getUser(), term,
+                registrationNumberMixin.getRegistrationNumber(),
+                Context.getContextAsync(term).get());
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+      }
+    } else {
+      try {
+        AddToCart.addToCart(loginMixin.getUser(), term,
+                registrationNumberMixin.getRegistrationNumbers(),
+                Context.getContextAsync(term).get());
+      } catch (InterruptedException | ExecutionException e) {
+        e.printStackTrace();
+      }
     }
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
@@ -68,12 +75,11 @@ public class Shop implements Runnable {
          @CommandLine.Mixin LoginMixin loginMixin,
          @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
          @CommandLine.Mixin OutputFileMixin outputFileMixin) {
-    // @ToDo: Change to allow multiple courses
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     try {
       EnrollCourses.removeFromCart(loginMixin.getUser(), term,
-                                   new ArrayList<>(),
+              registrationNumberMixin.getRegistrationNumbers(),
                                    Context.getContextAsync(term).get());
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
@@ -94,12 +100,11 @@ public class Shop implements Runnable {
          @CommandLine.Mixin LoginMixin loginMixin,
          @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
          @CommandLine.Mixin OutputFileMixin outputFileMixin) {
-    // @ToDo: Change to allow multiple courses
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     User user = loginMixin.getUser();
     try {
-      EnrollCourses.enrollCourse(user, term, new ArrayList<>(),
+      EnrollCourses.enrollCourse(user, term, registrationNumberMixin.getRegistrationNumbers(),
                                  Context.getContextAsync(term).get());
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();

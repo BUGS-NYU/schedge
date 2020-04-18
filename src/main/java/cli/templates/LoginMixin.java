@@ -8,20 +8,17 @@ public final class LoginMixin {
 
   private LoginMixin() {}
   @CommandLine.Option(names = "--username") private String username;
+  @CommandLine.
+          Option(names = "--pwd")
+  private String password;
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   public User getUserNotNull() {
-    if (username == null) {
+    if (username == null || password == null) {
       return null;
     }
-    Console cons;
-    char[] passwd = null;
-    if ((cons = System.console()) != null &&
-        (passwd = cons.readPassword("[%s]", "Password:")) != null) {
-      java.util.Arrays.fill(passwd, ' ');
-    }
-    return new User(username, String.valueOf(passwd));
+    return new User(username, password);
   }
   public User getUser() {
     User user = getUserNotNull();

@@ -5,19 +5,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
-import nyu.SubjectCode;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import org.eclipse.jetty.websocket.server.WebSocketHandler;
-import scraping.models.CatalogQueryData;
 import scraping.query.GetClient;
-import scraping.query.QueryCatalog;
 import utils.SimpleBatchedFutureEngine;
 
 import static register.Context.getContextAsync;

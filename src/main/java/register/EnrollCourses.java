@@ -79,7 +79,7 @@ public class EnrollCourses {
         new RequestBuilder()
             .setUri(Uri.create(DATA_URL_STRING + term.getId()))
             .setRequestTimeout(60000)
-            .setHeader("Referer", DATA_URL_STRING + term.getId())
+            .setHeader("Referer", DATA_URL_STRING)
             .setHeader("Host", "m.albert.nyu.edu")
             .setHeader("Accept-Language", "en-US,en;q=0.5")
             .setHeader("Accept-Encoding", "gzip, deflate, br")

@@ -12,7 +12,9 @@ import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
@@ -22,6 +24,8 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.GetRatings;
+import scraping.models.Instructor;
 import scraping.query.GetClient;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
@@ -79,16 +83,12 @@ public class Database implements Runnable {
       Integer batchSize) {
     long start = System.nanoTime();
     GetConnection.withContext(context -> {
-      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
       UpdateInstructors.updateInstructors(
           context,
           ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
                            barBuilder),
           batchSize);
-    }
-
-    );
-
+    });
     GetConnection.close();
     GetClient.close();
 

@@ -8,4 +8,8 @@ public final class Instructor {
     this.id = id;
     this.name = name;
   }
+
+  public String toString() {
+    return id + ". " + name;
+  }
 }

@@ -90,6 +90,18 @@ public final class QueryCatalog {
         .filter(i -> i != null);
   }
 
+  /**
+   * Note: This is the meat of the catalog query.
+   * To make the query, two most important things are
+   * school code and subject code. For NYU Shanghai, the
+   * school code: UI and subject code: {subject}-SHU.
+   * For NYU Undegraduate School of Public Health, school
+   * code: UU and subject code: {subject}-GU. They will be
+   * changed at runtime.
+   * @param term
+   * @param subjectCode
+   * @param context
+   */
   private static Future<CatalogQueryData>
   queryCatalog(Term term, SubjectCode subjectCode, HttpContext context) {
     logger.debug("querying catalog for term=" + term +

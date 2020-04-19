@@ -31,6 +31,15 @@ public class EnrollCourses {
     return form;
   }
 
+  /**
+   * With class with waitlist, when enroll, user will be atomatically
+   * set up for the class waitlist.
+   * @param user
+   * @param term
+   * @param registrationNumbers
+   * @param context
+   * @return
+   */
   public static Future<String> enrollCourse(User user, Term term,
                                             List<Integer> registrationNumbers,
                                             Context.HttpContext context) {

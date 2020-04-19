@@ -22,10 +22,13 @@ public class AddToCart {
       "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/";
   private static final String ROOT_URL_STRING =
       "https://m.albert.nyu.edu/app/student/enrollmentcart/cart";
+  private static final String ADD_RELATED_DATA_URL_STRING =
+          "https://m.albert.nyu.edu/app/student/enrollmentcart/addRelated";
+  private static final String ADD_RELATED_ROOT_URL_STRING =
+          "https://m.albert.nyu.edu/app/student/enrollmentcart/selectRelated/NYUNV/UGRD/";
 
   public static void
-  addToCart(User user, Term term, List<Integer> registrationNumbers,
-            Context.HttpContext context) {
+  addToCart(User user, Term term, List<Integer> registrationNumbers) {
     int size = registrationNumbers.size();
     Context.HttpContext[] contexts = new Context.HttpContext[size];
     {
@@ -62,7 +65,7 @@ public class AddToCart {
      * Make the request given session token and shopping cart
      * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
      */
-    Request request2 =
+    Request request =
         new RequestBuilder()
             .setUri(Uri.create(SHOPPING_CART_ADD_DATA_URL_STRING +
                                term.getId() + "/" + registrationNumber))
@@ -83,10 +86,52 @@ public class AddToCart {
             .setMethod("GET")
             .build();
     GetClient.getClient()
-        .executeRequest(request2)
+        .executeRequest(request)
         .toCompletableFuture()
-        .handleAsync(((response2, throwable) -> { return null; }));
+        .handleAsync(((resp, throwable) -> { return null; }));
     // @ToDo: Handle this later
     return null;
   }
+
+  public static Future<String> addRelated(User user, Term term, int registrationNumber, int sectionRelated,
+                                         Context.HttpContext context) {
+    // @TODO: Turn this into static if possible
+    List<Cookie> cookies = GetLogin.getLoginSession(user, context);
+    String form = String.format(
+            "institution=NYUNV&acad_career=UGRD&strm=%s&class_nbr=%s&CSRFToken=%s&component1=%s",
+            term.getId(), registrationNumber, context.csrfToken, sectionRelated
+    );
+    /**
+     * Make the request given session token and shopping cart
+     * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
+     */
+    Request request =
+            new RequestBuilder()
+                    .setUri(Uri.create(ADD_RELATED_DATA_URL_STRING))
+                    .setRequestTimeout(60000)
+                    .setHeader("Referer", ADD_RELATED_ROOT_URL_STRING + term.getId() + "/" + registrationNumber)
+                    .setHeader("Host", "m.albert.nyu.edu")
+                    .setHeader("Accept-Language", "en-US,en;q=0.5")
+                    .setHeader("Accept-Encoding", "gzip, deflate, br")
+                    .setHeader("Content-Type",
+                            "application/x-www-form-urlencoded; charset=UTF-8")
+                    .setHeader("X-Requested-With", "XMLHttpRequest")
+                    .setHeader("Origin", "https://m.albert.nyu.edu")
+                    .setHeader("DNT", "1")
+                    .setHeader("Connection", "keep-alive")
+                    .setHeader("Cookie", cookies.stream()
+                            .map(it -> it.name() + '=' + it.value())
+                            .collect(Collectors.joining("; ")))
+                    .setMethod("POST")
+                    .setBody(form)
+                    .build();
+    GetClient.getClient()
+            .executeRequest(request)
+            .toCompletableFuture()
+            .handleAsync(((resp, throwable) -> { return null; }));
+    // @ToDo: Handle this later
+    return null;
+  }
+
+
 }

@@ -51,13 +51,8 @@ public class Shop implements Runnable {
         e.printStackTrace();
       }
     } else {
-      try {
-        AddToCart.addToCart(loginMixin.getUser(), term,
-                            registrationNumberMixin.getRegistrationNumbers(),
-                            Context.getContextAsync(term).get());
-      } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-      }
+      AddToCart.addToCart(loginMixin.getUser(), term,
+                          registrationNumberMixin.getRegistrationNumbers());
     }
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

@@ -43,9 +43,9 @@ public class EnrollCourses {
   public static Future<String> enrollCourse(User user, Term term,
                                             List<Integer> registrationNumbers,
                                             Context.HttpContext context) {
-    List<Cookie> cookies = getLoginSession(user, context);
+    Context.HttpContext newContext = getLoginSession(user, context);
     String enrollForm =
-        setUpForm(term, registrationNumbers, "&enroll=", context);
+        setUpForm(term, registrationNumbers, "&enroll=", newContext);
     Request request =
         new RequestBuilder()
             .setUri(Uri.create(DATA_URL_STRING + term.getId()))
@@ -60,7 +60,7 @@ public class EnrollCourses {
             .setHeader("Origin", "https://m.albert.nyu.edu")
             .setHeader("DNT", "1")
             .setHeader("Connection", "keep-alive")
-            .setHeader("Cookie", cookies.stream()
+            .setHeader("Cookie", newContext.cookies.stream()
                                      .map(it -> it.name() + '=' + it.value())
                                      .collect(Collectors.joining("; ")))
             .setMethod("POST")
@@ -75,13 +75,13 @@ public class EnrollCourses {
   public static void removeFromCart(User user, Term term,
                                     List<Integer> registrationNumbers,
                                     Context.HttpContext context) {
-    List<Cookie> cookies = getLoginSession(user, context);
+    Context.HttpContext newContext = getLoginSession(user, context);
     /*
     "https://m.albert.nyu.edu/app/student/enrollmentcart/enroll/NYUNV/UGRD/1204"
     "Can change to more by adding more selected field
      */
     String deleteForm =
-        setUpForm(term, registrationNumbers, "&delete=", context);
+        setUpForm(term, registrationNumbers, "&delete=", newContext);
     Request request =
         new RequestBuilder()
             .setUri(Uri.create(DATA_URL_STRING + term.getId()))
@@ -96,7 +96,7 @@ public class EnrollCourses {
             .setHeader("Origin", "https://m.albert.nyu.edu")
             .setHeader("DNT", "1")
             .setHeader("Connection", "keep-alive")
-            .setHeader("Cookie", cookies.stream()
+            .setHeader("Cookie", newContext.cookies.stream()
                                      .map(it -> it.name() + '=' + it.value())
                                      .collect(Collectors.joining("; ")))
             .setMethod("POST")

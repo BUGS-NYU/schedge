@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import nyu.Term;
+
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
@@ -22,7 +22,7 @@ public class GetLogin {
   private static final Uri LOGIN_ROOT_URI = Uri.create(LOGIN_ROOT_URL_STRING);
   private static final Uri LOGIN_DATA_URI = Uri.create(LOGIN_URI_STRING);
 
-  public static List<Cookie> getLoginSession(User user, Context.HttpContext context) {
+  public static Context.HttpContext getLoginSession(User user, Context.HttpContext context) {
     String params = String.format(
             "CSRFToken=%s&username=%s&password=%s&loginAction=&institution=NYUNV",
             context.csrfToken, user.getUsername(), user.getPassword());
@@ -55,6 +55,7 @@ public class GetLogin {
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace();
     }
+
     // Retrive the session tokens and cookies
     List<Cookie> cookies =
             response.getHeaders()
@@ -62,7 +63,12 @@ public class GetLogin {
                     .stream()
                     .map(cookie -> ClientCookieDecoder.LAX.decode(cookie))
                     .collect(Collectors.toList());
+    Cookie csrfCookie =
+            cookies.stream()
+                    .filter(cookie -> cookie.name().equals("CSRFCookie"))
+                    .findAny()
+                    .orElse(null);
     cookies.addAll(context.cookies);
-    return cookies;
+    return new Context.HttpContext(csrfCookie.value(), cookies);
   }
 }

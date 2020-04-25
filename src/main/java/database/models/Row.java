@@ -33,8 +33,8 @@ public class Row {
   public final List<Meeting> meetings;
 
   public final String sectionName;
-  public final Float minUnits;
-  public final Float maxUnits;
+  public final Double minUnits;
+  public final Double maxUnits;
   public final String location;
 
   public Row(Record row, List<Meeting> meetings) {

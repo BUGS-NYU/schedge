@@ -36,7 +36,7 @@ dependencies {
 
             "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
 
-            "org.postgresql:postgresql:42.2.12", // Database driver
+            "org.postgresql:postgresql:42.2.8.jre7", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
             "org.jooq:jooq:3.13.1", // Database framework
 
@@ -76,7 +76,7 @@ flyway {
 }
 
 jooq {
-  version = '3.11.9'
+  version = '3.13.1'
   edition = 'OSS'
 
   database(sourceSets.main) {
@@ -91,7 +91,7 @@ jooq {
         name = 'org.jooq.meta.postgres.PostgresDatabase'
         includes = '.*'
         excludes = ''
-        inputSchema = 'public'
+        // inputSchema = 'main'
       }
 
       generate {
@@ -193,7 +193,13 @@ class UpdateDbTask extends DefaultTask {
     }
 }
 
-task updateDb {}
-updateDb.dependsOn += 'flywayClean'
-updateDb.dependsOn += 'flywayMigrate'
-updateDb.dependsOn += 'generateDatabaseJooqSchemaSource'
+task updateDb(type: DefaultTask) {
+    // inputDirectory = "${buildscript.sourceFile.absoluteFile.parent}/src/main/migrations"
+    // tables = "${buildscript.sourceFile.absoluteFile.parent}/local/tables.db";
+
+    run {
+        flywayMigrate.runTask()
+        generateDatabaseJooqSchemaSource.generate()
+    }
+}
+

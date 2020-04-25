@@ -16,8 +16,8 @@ public class SectionAttribute {
   private String description;
   private String instructionMode;
   private String[] instructors; // dup
-  private Float minUnits;
-  private Float maxUnits;
+  private Double minUnits;
+  private Double maxUnits;
   private String grading;
   private String location;
   private String notes;
@@ -26,7 +26,7 @@ public class SectionAttribute {
   public SectionAttribute(String sectionName, int registrationNumber,
                           SectionStatus status, String campus,
                           String description, String instructorMode,
-                          String[] instructors, Float minUnits, Float maxUnits,
+                          String[] instructors, Double minUnits, Double maxUnits,
                           String grading, String notes, String prerequisites,
                           String location) {
     this.sectionName = sectionName;
@@ -58,9 +58,9 @@ public class SectionAttribute {
 
   public String[] getInstructors() { return instructors; }
 
-  public Float getMinUnits() { return minUnits; }
+  public Double getMinUnits() { return minUnits; }
 
-  public Float getMaxUnits() { return maxUnits; }
+  public Double getMaxUnits() { return maxUnits; }
 
   public String getGrading() { return grading; }
 

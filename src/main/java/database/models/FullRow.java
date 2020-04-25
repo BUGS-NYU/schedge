@@ -35,8 +35,8 @@ public class FullRow {
   public final String campus;
   public final String description;
   public final String instructionMode;
-  public final Float minUnits;
-  public final Float maxUnits;
+  public final Double minUnits;
+  public final Double maxUnits;
   public final String grading;
   public final String location;
   public final String notes;

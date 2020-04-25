@@ -25,8 +25,8 @@ public class Section {
   private String name;
   private String campus;
   private String description;
-  private Float minUnits;
-  private Float maxUnits;
+  private Double minUnits;
+  private Double maxUnits;
   private String instructionMode;
   private String grading;
   private String location;
@@ -55,8 +55,8 @@ public class Section {
   public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String name, Integer waitlistTotal,
-                 String campus, String description, Float minUnits,
-                 Float maxUnits, String instructionMode, String grading,
+                 String campus, String description, Double minUnits,
+                 Double maxUnits, String instructionMode, String grading,
                  String location, String notes, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
@@ -116,11 +116,11 @@ public class Section {
     return description;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Float getMinUnits() {
+  public Double getMinUnits() {
     return minUnits;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Float getMaxUnits() {
+  public Double getMaxUnits() {
     return maxUnits;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)

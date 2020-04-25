@@ -16,7 +16,7 @@ import org.jooq.impl.DSL;
  */
 public class GetConnection {
 
-  public static final SQLDialect DIALECT = SQLDialect.SQLITE;
+  public static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 
   private static HikariDataSource dataSource;
 
@@ -50,8 +50,7 @@ public class GetConnection {
       HikariConfig config = new HikariConfig();
       config.setUsername("schedge");
       config.setPassword("");
-      config.setJdbcUrl("jdbc:sqlite:" + System.getProperty("user.dir") +
-                        "/local/tables.db");
+      config.setJdbcUrl("jdbc:postgresql://localhost:5432/schedge");
       // config.addDataSourceProperty("cachePrepStmts", "false");
       dataSource = new HikariDataSource(config);
     }

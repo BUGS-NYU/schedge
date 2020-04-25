@@ -43,5 +43,5 @@ College of Arts and Sciences for the Spring, 2020.
 ## Front Ends
 If you'd like to write a front end to this API, you can list it below!
 
-- https://courses.torchnyu.com
-- https://bobcat-search.netlify.com
+- https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
+- https://bobcat-search.netlify.com (repo at https://github.com/EthanPrintz/bobcat-search )

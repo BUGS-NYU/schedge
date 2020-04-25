@@ -1,13 +1,13 @@
 CREATE TABLE epochs (
-  id                  integer                       NOT NULL UNIQUE,
-  started_at          timestamp                     NOT NULL UNIQUE,
-  completed_at        timestamp                     UNIQUE,
+  id                  SERIAL                        NOT NULL UNIQUE,
+  started_at          timestamp WITHOUT TIME ZONE   NOT NULL UNIQUE,
+  completed_at        timestamp WITHOUT TIME ZONE   UNIQUE,
   term_id             integer                       NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE courses (
-  id                  integer                     NOT NULL,
+  id                  SERIAL                      NOT NULL,
   epoch               int REFERENCES epochs(id)
                           ON DELETE CASCADE       NOT NULL,
   name                varchar(128)                NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE courses (
 );
 
 CREATE TABLE instructors (
-  id                  integer                     NOT NULL,
+  id                  SERIAL                      NOT NULL,
   name                varchar(64)                 NOT NULL,
   school              varchar(4)                  NOT NULL,
   subject             varchar(6)                  NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE instructors (
 );
 
 CREATE TABLE sections (
-  id                  integer                     NOT NULL,
+  id                  SERIAL                      NOT NULL,
   registration_number integer                     NOT NULL,
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
@@ -54,23 +54,15 @@ CREATE TABLE sections (
 );
 
 CREATE TABLE is_teaching_section (
-  id                  integer                     NOT NULL,
+  id                  SERIAL                      NOT NULL,
   instructor_id       integer                     NOT NULL,
   section_id          integer                     NOT NULL,
   instructor_name     varchar(64)                 NOT NULL,
   PRIMARY KEY (id)
 );
 
--- CREATE TABLE is_teaching_subject (
---   id                  integer                     NOT NULL,
---   instructor_id       integer                     NOT NULL,
---   school              varchar(4)                  NOT NULL,
---   subject             varchar(6)                  NOT NULL,
---   PRIMARY KEY (id)
--- );
-
 CREATE TABLE meetings (
-  id                  integer                         NOT NULL,
+  id                  SERIAL                          NOT NULL,
   section_id          int REFERENCES sections(id)
                       ON DELETE CASCADE               NOT NULL,
   begin_date          timestamp                       NOT NULL,

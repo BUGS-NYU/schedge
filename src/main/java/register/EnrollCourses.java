@@ -105,6 +105,11 @@ public class EnrollCourses {
     GetClient.getClient()
         .executeRequest(request)
         .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> null));
+        .handleAsync(((resp, throwable) -> {
+          System.out.println(resp.getHeaders());
+          System.out.println(resp.getStatusCode());
+          System.out.println(resp.getResponseBody());
+          return null;
+        }));
   }
 }

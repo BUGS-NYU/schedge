@@ -62,7 +62,7 @@ public class AddToCart {
     engine.iterator();
   }
 
-  public static Future<String> addToCart(User user, Term term, int registrationNumber,
+  public static Future<Void> addToCart(User user, Term term, int registrationNumber,
                                Context.HttpContext context) {
     // @TODO: Turn this into static if possible
     Context.HttpContext newContext = GetLogin.getLoginSession(user, context);
@@ -91,12 +91,15 @@ public class AddToCart {
                                      .collect(Collectors.joining("; ")))
             .setMethod("GET")
             .build();
-    GetClient.getClient()
+    return GetClient.getClient()
         .executeRequest(request)
         .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> { return null; }));
-    // @ToDo: Handle this later
-    return null;
+        .handleAsync(((resp, throwable) -> {
+          //if status code is 200 then there is an error
+          return null;
+        }));
+
+//    return null;
   }
 
   public static Future<String> addRelated(User user, Term term, int registrationNumber, int sectionRelated,
@@ -137,11 +140,12 @@ public class AddToCart {
             "institution=NYUNV&acad_career=UGRD&strm=%s&class_nbr=%s&CSRFToken=%s&component1=%s",
             term.getId(), registrationNumber, newContext.csrfToken, sectionRelated
     );
+
     /**
      * Make the request given session token and shopping cart
      * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
      */
-    Request request2 =
+    Request sectionRequest =
             new RequestBuilder()
                     .setUri(Uri.create(ADD_RELATED_DATA_URL_STRING))
                     .setRequestTimeout(60000)
@@ -162,7 +166,7 @@ public class AddToCart {
                     .setBody(form)
                     .build();
     GetClient.getClient()
-            .executeRequest(request2)
+            .executeRequest(sectionRequest)
             .toCompletableFuture()
             .handleAsync(((resp, throwable) -> { return null; }));
     // @ToDo: Handle this later

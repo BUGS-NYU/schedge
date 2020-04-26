@@ -111,15 +111,14 @@ public final class QueryCatalog {
     if (subject.equals("UGPH-UU")) {
       subject = "UGPH-GU";
     }
-        
+
     String school = subjectCode.school;
     if (school.equals("SHU")) {
       school = "UI";
     }
-    String params = String.format(
-        "CSRFToken=%s&term=%d&acad_group=%s&subject=%s", context.csrfToken,
-        term.getId(), school, subject);
-
+    String params =
+        String.format("CSRFToken=%s&term=%d&acad_group=%s&subject=%s",
+                      context.csrfToken, term.getId(), school, subject);
 
     logger.debug("Params are {}.", params);
     Request request =
@@ -134,7 +133,6 @@ public final class QueryCatalog {
             .setHeader("Content-Type",
                        "application/x-www-form-urlencoded; charset=UTF-8")
             .setHeader("X-Requested-With", "XMLHttpRequest")
-            // .header("Content-Length", "129")
             .setHeader("Origin", "https://m.albert.nyu.edu")
             .setHeader("DNT", "1")
             .setHeader("Connection", "keep-alive")

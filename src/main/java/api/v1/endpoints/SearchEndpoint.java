@@ -3,19 +3,15 @@ package api.v1.endpoints;
 import static api.v1.SelectCoursesBySectionId.selectCoursesBySectionId;
 import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-import static search.SearchCourses.searchCourses;
 
 import api.Endpoint;
 import api.v1.ApiError;
-import api.v1.models.Course;
-import api.v1.models.Section;
+import api.v1.models.*;
 import database.GetConnection;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.swagger.v3.oas.models.examples.Example;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import nyu.SubjectCode;
 import nyu.Term;
 
@@ -128,9 +124,10 @@ public final class SearchEndpoint extends Endpoint {
           return;
         }
 
-        List<Integer> result = searchCourses(epoch, args, resultSize);
+        // List<Integer> result = searchCourses(epoch, args, resultSize);
 
-        ctx.json(selectCoursesBySectionId(context, epoch, result));
+        ctx.json(
+            selectCoursesBySectionId(context, epoch, Collections.emptyList()));
         ctx.status(200);
       });
     };

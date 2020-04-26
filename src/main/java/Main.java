@@ -10,7 +10,6 @@ public class Main {
         .addSubcommand("parse", new CommandLine(new cli.Parse()))
         .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
         .addSubcommand("db", new CommandLine(new cli.Database()))
-        .addSubcommand("search", new CommandLine(new cli.Search()))
         .execute(args);
   }
 }

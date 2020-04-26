@@ -20,8 +20,7 @@ public class GetConnection {
 
   private static HikariDataSource dataSource;
 
-  private static @NotNull String getEnvDefault(String name,
-                                               @NotNull String default_value) {
+  private static String getEnvDefault(String name, String default_value) {
     String value = System.getenv(name);
     if (value == null) {
       return default_value;

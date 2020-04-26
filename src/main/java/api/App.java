@@ -1,9 +1,6 @@
 package api;
 
-import api.v1.endpoints.CoursesEndpoint;
-import api.v1.endpoints.SchoolsEndpoint;
-import api.v1.endpoints.SearchEndpoint;
-import api.v1.endpoints.SubjectsEndpoint;
+import api.v1.endpoints.*;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
@@ -65,6 +62,7 @@ public class App {
     new SchoolsEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new SearchEndpoint().addTo(app);
+    new SectionEndpoint().addTo(app);
   }
 
   private static SslContextFactory getSslContextFactory() {

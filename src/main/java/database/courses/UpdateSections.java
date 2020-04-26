@@ -10,6 +10,8 @@ import java.util.*;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.impl.DSL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
@@ -80,20 +82,27 @@ public class UpdateSections {
         UpsertInstructor.upsertInstructor(context, save.code, save.id, i);
       }
 
-      Integer courseId = context.update(SECTIONS)
-                             .set(SECTIONS.NAME, s.sectionName)
-                             .set(SECTIONS.CAMPUS, s.campus)
-                             .set(SECTIONS.INSTRUCTION_MODE, s.instructionMode)
-                             .set(SECTIONS.MIN_UNITS, s.minUnits)
-                             .set(SECTIONS.MAX_UNITS, s.maxUnits)
-                             .set(SECTIONS.LOCATION, s.location)
-                             .set(SECTIONS.GRADING, s.grading)
-                             .set(SECTIONS.NOTES, s.notes)
-                             .set(SECTIONS.PREREQUISITES, s.prerequisites)
-                             .where(SECTIONS.ID.eq(save.id))
-                             .returning(SECTIONS.COURSE_ID)
-                             .fetchOne()
-                             .get(SECTIONS.COURSE_ID);
+      Integer courseId =
+          context.update(SECTIONS)
+              .set(SECTIONS.NAME, s.sectionName)
+              .set(SECTIONS.NAME_VEC,
+                   (Object)DSL.field("to_tsvector({0})", s.sectionName))
+              .set(SECTIONS.CAMPUS, s.campus)
+              .set(SECTIONS.INSTRUCTION_MODE, s.instructionMode)
+              .set(SECTIONS.MIN_UNITS, s.minUnits)
+              .set(SECTIONS.MAX_UNITS, s.maxUnits)
+              .set(SECTIONS.LOCATION, s.location)
+              .set(SECTIONS.GRADING, s.grading)
+              .set(SECTIONS.NOTES, s.notes)
+              .set(SECTIONS.NOTES_VEC,
+                   (Object)DSL.field("to_tsvector({0})", s.notes))
+              .set(SECTIONS.PREREQUISITES, s.prerequisites)
+              .set(SECTIONS.PREREQS_VEC,
+                   (Object)DSL.field("to_tsvector({0})", s.prerequisites))
+              .where(SECTIONS.ID.eq(save.id))
+              .returning(SECTIONS.COURSE_ID)
+              .fetchOne()
+              .get(SECTIONS.COURSE_ID);
       if (!courseDescriptions.containsKey(courseId)) {
         courseDescriptions.put(courseId, s.description);
       }

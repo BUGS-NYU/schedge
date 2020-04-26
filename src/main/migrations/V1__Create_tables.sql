@@ -52,7 +52,8 @@ CREATE TABLE sections (
   instruction_mode    varchar(32),
   grading             varchar(48),
   location            varchar(128),
-  prerequisites       varchar,
+  prerequisites       text,
+  prereqs_vec         TSVECTOR,
 
   PRIMARY KEY (id)
 );

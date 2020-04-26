@@ -29,12 +29,23 @@ public class SelectRows {
                       COURSES.SUBJECT.eq(code.code));
   }
 
-    public static Stream<Row> selectRow(DSLContext context, int epoch,
-                                         int registrationNumber) {
-        return selectRows(context, COURSES.EPOCH.eq(epoch),
-                SECTIONS.ASSOCIATED_WITH.eq(registrationNumber),
-                SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber));
+  public static Stream<Row> selectRow(DSLContext context, int epoch,
+                                      int registrationNumber) {
+    Record1<Integer> rec =
+        context.select(SECTIONS.ID)
+            .from(SECTIONS)
+            .join(COURSES)
+            .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
+            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber))
+            .fetchOne();
+    if (rec == null) {
+      return Stream.empty();
     }
+    int val = rec.component1();
+    return selectRows(context, COURSES.EPOCH.eq(epoch),
+                      SECTIONS.ASSOCIATED_WITH.eq(val),
+                      SECTIONS.REGISTRATION_NUMBER.eq(val));
+  }
 
   public static Stream<Row> selectRows(DSLContext context,
                                        Condition... conditions) {
@@ -73,12 +84,23 @@ public class SelectRows {
                           COURSES.SUBJECT.eq(code.code));
   }
 
-    public static Stream<FullRow> selectFullRow(DSLContext context, int epoch,
-                                        int registrationNumber) {
-        return selectFullRows(context, COURSES.EPOCH.eq(epoch),
-                SECTIONS.ASSOCIATED_WITH.eq(registrationNumber),
-                SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber));
+  public static Stream<FullRow> selectFullRow(DSLContext context, int epoch,
+                                              int registrationNumber) {
+    Record1<Integer> rec =
+        context.select(SECTIONS.ID)
+            .from(SECTIONS)
+            .join(COURSES)
+            .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
+            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber))
+            .fetchOne();
+    if (rec == null) {
+      return Stream.empty();
     }
+    int val = rec.component1();
+    return selectFullRows(context, COURSES.EPOCH.eq(epoch),
+                          SECTIONS.ASSOCIATED_WITH.eq(val),
+                          SECTIONS.REGISTRATION_NUMBER.eq(val));
+  }
 
   public static Stream<FullRow> selectFullRows(DSLContext context,
                                                Condition... conditions) {

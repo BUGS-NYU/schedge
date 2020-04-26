@@ -62,7 +62,7 @@ public class FullRow {
     waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
     sectionName = row.get(SECTIONS.NAME);
     campus = row.get(SECTIONS.CAMPUS);
-    description = row.get(SECTIONS.DESCRIPTION);
+    description = row.get(COURSES.DESCRIPTION);
     minUnits = row.get(SECTIONS.MIN_UNITS);
     maxUnits = row.get(SECTIONS.MAX_UNITS);
     instructionMode = row.get(SECTIONS.INSTRUCTION_MODE);

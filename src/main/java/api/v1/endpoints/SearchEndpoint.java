@@ -10,7 +10,6 @@ import api.v1.models.*;
 import database.GetConnection;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.swagger.v3.oas.models.examples.Example;
 import java.util.*;
 import nyu.SubjectCode;
 import nyu.Term;
@@ -62,13 +61,6 @@ public final class SearchEndpoint extends Endpoint {
           openApiParam.description("OK.");
 
           ArrayList<Section> sections = new ArrayList<>();
-
-          openApiParam.getContent()
-              .get(guessContentType(Course.class))
-              .addExamples("course",
-                           new Example().value(new Course(
-                               "Intro to Computer SCI", "101",
-                               new SubjectCode("CSCI", "UA"), sections)));
         });
   }
 

@@ -24,7 +24,6 @@ public class Section {
   // values that need to be updated
   private String name;
   private String campus;
-  private String description;
   private Double minUnits;
   private Double maxUnits;
   private String instructionMode;
@@ -41,7 +40,6 @@ public class Section {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
     }
-
     this.registrationNumber = registrationNumber;
     this.code = code;
     this.instructors = instructors;
@@ -55,9 +53,9 @@ public class Section {
   public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, String name, Integer waitlistTotal,
-                 String campus, String description, Double minUnits,
-                 Double maxUnits, String instructionMode, String grading,
-                 String location, String notes, String prerequisites) {
+                 String campus, Double minUnits, Double maxUnits,
+                 String instructionMode, String grading, String location,
+                 String notes, String prerequisites) {
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
@@ -73,7 +71,6 @@ public class Section {
     this.meetings = meetings;
     this.recitations = recitations;
     this.campus = campus;
-    this.description = description;
     this.minUnits = minUnits;
     this.maxUnits = maxUnits;
     this.instructionMode = instructionMode;
@@ -110,10 +107,6 @@ public class Section {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public String getName() {
     return name;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getDescription() {
-    return description;
   }
   @JsonInclude(JsonInclude.Include.NON_NULL)
   public Double getMinUnits() {
@@ -164,7 +157,6 @@ public class Section {
         status == section.status &&
         Objects.equals(waitlistTotal, section.waitlistTotal) &&
         Objects.equals(campus, section.campus) &&
-        Objects.equals(description, section.description) &&
         Objects.equals(minUnits, section.minUnits) &&
         Objects.equals(maxUnits, section.maxUnits) &&
         Objects.equals(instructionMode, section.instructionMode) &&
@@ -176,25 +168,22 @@ public class Section {
   @Override
   public int hashCode() {
     return Objects.hash(name, registrationNumber, code, instructors, type,
-                        status, waitlistTotal, campus, description, minUnits,
-                        maxUnits, instructionMode, grading, location,
-                        prerequisites);
+                        status, waitlistTotal, campus, minUnits, maxUnits,
+                        instructionMode, grading, location, prerequisites);
   }
 
   public static Section fromRow(Row row) {
     return new Section(row.registrationNumber, row.sectionCode, row.instructors,
                        row.sectionType, row.sectionStatus, row.meetings, null,
-                       row.sectionName, row.waitlistTotal, null, null,
-                       row.minUnits, row.maxUnits, null, null, row.location,
-                       null, null);
+                       row.sectionName, row.waitlistTotal, null, row.minUnits,
+                       row.maxUnits, null, null, row.location, null, null);
   }
 
   public static Section fromFullRow(FullRow row) {
     return new Section(row.registrationNumber, row.sectionCode, row.instructors,
                        row.sectionType, row.sectionStatus, row.meetings, null,
                        row.sectionName, row.waitlistTotal, row.campus,
-                       row.description, row.minUnits, row.maxUnits,
-                       row.instructionMode, row.grading, row.location,
-                       row.notes, row.prerequisites);
+                       row.minUnits, row.maxUnits, row.instructionMode,
+                       row.grading, row.location, row.notes, row.prerequisites);
   }
 }

@@ -103,4 +103,80 @@ public final class SearchRows {
                 false) // @Performance Should this be true?
         .map(r -> new Row(r, meetingsList.get(r.get(SECTIONS.ID))));
   }
+
+  public static Stream<FullRow>
+  searchFullRows(DSLContext context, int epoch, int resultSize, String query,
+                 int titleWeight, int descriptionWeight, int notesWeight,
+                 int prereqsWeight) {
+    if (resultSize <= 0) {
+      throw new IllegalArgumentException("result size must be positive");
+    }
+    if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
+        prereqsWeight == 0) {
+      throw new IllegalArgumentException("all of the weights were zero");
+    }
+    CommonTableExpression<Record1<Object>> with =
+        DSL.name("q").fields("query").as(
+            DSL.select(DSL.field("to_tsquery(?)", query)));
+
+    ArrayList<String> fields = new ArrayList<>();
+    ArrayList<String> rankings = new ArrayList<>();
+    if (titleWeight != 0) {
+      fields.add("courses.name_vec @@ q.query");
+      fields.add("sections.name_vec @@ q.query");
+      rankings.add(titleWeight + " * ts_rank_cd(courses.name_vec, q.query)");
+      rankings.add(titleWeight + " * ts_rank_cd(sections.name_vec, q.query)");
+    }
+    if (descriptionWeight != 0) {
+      fields.add("courses.description_vec @@ q.query");
+      rankings.add(descriptionWeight +
+                   " * ts_rank_cd(courses.description_vec, q.query)");
+    }
+    if (notesWeight != 0) {
+      fields.add("sections.notes_vec @@ q.query");
+      rankings.add(notesWeight + " * ts_rank_cd(sections.notes_vec, q.query)");
+    }
+    if (prereqsWeight != 0) {
+      fields.add("sections.prereqs_vec @@ q.query");
+      rankings.add(prereqsWeight +
+                   " * ts_rank_cd(sections.prereqs_vec, q.query)");
+    }
+
+    List<Integer> result =
+        context.with(with)
+            .selectDistinct(COURSES.ID)
+            .from(DSL.table("q"), SECTIONS)
+            .join(COURSES)
+            .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
+            .where('(' + String.join(" OR ", fields) + ") AND epoch = ?", epoch)
+            .fetch()
+            .getValues(SECTIONS.ID);
+
+    // Condition[] conditions =
+    //     new Condition[] {COURSES.EPOCH.eq(epoch), COURSES.ID.in(result)};
+
+    Condition condition = COURSES.ID.in(result);
+    Map<Integer, List<Meeting>> meetingsList =
+        SelectRows.selectMeetings(context, condition);
+    Result<Record> records =
+        context.with(with)
+            .select(COURSES.asterisk(), SECTIONS.asterisk(),
+                    groupConcat(
+                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
+                        .as("section_instructors"))
+            .from(DSL.table("q"), COURSES)
+            .leftJoin(SECTIONS)
+            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
+            .leftJoin(IS_TEACHING_SECTION)
+            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
+            .where(condition)
+            .groupBy(DSL.field("q.query"), COURSES.ID, SECTIONS.ID)
+            .orderBy(DSL.field(String.join(" + ", rankings) + " DESC"))
+            .fetch();
+
+    return StreamSupport
+        .stream(records.spliterator(),
+                false) // @Performance Should this be true?
+        .map(r -> new FullRow(r, meetingsList.get(r.get(SECTIONS.ID))));
+  }
 }

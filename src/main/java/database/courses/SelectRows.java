@@ -50,7 +50,7 @@ public class SelectRows {
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
             .where(conditions)
-            .groupBy(SECTIONS.ID)
+            .groupBy(COURSES.ID, SECTIONS.ID)
             .fetch();
 
     return StreamSupport
@@ -82,7 +82,7 @@ public class SelectRows {
             .leftJoin(IS_TEACHING_SECTION)
             .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
             .where(conditions)
-            .groupBy(SECTIONS.ID)
+            .groupBy(COURSES.ID, SECTIONS.ID)
             .fetch();
 
     return StreamSupport

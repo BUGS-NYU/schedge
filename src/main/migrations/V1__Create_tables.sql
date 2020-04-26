@@ -11,10 +11,13 @@ CREATE TABLE courses (
   epoch               int REFERENCES epochs(id)
                           ON DELETE CASCADE       NOT NULL,
   name                varchar(128)                NOT NULL,
+  name_vec            TSVECTOR                    NOT NULL,
   school              varchar(4)                  NOt NULL,
   subject             varchar(6)                  NOT NULL,
   dept_course_id      varchar(6)                  NOT NULL,
   term_id             integer                     NOT NULL,
+  description         text,
+  description_vec     TSVECTOR,
   PRIMARY KEY (id)
 );
 
@@ -40,11 +43,12 @@ CREATE TABLE sections (
 
   waitlist_total      integer,
   name                text,
+  name_vec            TSVECTOR,
   min_units           float,
   max_units           float,
   campus              varchar(100),
-  description         text,
   notes               text,
+  notes_vec           TSVECTOR,
   instruction_mode    varchar(32),
   grading             varchar(48),
   location            varchar(128),

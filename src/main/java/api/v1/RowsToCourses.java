@@ -21,7 +21,8 @@ public class RowsToCourses {
         rows.map(row -> {
               if (!courses.containsKey(row.courseId))
                 courses.put(row.courseId,
-                            new Course(row.name, row.deptCourseId, row.subject,
+                            new Course(row.name, row.deptCourseId,
+                                       row.description, row.subject,
                                        new ArrayList<>()));
               if (row.associatedWith == null) {
                 Section s = Section.fromFullRow(row);
@@ -50,8 +51,8 @@ public class RowsToCourses {
         rows.map(row -> {
               if (!courses.containsKey(row.courseId))
                 courses.put(row.courseId,
-                            new Course(row.name, row.deptCourseId, row.subject,
-                                       new ArrayList<>()));
+                            new Course(row.name, row.deptCourseId, null,
+                                       row.subject, new ArrayList<>()));
               if (row.associatedWith == null) {
                 Section s = Section.fromRow(row);
                 sections.put(row.sectionId, s);

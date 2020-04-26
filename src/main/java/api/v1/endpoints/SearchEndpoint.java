@@ -6,11 +6,14 @@ import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType
 
 import api.Endpoint;
 import api.v1.ApiError;
+import api.v1.RowsToCourses;
 import api.v1.models.*;
 import database.GetConnection;
+import database.courses.SearchRows;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
+import java.util.stream.Collectors;
 import nyu.SubjectCode;
 import nyu.Term;
 
@@ -96,12 +99,12 @@ public final class SearchEndpoint extends Endpoint {
         ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
-      Integer resultSize;
+      int resultSize;
       try {
         resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                          .map(Integer::parseInt)
                          .map(i -> i > 200 ? 200 : i)
-                         .orElse(null);
+                         .orElse(50);
       } catch (NumberFormatException e) {
         ctx.status(400);
         ctx.json(new ApiError("Limit needs to be a positive integer."));
@@ -111,15 +114,15 @@ public final class SearchEndpoint extends Endpoint {
       GetConnection.withContext(context -> {
         Integer epoch = getLatestEpoch(context, term);
         if (epoch == null) {
-          ctx.status(404);
-          ctx.json(new ApiError("No data for query."));
+          ctx.status(200);
+          ctx.json(new ArrayList<>());
           return;
         }
 
-        // List<Integer> result = searchCourses(epoch, args, resultSize);
-
-        ctx.json(
-            selectCoursesBySectionId(context, epoch, Collections.emptyList()));
+        ctx.json(RowsToCourses
+                     .rowsToCourses(SearchRows.searchRows(
+                         context, epoch, resultSize, args, 4, 3, 2, 1))
+                     .collect(Collectors.toList()));
         ctx.status(200);
       });
     };

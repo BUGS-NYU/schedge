@@ -127,7 +127,7 @@ public class SelectRows {
         .map(r -> new FullRow(r, meetingsList.get(r.get(SECTIONS.ID))));
   }
 
-  private static Map<Integer, List<Meeting>>
+  public static Map<Integer, List<Meeting>>
   selectMeetings(DSLContext context, Condition... conditions) {
     Result<Record4<Integer, String, String, String>> records =
         context

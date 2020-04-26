@@ -119,10 +119,17 @@ public final class SearchEndpoint extends Endpoint {
           return;
         }
 
-        ctx.json(RowsToCourses
-                     .rowsToCourses(SearchRows.searchRows(
-                         context, epoch, resultSize, args, 4, 3, 2, 1))
-                     .collect(Collectors.toList()));
+        String fullData = ctx.queryParam("full");
+        if (fullData != null && fullData.toLowerCase().equals("true")) {
+          ctx.json(RowsToCourses
+                       .fullRowsToCourses(SearchRows.searchFullRows(
+                           context, epoch, resultSize, args, 4, 3, 2, 1))
+                       .collect(Collectors.toList()));
+        } else
+          ctx.json(RowsToCourses
+                       .rowsToCourses(SearchRows.searchRows(
+                           context, epoch, resultSize, args, 4, 3, 2, 1))
+                       .collect(Collectors.toList()));
         ctx.status(200);
       });
     };

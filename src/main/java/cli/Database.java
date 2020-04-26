@@ -53,18 +53,19 @@ public class Database implements Runnable {
       description =
           "Scrape section based on term and registration number, OR school and subject from db")
   public void
-  scrape(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.
-         Option(names = "--batch-size-catalog",
-                description = "batch size for querying the catalog")
-         Integer batchSize,
-         @CommandLine.Option(names = "--batch-size-sections",
-                             description = "batch size for querying sections")
-         Integer batchSizeSections,
-         @CommandLine.Option(names = "--service",
-                             description = "turns scraping into a service")
-         boolean service) {
-
+  scrape(
+      @CommandLine.Mixin TermMixin termMixin,
+      @CommandLine.Option(names = "--batch-size-catalog",
+                          description = "batch size for querying the catalog")
+      Integer batchSize,
+      @CommandLine.Option(names = "--batch-size-sections",
+                          description = "batch size for querying sections")
+      Integer batchSizeSections,
+      @CommandLine.Option(
+          names = "--service",
+          description =
+              "turns scraping into a service; if set, all other params are ignored.")
+      boolean service) {
     while (service) {
       CleanData.cleanData();
       UpdateData.updateData();

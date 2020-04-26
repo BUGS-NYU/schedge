@@ -31,23 +31,6 @@ public class App {
         Javalin
             .create(config -> {
               config.enableCorsForAllOrigins();
-              config.server(() -> {
-                Server server = new Server();
-                ServerConnector connector = new ServerConnector(server);
-                connector.setPort(80);
-                SslContextFactory sslContextFactory = getSslContextFactory();
-                if (sslContextFactory != null) {
-                  ServerConnector sslConnector =
-                      new ServerConnector(server, sslContextFactory);
-                  sslConnector.setPort(443);
-                  server.setConnectors(
-                      new Connector[] {sslConnector, connector});
-                } else {
-                  server.setConnectors(new Connector[] {connector});
-                }
-                return server;
-              });
-              config.addStaticFiles("./local", Location.EXTERNAL);
               String description =
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
@@ -63,7 +46,7 @@ public class App {
               config.enableWebjars();
               config.registerPlugin(new OpenApiPlugin(options));
             })
-            .start();
+            .start(8080);
     Logger logger = LoggerFactory.getLogger("app");
 
     String docs = new BufferedReader(

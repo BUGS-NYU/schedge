@@ -48,10 +48,10 @@ public class GetConnection {
   public static void initIfNecessary() {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
-      config.setUsername("schedge");
-      config.setPassword("");
-      config.setJdbcUrl("jdbc:postgresql://localhost:5432/schedge");
-      // config.addDataSourceProperty("cachePrepStmts", "false");
+      config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
+      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
+      config.setJdbcUrl(getEnvDefault(
+          "JDBC_URL", "jdbc:postgresql://localhost:5432/schedge"));
       dataSource = new HikariDataSource(config);
     }
   }

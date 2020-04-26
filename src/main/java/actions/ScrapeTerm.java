@@ -19,8 +19,6 @@ import java.util.stream.StreamSupport;
 import nyu.SubjectCode;
 import nyu.Term;
 import scraping.ScrapeCatalog;
-import search.GetResources;
-import search.UpdateIndex;
 import utils.Utils;
 
 public class ScrapeTerm {
@@ -46,14 +44,6 @@ public class ScrapeTerm {
               .iterator();
 
       UpdateSections.updateSections(context, term, s, batchSizeSections);
-
-      Stream<FullRow> rows =
-          StreamSupport
-              .stream(f.apply(SubjectCode.allSubjects()).spliterator(), false)
-              .flatMap(code -> SelectRows.selectFullRows(context, epoch, code));
-
-      Utils.deleteFile(GetResources.getIndexFileForEpoch(epoch));
-      UpdateIndex.updateIndex(epoch, rows);
 
       CompleteEpoch.completeEpoch(context, term, epoch);
     });

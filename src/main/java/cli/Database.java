@@ -171,15 +171,15 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    // while (true) { // @TODO Fix this using PostgresQL
-    //   CleanData.cleanData();
-    //   UpdateData.updateData();
+    while (true) { // @TODO Fix this using PostgresQL
+      CleanData.cleanData();
+      UpdateData.updateData();
 
-    //   try {
-    //     TimeUnit.DAYS.sleep(1);
-    //   } catch (InterruptedException e) {
-    //     throw new RuntimeException(e);
-    //   }
-    // }
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

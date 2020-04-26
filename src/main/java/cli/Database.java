@@ -60,7 +60,22 @@ public class Database implements Runnable {
          Integer batchSize,
          @CommandLine.Option(names = "--batch-size-sections",
                              description = "batch size for querying sections")
-         Integer batchSizeSections) {
+         Integer batchSizeSections,
+         @CommandLine.Option(names = "--service",
+                             description = "turns scraping into a service")
+         boolean service) {
+
+    while (service) {
+      CleanData.cleanData();
+      UpdateData.updateData();
+
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     long start = System.nanoTime();
     ScrapeTerm.scrapeTerm(
         termMixin.getTerm(), batchSize, batchSizeSections,
@@ -171,15 +186,5 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    while (true) {
-      CleanData.cleanData();
-      UpdateData.updateData();
-
-      try {
-        TimeUnit.DAYS.sleep(1);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
-    }
   }
 }

@@ -7,8 +7,7 @@ cd "$PROJ_DIR"
 if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
   shift
   if [ -f "$PROJ_DIR/.pid" ]; then
-    sudo echo -n "" || exit
-    (cat "$PROJ_DIR/.pid" | sudo xargs kill)
+    (cat "$PROJ_DIR/.pid" | xargs kill)
     rm "$PROJ_DIR/.pid" 2>/dev/null
   else
     echo "Nothing to kill!"
@@ -23,24 +22,19 @@ if [ -f "$PROJ_DIR/.env" ]; then
 fi
 
 if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
-  echo "Running in disowned process as root..."
-  sudo echo -n "" || exit
+  echo "Running in disowned process..."
 
   if [ -f "$PROJ_DIR/.pid" ]; then
-    (cat "$PROJ_DIR/.pid" | sudo xargs kill)
+    (cat "$PROJ_DIR/.pid" | xargs kill)
     rm .pid
   fi
 
-  sudo -E java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
+  java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
     -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ \
     2>"$PROJ_DIR/stderr.log" & disown
   echo "$!" > "$PROJ_DIR/.pid"
-  echo "Open ./logging in order to see logs of the program."
+  echo "Open ./stderr.log in order to see logs of the program."
 else
   java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
     -jar "$PROJ_DIR/.build/libs/schedge.jar" $@
 fi
-
-
-
-

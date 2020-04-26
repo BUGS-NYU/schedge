@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 public class SelectRows {
 
   private static Logger logger =
-      LoggerFactory.getLogger("database.courses.SelectCourseSectionRows");
+      LoggerFactory.getLogger("database.courses.SelectRows");
 
   public static Stream<Row> selectRows(DSLContext context, int epoch,
                                        SubjectCode code) {
@@ -28,6 +28,13 @@ public class SelectRows {
                       COURSES.SCHOOL.eq(code.school),
                       COURSES.SUBJECT.eq(code.code));
   }
+
+    public static Stream<Row> selectRow(DSLContext context, int epoch,
+                                         int registrationNumber) {
+        return selectRows(context, COURSES.EPOCH.eq(epoch),
+                SECTIONS.ASSOCIATED_WITH.eq(registrationNumber),
+                SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber));
+    }
 
   public static Stream<Row> selectRows(DSLContext context,
                                        Condition... conditions) {
@@ -65,6 +72,13 @@ public class SelectRows {
                           COURSES.SCHOOL.eq(code.school),
                           COURSES.SUBJECT.eq(code.code));
   }
+
+    public static Stream<FullRow> selectFullRow(DSLContext context, int epoch,
+                                        int registrationNumber) {
+        return selectFullRows(context, COURSES.EPOCH.eq(epoch),
+                SECTIONS.ASSOCIATED_WITH.eq(registrationNumber),
+                SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber));
+    }
 
   public static Stream<FullRow> selectFullRows(DSLContext context,
                                                Condition... conditions) {

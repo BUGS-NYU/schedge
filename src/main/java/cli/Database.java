@@ -171,7 +171,7 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    while (true) { // @TODO Fix this using PostgresQL
+    while (true) {
       CleanData.cleanData();
       UpdateData.updateData();
 

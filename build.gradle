@@ -47,9 +47,6 @@ dependencies {
             "org.asynchttpclient:async-http-client-bom:2.10.5",
             "org.asynchttpclient:async-http-client:2.10.5", // Async Http Client
 
-            "org.apache.lucene:lucene-core:8.4.1", // Text search
-            "org.apache.lucene:lucene-queryparser:8.4.1", // Text search
-
             "info.picocli:picocli:4.1.4", // Command line args
             "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON

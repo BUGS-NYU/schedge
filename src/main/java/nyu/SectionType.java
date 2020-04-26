@@ -26,6 +26,7 @@ public enum SectionType {
   NCR, // Non-Credit (Tandon)
   PRP, // Preparatory
   MAM, // Maintaining Marticulation
+  DLG,
   NCH;
 
   @JsonValue

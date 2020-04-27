@@ -36,7 +36,7 @@ public final class SearchRows {
     }
     CommonTableExpression<Record1<Object>> with =
         DSL.name("q").fields("query").as(
-            DSL.select(DSL.field("to_tsquery(?)", query)));
+            DSL.select(DSL.field("plainto_tsquery(?)", query)));
 
     ArrayList<String> fields = new ArrayList<>();
     ArrayList<String> rankings = new ArrayList<>();
@@ -117,7 +117,7 @@ public final class SearchRows {
     }
     CommonTableExpression<Record1<Object>> with =
         DSL.name("q").fields("query").as(
-            DSL.select(DSL.field("to_tsquery(?)", query)));
+            DSL.select(DSL.field("plainto_tsquery(?)", query)));
 
     ArrayList<String> fields = new ArrayList<>();
     ArrayList<String> rankings = new ArrayList<>();

@@ -79,7 +79,7 @@ public enum SectionType {
     case LLB:
       return "Lecture for Lab";
     default:
-      throw new RuntimeException("Unknown name: " + this.toString());
+      return this.toString();
     }
   }
 }

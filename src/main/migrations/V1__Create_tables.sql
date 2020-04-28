@@ -13,7 +13,7 @@ CREATE TABLE courses (
   name                varchar(128)                NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
   school              varchar(4)                  NOt NULL,
-  subject             varchar(8)                  NOT NULL,
+  subject             varchar(8)                  NOT NULL, -- could probably be lower
   dept_course_id      varchar(6)                  NOT NULL,
   term_id             integer                     NOT NULL,
   description         text,

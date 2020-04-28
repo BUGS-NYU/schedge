@@ -12,13 +12,13 @@
 You'll need to install a few applications to contribute to this project:
 
 - Git
-- SQLite<sup>1</sup>
+- PostgresSQl<sup>1</sup>
 - Java/Kotlin
 - Gradle
 
 Some of this can be handled for you using the Intellij Idea IDE.
 
-<small><sup>1</sup>You only need SQLite to develop on portions of the project
+<small><sup>1</sup>You only need PostgreSQL to develop on portions of the project
 that use the database; if you don't think you'll be doing that, then you dont need
 to worry about it.</small>
 
@@ -29,12 +29,12 @@ to worry about it.</small>
 - Select Git from the drop down menu
 - Use the URL for this repository ( https://github.com/A1Liu/schedge ).
 
-You'll need to use the command line instructions to install SQLite<sup>1<sup>,
+You'll need to use the command line instructions to install PostgreSQL<sup>1<sup>,
 but everything else should be handled for you.
 
 [intellij-download]: https://www.jetbrains.com/idea/download/index.html
 
-<small><sup>1</sup>You only need SQLite to develop on portions of the project
+<small><sup>1</sup>You only need PostgreSQL to develop on portions of the project
 that use the database; if you don't think you'll be doing that, then you dont need
 to worry about it.</small>
 
@@ -50,8 +50,8 @@ Type the following into the terminal:
 # Install Git
 sudo apt install git-all
 
-# Install SQLite
-sudo apt-get install sqlite3
+# Install PostgreSQL
+sudo apt-get install postgres
 
 # Install Java
 sudo apt install openjdk-8-jdk openjdk-8-jre
@@ -61,10 +61,6 @@ curl -s https://get.sdkman.io | bash
 
 # Install Gradle
 sdk install gradle 6.0.1
-
-# Install Kotlin
-sdk install kotlin
-```
 
 ### Mac
 If you are on Mac, installing HomeBrew, a package manager for MacOs, helps make
@@ -87,12 +83,11 @@ Git is a version control system and helps manage the project. Learn
 brew install git 
 ```
 
-SQLite is used as the database for Schedge. Read more about it
-[here](https://www.sqlite.org/index.html)
+Postgresql is used as the database for Schedge
 
 ```shell script
-# Install SQLite.
-brew install sqlite
+# Install postgresql. postgresql is for the database
+brew install postgresql
 ```
 
 Java codes handle I/O and parsing the data. Read the
@@ -110,11 +105,6 @@ Gradle is a build tool to manage dependencies. Read the [documentation](https://
 ```shell script
 # Install Gradle. Gradle is the build tools for schedge
 brew install gradle
-```
-Kotlin code handles scraping and querying data. Read the [documentation](https://kotlinlang.org/docs/reference/)
-```shell script
-# Install Kotlin.
-brew install kotlin
 ```
 
 ## Development

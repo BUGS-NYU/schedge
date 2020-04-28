@@ -85,8 +85,10 @@ public class UpdateSections {
       Integer courseId =
           context.update(SECTIONS)
               .set(SECTIONS.NAME, s.sectionName)
-              .set(SECTIONS.NAME_VEC,
-                   (Object)DSL.field("to_tsvector({0})", s.sectionName))
+              .set(
+                  SECTIONS.NAME_VEC,
+                  (Object)DSL.field("to_tsvector({0})",
+                                    save.code.toString() + ' ' + s.sectionName))
               .set(SECTIONS.CAMPUS, s.campus)
               .set(SECTIONS.INSTRUCTION_MODE, s.instructionMode)
               .set(SECTIONS.MIN_UNITS, s.minUnits)

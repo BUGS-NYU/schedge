@@ -55,26 +55,29 @@ public final class SearchEndpoint extends Endpoint {
               openApiParam.description(
                   "The maximum number of top-level sections to return. Capped at 50.");
             })
-        .queryParam("titleWeight", Integer.class,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "The weight given to course titles in search.");
-                    })
-        .queryParam("descriptionWeight", Integer.class,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "The weight given to course descriptions in search.");
-                    })
-        .queryParam("notesWeight", Integer.class,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "The weight given to course notes in search.");
-                    })
+        .queryParam(
+            "titleWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course titles in search. Default is 2.");
+            })
+        .queryParam(
+            "descriptionWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course descriptions in search. Default is 1.");
+            })
+        .queryParam(
+            "notesWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course notes in search. Default is 0.");
+            })
         .queryParam(
             "prereqsWeight", Integer.class,
             openApiParam -> {
               openApiParam.description(
-                  "The weight given to course prerequisites in search.");
+                  "The weight given to course prerequisites in search. Default is 0.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -128,11 +131,11 @@ public final class SearchEndpoint extends Endpoint {
                          .orElse(50);
         titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
                           .map(Integer::parseInt)
-                          .orElse(1);
+                          .orElse(2);
         descriptionWeight =
             Optional.ofNullable(ctx.queryParam("descriptionWeight"))
                 .map(Integer::parseInt)
-                .orElse(0);
+                .orElse(1);
         notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
                           .map(Integer::parseInt)
                           .orElse(0);

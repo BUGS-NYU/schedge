@@ -24,6 +24,7 @@ public final class SearchRows {
       LoggerFactory.getLogger("database.courses.SearchCourses");
 
   public static Stream<Row> searchRows(DSLContext context, int epoch,
+                                       String subject, String school,
                                        int resultSize, String query,
                                        int titleWeight, int descriptionWeight,
                                        int notesWeight, int prereqsWeight) {
@@ -36,6 +37,7 @@ public final class SearchRows {
         prereqsWeight == 0) {
       throw new IllegalArgumentException("all of the weights were zero");
     }
+
     CommonTableExpression<Record1<Object>> with =
         DSL.name("q").fields("query").as(
             DSL.select(DSL.field("plainto_tsquery(?)", query)));
@@ -63,13 +65,35 @@ public final class SearchRows {
                    " * ts_rank_cd(sections.prereqs_vec, q.query)");
     }
 
+    if (subject != null)
+      subject = subject.toUpperCase();
+    if (school != null)
+      school = school.toUpperCase();
+    String conditionString;
+    Object[] objArray;
+    if (subject != null && school != null) {
+      conditionString =
+          ") AND courses.subject = ? AND courses.school = ? AND courses.epoch = ?";
+      objArray = new Object[] {school, epoch};
+    } else if (subject != null) {
+      conditionString = ") AND courses.subject = ? AND courses.epoch = ?";
+      objArray = new Object[] {subject, epoch};
+    } else if (school != null) {
+      conditionString = ") AND courses.school = ? AND courses.epoch = ?";
+      objArray = new Object[] {school, epoch};
+    } else {
+      conditionString = ") AND courses.epoch = ?";
+      objArray = new Object[] {epoch};
+    }
+
     List<Integer> result =
         context.with(with)
             .selectDistinct(COURSES.ID)
             .from(DSL.table("q"), SECTIONS)
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where('(' + String.join(" OR ", fields) + ") AND epoch = ?", epoch)
+            .where('(' + String.join(" OR ", fields) + conditionString,
+                   objArray)
             .limit(50)
             .fetch()
             .getValues(SECTIONS.ID);
@@ -105,9 +129,9 @@ public final class SearchRows {
   }
 
   public static Stream<FullRow>
-  searchFullRows(DSLContext context, int epoch, int resultSize, String query,
-                 int titleWeight, int descriptionWeight, int notesWeight,
-                 int prereqsWeight) {
+  searchFullRows(DSLContext context, int epoch, String subject, String school,
+                 int resultSize, String query, int titleWeight,
+                 int descriptionWeight, int notesWeight, int prereqsWeight) {
     if (resultSize <= 0) {
       throw new IllegalArgumentException("result size must be positive");
     } else if (resultSize > 50)
@@ -144,13 +168,35 @@ public final class SearchRows {
                    " * ts_rank_cd(sections.prereqs_vec, q.query)");
     }
 
+    if (subject != null)
+      subject = subject.toUpperCase();
+    if (school != null)
+      school = school.toUpperCase();
+    String conditionString;
+    Object[] objArray;
+    if (subject != null && school != null) {
+      conditionString =
+          ") AND courses.subject = ? AND courses.school = ? AND courses.epoch = ?";
+      objArray = new Object[] {school, epoch};
+    } else if (subject != null) {
+      conditionString = ") AND courses.subject = ? AND courses.epoch = ?";
+      objArray = new Object[] {subject, epoch};
+    } else if (school != null) {
+      conditionString = ") AND courses.school = ? AND courses.epoch = ?";
+      objArray = new Object[] {school, epoch};
+    } else {
+      conditionString = ") AND courses.epoch = ?";
+      objArray = new Object[] {epoch};
+    }
+
     List<Integer> result =
         context.with(with)
             .selectDistinct(COURSES.ID)
             .from(DSL.table("q"), SECTIONS)
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where('(' + String.join(" OR ", fields) + ") AND epoch = ?", epoch)
+            .where('(' + String.join(" OR ", fields) + conditionString,
+                   objArray)
             .limit(resultSize)
             .fetch()
             .getValues(SECTIONS.ID);

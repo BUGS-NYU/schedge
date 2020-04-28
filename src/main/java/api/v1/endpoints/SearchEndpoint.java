@@ -55,6 +55,16 @@ public final class SearchEndpoint extends Endpoint {
               openApiParam.description(
                   "The maximum number of top-level sections to return. Capped at 50.");
             })
+        .queryParam("school", String.class,
+                    openApiParam -> {
+                      openApiParam.description("The school to search within.");
+                    })
+        .queryParam(
+            "subject", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The subject to search within. Can work cross school.");
+            })
         .queryParam(
             "titleWeight", Integer.class,
             openApiParam -> {
@@ -123,6 +133,9 @@ public final class SearchEndpoint extends Endpoint {
         ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
+      String school = ctx.queryParam("school"), subject =
+                                                    ctx.queryParam("subject");
+
       int resultSize, titleWeight, descriptionWeight, notesWeight,
           prereqsWeight;
       try {
@@ -160,14 +173,16 @@ public final class SearchEndpoint extends Endpoint {
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           ctx.json(RowsToCourses
                        .fullRowsToCourses(SearchRows.searchFullRows(
-                           context, epoch, resultSize, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
+                           context, epoch, subject, school, resultSize, args,
+                           titleWeight, descriptionWeight, notesWeight,
+                           prereqsWeight))
                        .collect(Collectors.toList()));
         } else
           ctx.json(RowsToCourses
                        .rowsToCourses(SearchRows.searchRows(
-                           context, epoch, resultSize, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
+                           context, epoch, subject, school, resultSize, args,
+                           titleWeight, descriptionWeight, notesWeight,
+                           prereqsWeight))
                        .collect(Collectors.toList()));
         ctx.status(200);
       });

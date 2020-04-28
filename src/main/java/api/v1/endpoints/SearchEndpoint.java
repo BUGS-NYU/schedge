@@ -50,10 +50,31 @@ public final class SearchEndpoint extends Endpoint {
                           "A query string to pass to the search engine.");
                     })
         .queryParam(
-            "limit", String.class,
+            "limit", Integer.class,
             openApiParam -> {
               openApiParam.description(
-                  "The maximum number of sections to return. Capped at 200.");
+                  "The maximum number of top-level sections to return. Capped at 50.");
+            })
+        .queryParam("titleWeight", Integer.class,
+                    openApiParam -> {
+                      openApiParam.description(
+                          "The weight given to course titles in search.");
+                    })
+        .queryParam("descriptionWeight", Integer.class,
+                    openApiParam -> {
+                      openApiParam.description(
+                          "The weight given to course descriptions in search.");
+                    })
+        .queryParam("notesWeight", Integer.class,
+                    openApiParam -> {
+                      openApiParam.description(
+                          "The weight given to course notes in search.");
+                    })
+        .queryParam(
+            "prereqsWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course prerequisites in search.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -99,12 +120,25 @@ public final class SearchEndpoint extends Endpoint {
         ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
-      int resultSize;
+      int resultSize, titleWeight, descriptionWeight, notesWeight,
+          prereqsWeight;
       try {
         resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                          .map(Integer::parseInt)
-                         .map(i -> i > 200 ? 200 : i)
                          .orElse(50);
+        titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
+                          .map(Integer::parseInt)
+                          .orElse(1);
+        descriptionWeight =
+            Optional.ofNullable(ctx.queryParam("descriptionWeight"))
+                .map(Integer::parseInt)
+                .orElse(0);
+        notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
+                          .map(Integer::parseInt)
+                          .orElse(0);
+        prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
+                            .map(Integer::parseInt)
+                            .orElse(0);
       } catch (NumberFormatException e) {
         ctx.status(400);
         ctx.json(new ApiError("Limit needs to be a positive integer."));
@@ -123,12 +157,14 @@ public final class SearchEndpoint extends Endpoint {
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           ctx.json(RowsToCourses
                        .fullRowsToCourses(SearchRows.searchFullRows(
-                           context, epoch, resultSize, args, 4, 3, 2, 1))
+                           context, epoch, resultSize, args, titleWeight,
+                           descriptionWeight, notesWeight, prereqsWeight))
                        .collect(Collectors.toList()));
         } else
           ctx.json(RowsToCourses
                        .rowsToCourses(SearchRows.searchRows(
-                           context, epoch, resultSize, args, 4, 3, 2, 1))
+                           context, epoch, resultSize, args, titleWeight,
+                           descriptionWeight, notesWeight, prereqsWeight))
                        .collect(Collectors.toList()));
         ctx.status(200);
       });

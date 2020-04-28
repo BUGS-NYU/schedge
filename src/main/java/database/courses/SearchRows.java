@@ -29,7 +29,9 @@ public final class SearchRows {
                                        int notesWeight, int prereqsWeight) {
     if (resultSize <= 0) {
       throw new IllegalArgumentException("result size must be positive");
-    }
+    } else if (resultSize > 50)
+      resultSize = 50;
+
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
         prereqsWeight == 0) {
       throw new IllegalArgumentException("all of the weights were zero");
@@ -68,11 +70,9 @@ public final class SearchRows {
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
             .where('(' + String.join(" OR ", fields) + ") AND epoch = ?", epoch)
+            .limit(50)
             .fetch()
             .getValues(SECTIONS.ID);
-
-    // Condition[] conditions =
-    //     new Condition[] {COURSES.EPOCH.eq(epoch), COURSES.ID.in(result)};
 
     Condition condition = COURSES.ID.in(result);
     Map<Integer, List<Meeting>> meetingsList =
@@ -110,7 +110,9 @@ public final class SearchRows {
                  int prereqsWeight) {
     if (resultSize <= 0) {
       throw new IllegalArgumentException("result size must be positive");
-    }
+    } else if (resultSize > 50)
+      resultSize = 50;
+
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
         prereqsWeight == 0) {
       throw new IllegalArgumentException("all of the weights were zero");
@@ -149,6 +151,7 @@ public final class SearchRows {
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
             .where('(' + String.join(" OR ", fields) + ") AND epoch = ?", epoch)
+            .limit(resultSize)
             .fetch()
             .getValues(SECTIONS.ID);
 

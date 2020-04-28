@@ -43,7 +43,8 @@ public class InsertCourses {
                            COURSES.NAME_VEC, COURSES.SCHOOL, COURSES.SUBJECT,
                            COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
                 .values(epoch, c.getName(),
-                        DSL.field("to_tsvector({0})", c.getName()),
+                        DSL.field("to_tsvector({0})",
+                                  c.getSubject() + ' ' + c.getName()),
                         c.getSchool(), c.getSubject(), c.getDeptCourseId(),
                         term.getId())
                 .returning(COURSES.ID)

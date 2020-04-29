@@ -1,19 +1,20 @@
 package cli;
 
+import api.v1.models.Course;
 import cli.templates.LoginMixin;
 import cli.templates.OutputFileMixin;
 import cli.templates.RegistrationNumberMixin;
 import cli.templates.TermMixin;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import nyu.Term;
 import nyu.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import register.AddToCart;
-import register.Context;
-import register.EnrollCourses;
-import register.ParseEnroll;
+import register.*;
 
 @CommandLine.
 Command(name = "shop", synopsisSubcommandLabel = "(add | remove | enroll)")
@@ -42,18 +43,30 @@ public class Shop implements Runnable {
             @CommandLine.Mixin OutputFileMixin outputFileMixin) {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
-    if (registrationNumberMixin.getRegistrationNumber() != null) {
-      try {
-        AddToCart.addToCart(loginMixin.getUser(), term,
-                            registrationNumberMixin.getRegistrationNumber(),
-                            Context.getContextAsync(term).get());
-      } catch (InterruptedException | ExecutionException e) {
-        e.printStackTrace();
-      }
-    } else {
+    List<Integer> sectionsRelated = new ArrayList<>();
+    sectionsRelated.add(7687);
+    RegistrationCourse course = new RegistrationCourse(
+          7686, sectionsRelated, "Y", 0, (float) 4.0
+  );
+    try {
       AddToCart.addToCart(loginMixin.getUser(), term,
-                          registrationNumberMixin.getRegistrationNumbers());
+                      course,
+                      Context.getContextAsync(term).get());
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
     }
+//    if (registrationNumberMixin.getRegistrationNumber() != null) {
+//      try {
+//        AddToCart.addToCart(loginMixin.getUser(), term,
+//                            registrationNumberMixin.getRegistrationNumber(),
+//                            Context.getContextAsync(term).get());
+//      } catch (InterruptedException | ExecutionException e) {
+//        e.printStackTrace();
+//      }
+//    } else {
+//      AddToCart.addToCart(loginMixin.getUser(), term,
+//                          registrationNumberMixin.getRegistrationNumbers());
+//    }
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

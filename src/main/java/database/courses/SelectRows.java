@@ -36,15 +36,15 @@ public class SelectRows {
             .from(SECTIONS)
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber))
+            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber),
+                   COURSES.EPOCH.eq(epoch))
             .fetchOne();
     if (rec == null) {
       return Stream.empty();
     }
     int val = rec.component1();
-    return selectRows(context, COURSES.EPOCH.eq(epoch),
-                      SECTIONS.ASSOCIATED_WITH.eq(val),
-                      SECTIONS.REGISTRATION_NUMBER.eq(val));
+    return selectRows(context,
+                      SECTIONS.ASSOCIATED_WITH.eq(val).or(SECTIONS.ID.eq(val)));
   }
 
   public static Stream<Row> selectRows(DSLContext context,
@@ -91,15 +91,15 @@ public class SelectRows {
             .from(SECTIONS)
             .join(COURSES)
             .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber))
+            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber),
+                   COURSES.EPOCH.eq(epoch))
             .fetchOne();
     if (rec == null) {
       return Stream.empty();
     }
     int val = rec.component1();
-    return selectFullRows(context, COURSES.EPOCH.eq(epoch),
-                          SECTIONS.ASSOCIATED_WITH.eq(val),
-                          SECTIONS.REGISTRATION_NUMBER.eq(val));
+    return selectFullRows(
+        context, SECTIONS.ASSOCIATED_WITH.eq(val).or(SECTIONS.ID.eq(val)));
   }
 
   public static Stream<FullRow> selectFullRows(DSLContext context,

@@ -28,9 +28,7 @@ public final class SectionEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() {
-    return "/:year/:semester/section/:registrationNumber";
-  }
+  public String getPath() { return "/:year/:semester/:registrationNumber"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -67,7 +65,6 @@ public final class SectionEndpoint extends Endpoint {
 
   public Handler getHandler() {
     return ctx -> {
-      ctx.contentType("application/json");
 
       int year;
       try {
@@ -92,7 +89,6 @@ public final class SectionEndpoint extends Endpoint {
 
       String fullData = ctx.queryParam("full");
 
-      ctx.status(200);
       Object output = GetConnection.withContextReturning(context -> {
         Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
         if (epoch == null) {
@@ -112,7 +108,14 @@ public final class SectionEndpoint extends Endpoint {
             .map(c -> c.getSections().get(0))
             .orElse(null);
       });
-      ctx.json(output);
+      if (output == null) {
+        ctx.status(404);
+        ctx.result("not found");
+      } else {
+        ctx.contentType("application/json");
+        ctx.status(200);
+        ctx.json(output);
+      }
     };
   }
 }

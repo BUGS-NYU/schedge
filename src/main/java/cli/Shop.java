@@ -44,18 +44,28 @@ public class Shop implements Runnable {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
     List<Integer> sectionsRelated = new ArrayList<>();
-    sectionsRelated.add(7687);
-    RegistrationCourse course = new RegistrationCourse(
-          7686, sectionsRelated, "Y", 0, (float) 4.0
-  );
-    try {
-      AddToCart.addToCart(loginMixin.getUser(), term,
-                      course,
-                      Context.getContextAsync(term).get());
-    } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
-    }
-//    if (registrationNumberMixin.getRegistrationNumber() != null) {
+    sectionsRelated.add(8608);
+    sectionsRelated.add(10529);
+    RegistrationCourse course1 = new RegistrationCourse(
+          8587, sectionsRelated, "Y", 0, (float) 4.0
+    );
+////    RegistrationCourse course2 = new RegistrationCourse(
+////            10009, sectionsRelated, "Y", 0, (float) 4.0
+////    );
+//    List<RegistrationCourse> lists = new ArrayList<>();
+//    lists.add(course1);
+////    lists.add(course2);
+////    AddToCart.addToCart(loginMixin.getUser(), term,
+////                    lists);
+//    try {
+//      AddToCart.addToCart(loginMixin.getUser(), term,
+//              course1, Context.getContextAsync(term).get());
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    } catch (ExecutionException e) {
+//      e.printStackTrace();
+//    }
+    //    if (registrationNumberMixin.getRegistrationNumber() != null) {
 //      try {
 //        AddToCart.addToCart(loginMixin.getUser(), term,
 //                            registrationNumberMixin.getRegistrationNumber(),

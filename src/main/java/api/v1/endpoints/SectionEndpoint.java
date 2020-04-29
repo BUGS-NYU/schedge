@@ -38,7 +38,7 @@ public final class SectionEndpoint extends Endpoint {
           // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
               "This endpoint returns a section for a specific year, semester, and registration number.");
-          openApiOperation.summary("Courses Endpoint");
+          openApiOperation.summary("Section Endpoint");
         })
         .pathParam("year", Integer.class,
                    openApiParam -> {

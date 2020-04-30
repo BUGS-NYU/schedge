@@ -18,8 +18,9 @@ public final class RegistrationNumberMixin {
   @CommandLine.
   Option(names = "--registration-number", description = "A registration number")
   private Integer registrationNumber;
-  @CommandLine.Option(names = "--registration-numbers", split = ",",
-                      description = "Multiple registration numbers")
+  @CommandLine.
+  Option(names = "--registration-numbers", split = ",",
+         description = "Multiple registration numbers: 1134,441,134,...")
   private List<Integer> registrationNumbers;
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;

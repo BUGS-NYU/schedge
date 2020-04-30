@@ -28,13 +28,18 @@ public class Shop implements Runnable {
                                              "Missing required subcommand");
   }
 
-  @CommandLine.
-  Command(name = "add", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n",
-          header = "Adding course to shopping cart",
-          description = "Adding one course to the shopping cart")
+  @CommandLine.Command(
+      name = "add", sortOptions = false, headerHeading = "Usage:%n%n",
+      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n",
+      header = "Adding course to shopping cart",
+      description =
+          "Adding one course to the shopping cart. "
+          + "Inputting --courses command multiple time to inputting multiple"
+          + "courses at once"
+          +
+          "Inputting as follows Eg: 1=3 -> {1=3} in mapping; 1=3,4,5 -> {1=3,4,5}, 1= -> empty list")
   public void
   addToCart(@CommandLine.Mixin TermMixin termMixin,
             @CommandLine.Mixin LoginMixin loginMixin,

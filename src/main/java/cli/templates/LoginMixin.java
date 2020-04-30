@@ -7,9 +7,11 @@ import picocli.CommandLine;
 public final class LoginMixin {
 
   private LoginMixin() {}
-  @CommandLine.Option(names = "--username") private String username;
   @CommandLine.
-          Option(names = "--pwd")
+  Option(names = "--username", description = "Be correct of capitalization")
+  private String username;
+  @CommandLine.
+  Option(names = "--pwd", description = "Be correct of capitalization")
   private String password;
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;

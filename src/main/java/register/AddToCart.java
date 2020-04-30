@@ -93,13 +93,14 @@ public class AddToCart {
                                      .collect(Collectors.joining("; ")))
             .setMethod("GET")
             .build();
-    GetClient.getClient()
-            .executeRequest(request)
-            .toCompletableFuture()
-            .handleAsync(((resp, throwable) -> {
-              //if status code is 200 then there is an error
-              return null;
-            }));
+//    GetClient.getClient()
+//            .executeRequest(request)
+//            .toCompletableFuture()
+//            .handleAsync(((resp, throwable) -> {
+//              //if status code is 200 then there is an error
+//              return null;
+//            }));
+
     if(sectionsForm != null) {
       System.out.println(sectionsForm);
       Request sectionRequest =
@@ -128,103 +129,14 @@ public class AddToCart {
               .toCompletableFuture()
               .handleAsync(((resp, throwable) -> { return null; }));
     }
-//    System.out.println(optionsForm);
-//    Request optionRequest =
-//            new RequestBuilder()
-//                    .setUri(ADD_OPTIONS_URI)
-//                    .setRequestTimeout(60000)
-//                    .setHeader("Referer", SELECT_OPTIONS_ROOT_URL_STRING + term.getId() + "/"
-//                            + course.registrationNumber + "/add")
-//                    .setHeader("Host", "m.albert.nyu.edu")
-//                    .setHeader("Accept-Language", "en-US,en;q=0.5")
-//                    .setHeader("Accept-Encoding", "gzip, deflate, br")
-//                    .setHeader("Content-Type",
-//                            "application/x-www-form-urlencoded; charset=UTF-8")
-//                    .setHeader("X-Requested-With", "XMLHttpRequest")
-//                    .setHeader("Origin", "https://m.albert.nyu.edu")
-//                    .setHeader("DNT", "1")
-//                    .setHeader("Connection", "keep-alive")
-//                    .setHeader("Cookie", newContext.cookies.stream()
-//                            .map(it -> it.name() + '=' + it.value())
-//                            .collect(Collectors.joining("; ")))
-//                    .setMethod("POST")
-//                    .setBody(optionsForm)
-//                    .build();
-//    GetClient.getClient()
-//            .executeRequest(optionRequest)
-//            .toCompletableFuture()
-//            .handleAsync(((resp, throwable) -> { return null; }));
-    return null;
-  }
 
-  public static Future<String> addRelated(User user, Term term, int registrationNumber, int sectionRelated,
-                                          Context.HttpContext context) {
-    // @TODO: Turn this into static if possible. Turn this into a context object
-    Context.HttpContext newContext = GetLogin.getLoginSession(user, context);
-
-    /**
-     * Make the request given session token and shopping cart
-     * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
-     */
-    Request request =
-            new RequestBuilder()
-                    .setUri(Uri.create(SHOPPING_CART_ADD_DATA_URL_STRING +
-                            term.getId() + "/" + registrationNumber))
-                    .setRequestTimeout(60000)
-                    .setHeader("Referer", ROOT_URL_STRING)
-                    .setHeader("Host", "m.albert.nyu.edu")
-                    .setHeader("Accept-Language", "en-US,en;q=0.5")
-                    .setHeader("Accept-Encoding", "gzip, deflate, br")
-                    .setHeader("Content-Type",
-                            "application/x-www-form-urlencoded; charset=UTF-8")
-                    .setHeader("X-Requested-With", "XMLHttpRequest")
-                    .setHeader("Origin", "https://m.albert.nyu.edu")
-                    .setHeader("DNT", "1")
-                    .setHeader("Connection", "keep-alive")
-                    .setHeader("Cookie", newContext.cookies.stream()
-                            .map(it -> it.name() + '=' + it.value())
-                            .collect(Collectors.joining("; ")))
-                    .setMethod("GET")
-                    .build();
     GetClient.getClient()
             .executeRequest(request)
             .toCompletableFuture()
-            .handleAsync(((resp, throwable) -> { return null; }));
-
-    String form = String.format(
-            "institution=NYUNV&acad_career=UGRD&strm=%s&class_nbr=%s&CSRFToken=%s&component1=%s",
-            term.getId(), registrationNumber, newContext.csrfToken, sectionRelated
-    );
-
-    /**
-     * Make the request given session token and shopping cart
-     * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
-     */
-    Request sectionRequest =
-            new RequestBuilder()
-                    .setUri(Uri.create(ADD_RELATED_DATA_URL_STRING))
-                    .setRequestTimeout(60000)
-                    .setHeader("Referer", ADD_RELATED_ROOT_URL_STRING + term.getId() + "/" + registrationNumber)
-                    .setHeader("Host", "m.albert.nyu.edu")
-                    .setHeader("Accept-Language", "en-US,en;q=0.5")
-                    .setHeader("Accept-Encoding", "gzip, deflate, br")
-                    .setHeader("Content-Type",
-                            "application/x-www-form-urlencoded; charset=UTF-8")
-                    .setHeader("X-Requested-With", "XMLHttpRequest")
-                    .setHeader("Origin", "https://m.albert.nyu.edu")
-                    .setHeader("DNT", "1")
-                    .setHeader("Connection", "keep-alive")
-                    .setHeader("Cookie", newContext.cookies.stream()
-                            .map(it -> it.name() + '=' + it.value())
-                            .collect(Collectors.joining("; ")))
-                    .setMethod("POST")
-                    .setBody(form)
-                    .build();
-    GetClient.getClient()
-            .executeRequest(sectionRequest)
-            .toCompletableFuture()
-            .handleAsync(((resp, throwable) -> { return null; }));
-    // @ToDo: Handle this later
+            .handleAsync(((resp, throwable) -> {
+              //if status code is 200 then there is an error
+              return null;
+            }));
     return null;
   }
 
@@ -273,18 +185,21 @@ public class AddToCart {
      * Make the request given session token and shopping cart
      * "https://m.albert.nyu.edu/app/student/enrollmentcart/addToCart/NYUNV/UGRD/1204/7669";
      */
-    Request request =
+        Request optionRequest =
             new RequestBuilder()
                     .setUri(ADD_OPTIONS_URI)
                     .setRequestTimeout(60000)
                     .setHeader("Referer", SELECT_OPTIONS_ROOT_URL_STRING + term.getId() + "/"
-                    + registrationNumber + "/add")
+                            + registrationNumber + "/add")
                     .setHeader("Host", "m.albert.nyu.edu")
-                    .setHeader("Accept-Language", "en-US,en;q=0.5")
+                    .setHeader("Accept-Language", "en-US,en;q=0.9,vi;q=0.8")
                     .setHeader("Accept-Encoding", "gzip, deflate, br")
                     .setHeader("Content-Type",
-                            "application/x-www-form-urlencoded; charset=UTF-8")
-                    .setHeader("X-Requested-With", "XMLHttpRequest")
+                            "application/x-www-form-urlencoded")
+                    .setHeader("cache-Control", "no-cache")
+                    .setHeader("Sec-Fetch-Dest", "document")
+                    .setHeader("Sec-Fetch-Mode", "navigate")
+                    .setHeader("Sec-Fetch-Size", "same-origin")
                     .setHeader("Origin", "https://m.albert.nyu.edu")
                     .setHeader("DNT", "1")
                     .setHeader("Connection", "keep-alive")
@@ -295,7 +210,7 @@ public class AddToCart {
                     .setBody(form)
                     .build();
     GetClient.getClient()
-            .executeRequest(request)
+            .executeRequest(optionRequest)
             .toCompletableFuture()
             .handleAsync(((resp, throwable) -> { return null; }));
     return null;

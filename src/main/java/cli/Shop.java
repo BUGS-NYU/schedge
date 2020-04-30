@@ -49,34 +49,14 @@ public class Shop implements Runnable {
     RegistrationCourse course1 = new RegistrationCourse(
           8587, sectionsRelated, "Y", 0, (float) 4.0
     );
-////    RegistrationCourse course2 = new RegistrationCourse(
-////            10009, sectionsRelated, "Y", 0, (float) 4.0
-////    );
-//    List<RegistrationCourse> lists = new ArrayList<>();
-//    lists.add(course1);
-////    lists.add(course2);
-////    AddToCart.addToCart(loginMixin.getUser(), term,
-////                    lists);
-//    try {
-//      AddToCart.addToCart(loginMixin.getUser(), term,
-//              course1, Context.getContextAsync(term).get());
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    } catch (ExecutionException e) {
-//      e.printStackTrace();
-//    }
-    //    if (registrationNumberMixin.getRegistrationNumber() != null) {
-//      try {
-//        AddToCart.addToCart(loginMixin.getUser(), term,
-//                            registrationNumberMixin.getRegistrationNumber(),
-//                            Context.getContextAsync(term).get());
-//      } catch (InterruptedException | ExecutionException e) {
-//        e.printStackTrace();
-//      }
-//    } else {
-//      AddToCart.addToCart(loginMixin.getUser(), term,
-//                          registrationNumberMixin.getRegistrationNumbers());
-//    }
+    RegistrationCourse course2 = new RegistrationCourse(
+            10009, new ArrayList<>(), "Y", 0, (float) 4.0
+    );
+    List<RegistrationCourse> lists = new ArrayList<>();
+    lists.add(course1);
+    lists.add(course2);
+    AddToCart.addToCart(loginMixin.getUser(), term,
+                    lists);
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

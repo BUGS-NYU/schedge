@@ -1,14 +1,13 @@
 package cli;
 
 import api.v1.models.Course;
-import cli.templates.LoginMixin;
-import cli.templates.OutputFileMixin;
-import cli.templates.RegistrationNumberMixin;
-import cli.templates.TermMixin;
-
+import cli.templates.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.slf4j.Logger;
@@ -39,24 +38,12 @@ public class Shop implements Runnable {
   public void
   addToCart(@CommandLine.Mixin TermMixin termMixin,
             @CommandLine.Mixin LoginMixin loginMixin,
-            @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
+            @CommandLine.Mixin CourseRegistrationMixin courseRegistrationMixin,
             @CommandLine.Mixin OutputFileMixin outputFileMixin) {
     long start = System.nanoTime();
     Term term = termMixin.getTerm();
-    List<Integer> sectionsRelated = new ArrayList<>();
-    sectionsRelated.add(8608);
-    sectionsRelated.add(10529);
-    RegistrationCourse course1 = new RegistrationCourse(
-          8587, sectionsRelated, "Y", 0, (float) 4.0
-    );
-    RegistrationCourse course2 = new RegistrationCourse(
-            10009, new ArrayList<>(), "Y", 0, (float) 4.0
-    );
-    List<RegistrationCourse> lists = new ArrayList<>();
-    lists.add(course1);
-    lists.add(course2);
-    AddToCart.addToCart(loginMixin.getUser(), term,
-                    lists);
+    List<RegistrationCourse> courses = courseRegistrationMixin.convertCourses();
+    AddToCart.addToCart(loginMixin.getUser(), term, courses);
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

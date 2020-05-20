@@ -18,11 +18,16 @@ public final class RegistrationNumberMixin {
   @CommandLine.
   Option(names = "--registration-number", description = "A registration number")
   private Integer registrationNumber;
+  @CommandLine.
+  Option(names = "--registration-numbers", split = ",",
+         description = "Multiple registration numbers: 1134,441,134,...")
+  private List<Integer> registrationNumbers;
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   public List<SubjectCode> getSubjectCodes() {
-    if (school == null && subject == null && registrationNumber == null) {
+    if (school == null && subject == null && registrationNumber == null &&
+        registrationNumbers == null) {
       throw new CommandLine.ParameterException(
           spec.commandLine(),
           "Must provide at least one of --school, --subject, or --registration-number");
@@ -46,4 +51,6 @@ public final class RegistrationNumberMixin {
     }
   }
   public Integer getRegistrationNumber() { return registrationNumber; }
+
+  public List<Integer> getRegistrationNumbers() { return registrationNumbers; }
 }

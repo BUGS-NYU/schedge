@@ -101,7 +101,7 @@ public final class SearchRows {
     Condition condition = COURSES.ID.in(result);
     Map<Integer, List<Meeting>> meetingsList =
         SelectRows.selectMeetings(context, condition);
-    Result<Record> records =
+    Result<org.jooq.Record> records =
         context.with(with)
             .select(COURSES.asterisk(), SECTIONS.ID,
                     SECTIONS.REGISTRATION_NUMBER, SECTIONS.SECTION_CODE,
@@ -207,7 +207,7 @@ public final class SearchRows {
     Condition condition = COURSES.ID.in(result);
     Map<Integer, List<Meeting>> meetingsList =
         SelectRows.selectMeetings(context, condition);
-    Result<Record> records =
+    Result<org.jooq.Record> records =
         context.with(with)
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
                     groupConcat(

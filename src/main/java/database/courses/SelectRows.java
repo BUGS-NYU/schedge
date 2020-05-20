@@ -51,7 +51,7 @@ public class SelectRows {
                                        Condition... conditions) {
     Map<Integer, List<Meeting>> meetingsList =
         selectMeetings(context, conditions);
-    Result<Record> records =
+    Result<org.jooq.Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.ID,
                     SECTIONS.REGISTRATION_NUMBER, SECTIONS.SECTION_CODE,
@@ -106,7 +106,7 @@ public class SelectRows {
                                                Condition... conditions) {
     Map<Integer, List<Meeting>> meetingsList =
         selectMeetings(context, conditions);
-    Result<Record> records =
+    Result<org.jooq.Record> records =
         context
             .select(COURSES.asterisk(), SECTIONS.asterisk(),
                     groupConcat(

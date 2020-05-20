@@ -29,3 +29,5 @@ src/main/resources/keystore.jks
 
 /local/*
 /index/*
+bin/
+.settings/

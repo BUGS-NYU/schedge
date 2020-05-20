@@ -10,7 +10,7 @@ import picocli.CommandLine;
 public class Schedge implements Runnable {
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
-
+  
   public void run() {
     throw new CommandLine.ParameterException(
         spec.commandLine(),

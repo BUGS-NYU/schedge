@@ -13,7 +13,7 @@ You'll need to install a few applications to contribute to this project:
 
 - Git
 - PostgresSQl<sup>1</sup>
-- Java/Kotlin
+- Java
 - Gradle
 
 Some of this can be handled for you using the Intellij Idea IDE.
@@ -37,6 +37,10 @@ but everything else should be handled for you.
 <small><sup>1</sup>You only need PostgreSQL to develop on portions of the project
 that use the database; if you don't think you'll be doing that, then you dont need
 to worry about it.</small>
+
+### Note 
+If you have `Java 14`, you MUST install the latest version of Gradle. Otherwise, 
+it will not let you build
 
 <!-- @HelpWanted Add command line installation instructions for more OSes -->
 ### Command Line: Linux

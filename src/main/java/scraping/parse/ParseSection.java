@@ -93,7 +93,7 @@ public class ParseSection {
   SectionAttribute parsingElements(Map<String, String> secData,
                                    String sectionName, String link) {
     String units = secData.get("Units");
-    float minUnits = 0, maxUnits;
+    double minUnits = 0, maxUnits;
     if (units.contains("-")) {
       minUnits = Float.parseFloat(units.split(" - ")[0]);
       maxUnits = Float.parseFloat(units.split(" - ")[1].split(" ")[0]);

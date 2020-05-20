@@ -1,9 +1,6 @@
 package api;
 
-import api.v1.endpoints.CoursesEndpoint;
-import api.v1.endpoints.SchoolsEndpoint;
-import api.v1.endpoints.SearchEndpoint;
-import api.v1.endpoints.SubjectsEndpoint;
+import api.v1.endpoints.*;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
@@ -31,23 +28,6 @@ public class App {
         Javalin
             .create(config -> {
               config.enableCorsForAllOrigins();
-              config.server(() -> {
-                Server server = new Server();
-                ServerConnector connector = new ServerConnector(server);
-                connector.setPort(80);
-                SslContextFactory sslContextFactory = getSslContextFactory();
-                if (sslContextFactory != null) {
-                  ServerConnector sslConnector =
-                      new ServerConnector(server, sslContextFactory);
-                  sslConnector.setPort(443);
-                  server.setConnectors(
-                      new Connector[] {sslConnector, connector});
-                } else {
-                  server.setConnectors(new Connector[] {connector});
-                }
-                return server;
-              });
-              config.addStaticFiles("./local", Location.EXTERNAL);
               String description =
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
@@ -63,7 +43,7 @@ public class App {
               config.enableWebjars();
               config.registerPlugin(new OpenApiPlugin(options));
             })
-            .start();
+            .start(8080);
     Logger logger = LoggerFactory.getLogger("app");
 
     String docs = new BufferedReader(
@@ -82,6 +62,7 @@ public class App {
     new SchoolsEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new SearchEndpoint().addTo(app);
+    new SectionEndpoint().addTo(app);
   }
 
   private static SslContextFactory getSslContextFactory() {

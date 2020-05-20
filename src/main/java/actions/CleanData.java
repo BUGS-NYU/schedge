@@ -8,7 +8,6 @@ import java.util.function.BiFunction;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import search.GetResources;
 import utils.Utils;
 
 public class CleanData {
@@ -50,9 +49,5 @@ public class CleanData {
 
     GetConnection.withContext(
         context -> CleanEpoch.cleanEpochsUpTo(context, minLiveEpoch));
-
-    int currentEpoch = minLiveEpoch - 1;
-    while (Utils.deleteFile(GetResources.getIndexFileForEpoch(currentEpoch--)))
-      ;
   }
 }

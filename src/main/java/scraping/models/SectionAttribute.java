@@ -9,26 +9,26 @@ import nyu.SectionStatus;
  * SectionAttribute to holds data for scraping catalogs' sections
  */
 public class SectionAttribute {
-  private String sectionName;
-  private int registrationNumber; // dup
-  private SectionStatus status;   // dup
-  private String campus;
-  private String description;
-  private String instructionMode;
-  private String[] instructors; // dup
-  private Float minUnits;
-  private Float maxUnits;
-  private String grading;
-  private String location;
-  private String notes;
-  private String prerequisites;
+  public final String sectionName;
+  public final int registrationNumber; // dup
+  public final SectionStatus status;   // dup
+  public final String campus;
+  public final String description;
+  public final String instructionMode;
+  public final String[] instructors; // dup
+  public final Double minUnits;
+  public final Double maxUnits;
+  public final String grading;
+  public final String location;
+  public final String notes;
+  public final String prerequisites;
 
   public SectionAttribute(String sectionName, int registrationNumber,
                           SectionStatus status, String campus,
                           String description, String instructorMode,
-                          String[] instructors, Float minUnits, Float maxUnits,
-                          String grading, String notes, String prerequisites,
-                          String location) {
+                          String[] instructors, Double minUnits,
+                          Double maxUnits, String grading, String notes,
+                          String prerequisites, String location) {
     this.sectionName = sectionName;
     this.registrationNumber = registrationNumber;
     this.status = status;
@@ -43,30 +43,4 @@ public class SectionAttribute {
     this.prerequisites = prerequisites;
     this.location = location;
   }
-
-  public String getSectionName() { return sectionName; }
-
-  public @NotNull int getRegistrationNumber() { return registrationNumber; }
-
-  public @NotNull SectionStatus getStatus() { return status; }
-
-  public @NotNull String getCampus() { return campus; }
-
-  public @NotNull String getDescription() { return description; }
-
-  public String getInstructionMode() { return instructionMode; }
-
-  public String[] getInstructors() { return instructors; }
-
-  public Float getMinUnits() { return minUnits; }
-
-  public Float getMaxUnits() { return maxUnits; }
-
-  public String getGrading() { return grading; }
-
-  public String getNotes() { return notes; }
-
-  public String getPrerequisites() { return prerequisites; }
-
-  public String getLocation() { return location; }
 }

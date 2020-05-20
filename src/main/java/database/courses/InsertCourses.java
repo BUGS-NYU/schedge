@@ -1,6 +1,7 @@
 package database.courses;
 
-import database.generated.Tables;
+import static database.generated.Tables.*;
+
 import database.generated.tables.Courses;
 import database.generated.tables.Meetings;
 import database.generated.tables.Sections;
@@ -32,21 +33,23 @@ public class InsertCourses {
   public static ArrayList<SectionID> insertCourses(DSLContext context,
                                                    Term term, int epoch,
                                                    List<Course> courses) {
-    Courses COURSES = Tables.COURSES;
-
     ArrayList<SectionID> states = new ArrayList<>();
     for (Course c : courses) {
       context.transaction(config -> {
         DSLContext ctx = DSL.using(config);
 
-        int id = ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
-                                COURSES.SCHOOL, COURSES.SUBJECT,
-                                COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
-                     .values(epoch, c.getName(), c.getSchool(), c.getSubject(),
-                             c.getDeptCourseId(), term.getId())
-                     .returning(COURSES.ID)
-                     .fetchOne()
-                     .getValue(COURSES.ID);
+        int id =
+            ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
+                           COURSES.NAME_VEC, COURSES.SCHOOL, COURSES.SUBJECT,
+                           COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
+                .values(epoch, c.getName(),
+                        DSL.field("to_tsvector({0})",
+                                  c.getSubject() + ' ' + c.getName()),
+                        c.getSchool(), c.getSubject(), c.getDeptCourseId(),
+                        term.getId())
+                .returning(COURSES.ID)
+                .fetchOne()
+                .getValue(COURSES.ID);
         insertSections(ctx, id, c.getSections(), states);
       });
     }
@@ -56,8 +59,6 @@ public class InsertCourses {
   public static void insertSections(DSLContext context, int courseId,
                                     List<Section> sections,
                                     ArrayList<SectionID> states) {
-    Sections SECTIONS = Tables.SECTIONS;
-
     for (Section s : sections) {
       Record r = context
                      .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
@@ -92,7 +93,6 @@ public class InsertCourses {
         throw new IllegalArgumentException(
             "Associated section had associated sections for some reason.");
 
-      Sections SECTIONS = Tables.SECTIONS;
       Record r =
           context
               .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
@@ -113,7 +113,6 @@ public class InsertCourses {
 
   public static void insertMeetings(DSLContext context, int sectionId,
                                     List<Meeting> meetings) {
-    Meetings MEETINGS = Tables.MEETINGS;
     context.delete(MEETINGS).where(MEETINGS.SECTION_ID.eq(sectionId)).execute();
 
     for (Meeting m : meetings) {

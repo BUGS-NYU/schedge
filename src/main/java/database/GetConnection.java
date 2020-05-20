@@ -16,12 +16,11 @@ import org.jooq.impl.DSL;
  */
 public class GetConnection {
 
-  public static final SQLDialect DIALECT = SQLDialect.SQLITE;
+  public static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 
   private static HikariDataSource dataSource;
 
-  private static @NotNull String getEnvDefault(String name,
-                                               @NotNull String default_value) {
+  private static String getEnvDefault(String name, String default_value) {
     String value = System.getenv(name);
     if (value == null) {
       return default_value;
@@ -48,11 +47,10 @@ public class GetConnection {
   public static void initIfNecessary() {
     if (dataSource == null) {
       HikariConfig config = new HikariConfig();
-      config.setUsername("schedge");
-      config.setPassword("");
-      config.setJdbcUrl("jdbc:sqlite:" + System.getProperty("user.dir") +
-                        "/local/tables.db");
-      // config.addDataSourceProperty("cachePrepStmts", "false");
+      config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
+      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
+      config.setJdbcUrl(getEnvDefault(
+          "JDBC_URL", "jdbc:postgresql://localhost:5432/schedge"));
       dataSource = new HikariDataSource(config);
     }
   }

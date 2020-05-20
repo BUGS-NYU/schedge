@@ -26,6 +26,7 @@ public enum SectionType {
   NCR, // Non-Credit (Tandon)
   PRP, // Preparatory
   MAM, // Maintaining Marticulation
+  DLG,
   NCH;
 
   @JsonValue
@@ -78,7 +79,7 @@ public enum SectionType {
     case LLB:
       return "Lecture for Lab";
     default:
-      throw new RuntimeException("Unknown name: " + this.toString());
+      return this.toString();
     }
   }
 }

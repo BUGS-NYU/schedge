@@ -6,19 +6,16 @@
         </encoder>
     </appender>
 
-    <appender name="TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- appender name="TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
       <file>logging/time_based_file.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logging/info_%d{yyyy-MM-dd-HH-mm}.log</fileNamePattern>
             <maxHistory>300</maxHistory>
         </rollingPolicy>
-        <!-- encoder>
-            <pattern>%relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder -->
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%logger{36}] %-5level - %msg%n</pattern>
         </encoder>
-    </appender>
+    </appender -->
 
 
     <logger name="services.query_catalog" level="INFO" additivity="false">
@@ -29,10 +26,11 @@
       <appender-ref ref="STDERR" />
     </logger>
 
-    <logger name="io.netty" level="INFO">
+    <logger name="io.netty" level="WARN">
       <appender-ref ref="STDERR" />
     </logger>
-    <logger name="org.asynchttpclient.netty" level="INFO">
+
+    <logger name="org.asynchttpclient.netty" level="WARN">
       <appender-ref ref="STDERR" />
     </logger>
 
@@ -67,7 +65,6 @@
         <appender-ref ref="STDERR"/>
     </logger> -->
     <root level="INFO">
-        <!-- appender-ref ref="STDERR"/ -->
-        <appender-ref ref="TIME_BASED_FILE"/>
+        <appender-ref ref="STDERR"/>
     </root>
 </configuration>

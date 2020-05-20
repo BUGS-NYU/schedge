@@ -12,7 +12,9 @@ import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
@@ -22,6 +24,8 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.GetRatings;
+import scraping.models.Instructor;
 import scraping.query.GetClient;
 
 @CommandLine.Command(name = "db", synopsisSubcommandLabel =
@@ -49,14 +53,30 @@ public class Database implements Runnable {
       description =
           "Scrape section based on term and registration number, OR school and subject from db")
   public void
-  scrape(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.
-         Option(names = "--batch-size-catalog",
-                description = "batch size for querying the catalog")
-         Integer batchSize,
-         @CommandLine.Option(names = "--batch-size-sections",
-                             description = "batch size for querying sections")
-         Integer batchSizeSections) {
+  scrape(
+      @CommandLine.Mixin TermMixin termMixin,
+      @CommandLine.Option(names = "--batch-size-catalog",
+                          description = "batch size for querying the catalog")
+      Integer batchSize,
+      @CommandLine.Option(names = "--batch-size-sections",
+                          description = "batch size for querying sections")
+      Integer batchSizeSections,
+      @CommandLine.Option(
+          names = "--service",
+          description =
+              "turns scraping into a service; if set, all other params are ignored.")
+      boolean service) {
+    while (service) {
+      CleanData.cleanData();
+      UpdateData.updateData();
+
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
     long start = System.nanoTime();
     ScrapeTerm.scrapeTerm(
         termMixin.getTerm(), batchSize, batchSizeSections,
@@ -79,16 +99,12 @@ public class Database implements Runnable {
       Integer batchSize) {
     long start = System.nanoTime();
     GetConnection.withContext(context -> {
-      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
       UpdateInstructors.updateInstructors(
           context,
           ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
                            barBuilder),
           batchSize);
-    }
-
-    );
-
+    });
     GetConnection.close();
     GetClient.close();
 
@@ -171,15 +187,5 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
-    // while (true) { // @TODO Fix this using PostgresQL
-    //   CleanData.cleanData();
-    //   UpdateData.updateData();
-
-    //   try {
-    //     TimeUnit.DAYS.sleep(1);
-    //   } catch (InterruptedException e) {
-    //     throw new RuntimeException(e);
-    //   }
-    // }
   }
 }

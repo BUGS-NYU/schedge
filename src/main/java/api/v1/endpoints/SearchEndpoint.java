@@ -3,19 +3,17 @@ package api.v1.endpoints;
 import static api.v1.SelectCoursesBySectionId.selectCoursesBySectionId;
 import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-import static search.SearchCourses.searchCourses;
 
 import api.Endpoint;
 import api.v1.ApiError;
-import api.v1.models.Course;
-import api.v1.models.Section;
+import api.v1.RowsToCourses;
+import api.v1.models.*;
 import database.GetConnection;
+import database.courses.SearchRows;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.swagger.v3.oas.models.examples.Example;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import nyu.SubjectCode;
 import nyu.Term;
 
@@ -52,10 +50,44 @@ public final class SearchEndpoint extends Endpoint {
                           "A query string to pass to the search engine.");
                     })
         .queryParam(
-            "limit", String.class,
+            "limit", Integer.class,
             openApiParam -> {
               openApiParam.description(
-                  "The maximum number of sections to return. Capped at 200.");
+                  "The maximum number of top-level sections to return. Capped at 50.");
+            })
+        .queryParam("school", String.class,
+                    openApiParam -> {
+                      openApiParam.description("The school to search within.");
+                    })
+        .queryParam(
+            "subject", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The subject to search within. Can work cross school.");
+            })
+        .queryParam(
+            "titleWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course titles in search. Default is 2.");
+            })
+        .queryParam(
+            "descriptionWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course descriptions in search. Default is 1.");
+            })
+        .queryParam(
+            "notesWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course notes in search. Default is 0.");
+            })
+        .queryParam(
+            "prereqsWeight", Integer.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "The weight given to course prerequisites in search. Default is 0.");
             })
         .json("400", ApiError.class,
               openApiParam -> {
@@ -66,13 +98,6 @@ public final class SearchEndpoint extends Endpoint {
           openApiParam.description("OK.");
 
           ArrayList<Section> sections = new ArrayList<>();
-
-          openApiParam.getContent()
-              .get(guessContentType(Course.class))
-              .addExamples("course",
-                           new Example().value(new Course(
-                               "Intro to Computer SCI", "101",
-                               new SubjectCode("CSCI", "UA"), sections)));
         });
   }
 
@@ -108,12 +133,28 @@ public final class SearchEndpoint extends Endpoint {
         ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
-      Integer resultSize;
+      String school = ctx.queryParam("school"), subject =
+                                                    ctx.queryParam("subject");
+
+      int resultSize, titleWeight, descriptionWeight, notesWeight,
+          prereqsWeight;
       try {
         resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                          .map(Integer::parseInt)
-                         .map(i -> i > 200 ? 200 : i)
-                         .orElse(null);
+                         .orElse(50);
+        titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
+                          .map(Integer::parseInt)
+                          .orElse(2);
+        descriptionWeight =
+            Optional.ofNullable(ctx.queryParam("descriptionWeight"))
+                .map(Integer::parseInt)
+                .orElse(1);
+        notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
+                          .map(Integer::parseInt)
+                          .orElse(0);
+        prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
+                            .map(Integer::parseInt)
+                            .orElse(0);
       } catch (NumberFormatException e) {
         ctx.status(400);
         ctx.json(new ApiError("Limit needs to be a positive integer."));
@@ -123,14 +164,26 @@ public final class SearchEndpoint extends Endpoint {
       GetConnection.withContext(context -> {
         Integer epoch = getLatestEpoch(context, term);
         if (epoch == null) {
-          ctx.status(404);
-          ctx.json(new ApiError("No data for query."));
+          ctx.status(200);
+          ctx.json(new ArrayList<>());
           return;
         }
 
-        List<Integer> result = searchCourses(epoch, args, resultSize);
-
-        ctx.json(selectCoursesBySectionId(context, epoch, result));
+        String fullData = ctx.queryParam("full");
+        if (fullData != null && fullData.toLowerCase().equals("true")) {
+          ctx.json(RowsToCourses
+                       .fullRowsToCourses(SearchRows.searchFullRows(
+                           context, epoch, subject, school, resultSize, args,
+                           titleWeight, descriptionWeight, notesWeight,
+                           prereqsWeight))
+                       .collect(Collectors.toList()));
+        } else
+          ctx.json(RowsToCourses
+                       .rowsToCourses(SearchRows.searchRows(
+                           context, epoch, subject, school, resultSize, args,
+                           titleWeight, descriptionWeight, notesWeight,
+                           prereqsWeight))
+                       .collect(Collectors.toList()));
         ctx.status(200);
       });
     };

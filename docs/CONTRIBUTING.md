@@ -149,6 +149,16 @@ allow you to query, scrape and parse Albert data. So shall we open the terminal 
 - `java-jar .build/libs/schedge-all.jar`: test the code.
 - `gradle checkFast`: quickly check if the code compiles.
 
+## Database
+- Run `sudo -u postgres psql`. You will then be prompt with `postgres=#`. This is for you
+to type in the commands you want to do with Postgres.
+- Run `CREATE USER schedge WITH PASSWORD 'docker'`. 
+- Run `ALTER USER schedge WITH SUPERUSER`.
+- Run `gradle updateDb` to update the database schema
+
+Your database setup should be done now. You might be prompt to setup initial password for postgres.
+This is different from our user schedge, so you can use any password that you want. 
+
 ## Issue
 Remember to include enough information if you're reporting a bug.
 Asking question through an issue is totally fine as well.

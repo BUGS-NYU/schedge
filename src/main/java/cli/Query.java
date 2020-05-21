@@ -1,10 +1,10 @@
 package cli;
 
 import cli.templates.*;
-
+import database.GetConnection;
+import database.instructors.UpdateInstructors;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-
 import nyu.Term;
 import nyu.User;
 import org.slf4j.Logger;
@@ -13,9 +13,6 @@ import picocli.CommandLine;
 import register.Context;
 import register.EnrollCourses;
 import register.GetLogin;
-import database.GetConnection;
-import database.instructors.UpdateInstructors;
-import picocli.CommandLine;
 import scraping.GetRatings;
 import scraping.models.Instructor;
 import scraping.query.QueryCatalog;

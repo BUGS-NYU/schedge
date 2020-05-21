@@ -32,8 +32,11 @@ public class UpdateInstructors {
                         .set(INSTRUCTORS.RMP_TID, rating.rmpTeacherId)
                         .where(INSTRUCTORS.ID.eq(rating.instructorId))
                         .execute();
-                      rating.reviews.forEach(review -> context.insertInto(REVIEWS, REVIEWS.INSTRUCTOR_ID, REVIEWS.REVIEW)
-                      .values(rating.instructorId, review).execute());
+      rating.reviews.forEach(
+          review
+          -> context.insertInto(REVIEWS, REVIEWS.INSTRUCTOR_ID, REVIEWS.REVIEW)
+                 .values(rating.instructorId, review)
+                 .execute());
                   });
   }
 }

@@ -164,7 +164,8 @@ public final class GetRatings {
             .selectFirst("div.react-tabs")
             .selectFirst("div.TeacherRatingTabs__StyledTabPage-pnmswv-2.iaploH")
             .selectFirst("div.react-tabs__tab-panel.react-tabs__tab-panel--selected");
-    Elements reviewEls = reviewBody.select("ul.RatingsList__RatingsUL-hn9one-1.kHITzZ")
+    Elements reviewEls =
+        reviewBody.select("ul.RatingsList__RatingsUL-hn9one-1.kHITzZ")
             .select("li");
     for(Element review : reviewEls) {
       Element reviewElement = review.selectFirst("div.Rating__StyledRating-sc-1rhvpxz-0.qSJvr");

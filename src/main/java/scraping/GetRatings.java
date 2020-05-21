@@ -1,6 +1,9 @@
 package scraping;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -71,7 +74,7 @@ public final class GetRatings {
    * @param instructor
    * @return
    */
-  private static Future<Instructor> getLinkAsync(Instructor instructor) {
+  public static Future<Instructor> getLinkAsync(Instructor instructor) {
     String param = parseInstructorName(instructor.name);
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_URL + param))
@@ -110,7 +113,7 @@ public final class GetRatings {
    * @param id
    * @return
    */
-  private static Future<Rating> queryRatingAsync(String url, int id) {
+  public static Future<Rating> queryRatingAsync(String url, int id) {
     Request request = new RequestBuilder()
                           .setUri(Uri.create(RMP_ROOT_URL + url))
                           .setRequestTimeout(60000)
@@ -127,24 +130,26 @@ public final class GetRatings {
           }
           if (url == null) {
             logger.warn("URL is null for id=" + id);
-            return new Rating(id, -1, -1.0f);
+            return new Rating(id, -1, -1.0f, new ArrayList<>());
           }
 
+          MetaReview meta = parseRating(resp.getResponseBody());
           return new Rating(id, Integer.parseInt(url),
-                            parseRating(resp.getResponseBody()));
+                            meta.getRating(), meta.getReviews());
         });
   }
 
-  private static Float parseRating(String rawData) {
+  public static MetaReview parseRating(String rawData) {
     rawData = rawData.trim();
+    List<String> reviews = new ArrayList<>();
     if (rawData == null || rawData.equals("")) {
       logger.warn("Got bad data: empty string");
-      return null;
+      return new MetaReview(null, reviews);
     }
     Document doc = Jsoup.parse(rawData);
     Element body = doc.selectFirst("div#root");
     if (body == null)
-      return null;
+      return new MetaReview(null, reviews);
     Element ratingBody =
         body.selectFirst("div.TeacherInfo__StyledTeacher-ti1fio-1.fIlNyU");
     Element ratingInnerBody = ratingBody.selectFirst("div").selectFirst(
@@ -154,13 +159,32 @@ public final class GetRatings {
             .selectFirst("div.RatingValue__Numerator-qw8sqy-2.gxuTRq")
             .html()
             .trim();
+
+    Element reviewBody = body
+            .selectFirst("div.react-tabs")
+            .selectFirst("div.TeacherRatingTabs__StyledTabPage-pnmswv-2.iaploH")
+            .selectFirst("div.react-tabs__tab-panel.react-tabs__tab-panel--selected");
+    Elements reviewEls = reviewBody.select("ul.RatingsList__RatingsUL-hn9one-1.kHITzZ")
+            .select("li");
+    for(Element review : reviewEls) {
+      Element reviewElement = review.selectFirst("div.Rating__StyledRating-sc-1rhvpxz-0.qSJvr");
+      if(reviewElement != null) {
+        reviewElement = reviewElement.selectFirst("div.Rating__RatingInfo-sc-1rhvpxz-2.coQIDo")
+                .selectFirst("div.Comments__StyledComments-dzzyvm-0.dEfjGB");
+        reviews.add(reviewElement.html());
+      }
+    }
+
     try {
-      return Float.parseFloat(ratingValue);
+      return new MetaReview(Float.parseFloat(ratingValue), reviews);
     } catch (NumberFormatException exception) {
       logger.warn("The instructor exist but having N/A rating");
-      return null;
+      return new MetaReview(
+              null, reviews
+      );
     }
   }
+
 
   private static String parseLink(String rawData) {
     logger.debug("parsing raw RMP data to link...");
@@ -186,12 +210,30 @@ public final class GetRatings {
     Elements professors = innerListings.select("li.listing.PROFESSOR");
     for (Element element : professors) {
       String school =
-          element.selectFirst("span.sub").toString(); //<- Bugs at this line
+          element.selectFirst("span.sub").toString();
       if (school.contains("New York University") || school.contains("NYU")) {
         return element.selectFirst("a").attr("href").split("=")[1];
       }
     }
 
     return null;
+  }
+
+  private static class MetaReview {
+    private Float rating;
+    private List<String> reviews;
+
+    public MetaReview(Float rating, List<String> reviews) {
+      this.rating = rating;
+      this.reviews = reviews;
+    }
+
+    public Float getRating() {
+      return this.rating;
+    }
+
+    public List<String> getReviews() {
+      return reviews;
+    }
   }
 }

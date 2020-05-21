@@ -22,6 +22,7 @@ The following commands are valid in Schedge:
 ./schedge query catalog     # Query the catalog
 ./schedge query sections    # Query a section
 ./schedge query school      # Query a school/subject
+./schedge query rmp         # Query a RMP for professors
 ./schedge parse catalog     # Parse the catalog
 ./schedge parse section     # Parse the section
 ./schedge parse school      # Parse the school/subject
@@ -31,6 +32,9 @@ The following commands are valid in Schedge:
 ./schedge db scrape         # scrape the catalog for information
 ./schedge db query          # query the database for information
 ./schedge db serve          # Serve the database data through an API
+./schedge shop add          # Adding course/courses to shopping cart
+./schedge shop remove       # Removing course/courses from shopping cart
+./schedge shop enroll       # Enrolling in one or more courses from shopping cart
 ```
 
 #### Example

@@ -31,6 +31,7 @@ CREATE TABLE instructors (
   PRIMARY KEY (id)
 );
 
+
 CREATE TABLE sections (
   id                  SERIAL                      NOT NULL,
   registration_number integer                     NOT NULL,
@@ -75,6 +76,16 @@ CREATE TABLE meetings (
   duration            bigint                          NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE reviews (
+  id                  SERIAL                      NOT NULL,
+  review_id           int REFERENCES instructors(id)
+                          ON DELETE CASCADE       NOT NULL,
+  review                text                      NOT NULL,
+  PRIMARY KEY (id)
+);
+
+
 
 CREATE INDEX sections_associated_with ON sections (associated_with);
 CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);

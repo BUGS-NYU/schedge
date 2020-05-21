@@ -3,6 +3,7 @@ package cli;
 import cli.templates.*;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 import nyu.Term;
 import nyu.User;
@@ -114,6 +115,7 @@ public class Query implements Runnable {
       outputFile.writeOutput(
           GetRatings.getRatings(instructors.iterator(), batchSize));
     });
+
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

@@ -79,7 +79,7 @@ CREATE TABLE meetings (
 
 CREATE TABLE reviews (
   id                  SERIAL                      NOT NULL,
-  review_id           int REFERENCES instructors(id)
+  instructor_id           int REFERENCES instructors(id)
                           ON DELETE CASCADE       NOT NULL,
   review                text                      NOT NULL,
   PRIMARY KEY (id)

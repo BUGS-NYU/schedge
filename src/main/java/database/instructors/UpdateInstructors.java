@@ -1,6 +1,7 @@
 package database.instructors;
 
 import static database.generated.Tables.INSTRUCTORS;
+import static database.generated.Tables.REVIEWS;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +27,13 @@ public class UpdateInstructors {
     GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
         .filter(rating -> rating.rmpTeacherId != -1)
         .forEach(rating
-                 -> context.update(INSTRUCTORS)
+                 -> {context.update(INSTRUCTORS)
                         .set(INSTRUCTORS.RMP_RATING, rating.rating)
                         .set(INSTRUCTORS.RMP_TID, rating.rmpTeacherId)
                         .where(INSTRUCTORS.ID.eq(rating.instructorId))
-                        .execute());
+                        .execute();
+                      rating.reviews.forEach(review -> context.insertInto(REVIEWS, REVIEWS.INSTRUCTOR_ID, REVIEWS.REVIEW)
+                      .values(rating.instructorId, review).execute());
+                  });
   }
 }

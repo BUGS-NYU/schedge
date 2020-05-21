@@ -1,3 +1,4 @@
 package database.instructors;
 
-public class SelectInstructors {}
+public class SelectInstructors {
+}

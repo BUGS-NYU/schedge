@@ -27,6 +27,9 @@ tables.db
 src/main/java/database/generated
 src/main/resources/keystore.jks
 
+/.classpath
+/.project
+
 /local/*
 /index/*
 bin/

@@ -2,6 +2,7 @@ package cli;
 
 import cli.templates.*;
 import database.GetConnection;
+import database.instructors.SelectInstructors;
 import database.instructors.UpdateInstructors;
 import java.util.*;
 import java.util.concurrent.ExecutionException;

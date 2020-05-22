@@ -65,6 +65,7 @@ curl -s https://get.sdkman.io | bash
 
 # Install Gradle
 sdk install gradle 6.0.1
+```
 
 ### Mac
 If you are on Mac, installing HomeBrew, a package manager for MacOs, helps make

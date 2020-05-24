@@ -6,15 +6,9 @@ import javax.validation.constraints.NotNull;
 import utils.JsonSerializable;
 
 public class Meeting implements JsonSerializable {
-  private String
-      beginDate; // Begin date; contains date and time of first event.
-  private Long minutesDuration; // Duration of meeting
-  private String endDate;       // When the meeting stops repeating
-
-  public static final DateTimeFormatter beginFormatter =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
-  public static final DateTimeFormatter endFormatter =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH);
+  public final String beginDate;     // contains date and time of first event.
+  public final Long minutesDuration; // Duration of meeting public
+  final String endDate;              // When the meeting stops repeating
 
   public Meeting(String beginDate, String minutesDuration, String endDate) {
     this.beginDate = beginDate;

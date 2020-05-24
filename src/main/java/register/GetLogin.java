@@ -25,7 +25,7 @@ public class GetLogin {
   getLoginSession(User user, Context.HttpContext context) {
     String params = String.format(
         "CSRFToken=%s&username=%s&password=%s&loginAction=&institution=NYUNV",
-        context.csrfToken, user.getUsername(), user.getPassword());
+        context.csrfToken, user.username, user.password);
     Request request =
         new RequestBuilder()
             .setUri(LOGIN_DATA_URI)

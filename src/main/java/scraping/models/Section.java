@@ -6,14 +6,14 @@ import nyu.SectionType;
 import nyu.SubjectCode;
 
 public class Section {
-  private int registrationNumber;
-  private String sectionCode;
-  private SectionType type;
-  private SectionStatus status;
-  private List<Meeting> meetings;
-  private List<Section> recitations;
-  private Integer waitlistTotal;
-  private SubjectCode subjectCode;
+  public final int registrationNumber;
+  public final String sectionCode;
+  public final SectionType type;
+  public final SectionStatus status;
+  public final List<Meeting> meetings;
+  public final List<Section> recitations;
+  public final Integer waitlistTotal;
+  public final SubjectCode subjectCode;
 
   public Section(SubjectCode code, int registrationNumber, String sectionCode,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
@@ -32,14 +32,4 @@ public class Section {
     this.meetings = meetings;
     this.recitations = recitations;
   }
-
-  public int getRegistrationNumber() { return registrationNumber; }
-  public String getSectionCode() { return sectionCode; }
-  public SectionType getType() { return type; }
-  public SectionStatus getStatus() { return status; }
-  public List<Meeting> getMeetings() { return meetings; }
-  public List<Section> getRecitations() { return recitations; }
-  public Integer getWaitlistTotal() { return waitlistTotal; }
-
-  public SubjectCode getSubjectCode() { return subjectCode; }
 }

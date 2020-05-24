@@ -7,10 +7,10 @@ import nyu.SubjectCode;
 
 public final class Course {
 
-  private String name;
-  private String deptCourseId;
-  private SubjectCode subjectCode;
-  private List<Section> sections;
+  public final String name;
+  public final String deptCourseId;
+  public final SubjectCode subjectCode;
+  public final List<Section> sections;
 
   public Course(String name, String deptCourseId, SubjectCode subjectCode,
                 List<Section> sections) {
@@ -19,14 +19,6 @@ public final class Course {
     this.subjectCode = subjectCode;
     this.sections = sections;
   }
-
-  public @NotNull String getName() { return name; }
-
-  public @NotNull String getDeptCourseId() { return deptCourseId; }
-
-  public @NotNull SubjectCode getSubjectCode() { return subjectCode; }
-
-  public @NotNull List<Section> getSections() { return sections; }
 
   @JsonIgnore
   public String getSubject() {

@@ -35,9 +35,9 @@ public class Section {
 
   public String toString() {
     return "Section(subjectCode=" + subjectCode +
-        "waitlistTotal=" + waitlistTotal +
-        "registrationNumber=" + registrationNumber +
-        "sectionCode=" + sectionCode + "type=" + type + "status=" + status +
-        "meetings=" + meetings + "recitations=" + recitations + ")";
+        ",waitlistTotal=" + waitlistTotal +
+        ",registrationNumber=" + registrationNumber +
+        ",sectionCode=" + sectionCode + ",type=" + type + ",status=" + status +
+        ",meetings=" + meetings + ",recitations=" + recitations + ")";
   }
 }

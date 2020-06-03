@@ -31,7 +31,7 @@ public final class Course {
   }
 
   public String toString() {
-    return "Course(name=" + name + "deptCourseId=" + deptCourseId +
-        "subjectCode=" + subjectCode + "sections=" + sections + ")";
+    return "Course(name=" + name + ",deptCourseId=" + deptCourseId +
+        ",subjectCode=" + subjectCode + ",sections=" + sections + ")";
   }
 }

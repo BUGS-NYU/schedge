@@ -20,5 +20,6 @@ public final class CompleteEpoch {
         .where(EPOCHS.ID.eq(id))
         .and(EPOCHS.TERM_ID.eq(term.getId()))
         .execute();
+    logger.info("completed epoch {}", id);
   }
 }

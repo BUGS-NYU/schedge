@@ -42,6 +42,7 @@ public class UpdateSections {
   public static void updateSections(DSLContext context, Term term,
                                     Iterator<SectionID> sectionIds,
                                     Integer batchSizeNullable) {
+    logger.info("updating sections");
     Iterator<SaveState> sectionAttributes = new SimpleBatchedFutureEngine<>(
         sectionIds, batchSizeNullable == null ? 40 : batchSizeNullable,
         (sectionID, __)

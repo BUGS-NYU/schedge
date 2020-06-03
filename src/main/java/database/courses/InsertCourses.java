@@ -36,21 +36,26 @@ public class InsertCourses {
     ArrayList<SectionID> states = new ArrayList<>();
     for (Course c : courses) {
       context.transaction(config -> {
-        DSLContext ctx = DSL.using(config);
+        try {
+          DSLContext ctx = DSL.using(config);
 
-        int id =
-            ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
-                           COURSES.NAME_VEC, COURSES.SCHOOL, COURSES.SUBJECT,
-                           COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
-                .values(epoch, c.name,
-                        DSL.field("to_tsvector({0})",
-                                  c.subjectCode.code + ' ' + c.name),
-                        c.subjectCode.school, c.subjectCode.code,
-                        c.deptCourseId, term.getId())
-                .returning(COURSES.ID)
-                .fetchOne()
-                .getValue(COURSES.ID);
-        insertSections(ctx, id, c.sections, states);
+          int id =
+              ctx.insertInto(COURSES, COURSES.EPOCH, COURSES.NAME,
+                             COURSES.NAME_VEC, COURSES.SCHOOL, COURSES.SUBJECT,
+                             COURSES.DEPT_COURSE_ID, COURSES.TERM_ID)
+                  .values(epoch, c.name,
+                          DSL.field("to_tsvector({0})",
+                                    c.subjectCode.code + ' ' + c.name),
+                          c.subjectCode.school, c.subjectCode.code,
+                          c.deptCourseId, term.getId())
+                  .returning(COURSES.ID)
+                  .fetchOne()
+                  .getValue(COURSES.ID);
+          insertSections(ctx, id, c.sections, states);
+        } catch (Exception e) {
+          logger.error("throwing with course={}", c.toString());
+          throw e;
+        }
       });
     }
     return states;
@@ -60,23 +65,28 @@ public class InsertCourses {
                                     List<Section> sections,
                                     ArrayList<SectionID> states) {
     for (Section s : sections) {
-      Record r =
-          context
-              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                          SECTIONS.SECTION_TYPE, SECTIONS.SECTION_STATUS,
-                          SECTIONS.WAITLIST_TOTAL)
-              .values(s.registrationNumber, courseId, s.sectionCode,
-                      s.type.ordinal(), s.status.ordinal(), s.waitlistTotal)
-              .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
-              .fetchOne();
+      try {
+        Record r =
+            context
+                .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                            SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                            SECTIONS.SECTION_TYPE, SECTIONS.SECTION_STATUS,
+                            SECTIONS.WAITLIST_TOTAL)
+                .values(s.registrationNumber, courseId, s.sectionCode,
+                        s.type.ordinal(), s.status.ordinal(), s.waitlistTotal)
+                .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
+                .fetchOne();
 
-      SectionID state = new SectionID(s.subjectCode, r.get(SECTIONS.ID),
-                                      s.registrationNumber);
-      states.add(state);
-      insertMeetings(context, state.id, s.meetings);
-      if (s.recitations != null)
-        insertRecitations(context, courseId, s.recitations, state.id, states);
+        SectionID state = new SectionID(s.subjectCode, r.get(SECTIONS.ID),
+                                        s.registrationNumber);
+        states.add(state);
+        insertMeetings(context, state.id, s.meetings);
+        if (s.recitations != null)
+          insertRecitations(context, courseId, s.recitations, state.id, states);
+      } catch (Exception e) {
+        logger.error("throwing with section={}", s.toString());
+        throw e;
+      }
     }
   }
 
@@ -91,22 +101,27 @@ public class InsertCourses {
       if (s.recitations != null)
         throw new IllegalArgumentException(
             "Associated section had associated sections for some reason.");
+      try {
+        Record r =
+            context
+                .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
+                            SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
+                            SECTIONS.SECTION_TYPE, SECTIONS.SECTION_STATUS,
+                            SECTIONS.WAITLIST_TOTAL, SECTIONS.ASSOCIATED_WITH)
+                .values(s.registrationNumber, courseId, s.sectionCode,
+                        s.type.ordinal(), s.status.ordinal(), s.waitlistTotal,
+                        associatedWith)
+                .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
+                .fetchOne();
 
-      Record r =
-          context
-              .insertInto(SECTIONS, SECTIONS.REGISTRATION_NUMBER,
-                          SECTIONS.COURSE_ID, SECTIONS.SECTION_CODE,
-                          SECTIONS.SECTION_TYPE, SECTIONS.SECTION_STATUS,
-                          SECTIONS.WAITLIST_TOTAL, SECTIONS.ASSOCIATED_WITH)
-              .values(s.registrationNumber, courseId, s.sectionCode,
-                      s.type.ordinal(), s.status.ordinal(), s.waitlistTotal,
-                      associatedWith)
-              .returning(SECTIONS.ID, SECTIONS.REGISTRATION_NUMBER)
-              .fetchOne();
-      SectionID state = new SectionID(s.subjectCode, r.get(SECTIONS.ID),
-                                      s.registrationNumber);
-      states.add(state);
-      insertMeetings(context, state.id, s.meetings);
+        SectionID state = new SectionID(s.subjectCode, r.get(SECTIONS.ID),
+                                        s.registrationNumber);
+        states.add(state);
+        insertMeetings(context, state.id, s.meetings);
+      } catch (Exception e) {
+        logger.error("throwing with section={}", s.toString());
+        throw e;
+      }
     }
   }
 

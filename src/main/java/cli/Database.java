@@ -98,10 +98,10 @@ public class Database implements Runnable {
                           description = "batch size for querying RMP")
       Integer batchSize) {
     long start = System.nanoTime();
-    GetConnection.withContext(context -> {
+    GetConnection.withConnection(conn -> {
       UpdateInstructors.updateInstructors(
-          context,
-          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
+          conn,
+          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(conn),
                            barBuilder),
           batchSize);
     });

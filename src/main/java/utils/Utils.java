@@ -102,10 +102,12 @@ public final class Utils {
     }
   }
 
-  public static void setArray(PreparedStatement stmt, Object... objs)
-      throws SQLException {
-    for (int i = 0; i < objs.length; i++) {
-      setObject(stmt, i + 1, objs[i]);
-    }
+  public static PreparedStatement setArray(PreparedStatement stmt, Object... objs) {
+      try {
+          for (int i = 0; i < objs.length; i++) {
+              setObject(stmt, i + 1, objs[i]);
+          }
+          return stmt;
+      } catch (SQLException e) { throw new RuntimeException(e); }
   }
 }

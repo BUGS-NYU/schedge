@@ -2,10 +2,7 @@ package database.epochs;
 
 import static database.generated.Tables.EPOCHS;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.Instant;
 import nyu.Term;
 import org.jooq.DSLContext;

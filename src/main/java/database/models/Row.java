@@ -48,7 +48,6 @@ public class Row {
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
     String instructorString = rs.getString("section_instructors");
-    // System.err.println(row.get(SECTIONS.ID) + instructorString);
     instructors = instructorString.equals("") ? new String[] {"Staff"}
                                               : instructorString.split(";");
 
@@ -76,7 +75,6 @@ public class Row {
     registrationNumber = row.get(SECTIONS.REGISTRATION_NUMBER);
     sectionCode = row.get(SECTIONS.SECTION_CODE);
     String instructorString = (String)row.get("section_instructors");
-    // System.err.println(row.get(SECTIONS.ID) + instructorString);
     instructors = instructorString.equals("") ? new String[] {"Staff"}
                                               : instructorString.split(";");
 

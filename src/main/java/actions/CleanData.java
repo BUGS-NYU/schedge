@@ -47,7 +47,7 @@ public class CleanData {
 
     logger.info("Oldest live epoch is epoch=" + minLiveEpoch);
 
-    GetConnection.withContext(
-        context -> CleanEpoch.cleanEpochsUpTo(context, minLiveEpoch));
+    GetConnection.withConnection(
+        conn -> CleanEpoch.cleanEpochsUpTo(conn, minLiveEpoch));
   }
 }

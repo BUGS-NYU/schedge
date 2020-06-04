@@ -3,41 +3,50 @@ package database.instructors;
 import static database.generated.Tables.INSTRUCTORS;
 import static database.generated.Tables.IS_TEACHING_SECTION;
 
+import java.sql.*;
 import nyu.SubjectCode;
 import org.jooq.DSLContext;
 import org.jooq.Record1;
+import utils.Utils;
 
 public final class UpsertInstructor {
 
-  public static void upsertInstructor(DSLContext context, SubjectCode subject,
-                                      int sectionId, String instructor) {
+  public static void upsertInstructor(Connection conn, SubjectCode subject,
+                                      int sectionId, String instructor)
+      throws SQLException {
 
-    Record1<Integer> instructorRecord =
-        context.select(INSTRUCTORS.ID)
-            .from(INSTRUCTORS)
-            .where(INSTRUCTORS.SUBJECT.eq(subject.code),
-                   INSTRUCTORS.SCHOOL.eq(subject.school),
-                   INSTRUCTORS.NAME.eq(instructor))
-            .fetchOne();
-
+    PreparedStatement stmt = conn.prepareStatement(
+        "SELECT id from instructors WHERE subject = ? AND school = ? AND name = ?");
+    Utils.setArray(stmt, subject.code, subject.school, instructor);
+    ResultSet rs = stmt.executeQuery();
     int instructorId;
-    if (instructorRecord == null) {
-      instructorId = context
-                         .insertInto(INSTRUCTORS, INSTRUCTORS.NAME,
-                                     INSTRUCTORS.SUBJECT, INSTRUCTORS.SCHOOL)
-                         .values(instructor, subject.code, subject.school)
-                         .returning(INSTRUCTORS.ID)
-                         .fetchOne()
-                         .component1();
+    if (!rs.next()) {
+      rs.close();
+      PreparedStatement createInstructor = conn.prepareStatement(
+          "INSERT INTO instructors (name, subject, school) VALUES (?, ?, ?)",
+          Statement.RETURN_GENERATED_KEYS);
+
+      Utils.setArray(createInstructor, instructor, subject.code,
+                     subject.school);
+      if (stmt.executeUpdate() == 0)
+        throw new RuntimeException("Why bro");
+      rs = stmt.getGeneratedKeys();
+      if (!rs.next())
+        throw new RuntimeException("man c'mon");
+      instructorId = rs.getInt("id");
+      rs.close();
     } else {
-      instructorId = instructorRecord.component1();
+      instructorId = rs.getInt("id");
+      rs.close();
     }
 
-    context.insertInto(IS_TEACHING_SECTION)
-        .columns(IS_TEACHING_SECTION.INSTRUCTOR_ID,
-                 IS_TEACHING_SECTION.SECTION_ID,
-                 IS_TEACHING_SECTION.INSTRUCTOR_NAME)
-        .values(instructorId, sectionId, instructor)
-        .execute();
+    PreparedStatement addTeachingRelation = conn.prepareStatement(
+        "INSERT INTO is_teaching_section (instructor_id, section_id, instructor_name) "
+        + "VALUES (?, ?, ?)");
+
+    Utils.setArray(addTeachingRelation, instructorId, sectionId, instructor);
+
+    if (addTeachingRelation.executeUpdate() != 1)
+      throw new RuntimeException("wtf dude");
   }
 }

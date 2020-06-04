@@ -23,6 +23,9 @@ public final class GetNewEpoch {
       throw new RuntimeException("why did this fail?");
 
     try (ResultSet rs = stmt.getGeneratedKeys()) {
+      if (!rs.next()) {
+        throw new RuntimeException("why did this fail?");
+      }
       return rs.getInt(1);
     }
   }

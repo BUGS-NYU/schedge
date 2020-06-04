@@ -99,8 +99,12 @@ public class InsertCourses {
         states.add(
             new SectionID(s.subjectCode, sectionId, s.registrationNumber));
         insertMeetings(conn, sectionId, s.meetings);
-        if (s.recitations != null)
+        if (s.recitations != null) {
+          if (associatedWith != null) {
+            throw new RuntimeException("why did this happen?");
+          }
           insertSections(conn, courseId, s.recitations, sectionId, states);
+        }
       } catch (Exception e) {
         logger.error("throwing with section={}", s.toString());
         throw e;

@@ -152,7 +152,7 @@ public class SelectRows {
         -> meetingList(row.component2(), row.component3(), row.component4())));
   }
 
-  private static List<Meeting>
+  public static List<Meeting>
   meetingList(String beginString, String durationString, String endString) {
     if (beginString == null)
       return Collections.emptyList();

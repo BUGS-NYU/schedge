@@ -20,7 +20,7 @@ public final class CleanEpoch {
     PreparedStatement stmt =
         conn.prepareStatement("DELETE FROM epochs WHERE epochs.id < ?");
     stmt.setInt(1, epoch);
-    if (!stmt.execute())
+    if (stmt.executeUpdate() == 0)
       throw new RuntimeException("why did this fail?");
   }
 
@@ -29,7 +29,7 @@ public final class CleanEpoch {
     PreparedStatement stmt =
         conn.prepareStatement("DELETE FROM epochs WHERE epochs.term_id = ?");
     stmt.setInt(1, term.getId());
-    if (!stmt.execute())
+    if (stmt.executeUpdate() == 0)
       throw new RuntimeException("why did this fail?");
   }
 
@@ -38,7 +38,7 @@ public final class CleanEpoch {
     PreparedStatement stmt =
         conn.prepareStatement("DELETE FROM epochs WHERE epochs.id = ?");
     stmt.setInt(1, epoch);
-    if (!stmt.execute())
+    if (stmt.executeUpdate() == 0)
       throw new RuntimeException("why did this fail?");
   }
 }

@@ -6,6 +6,8 @@ import database.generated.Tables;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,6 +38,32 @@ public class Row {
   public final Double minUnits;
   public final Double maxUnits;
   public final String location;
+
+  public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
+    courseId = rs.getInt("id");
+    name = rs.getString("name");
+    subject = new SubjectCode(rs.getString("subject"), rs.getString("school"));
+    deptCourseId = rs.getString("dept_course_id");
+    sectionId = rs.getInt("section_id");
+    registrationNumber = rs.getInt("registration_number");
+    sectionCode = rs.getString("section_code");
+    String instructorString = rs.getString("section_instructors");
+    // System.err.println(row.get(SECTIONS.ID) + instructorString);
+    instructors = instructorString.equals("") ? new String[] {"Staff"}
+                                              : instructorString.split(";");
+
+    sectionType = SectionType.values()[rs.getInt("section_type")];
+    sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+    int associatedWith = rs.getInt("associated_with");
+    this.associatedWith = rs.wasNull() ? null : associatedWith;
+    this.meetings = meetings;
+    int waitListTotal = rs.getInt("waitlist_total");
+    this.waitlistTotal = rs.wasNull() ? null : waitListTotal;
+    sectionName = rs.getString("section_name");
+    minUnits = rs.getDouble("min_units");
+    maxUnits = rs.getDouble("max_units");
+    location = rs.getString("location");
+  }
 
   public Row(Record row, List<Meeting> meetings) {
     courseId = row.get(COURSES.ID);

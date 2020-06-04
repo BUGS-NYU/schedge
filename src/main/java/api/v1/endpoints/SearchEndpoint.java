@@ -178,12 +178,15 @@ public final class SearchEndpoint extends Endpoint {
                            prereqsWeight))
                        .collect(Collectors.toList()));
         } else
-          ctx.json(RowsToCourses
-                       .rowsToCourses(SearchRows.searchRows(
-                           context, epoch, subject, school, resultSize, args,
-                           titleWeight, descriptionWeight, notesWeight,
-                           prereqsWeight))
-                       .collect(Collectors.toList()));
+          context.connection(
+              (conn)
+                  -> ctx.json(RowsToCourses
+                                  .rowsToCourses(SearchRows.searchRows(
+                                      conn, epoch, subject, school, resultSize,
+                                      args, titleWeight, descriptionWeight,
+                                      notesWeight, prereqsWeight))
+                                  .collect(Collectors.toList())));
+
         ctx.status(200);
       });
     };

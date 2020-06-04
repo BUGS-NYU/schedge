@@ -1,8 +1,7 @@
 package utils;
 
 import java.io.*;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.util.Arrays;
@@ -95,6 +94,8 @@ public final class Utils {
       stmt.setTimestamp(index, (Timestamp)obj);
     } else if (obj instanceof Long) {
       stmt.setLong(index, (Long)obj);
+    } else if (obj instanceof Array) {
+      stmt.setArray(index, (Array)obj);
     } else {
       throw new IllegalArgumentException(
           "type of object is incompatible for object=" + obj.toString());

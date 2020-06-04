@@ -158,16 +158,16 @@ public class Database implements Runnable {
 
     public void run() {
       Term term = termMixin.getTermAllowNull();
-      GetConnection.withContext(context -> {
+      GetConnection.withConnection(conn -> {
         if (epoch == null && term == null) {
           logger.info("Cleaning old epochs...");
           CleanData.cleanData();
         } else if (epoch != null && term == null) {
           logger.info("Cleaning epoch={}...", epoch);
-          CleanEpoch.cleanEpoch(context, epoch);
+          CleanEpoch.cleanEpoch(conn, epoch);
         } else if (term != null && epoch == null) {
           logger.info("Cleaning epochs for term={}...", term);
-          CleanEpoch.cleanEpochs(context, term);
+          CleanEpoch.cleanEpochs(conn, term);
         } else {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Term and --epoch are mutually exclusive!");

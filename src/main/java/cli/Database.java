@@ -126,7 +126,7 @@ public class Database implements Runnable {
     long start = System.nanoTime();
     GetConnection.withContext(context -> {
       Term term = termMixin.getTerm();
-      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
       if (epoch == null) {
         logger.warn("No completed epoch for term=" + term);
         return;

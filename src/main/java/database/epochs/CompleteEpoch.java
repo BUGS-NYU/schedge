@@ -1,11 +1,8 @@
 package database.epochs;
 
-import static database.generated.Tables.EPOCHS;
-
 import java.sql.*;
 import java.time.Instant;
 import nyu.Term;
-import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;

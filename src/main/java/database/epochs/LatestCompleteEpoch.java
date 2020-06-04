@@ -1,32 +1,31 @@
 package database.epochs;
 
-import static database.generated.Tables.EPOCHS;
-import static org.jooq.impl.DSL.max;
-
+import java.sql.*;
 import nyu.Term;
-import org.jooq.DSLContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Utils;
 
 public final class LatestCompleteEpoch {
 
   private static Logger logger =
       LoggerFactory.getLogger("database.epochs.LatestCompleteEpoch");
 
-  public static Integer getLatestEpoch(DSLContext context, Term term) {
-    Integer e = context.select(max(EPOCHS.ID))
-                    .from(EPOCHS)
-                    .where(EPOCHS.COMPLETED_AT.isNotNull(),
-                           EPOCHS.TERM_ID.eq(term.getId()))
-                    .limit(1)
-                    .fetchOne()
-                    .getValue(max(EPOCHS.ID));
+  public static Integer getLatestEpoch(Connection conn, Term term)
+      throws SQLException {
+    PreparedStatement stmt = conn.prepareStatement(
+        "SELECT max(id) from epochs WHERE completed_at IS NOT NULL "
+        + "AND term_id = ? ORDER BY completed_at DESC LIMIT 1");
 
-    if (e == null) {
-      logger.info("Couldn't find epoch for term=" + term);
-    } else {
-      logger.info("found epoch=" + e + " for term=" + term);
+    try (ResultSet rs = Utils.setArray(stmt, term.getId()).executeQuery()) {
+      int e = rs.getInt(1);
+      if (rs.wasNull()) {
+        logger.info("Couldn't find epoch for term=" + term);
+        return null;
+      } else {
+        logger.info("found epoch=" + e + " for term=" + term);
+        return e;
+      }
     }
-    return e;
   }
 }

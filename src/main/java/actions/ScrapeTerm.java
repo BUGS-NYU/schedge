@@ -37,10 +37,13 @@ public class ScrapeTerm {
 
       Iterator<SectionID> s =
           ScrapeCatalog.scrapeFromCatalog(term, f.apply(allSubjects), batchSize)
-              .flatMap(courseList
-                       -> InsertCourses
-                              .insertCourses(context, term, epoch, courseList)
-                              .stream())
+              .flatMap(
+                  courseList
+                  -> context.connectionResult(
+                      (conn)
+                          -> InsertCourses
+                                 .insertCourses(conn, term, epoch, courseList)
+                                 .stream()))
               .iterator();
 
       UpdateSections.updateSections(context, term, s, batchSizeSections);

@@ -73,20 +73,23 @@ public final class SearchRows {
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
-          begin + "epoch = ? AND courses.subject = ? AND courses.school = ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, subject, school});
+          begin +
+          "epoch = ? AND courses.subject = ? AND courses.school = ? LIMIT ?");
+      Utils.setArray(idStmt,
+                     new Object[] {query, epoch, subject, school, resultSize});
     } else if (subject != null) {
-      idStmt =
-          conn.prepareStatement(begin + "epoch = ? AND courses.subject = ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, subject});
+      idStmt = conn.prepareStatement(
+          begin + "epoch = ? AND courses.subject = ? LIMIT ?");
+      Utils.setArray(idStmt, new Object[] {query, epoch, subject, resultSize});
     } else if (school != null) {
       idStmt =
 
-          conn.prepareStatement(begin + "epoch = ? AND courses.school = ?");
+          conn.prepareStatement(begin +
+                                "epoch = ? AND courses.school = ? LIMIT ?");
       Utils.setArray(idStmt, new Object[] {query, epoch, school});
     } else {
       idStmt = conn.prepareStatement(begin + "epoch = ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch});
+      Utils.setArray(idStmt, new Object[] {query, epoch, resultSize});
     }
 
     ArrayList<Integer> result = new ArrayList<>();
@@ -179,7 +182,7 @@ public final class SearchRows {
     if (subject != null && school != null) {
       conditionString =
           ") AND courses.subject = ? AND courses.school = ? AND courses.epoch = ?";
-      objArray = new Object[] {school, epoch};
+      objArray = new Object[] {subject, school, epoch};
     } else if (subject != null) {
       conditionString = ") AND courses.subject = ? AND courses.epoch = ?";
       objArray = new Object[] {subject, epoch};

@@ -8,9 +8,8 @@ import java.util.List;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.models.Course;
-import scraping.models.Meeting;
-import scraping.models.Section;
+import scraping.models.*;
+import utils.Utils;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -32,16 +31,15 @@ public class InsertCourses {
                                   + "VALUES (?, ?, to_tsvector(?), ?, ?, ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
     for (Course c : courses) {
-      stmt.setInt(1, epoch);
-      stmt.setString(2, c.name);
-      stmt.setString(3, c.name);
-      stmt.setString(4, c.subjectCode.school);
-      stmt.setString(5, c.subjectCode.code);
-      stmt.setString(6, c.deptCourseId);
-      stmt.setInt(7, term.getId());
-      if (stmt.executeUpdate() == 0)
+      Utils.setArray(stmt,
+                     new Object[] {epoch, c.name, c.name, c.subjectCode.school,
+                                   c.subjectCode.code, c.deptCourseId,
+                                   term.getId()});
+
+      if (stmt.executeUpdate() == 0) {
         throw new RuntimeException("inserting course=" + c.toString() +
                                    " failed, no rows affected.");
+      }
 
       ResultSet rs = stmt.getGeneratedKeys();
       if (!rs.next())
@@ -64,9 +62,10 @@ public class InsertCourses {
     if (associatedWith != null) {
       stmt = conn.prepareStatement(
           "INSERT INTO sections "
-          + "(registration_number, course_id, section_code, section_type, "
-          + "section_status, waitlist_total, associated_with) "
-          + "VALUES (?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+              + "(registration_number, course_id, section_code, section_type, "
+              + "section_status, waitlist_total, associated_with) "
+              + "VALUES (?, ?, ?, ?, ?, ?, ?)",
+          Statement.RETURN_GENERATED_KEYS);
       stmt.setInt(7, associatedWith);
     } else {
       stmt = conn.prepareStatement(
@@ -77,18 +76,16 @@ public class InsertCourses {
     }
     for (Section s : sections) {
       try {
-        stmt.setInt(1, s.registrationNumber);
-        stmt.setInt(2, courseId);
-        stmt.setString(3, s.sectionCode);
-        stmt.setInt(4, s.type.ordinal());
-        stmt.setInt(5, s.status.ordinal());
-          if (s.waitlistTotal == null) {
-              stmt.setNull(6, Types.INTEGER);
-          } else {
-              stmt.setInt(6, s.waitlistTotal);
-          }
+        Utils.setArray(stmt, new Object[] {s.registrationNumber, courseId,
+                                           s.sectionCode, s.type.ordinal(),
+                                           s.status.ordinal()});
+        if (s.waitlistTotal == null) {
+          stmt.setNull(6, Types.INTEGER);
+        } else {
+          stmt.setInt(6, s.waitlistTotal);
+        }
 
-          if (stmt.executeUpdate() == 0)
+        if (stmt.executeUpdate() == 0)
           throw new RuntimeException("inserting section=" + s.toString() +
                                      " failed, no rows affected.");
 
@@ -123,11 +120,11 @@ public class InsertCourses {
         "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
 
     for (Meeting m : meetings) {
-      stmt.setInt(1, sectionId);
-      stmt.setTimestamp(2,
-                        Timestamp.from(m.beginDate.toInstant(ZoneOffset.UTC)));
-      stmt.setLong(3, m.duration);
-      stmt.setTimestamp(4, Timestamp.from(m.endDate.toInstant(ZoneOffset.UTC)));
+      Utils.setArray(
+          stmt,
+          new Object[] {
+              sectionId, Timestamp.from(m.beginDate.toInstant(ZoneOffset.UTC)),
+              m.duration, Timestamp.from(m.endDate.toInstant(ZoneOffset.UTC))});
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("Why did this fail?");
     }

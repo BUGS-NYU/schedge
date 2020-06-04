@@ -4,40 +4,32 @@ import cli.templates.OutputFileMixin;
 import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
-import io.netty.handler.codec.http.cookie.Cookie;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-import javax.servlet.http.HttpSession;
 import nyu.SubjectCode;
-import nyu.Term;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.RequestBuilder;
-import org.asynchttpclient.Response;
-import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
-import scraping.models.CatalogQueryData;
 import scraping.parse.ParseSchoolSubjects;
-import scraping.query.GetClient;
-import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
 /*
-   @Todo: Add annotation for parameter. Fix the method to parse
-   @Help: Add annotations, comments to code
+   @Todo: Add annotation for parameter.
 */
 @CommandLine.Command(name = "scrape",
+                     description = "Query then parse NYU Albert data based on different catagories",
                      synopsisSubcommandLabel = "(catalog | sections | school)")
 public class Scrape implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Scrape");
+  @CommandLine.
+          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  boolean displayHelp;
 
   @Override
   public void run() {

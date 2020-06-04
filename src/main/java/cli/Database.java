@@ -12,26 +12,26 @@ import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.GetRatings;
-import scraping.models.Instructor;
 import scraping.query.GetClient;
 
-@CommandLine.Command(name = "db", synopsisSubcommandLabel =
+import java.util.concurrent.TimeUnit;
+
+@CommandLine.Command(name = "db",
+        description = "query/scrape/update/serve data through the database locally",
+        synopsisSubcommandLabel =
                                       "(scrape | query | update | serve)")
 public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+  @CommandLine.
+          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  boolean displayHelp;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
   private static ProgressBarBuilder barBuilder =

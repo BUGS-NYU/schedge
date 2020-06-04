@@ -2,22 +2,27 @@ package cli;
 
 import cli.templates.InputFileMixin;
 import cli.templates.OutputFileMixin;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
+
+import java.util.Map;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
 @CommandLine.Command(name = "parse",
+                     description = "Parsing NYU data based on different categories",
                      synopsisSubcommandLabel = "(catalog | section | school)",
                      subcommands = {Parse.School.class})
 public class Parse implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+  @CommandLine.
+          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  boolean displayHelp;
 
   Logger logger = LoggerFactory.getLogger("cli.Parse");
   @Override

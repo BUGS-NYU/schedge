@@ -1,19 +1,12 @@
 package cli;
 
-import cli.templates.*;
-
-import java.util.*;
-
-import nyu.Term;
-import nyu.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
-import register.Context;
-import register.EnrollCourses;
-import register.GetLogin;
+import cli.templates.OutputFileMixin;
+import cli.templates.SubjectCodeMixin;
+import cli.templates.TermMixin;
 import database.GetConnection;
 import database.instructors.UpdateInstructors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.GetRatings;
 import scraping.models.Instructor;
@@ -21,15 +14,21 @@ import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
 
+import java.util.List;
+
 /*
    @Todo: Add annotation for parameter. Fix the method to parse.
           Adding multiple options for querying
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "query", synopsisSubcommandLabel =
-                                         "(catalog | section | school | rmp)")
+@CommandLine.Command(name = "query",
+              description = "Querying data from NYU Albert",
+              synopsisSubcommandLabel = "(catalog | section | school | rmp)")
 public class Query implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+  @CommandLine.
+          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  boolean displayHelp;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Query");
 

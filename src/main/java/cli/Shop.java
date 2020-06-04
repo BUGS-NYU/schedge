@@ -1,13 +1,6 @@
 package cli;
 
-import api.v1.models.Course;
 import cli.templates.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.slf4j.Logger;
@@ -15,12 +8,18 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import register.*;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 @CommandLine.
 Command(name = "shop", synopsisSubcommandLabel = "(add | remove | enroll)")
 public class Shop implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Shop");
+  @CommandLine.
+          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  boolean displayHelp;
 
   @Override
   public void run() {

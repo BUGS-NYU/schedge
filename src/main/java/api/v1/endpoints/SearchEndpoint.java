@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import nyu.SubjectCode;
 import nyu.Term;
+import org.jooq.impl.DSL;
 
 public final class SearchEndpoint extends Endpoint {
 
@@ -102,93 +103,92 @@ public final class SearchEndpoint extends Endpoint {
   }
 
   public Handler getHandler() {
-    return ctx -> {
-      ctx.contentType("application/json");
+      return ctx -> {
+          ctx.contentType("application/json");
 
-      int year;
-      try {
-        year = Integer.parseInt(ctx.pathParam("year"));
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
-        return;
-      }
+          int year;
+          try {
+              year = Integer.parseInt(ctx.pathParam("year"));
+          } catch (NumberFormatException e) {
+              ctx.status(400);
+              ctx.json(new ApiError(e.getMessage()));
+              return;
+          }
 
-      Term term;
-      try {
-        term = new Term(ctx.pathParam("semester"), year);
-      } catch (IllegalArgumentException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
-        return;
-      }
+          Term term;
+          try {
+              term = new Term(ctx.pathParam("semester"), year);
+          } catch (IllegalArgumentException e) {
+              ctx.status(400);
+              ctx.json(new ApiError(e.getMessage()));
+              return;
+          }
 
-      String args = ctx.queryParam("query");
-      if (args == null) {
-        ctx.status(400);
-        ctx.json(new ApiError("Need to provide a query."));
-        return;
-      } else if (args.length() > 50) {
-        ctx.status(400);
-        ctx.json(new ApiError("Query can be at most 50 characters long."));
-      }
+          String args = ctx.queryParam("query");
+          if (args == null) {
+              ctx.status(400);
+              ctx.json(new ApiError("Need to provide a query."));
+              return;
+          } else if (args.length() > 50) {
+              ctx.status(400);
+              ctx.json(new ApiError("Query can be at most 50 characters long."));
+          }
 
-      String school = ctx.queryParam("school"), subject =
-                                                    ctx.queryParam("subject");
+          String school = ctx.queryParam("school"), subject =
+                  ctx.queryParam("subject");
 
-      int resultSize, titleWeight, descriptionWeight, notesWeight,
-          prereqsWeight;
-      try {
-        resultSize = Optional.ofNullable(ctx.queryParam("limit"))
-                         .map(Integer::parseInt)
-                         .orElse(50);
-        titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(2);
-        descriptionWeight =
-            Optional.ofNullable(ctx.queryParam("descriptionWeight"))
-                .map(Integer::parseInt)
-                .orElse(1);
-        notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(0);
-        prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
-                            .map(Integer::parseInt)
-                            .orElse(0);
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new ApiError("Limit needs to be a positive integer."));
-        return;
-      }
+          int resultSize, titleWeight, descriptionWeight, notesWeight,
+                  prereqsWeight;
+          try {
+              resultSize = Optional.ofNullable(ctx.queryParam("limit"))
+                      .map(Integer::parseInt)
+                      .orElse(50);
+              titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
+                      .map(Integer::parseInt)
+                      .orElse(2);
+              descriptionWeight =
+                      Optional.ofNullable(ctx.queryParam("descriptionWeight"))
+                              .map(Integer::parseInt)
+                              .orElse(1);
+              notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
+                      .map(Integer::parseInt)
+                      .orElse(0);
+              prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
+                      .map(Integer::parseInt)
+                      .orElse(0);
+          } catch (NumberFormatException e) {
+              ctx.status(400);
+              ctx.json(new ApiError("Limit needs to be a positive integer."));
+              return;
+          }
 
-      GetConnection.withContext(context -> {
-        Integer epoch = getLatestEpoch(context, term);
-        if (epoch == null) {
-          ctx.status(200);
-          ctx.json(new ArrayList<>());
-          return;
-        }
+          GetConnection.withConnection(conn -> {
+              Integer epoch = getLatestEpoch(conn, term);
+              if (epoch == null) {
+                  ctx.status(200);
+                  ctx.json(new ArrayList<>());
+                  return;
+              }
 
-        String fullData = ctx.queryParam("full");
-        if (fullData != null && fullData.toLowerCase().equals("true")) {
-          ctx.json(RowsToCourses
-                       .fullRowsToCourses(SearchRows.searchFullRows(
-                           context, epoch, subject, school, resultSize, args,
-                           titleWeight, descriptionWeight, notesWeight,
-                           prereqsWeight))
-                       .collect(Collectors.toList()));
-        } else
-          context.connection(
-              (conn)
-                  -> ctx.json(RowsToCourses
-                                  .rowsToCourses(SearchRows.searchRows(
-                                      conn, epoch, subject, school, resultSize,
-                                      args, titleWeight, descriptionWeight,
-                                      notesWeight, prereqsWeight))
-                                  .collect(Collectors.toList())));
+              String fullData = ctx.queryParam("full");
+              if (fullData != null && fullData.toLowerCase().equals("true")) {
+                  ctx.json(RowsToCourses
+                          .fullRowsToCourses(SearchRows.searchFullRows(
+                                  DSL.using(conn, GetConnection.DIALECT), epoch, subject, school, resultSize, args,
+                                  titleWeight, descriptionWeight, notesWeight,
+                                  prereqsWeight))
+                          .collect(Collectors.toList()));
+              } else {
+                  ctx.json(RowsToCourses
+                          .rowsToCourses(SearchRows.searchRows(
+                                  conn, epoch, subject, school, resultSize,
+                                  args, titleWeight, descriptionWeight,
+                                  notesWeight, prereqsWeight))
+                          .collect(Collectors.toList()));
 
-        ctx.status(200);
-      });
-    };
+                  ctx.status(200);
+              }
+          });
+      };
   }
 }

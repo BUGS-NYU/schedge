@@ -90,7 +90,7 @@ public final class SectionEndpoint extends Endpoint {
       String fullData = ctx.queryParam("full");
 
       Object output = GetConnection.withContextReturning(context -> {
-        Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+        Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
         if (epoch == null) {
           return Collections.emptyList();
         }

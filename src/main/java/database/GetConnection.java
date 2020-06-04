@@ -50,7 +50,7 @@ public class GetConnection {
       config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
       config.setPassword(getEnvDefault("DB_PASSWORD", ""));
       config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://localhost:5432/schedge"));
+          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/schedge"));
       dataSource = new HikariDataSource(config);
     }
   }

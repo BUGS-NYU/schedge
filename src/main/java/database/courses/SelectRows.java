@@ -6,6 +6,8 @@ import static org.jooq.impl.DSL.groupConcat;
 
 import database.models.FullRow;
 import database.models.Row;
+
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;

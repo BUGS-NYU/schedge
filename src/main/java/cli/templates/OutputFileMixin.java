@@ -5,7 +5,7 @@ import utils.JsonMapper;
 import utils.Utils;
 
 public final class OutputFileMixin {
-  @CommandLine.Option(names = "--pretty", defaultValue = "true")
+  @CommandLine.Option(names = "--pretty", defaultValue = "true", description = "Either true or false")
   private boolean pretty;
   @CommandLine.
   Option(names = "--output-file",

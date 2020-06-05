@@ -1,9 +1,10 @@
 package cli.templates;
 
-import java.util.Arrays;
-import java.util.List;
 import nyu.SubjectCode;
 import picocli.CommandLine;
+
+import java.util.Arrays;
+import java.util.List;
 
 public final class RegistrationNumberMixin {
 
@@ -16,7 +17,7 @@ public final class RegistrationNumberMixin {
   Option(names = "--subject", description = "subject code: CSCI, MATH, etc")
   private String subject;
   @CommandLine.
-  Option(names = "--registration-number", description = "A registration number")
+  Option(names = "--registration-number", description = "A registration number, such as 9667. This can be either a number for Lecture, section, etc..")
   private Integer registrationNumber;
   @CommandLine.
   Option(names = "--registration-numbers", split = ",",

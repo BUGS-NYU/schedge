@@ -88,7 +88,7 @@ public final class SearchRows {
                                 "epoch = ? AND courses.school = ? LIMIT ?");
       Utils.setArray(idStmt, new Object[] {query, epoch, school});
     } else {
-      idStmt = conn.prepareStatement(begin + "epoch = ?");
+      idStmt = conn.prepareStatement(begin + "epoch = ? LIMIT ?");
       Utils.setArray(idStmt, new Object[] {query, epoch, resultSize});
     }
 

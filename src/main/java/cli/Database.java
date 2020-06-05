@@ -124,15 +124,15 @@ public class Database implements Runnable {
         @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
         @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
-    GetConnection.withContext(context -> {
+    GetConnection.withConnection(conn -> {
       Term term = termMixin.getTerm();
-      Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
+      Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
       if (epoch == null) {
         logger.warn("No completed epoch for term=" + term);
         return;
       }
       outputFile.writeOutput(SelectCourses.selectCourses(
-          context, epoch, subjectCodeMixin.getSubjectCodes()));
+          conn, epoch, subjectCodeMixin.getSubjectCodes()));
     });
 
     GetConnection.close();

@@ -6,150 +6,144 @@ import static org.jooq.impl.DSL.groupConcat;
 
 import database.models.FullRow;
 import database.models.Row;
-
+import java.sql.*;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import nyu.Meeting;
 import nyu.SubjectCode;
 import org.jooq.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.Utils;
 
 public class SelectRows {
 
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectRows");
 
-  public static Stream<Row> selectRows(DSLContext context, int epoch,
-                                       SubjectCode code) {
-    return selectRows(context, COURSES.EPOCH.eq(epoch),
-                      COURSES.SCHOOL.eq(code.school),
-                      COURSES.SUBJECT.eq(code.code));
+  public static Stream<Row> selectRows(Connection conn, int epoch,
+                                       SubjectCode code) throws SQLException {
+    return selectRows(
+        conn,
+        "courses.epoch = ? AND courses.school = ? AND courses.subject = ?",
+        epoch, code.school, code.code);
   }
 
-  public static Stream<Row> selectRow(DSLContext context, int epoch,
-                                      int registrationNumber) {
-    Record1<Integer> rec =
-        context.select(SECTIONS.ID)
-            .from(SECTIONS)
-            .join(COURSES)
-            .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber),
-                   COURSES.EPOCH.eq(epoch))
-            .fetchOne();
-    if (rec == null) {
+  public static Stream<Row> selectRow(Connection conn, int epoch,
+                                      int registrationNumber)
+      throws SQLException {
+    PreparedStatement sectionIdStmt = conn.prepareStatement(
+        "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
+        + "WHERE sections.registration_number = ? AND courses.epoch = ?");
+
+    Utils.setArray(sectionIdStmt, registrationNumber, epoch);
+    ResultSet rs = sectionIdStmt.executeQuery();
+    ArrayList<Integer> sectionIds = new ArrayList<>();
+    if (!rs.next())
       return Stream.empty();
-    }
-    int val = rec.component1();
-    return selectRows(context,
-                      SECTIONS.ASSOCIATED_WITH.eq(val).or(SECTIONS.ID.eq(val)));
+
+    int sectionId = rs.getInt(1);
+    rs.close();
+    return selectRows(
+        conn, "sections.id = ANY (?) OR sections.associated_with = ANY (?)",
+        sectionId, sectionId);
   }
 
-  public static Stream<Row> selectRows(DSLContext context,
-                                       Condition... conditions) {
+  public static Stream<Row> selectRowsBySectionId(Connection conn, int epoch,
+                                                  List<Integer> sectionIds)
+      throws SQLException {
+    Array idArray = conn.createArrayOf("INTEGER", sectionIds.toArray());
+    return SelectRows.selectRows(
+        conn,
+        "courses.epoch = ? AND (sections.id = ANY (?) OR sections.associated_with = ANY (?))",
+        epoch, idArray, idArray);
+  }
+
+  public static Stream<Row> selectRows(Connection conn, String conditions,
+                                       Object... objects) throws SQLException {
     Map<Integer, List<Meeting>> meetingsList =
-        selectMeetings(context, conditions);
-    Result<org.jooq.Record> records =
-        context
-            .select(COURSES.asterisk(), SECTIONS.ID,
-                    SECTIONS.REGISTRATION_NUMBER, SECTIONS.SECTION_CODE,
-                    SECTIONS.SECTION_TYPE, SECTIONS.SECTION_STATUS,
-                    SECTIONS.ASSOCIATED_WITH, SECTIONS.WAITLIST_TOTAL,
-                    SECTIONS.NAME, SECTIONS.MIN_UNITS, SECTIONS.MAX_UNITS,
-                    SECTIONS.LOCATION,
-                    groupConcat(
-                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
-                        .as("section_instructors"))
-            .from(COURSES)
-            .leftJoin(SECTIONS)
-            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
-            .leftJoin(IS_TEACHING_SECTION)
-            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .where(conditions)
-            .groupBy(COURSES.ID, SECTIONS.ID)
-            .fetch();
+        selectMeetings(conn, conditions, objects);
 
-    return StreamSupport
-        .stream(records.spliterator(),
-                false) // @Performance Should this be true?
-        .map(r -> new Row(r, meetingsList.get(r.get(SECTIONS.ID))));
-  }
+    PreparedStatement stmt = conn.prepareStatement(
+        "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
+        + "sections.section_type, sections.section_status, "
+        + "array_to_string(array_agg(its.instructor_name),';') "
+        + "AS section_instructors, sections.associated_with, "
+        + "sections.waitlist_total, sections.name as section_name, "
+        + "sections.min_units, sections.max_units, sections.location "
+        + "FROM courses JOIN sections ON courses.id = sections.course_id "
+        + "JOIN is_teaching_section its on sections.id = its.section_id "
+        + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
+    Utils.setArray(stmt, objects);
 
-  public static Stream<FullRow> selectFullRows(DSLContext context, int epoch,
-                                               SubjectCode code) {
-    return selectFullRows(context, COURSES.EPOCH.eq(epoch),
-                          COURSES.SCHOOL.eq(code.school),
-                          COURSES.SUBJECT.eq(code.code));
-  }
-
-  public static Stream<FullRow> selectFullRow(DSLContext context, int epoch,
-                                              int registrationNumber) {
-    Record1<Integer> rec =
-        context.select(SECTIONS.ID)
-            .from(SECTIONS)
-            .join(COURSES)
-            .on(COURSES.ID.eq(SECTIONS.COURSE_ID))
-            .where(SECTIONS.REGISTRATION_NUMBER.eq(registrationNumber),
-                   COURSES.EPOCH.eq(epoch))
-            .fetchOne();
-    if (rec == null) {
-      return Stream.empty();
+    ResultSet rs = stmt.executeQuery();
+    ArrayList<Row> rows = new ArrayList<>();
+    while (rs.next()) {
+      rows.add(new Row(rs, meetingsList.get(rs.getInt("id"))));
     }
-    int val = rec.component1();
+
+    return rows.stream();
+  }
+
+  public static Stream<FullRow> selectFullRows(Connection conn, int epoch,
+                                               SubjectCode code)
+      throws SQLException {
     return selectFullRows(
-        context, SECTIONS.ASSOCIATED_WITH.eq(val).or(SECTIONS.ID.eq(val)));
+        conn,
+        "courses.epoch = ? AND courses.school = ? AND courses.subject = ?",
+        epoch, code.school, code.code);
   }
 
-  public static Stream<FullRow> selectFullRows(DSLContext context,
-                                               Condition... conditions) {
+  public static Stream<FullRow> selectFullRow(Connection conn, int epoch,
+                                              int registrationNumber)
+      throws SQLException {
+    PreparedStatement sectionIdStmt = conn.prepareStatement(
+        "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
+        + "WHERE sections.registration_number = ? AND courses.epoch = ?");
+
+    Utils.setArray(sectionIdStmt, registrationNumber, epoch);
+    ResultSet rs = sectionIdStmt.executeQuery();
+    ArrayList<Integer> sectionIds = new ArrayList<>();
+    if (!rs.next())
+      return Stream.empty();
+
+    int sectionId = rs.getInt(1);
+    rs.close();
+    return selectFullRows(conn,
+                          "sections.associated_with = ? OR sections.id = ?",
+                          sectionId, sectionId);
+  }
+
+  public static Stream<FullRow>
+  selectFullRows(Connection conn, String conditions, Object... objects)
+      throws SQLException {
     Map<Integer, List<Meeting>> meetingsList =
-        selectMeetings(context, conditions);
-    Result<org.jooq.Record> records =
-        context
-            .select(COURSES.asterisk(), SECTIONS.asterisk(),
-                    groupConcat(
-                        coalesce(IS_TEACHING_SECTION.INSTRUCTOR_NAME, ""), ";")
-                        .as("section_instructors"))
-            .from(COURSES)
-            .leftJoin(SECTIONS)
-            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
-            .leftJoin(IS_TEACHING_SECTION)
-            .on(SECTIONS.ID.eq(IS_TEACHING_SECTION.SECTION_ID))
-            .where(conditions)
-            .groupBy(COURSES.ID, SECTIONS.ID)
-            .fetch();
+        selectMeetings(conn, conditions, objects);
 
-    return StreamSupport
-        .stream(records.spliterator(),
-                false) // @Performance Should this be true?
-        .map(r -> new FullRow(r, meetingsList.get(r.get(SECTIONS.ID))));
-  }
+    PreparedStatement stmt = conn.prepareStatement(
+        "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
+        + "sections.section_type, sections.section_status, "
+        + "array_to_string(array_agg(its.instructor_name),';') "
+        + "AS section_instructors, sections.associated_with, "
+        + "sections.waitlist_total, sections.name AS section_name, "
+        + "sections.min_units, sections.max_units, sections.location, "
+        + "sections.campus, sections.instruction_mode, "
+        + "sections.grading, sections.notes, sections.prerequisites "
+        + "FROM courses JOIN sections ON courses.id = sections.course_id "
+        + "JOIN is_teaching_section its on sections.id = its.section_id "
+        + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
 
-  public static Map<Integer, List<Meeting>>
-  selectMeetings(DSLContext context, Condition... conditions) {
-    Result<Record4<Integer, String, String, String>> records =
-        context
-            .select(SECTIONS.ID, groupConcat(MEETINGS.BEGIN_DATE, ";"),
-                    groupConcat(MEETINGS.DURATION, ";"),
-                    groupConcat(MEETINGS.END_DATE, ";"))
-            .from(COURSES)
-            .leftJoin(SECTIONS)
-            .on(SECTIONS.COURSE_ID.eq(COURSES.ID))
-            .leftJoin(MEETINGS)
-            .on(SECTIONS.ID.eq(MEETINGS.SECTION_ID))
-            .where(conditions)
-            .groupBy(SECTIONS.ID)
-            .fetch();
+    Utils.setArray(stmt, objects);
 
-    return records.stream().collect(Collectors.toMap(
-        row
-        -> row.component1(),
-        row
-        -> meetingList(row.component2(), row.component3(), row.component4())));
+    ResultSet rs = stmt.executeQuery();
+    ArrayList<FullRow> rows = new ArrayList<>();
+    while (rs.next()) {
+      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("id"))));
+    }
+
+    return rows.stream();
   }
 
   public static List<Meeting>
@@ -163,6 +157,30 @@ public class SelectRows {
     for (int i = 0; i < beginDates.length; i++) {
       meetings.add(new Meeting(beginDates[i], durations[i], endDates[i]));
     }
+    return meetings;
+  }
+
+  public static Map<Integer, List<Meeting>>
+  selectMeetings(Connection conn, String conditions, Object... objects)
+      throws SQLException {
+    PreparedStatement stmt = conn.prepareStatement(
+        "SELECT sections.id as section_id, "
+        + "array_to_string(array_agg(meetings.begin_date),';'), "
+        + "array_to_string(array_agg(meetings.duration),';'), "
+        + "array_to_string(array_agg(meetings.end_date),';') "
+        + "FROM courses JOIN sections ON courses.id = sections.course_id "
+        + "JOIN meetings ON sections.id = meetings.section_id "
+        + "WHERE " + conditions + " GROUP BY sections.id");
+    Utils.setArray(stmt, objects);
+
+    ResultSet rs = stmt.executeQuery();
+    HashMap<Integer, List<Meeting>> meetings = new HashMap<>();
+    while (rs.next()) {
+      meetings.put(
+          rs.getInt("section_id"),
+          meetingList(rs.getString(2), rs.getString(3), rs.getString(4)));
+    }
+    rs.close();
     return meetings;
   }
 }

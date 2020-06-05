@@ -5,7 +5,6 @@ import static database.generated.Tables.*;
 import database.generated.tables.Courses;
 import database.generated.tables.Instructors;
 import database.generated.tables.Sections;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,36 +44,36 @@ public class FullRow {
   public final String notes;
   public final String prerequisites;
 
-    public FullRow(ResultSet rs, List<Meeting> meetings) throws SQLException {
-        courseId = rs.getInt("id");
-        name = rs.getString("name");
-        subject = new SubjectCode(rs.getString("subject"), rs.getString("school"));
-        deptCourseId = rs.getString("dept_course_id");
-        sectionId = rs.getInt("section_id");
-        registrationNumber = rs.getInt("registration_number");
-        sectionCode = rs.getString("section_code");
-        String instructorString = rs.getString("section_instructors");
-        instructors = instructorString.equals("") ? new String[] {"Staff"}
-                : instructorString.split(";");
+  public FullRow(ResultSet rs, List<Meeting> meetings) throws SQLException {
+    courseId = rs.getInt("id");
+    name = rs.getString("name");
+    subject = new SubjectCode(rs.getString("subject"), rs.getString("school"));
+    deptCourseId = rs.getString("dept_course_id");
+    sectionId = rs.getInt("section_id");
+    registrationNumber = rs.getInt("registration_number");
+    sectionCode = rs.getString("section_code");
+    String instructorString = rs.getString("section_instructors");
+    instructors = instructorString.equals("") ? new String[] {"Staff"}
+                                              : instructorString.split(";");
 
-        sectionType = SectionType.values()[rs.getInt("section_type")];
-        sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
-        int associatedWith = rs.getInt("associated_with");
-        this.associatedWith = rs.wasNull() ? null : associatedWith;
-        this.meetings = meetings;
-        int waitListTotal = rs.getInt("waitlist_total");
-        this.waitlistTotal = rs.wasNull() ? null : waitListTotal;
-        sectionName = rs.getString("section_name");
-        campus = rs.getString("campus");
-        description = rs.getString("description");
-        minUnits = rs.getDouble("min_units");
-        maxUnits = rs.getDouble("max_units");
-        instructionMode = rs.getString("instructionMode");
-        grading = rs.getString("grading");
-        location = rs.getString("location");
-        notes = rs.getString("notes");
-        prerequisites = rs.getString("prerequisites");
-    }
+    sectionType = SectionType.values()[rs.getInt("section_type")];
+    sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+    int associatedWith = rs.getInt("associated_with");
+    this.associatedWith = rs.wasNull() ? null : associatedWith;
+    this.meetings = meetings;
+    int waitListTotal = rs.getInt("waitlist_total");
+    this.waitlistTotal = rs.wasNull() ? null : waitListTotal;
+    sectionName = rs.getString("section_name");
+    campus = rs.getString("campus");
+    description = rs.getString("description");
+    minUnits = rs.getDouble("min_units");
+    maxUnits = rs.getDouble("max_units");
+    instructionMode = rs.getString("instruction_mode");
+    grading = rs.getString("grading");
+    location = rs.getString("location");
+    notes = rs.getString("notes");
+    prerequisites = rs.getString("prerequisites");
+  }
 
   public FullRow(Record row, List<Meeting> meetings) {
     courseId = row.get(COURSES.ID);

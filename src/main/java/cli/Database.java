@@ -12,26 +12,26 @@ import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.ProgressBar;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
-import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import scraping.GetRatings;
-import scraping.models.Instructor;
 import scraping.query.GetClient;
 
-@CommandLine.Command(name = "db", synopsisSubcommandLabel =
-                                      "(scrape | query | update | serve)")
+import java.util.concurrent.TimeUnit;
+
+@CommandLine.
+Command(name = "db",
+        description = "query/scrape/update/serve data through the database",
+        synopsisSubcommandLabel = "(scrape | query | update | serve)")
 public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
+                      description = "display a help message")
+  boolean displayHelp;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
   private static ProgressBarBuilder barBuilder =
@@ -41,13 +41,15 @@ public class Database implements Runnable {
 
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(spec.commandLine(),
-                                             "Missing required subcommand");
+    throw new CommandLine.ParameterException(
+        spec.commandLine(),
+        "\nMissing required subcommand. Try ./schedge db [subcommand] --help to"
+            + " display help message for possible subcommands");
   }
 
   @CommandLine.Command(
-      name = "scrape", sortOptions = false, headerHeading = "Usage:%n%n",
-      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      name = "scrape", sortOptions = false,
+      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
       optionListHeading = "%nOptions:%n", header = "Scrape section from db",
       description =
@@ -88,8 +90,8 @@ public class Database implements Runnable {
   }
 
   @CommandLine.
-  Command(name = "rmp", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+  Command(name = "rmp", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Scrape section from db",
           description = "Update instructors using RMP")
@@ -113,8 +115,8 @@ public class Database implements Runnable {
   }
 
   @CommandLine.Command(
-      name = "query", sortOptions = false, headerHeading = "Usage:%n%n",
-      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      name = "query", sortOptions = false,
+      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
       optionListHeading = "%nOptions:%n", header = "Query section",
       description =
@@ -143,8 +145,8 @@ public class Database implements Runnable {
   }
 
   @CommandLine.
-  Command(name = "clean", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+  Command(name = "clean", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Clean epochs")
@@ -178,8 +180,8 @@ public class Database implements Runnable {
   }
 
   @CommandLine.
-  Command(name = "serve", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+  Command(name = "serve", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Serve data through an API")

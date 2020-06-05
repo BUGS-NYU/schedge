@@ -1,7 +1,6 @@
 package api.v1.endpoints;
 
 import api.Endpoint;
-import api.v1.ApiError;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import nyu.SubjectCode;

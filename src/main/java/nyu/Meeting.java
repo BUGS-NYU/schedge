@@ -1,9 +1,8 @@
 package nyu;
 
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import javax.validation.constraints.NotNull;
 import utils.JsonSerializable;
+
+import javax.validation.constraints.NotNull;
 
 public class Meeting implements JsonSerializable {
   public final String beginDate;     // contains date and time of first event.

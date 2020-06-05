@@ -1,10 +1,6 @@
 package scraping.models;
 
-import com.fasterxml.jackson.annotation.JsonValue;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-import javax.validation.constraints.NotNull;
 
 public class Meeting {
   public final LocalDateTime

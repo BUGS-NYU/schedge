@@ -1,22 +1,21 @@
 package api.v1.endpoints;
 
-import static api.v1.SelectCourses.selectCoursesBySectionId;
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
-import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-
 import api.Endpoint;
 import api.v1.ApiError;
 import api.v1.RowsToCourses;
-import api.v1.models.*;
+import api.v1.models.Course;
+import api.v1.models.Section;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import java.util.*;
-import java.util.stream.Collectors;
-import nyu.SubjectCode;
 import nyu.Term;
-import org.jooq.impl.DSL;
+
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 
 public final class SearchEndpoint extends Endpoint {
 

@@ -6,18 +6,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
-import org.jooq.SQL;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 
 /**
  * This class get connection to the SQLite database using JDBC Driver
  */
 public class GetConnection {
-
-  public static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 
   public interface SQLConsumer {
     void accept(Connection c) throws SQLException;
@@ -48,22 +41,6 @@ public class GetConnection {
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
     try (Connection conn = getConnection()) {
       return f.apply(conn);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public static void withContext(Consumer<DSLContext> f) {
-    try (Connection conn = getConnection()) {
-      f.accept(DSL.using(conn, DIALECT));
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public static <T> T withContextReturning(Function<DSLContext, T> f) {
-    try (Connection conn = getConnection()) {
-      return f.apply(DSL.using(conn, DIALECT));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

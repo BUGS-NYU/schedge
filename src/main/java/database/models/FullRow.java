@@ -1,21 +1,8 @@
 package database.models;
 
-import static database.generated.Tables.*;
-
-import database.generated.tables.Courses;
-import database.generated.tables.Instructors;
-import database.generated.tables.Sections;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.sql.*;
 import java.util.List;
-import jdk.dynalink.NamedOperation;
-import nyu.Meeting;
-import nyu.SectionStatus;
-import nyu.SectionType;
-import nyu.SubjectCode;
-import org.jooq.Record;
+import nyu.*;
 
 public class FullRow {
   public final int courseId;
@@ -73,35 +60,5 @@ public class FullRow {
     location = rs.getString("location");
     notes = rs.getString("notes");
     prerequisites = rs.getString("prerequisites");
-  }
-
-  public FullRow(Record row, List<Meeting> meetings) {
-    courseId = row.get(COURSES.ID);
-    name = row.get(COURSES.NAME);
-    subject =
-        new SubjectCode(row.get(COURSES.SUBJECT), row.get(COURSES.SCHOOL));
-    deptCourseId = row.get(COURSES.DEPT_COURSE_ID);
-
-    sectionId = row.get(SECTIONS.ID);
-    registrationNumber = row.get(SECTIONS.REGISTRATION_NUMBER);
-    sectionCode = row.get(SECTIONS.SECTION_CODE);
-    String instructorString = (String)row.get("section_instructors");
-    instructors = instructorString.equals("") ? new String[] {"Staff"}
-                                              : instructorString.split(";");
-    sectionType = SectionType.values()[row.get(SECTIONS.SECTION_TYPE)];
-    sectionStatus = SectionStatus.values()[row.get(SECTIONS.SECTION_STATUS)];
-    associatedWith = row.get(SECTIONS.ASSOCIATED_WITH);
-    this.meetings = meetings;
-    waitlistTotal = row.get(SECTIONS.WAITLIST_TOTAL);
-    sectionName = row.get(SECTIONS.NAME);
-    campus = row.get(SECTIONS.CAMPUS);
-    description = row.get(COURSES.DESCRIPTION);
-    minUnits = row.get(SECTIONS.MIN_UNITS);
-    maxUnits = row.get(SECTIONS.MAX_UNITS);
-    instructionMode = row.get(SECTIONS.INSTRUCTION_MODE);
-    grading = row.get(SECTIONS.GRADING);
-    location = row.get(SECTIONS.LOCATION);
-    notes = row.get(SECTIONS.NOTES);
-    prerequisites = row.get(SECTIONS.PREREQUISITES);
   }
 }

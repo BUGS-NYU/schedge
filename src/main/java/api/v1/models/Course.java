@@ -2,9 +2,10 @@ package api.v1.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.util.List;
-import javax.validation.constraints.NotNull;
 import nyu.SubjectCode;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class Course {
 

@@ -1,6 +1,5 @@
 package cli.templates;
 
-import java.io.Console;
 import nyu.User;
 import picocli.CommandLine;
 

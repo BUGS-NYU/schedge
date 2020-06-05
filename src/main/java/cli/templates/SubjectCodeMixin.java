@@ -1,9 +1,10 @@
 package cli.templates;
 
-import java.util.Arrays;
-import java.util.List;
 import nyu.SubjectCode;
 import picocli.CommandLine;
+
+import java.util.Arrays;
+import java.util.List;
 
 public final class SubjectCodeMixin {
   private SubjectCodeMixin() {}

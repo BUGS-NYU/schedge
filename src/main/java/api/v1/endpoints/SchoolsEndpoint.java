@@ -2,7 +2,6 @@ package api.v1.endpoints;
 
 import api.Endpoint;
 import io.javalin.http.Handler;
-import io.javalin.plugin.openapi.dsl.DocumentedResponse;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import nyu.SubjectCode;
 import org.jetbrains.annotations.NotNull;

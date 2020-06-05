@@ -1,22 +1,19 @@
 package cli;
 
-import cli.templates.*;
+import cli.templates.OutputFileMixin;
+import cli.templates.SubjectCodeMixin;
+import cli.templates.TermMixin;
 import database.GetConnection;
 import database.instructors.UpdateInstructors;
-import java.util.*;
-import nyu.Term;
-import nyu.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
-import register.Context;
-import register.EnrollCourses;
-import register.GetLogin;
 import scraping.GetRatings;
 import scraping.models.Instructor;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
+
 import java.util.List;
 
 /*

@@ -1,11 +1,8 @@
 package api.v1.endpoints;
 
-import static io.javalin.plugin.openapi.dsl.DocumentedContentKt.guessContentType;
-
 import api.Endpoint;
 import api.v1.ApiError;
 import api.v1.RowsToCourses;
-import api.v1.SelectCourses;
 import api.v1.models.Course;
 import api.v1.models.Section;
 import database.GetConnection;
@@ -13,12 +10,10 @@ import database.courses.SelectRows;
 import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import nyu.SubjectCode;
 import nyu.Term;
-import org.jooq.impl.DSL;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 public final class SectionEndpoint extends Endpoint {
 

@@ -1,16 +1,16 @@
 package register;
 
-import cli.Scrape;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import nyu.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
+
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class Context {
   private final static String ROOT_URI =

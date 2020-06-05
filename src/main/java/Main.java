@@ -1,7 +1,5 @@
 import cli.Schedge;
-import database.GetConnection;
 import picocli.CommandLine;
-import scraping.query.GetClient;
 
 public class Main {
   public static void main(String[] args) {

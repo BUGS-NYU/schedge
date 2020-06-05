@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import nyu.SubjectCode;
 import nyu.Term;
+import org.jooq.impl.DSL;
 
 public final class SectionEndpoint extends Endpoint {
 
@@ -89,21 +90,21 @@ public final class SectionEndpoint extends Endpoint {
 
       String fullData = ctx.queryParam("full");
 
-      Object output = GetConnection.withContextReturning(context -> {
-        Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
+      Object output = GetConnection.withConnectionReturning(conn -> {
+        Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
         if (epoch == null) {
           return Collections.emptyList();
         }
         if (fullData != null && fullData.toLowerCase().equals("true"))
           return RowsToCourses
               .fullRowsToCourses(
-                  SelectRows.selectFullRow(context, epoch, registrationNumber))
+                  SelectRows.selectFullRow(conn, epoch, registrationNumber))
               .findAny()
               .map(c -> c.getSections().get(0))
               .orElse(null);
         return RowsToCourses
             .rowsToCourses(
-                SelectRows.selectRow(context, epoch, registrationNumber))
+                SelectRows.selectRow(conn, epoch, registrationNumber))
             .findAny()
             .map(c -> c.getSections().get(0))
             .orElse(null);

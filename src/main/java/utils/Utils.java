@@ -88,7 +88,14 @@ public final class Utils {
 
   public static void setObject(PreparedStatement stmt, int index, Object obj)
       throws SQLException {
-    if (obj instanceof String) {
+    if (obj instanceof NullWrapper) {
+      NullWrapper nullable = (NullWrapper)obj;
+      if (nullable.value == null) {
+        stmt.setNull(index, nullable.type);
+      } else {
+        setObject(stmt, index, nullable.value);
+      }
+    } else if (obj instanceof String) {
       stmt.setString(index, (String)obj);
     } else if (obj instanceof Integer) {
       stmt.setInt(index, (Integer)obj);
@@ -108,14 +115,30 @@ public final class Utils {
     }
   }
 
+  static class NullWrapper {
+    int type;
+    Object value;
+
+    NullWrapper(int type, Object value) {
+      this.type = type;
+      this.value = value;
+    }
+  }
+
+  public static NullWrapper nullable(int type, Object value) {
+    return new NullWrapper(type, value);
+  }
+
   public static PreparedStatement setArray(PreparedStatement stmt,
                                            Object... objs) {
+    int i = 0;
     try {
-      for (int i = 0; i < objs.length; i++) {
+      for (i = 0; i < objs.length; i++) {
         setObject(stmt, i + 1, objs[i]);
       }
       return stmt;
-    } catch (SQLException e) {
+    } catch (Exception e) {
+      System.err.println("at index " + i);
       throw new RuntimeException(e);
     }
   }

@@ -1,7 +1,13 @@
 package database.courses;
 
+import static scraping.query.QuerySection.querySectionAsync;
+
 import database.instructors.UpsertInstructor;
 import database.models.SectionID;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -10,16 +16,6 @@ import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
 import utils.SimpleBatchedFutureEngine;
 import utils.Utils;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import static scraping.query.QuerySection.querySectionAsync;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -93,6 +89,7 @@ public class UpdateSections {
                                 + "campus = ?, "
                                 + "instruction_mode = ?, "
                                 + "min_units = ?, "
+                                + "max_units = ?, "
                                 + "location = ?, "
                                 + "grading = ?, "
                                 + "notes = ?, "
@@ -105,10 +102,16 @@ public class UpdateSections {
       Utils.setArray(stmt, s.sectionName,
                      save.code.toString() + ' ' + s.sectionName, s.campus,
                      s.instructionMode, s.minUnits, s.maxUnits, s.location,
-                     s.grading, s.notes, s.notes, s.prerequisites,
-                     s.prerequisites, save.id);
-      stmt.executeUpdate();
+                     s.grading, Utils.nullable(Types.VARCHAR, s.notes),
+                     Utils.nullable(Types.VARCHAR, s.notes),
+                     Utils.nullable(Types.VARCHAR, s.prerequisites),
+                     Utils.nullable(Types.VARCHAR, s.prerequisites), save.id);
+
+      stmt.execute();
       ResultSet rs = stmt.getResultSet();
+      if (!rs.next()) {
+        throw new RuntimeException("why");
+      }
       int courseId = rs.getInt(1);
       rs.close();
 
@@ -120,7 +123,7 @@ public class UpdateSections {
     PreparedStatement stmt = conn.prepareStatement(
         "UPDATE courses SET description = ? WHERE id = ?");
     for (Map.Entry<Integer, String> entry : courseDescriptions.entrySet()) {
-      Utils.setArray(stmt, entry.getValue(), entry.getValue());
+      Utils.setArray(stmt, entry.getValue(), entry.getKey());
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("why did this fail?");
     }

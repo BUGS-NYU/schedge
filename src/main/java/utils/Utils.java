@@ -98,18 +98,25 @@ public final class Utils {
       stmt.setLong(index, (Long)obj);
     } else if (obj instanceof Array) {
       stmt.setArray(index, (Array)obj);
+    } else if (obj instanceof Float) {
+      stmt.setFloat(index, (Float)obj);
+    } else if (obj instanceof Double) {
+      stmt.setDouble(index, (Double)obj);
     } else {
       throw new IllegalArgumentException(
           "type of object is incompatible for object=" + obj.toString());
     }
   }
 
-  public static PreparedStatement setArray(PreparedStatement stmt, Object... objs) {
-      try {
-          for (int i = 0; i < objs.length; i++) {
-              setObject(stmt, i + 1, objs[i]);
-          }
-          return stmt;
-      } catch (SQLException e) { throw new RuntimeException(e); }
+  public static PreparedStatement setArray(PreparedStatement stmt,
+                                           Object... objs) {
+    try {
+      for (int i = 0; i < objs.length; i++) {
+        setObject(stmt, i + 1, objs[i]);
+      }
+      return stmt;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

@@ -93,11 +93,13 @@ public class Database implements Runnable {
   Command(name = "rmp", sortOptions = false,
           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape section from db",
-          description = "Update instructors using RMP")
+          optionListHeading = "%nOptions:%n",
+          header = "Update instructors' ratings using Rate My Professor",
+          description = "Scrape Rate My Professor for ratings, parsed and updated in the database")
   public void
-  rmp(@CommandLine.Option(names = "--batch-size",
-                          description = "batch size for querying RMP")
+  rmp(@CommandLine.
+      Option(names = "--batch-size",
+             description = "batch size for querying Rate My Professor")
       Integer batchSize) {
     long start = System.nanoTime();
     GetConnection.withConnection(conn -> {

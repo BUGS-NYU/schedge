@@ -101,11 +101,11 @@ public class Query implements Runnable {
 
   @CommandLine.
   Command(name = "rmp", sortOptions = false, headerHeading = "Command: ",
-          descriptionHeading = "%nDescription:%n%n",
+          descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
           optionListHeading = "%nOptions:%n",
-          header = "Query rating for professors",
-          description = "Query rating for professors based on term")
+          header = "Query rating for professors from Rate My Professor",
+          description = "Query rating for professors based on term from Rate My Professor")
   public void
   rmp(@CommandLine.Mixin OutputFileMixin outputFile, Integer batchSize) {
     long start = System.nanoTime();

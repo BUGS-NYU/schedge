@@ -115,7 +115,7 @@ public class UpdateSections {
       int courseId = rs.getInt(1);
       rs.close();
 
-      if (!courseDescriptions.containsKey(courseId)) {
+      if (!courseDescriptions.containsKey(courseId) && s.description != null) {
         courseDescriptions.put(courseId, s.description);
       }
     }

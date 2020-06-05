@@ -1,6 +1,8 @@
 package utils;
 
 import java.io.*;
+import java.sql.*;
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.List;
@@ -80,5 +82,32 @@ public final class Utils {
         deleteFile(c);
     }
     return f.delete();
+  }
+
+  public static void setObject(PreparedStatement stmt, int index, Object obj)
+      throws SQLException {
+    if (obj instanceof String) {
+      stmt.setString(index, (String)obj);
+    } else if (obj instanceof Integer) {
+      stmt.setInt(index, (Integer)obj);
+    } else if (obj instanceof Timestamp) {
+      stmt.setTimestamp(index, (Timestamp)obj);
+    } else if (obj instanceof Long) {
+      stmt.setLong(index, (Long)obj);
+    } else if (obj instanceof Array) {
+      stmt.setArray(index, (Array)obj);
+    } else {
+      throw new IllegalArgumentException(
+          "type of object is incompatible for object=" + obj.toString());
+    }
+  }
+
+  public static PreparedStatement setArray(PreparedStatement stmt, Object... objs) {
+      try {
+          for (int i = 0; i < objs.length; i++) {
+              setObject(stmt, i + 1, objs[i]);
+          }
+          return stmt;
+      } catch (SQLException e) { throw new RuntimeException(e); }
   }
 }

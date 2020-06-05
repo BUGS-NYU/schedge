@@ -100,10 +100,10 @@ public class Database implements Runnable {
                           description = "batch size for querying RMP")
       Integer batchSize) {
     long start = System.nanoTime();
-    GetConnection.withContext(context -> {
+    GetConnection.withConnection(conn -> {
       UpdateInstructors.updateInstructors(
-          context,
-          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(context),
+          conn,
+          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(conn),
                            barBuilder),
           batchSize);
     });
@@ -128,7 +128,7 @@ public class Database implements Runnable {
     long start = System.nanoTime();
     GetConnection.withContext(context -> {
       Term term = termMixin.getTerm();
-      Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+      Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
       if (epoch == null) {
         logger.warn("No completed epoch for term=" + term);
         return;
@@ -160,16 +160,16 @@ public class Database implements Runnable {
 
     public void run() {
       Term term = termMixin.getTermAllowNull();
-      GetConnection.withContext(context -> {
+      GetConnection.withConnection(conn -> {
         if (epoch == null && term == null) {
           logger.info("Cleaning old epochs...");
           CleanData.cleanData();
         } else if (epoch != null && term == null) {
           logger.info("Cleaning epoch={}...", epoch);
-          CleanEpoch.cleanEpoch(context, epoch);
+          CleanEpoch.cleanEpoch(conn, epoch);
         } else if (term != null && epoch == null) {
           logger.info("Cleaning epochs for term={}...", term);
-          CleanEpoch.cleanEpochs(context, term);
+          CleanEpoch.cleanEpochs(conn, term);
         } else {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Term and --epoch are mutually exclusive!");

@@ -6,6 +6,8 @@ import static org.jooq.impl.DSL.groupConcat;
 
 import database.models.FullRow;
 import database.models.Row;
+
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -150,7 +152,7 @@ public class SelectRows {
         -> meetingList(row.component2(), row.component3(), row.component4())));
   }
 
-  private static List<Meeting>
+  public static List<Meeting>
   meetingList(String beginString, String durationString, String endString) {
     if (beginString == null)
       return Collections.emptyList();

@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
+import org.jooq.SQL;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
@@ -18,6 +19,14 @@ public class GetConnection {
 
   public static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 
+  public interface SQLConsumer {
+    void accept(Connection c) throws SQLException;
+  }
+
+  public interface SQLFunction<T> {
+    T apply(Connection conn) throws SQLException;
+  }
+
   private static HikariDataSource dataSource;
 
   private static String getEnvDefault(String name, String default_value) {
@@ -26,6 +35,22 @@ public class GetConnection {
       return default_value;
     } else
       return value;
+  }
+
+  public static void withConnection(SQLConsumer f) {
+    try (Connection conn = getConnection()) {
+      f.accept(conn);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static <T> T withConnectionReturning(SQLFunction<T> f) {
+    try (Connection conn = getConnection()) {
+      return f.apply(conn);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static void withContext(Consumer<DSLContext> f) {
@@ -50,7 +75,7 @@ public class GetConnection {
       config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
       config.setPassword(getEnvDefault("DB_PASSWORD", ""));
       config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://localhost:5432/schedge"));
+          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/schedge"));
       dataSource = new HikariDataSource(config);
     }
   }

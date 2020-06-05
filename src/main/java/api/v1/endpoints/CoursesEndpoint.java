@@ -98,7 +98,7 @@ public final class CoursesEndpoint extends Endpoint {
 
       ctx.status(200);
       Object output = GetConnection.withContextReturning(context -> {
-        Integer epoch = LatestCompleteEpoch.getLatestEpoch(context, term);
+        Integer epoch = context.connectionResult((conn) -> LatestCompleteEpoch.getLatestEpoch(conn, term));
         if (epoch == null) {
           return Collections.emptyList();
         }

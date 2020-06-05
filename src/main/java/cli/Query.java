@@ -1,19 +1,22 @@
 package cli;
 
-import cli.templates.OutputFileMixin;
-import cli.templates.SubjectCodeMixin;
-import cli.templates.TermMixin;
+import cli.templates.*;
 import database.GetConnection;
 import database.instructors.UpdateInstructors;
+import java.util.*;
+import nyu.Term;
+import nyu.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import register.Context;
+import register.EnrollCourses;
+import register.GetLogin;
 import scraping.GetRatings;
 import scraping.models.Instructor;
 import scraping.query.QueryCatalog;
 import scraping.query.QuerySchool;
 import scraping.query.QuerySection;
-
 import java.util.List;
 
 /*
@@ -109,9 +112,9 @@ public class Query implements Runnable {
   public void
   rmp(@CommandLine.Mixin OutputFileMixin outputFile, Integer batchSize) {
     long start = System.nanoTime();
-    GetConnection.withContext(context -> {
+    GetConnection.withConnection(conn -> {
       List<Instructor> instructors =
-          UpdateInstructors.instructorUpdateList(context);
+          UpdateInstructors.instructorUpdateList(conn);
       outputFile.writeOutput(
           GetRatings.getRatings(instructors.iterator(), batchSize));
     });

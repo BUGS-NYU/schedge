@@ -10,22 +10,22 @@ CREATE TABLE courses (
   id                  SERIAL                      NOT NULL,
   epoch               int REFERENCES epochs(id)
                           ON DELETE CASCADE       NOT NULL,
-  name                varchar(128)                NOT NULL,
+  name                varchar                     NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
-  school              varchar(4)                  NOt NULL,
-  subject             varchar(8)                  NOT NULL, -- could probably be lower
-  dept_course_id      varchar(8)                  NOT NULL,
+  school              varchar                     NOt NULL,
+  subject             varchar                     NOT NULL, -- could probably be lower
+  dept_course_id      varchar                     NOT NULL,
   term_id             integer                     NOT NULL,
-  description         text,
+  description         varchar,
   description_vec     TSVECTOR,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE instructors (
   id                  SERIAL                      NOT NULL,
-  name                varchar(64)                 NOT NULL,
-  school              varchar(4)                  NOT NULL,
-  subject             varchar(6)                  NOT NULL,
+  name                varchar                     NOT NULL,
+  school              varchar                     NOT NULL,
+  subject             varchar                     NOT NULL,
   rmp_rating          real,
   rmp_tid             integer,
   PRIMARY KEY (id)
@@ -36,23 +36,23 @@ CREATE TABLE sections (
   registration_number integer                     NOT NULL,
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
-  section_code        varchar(5)                  NOT NULL,
+  section_code        varchar                     NOT NULL,
   section_type        integer                     NOT NULL,
   section_status      integer                     NOT NULL,
   associated_with     integer REFERENCES sections(id),
 
   waitlist_total      integer,
-  name                text,
+  name                varchar,
   name_vec            TSVECTOR,
   min_units           float,
   max_units           float,
-  campus              varchar(100),
-  notes               text,
+  campus              varchar,
+  notes               varchar,
   notes_vec           TSVECTOR,
-  instruction_mode    varchar(32),
-  grading             varchar(48),
-  location            varchar(128),
-  prerequisites       text,
+  instruction_mode    varchar,
+  grading             varchar,
+  location            varchar,
+  prerequisites       varchar,
   prereqs_vec         TSVECTOR,
 
   PRIMARY KEY (id)
@@ -62,7 +62,7 @@ CREATE TABLE is_teaching_section (
   id                  SERIAL                      NOT NULL,
   instructor_id       integer                     NOT NULL,
   section_id          integer                     NOT NULL,
-  instructor_name     varchar(64)                 NOT NULL,
+  instructor_name     varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
 

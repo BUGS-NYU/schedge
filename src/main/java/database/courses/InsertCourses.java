@@ -1,6 +1,10 @@
 package database.courses;
 
 import database.models.SectionID;
+import java.sql.*;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,11 +12,6 @@ import scraping.models.Course;
 import scraping.models.Meeting;
 import scraping.models.Section;
 import utils.Utils;
-
-import java.sql.*;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class insert courses into the Postgresql database based on
@@ -34,10 +33,8 @@ public class InsertCourses {
                                   + "VALUES (?, ?, to_tsvector(?), ?, ?, ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
     for (Course c : courses) {
-      Utils.setArray(stmt,
-                     new Object[] {epoch, c.name, c.name, c.subjectCode.school,
-                                   c.subjectCode.code, c.deptCourseId,
-                                   term.getId()});
+      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.school,
+                     c.subjectCode.code, c.deptCourseId, term.getId());
 
       if (stmt.executeUpdate() == 0) {
         throw new RuntimeException("inserting course=" + c.toString() +
@@ -79,14 +76,9 @@ public class InsertCourses {
     }
     for (Section s : sections) {
       try {
-        Utils.setArray(stmt, new Object[] {s.registrationNumber, courseId,
-                                           s.sectionCode, s.type.ordinal(),
-                                           s.status.ordinal()});
-        if (s.waitlistTotal == null) {
-          stmt.setNull(6, Types.INTEGER);
-        } else {
-          stmt.setInt(6, s.waitlistTotal);
-        }
+        Utils.setArray(stmt, s.registrationNumber, courseId, s.sectionCode,
+                       s.type.ordinal(), s.status.ordinal(),
+                       Utils.nullable(Types.INTEGER, s.waitlistTotal));
 
         if (stmt.executeUpdate() == 0)
           throw new RuntimeException("inserting section=" + s.toString() +
@@ -127,11 +119,10 @@ public class InsertCourses {
         "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
 
     for (Meeting m : meetings) {
-      Utils.setArray(
-          stmt,
-          new Object[] {
-              sectionId, Timestamp.from(m.beginDate.toInstant(ZoneOffset.UTC)),
-              m.duration, Timestamp.from(m.endDate.toInstant(ZoneOffset.UTC))});
+      Utils.setArray(stmt, sectionId,
+                     Timestamp.from(m.beginDate.toInstant(ZoneOffset.UTC)),
+                     m.duration,
+                     Timestamp.from(m.endDate.toInstant(ZoneOffset.UTC)));
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("Why did this fail?");
     }

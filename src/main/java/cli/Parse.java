@@ -14,28 +14,31 @@ import java.util.Map;
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
-@CommandLine.Command(name = "parse",
-                     description = "Parsing NYU data based on different categories",
-                     synopsisSubcommandLabel = "(catalog | section | school)",
-                     subcommands = {Parse.School.class})
+@CommandLine.
+Command(name = "parse",
+        description = "Parsing NYU data based on different categories",
+        synopsisSubcommandLabel = "(catalog | section | school)",
+        subcommands = {Parse.School.class})
 public class Parse implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
-  @CommandLine.
-          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
+                      description = "display a help message")
   boolean displayHelp;
 
   Logger logger = LoggerFactory.getLogger("cli.Parse");
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(spec.commandLine(),
-                                             "Missing required subcommand");
+    throw new CommandLine.ParameterException(
+        spec.commandLine(),
+        "\nMissing required subcommand. Try ./schedge parse [subcommand] --help to"
+            + " display help message for possible subcommands");
   }
 
   @CommandLine.
-  Command(name = "section", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+  Command(name = "section", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Parse catalog",
+          optionListHeading = "%nOptions:%n", header = "Parse section data",
           description = "Parse section based on term, subject codes, "
                         + "or school for one or multiple subjects/schools")
   public void
@@ -49,10 +52,10 @@ public class Parse implements Runnable {
   }
 
   @CommandLine.Command(
-      name = "catalog", sortOptions = false, headerHeading = "Usage:%n%n",
-      synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+      name = "catalog", sortOptions = false,
+      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Parse catalog",
+      optionListHeading = "%nOptions:%n", header = "Parse catalog data",
       description =
           "Parse catalog based on input file. If not provided, read from stdin")
   public void
@@ -67,10 +70,11 @@ public class Parse implements Runnable {
 
   // @ToDo: Fix this with two options
   @CommandLine.
-  Command(name = "school", sortOptions = false, headerHeading = "Usage:%n%n",
-          synopsisHeading = "%n", descriptionHeading = "%nDescription:%n%n",
+  Command(name = "school", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Parse school/subject",
+          optionListHeading = "%nOptions:%n",
+          header = "Parse school/subject data",
           description = "Parse school/subject based on input file")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");

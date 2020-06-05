@@ -1,16 +1,16 @@
 package database.courses;
 
-import static database.generated.Tables.*;
-import static org.jooq.impl.DSL.coalesce;
-import static org.jooq.impl.DSL.groupConcat;
-
 import database.models.FullRow;
 import database.models.Row;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import nyu.Meeting;
-import org.jooq.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;
@@ -114,7 +114,6 @@ public final class SearchRows {
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
-    Condition condition = COURSES.ID.in(result);
     Map<Integer, List<Meeting>> meetingsList = SelectRows.selectMeetings(
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));
@@ -225,7 +224,6 @@ public final class SearchRows {
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
-    Condition condition = COURSES.ID.in(result);
     Map<Integer, List<Meeting>> meetingsList = SelectRows.selectMeetings(
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));

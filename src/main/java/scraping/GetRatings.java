@@ -1,9 +1,5 @@
 package scraping;
 
-import java.util.Iterator;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
@@ -17,6 +13,11 @@ import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
+
+import java.util.Iterator;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class GetRatings {
 

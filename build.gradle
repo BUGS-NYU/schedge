@@ -38,7 +38,6 @@ dependencies {
 
             "org.postgresql:postgresql:42.2.12", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
-            "org.jooq:jooq:3.13.1", // Database framework
 
             "org.jsoup:jsoup:1.12.1", // HTML Parsing
 
@@ -61,7 +60,6 @@ dependencies {
     )
 
     runtimeOnly "org.mortbay.jetty.alpn:alpn-boot:8.1.12.v20180117"
-    jooqRuntime 'postgresql:postgresql:9.1-901.jdbc4'
 }
 
 flyway {
@@ -72,44 +70,8 @@ flyway {
   locations = ['filesystem:src/main/migrations']
 }
 
-jooq {
-  version = '3.11.9'
-  edition = 'OSS'
-
-  database(sourceSets.main) {
-    jdbc {
-      user = dbUsername
-      password = dbPassword
-      driver = dbDriver
-      url = dbUrl
-    }
-    generator {
-      database {
-        name = 'org.jooq.meta.postgres.PostgresDatabase'
-        includes = '.*'
-        excludes = ''
-        inputSchema = 'public'
-      }
-
-      generate {
-        relations = true
-        deprecated = false
-        records = true
-        immutablePojos = true
-        fluentSetters = true
-      }
-
-      target {
-        packageName = 'database.generated'
-        directory = 'src/main/java'
-      }
-    }
-  }
-}
-
 // Set up Jooq to always codegen when needed, but not any other time
 project.tasks.getByName('compileJava').dependsOn -= 'generateDatabaseJooqSchemaSource'
-project.tasks.getByName('generateDatabaseJooqSchemaSource').outputs.upToDateWhen { false }
 
 // The build directory should not begin with the same name as the script
 allprojects {
@@ -193,4 +155,3 @@ class UpdateDbTask extends DefaultTask {
 task updateDb {}
 updateDb.dependsOn += 'flywayClean'
 updateDb.dependsOn += 'flywayMigrate'
-updateDb.dependsOn += 'generateDatabaseJooqSchemaSource'

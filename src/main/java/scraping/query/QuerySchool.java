@@ -1,12 +1,13 @@
 package scraping.query;
 
-import java.util.concurrent.ExecutionException;
 import nyu.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
 
 public final class QuerySchool {
 

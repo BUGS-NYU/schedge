@@ -1,13 +1,13 @@
 package cli.templates;
 
+import picocli.CommandLine;
+import register.RegistrationCourse;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import nyu.SubjectCode;
-import picocli.CommandLine;
-import register.RegistrationCourse;
 
 public class CourseRegistrationMixin {
   private CourseRegistrationMixin() {}

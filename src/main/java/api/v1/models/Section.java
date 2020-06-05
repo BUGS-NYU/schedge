@@ -3,13 +3,14 @@ package api.v1.models;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import database.models.FullRow;
 import database.models.Row;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.validation.constraints.NotNull;
 import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
+
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Section {
   private int registrationNumber;

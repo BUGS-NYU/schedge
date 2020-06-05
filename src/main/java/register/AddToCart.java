@@ -1,13 +1,5 @@
 package register;
 
-import static register.Context.getContextAsync;
-
-import io.netty.handler.codec.http.cookie.Cookie;
-import java.net.URI;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
@@ -15,6 +7,13 @@ import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import static register.Context.getContextAsync;
 
 public class AddToCart {
   // We will do undergrad for now

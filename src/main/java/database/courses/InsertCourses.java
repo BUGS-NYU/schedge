@@ -1,15 +1,18 @@
 package database.courses;
 
 import database.models.SectionID;
+import nyu.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scraping.models.Course;
+import scraping.models.Meeting;
+import scraping.models.Section;
+import utils.Utils;
+
 import java.sql.*;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
-import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scraping.models.*;
-import utils.Utils;
 
 /**
  * This class insert courses into the Postgresql database based on

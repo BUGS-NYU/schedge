@@ -1,17 +1,17 @@
 package register;
 
-import static register.GetLogin.getLoginSession;
-
-import io.netty.handler.codec.http.cookie.Cookie;
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
+
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
+import static register.GetLogin.getLoginSession;
 
 public class EnrollCourses {
   private static final String DATA_URL_STRING =

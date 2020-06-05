@@ -1,15 +1,14 @@
 package actions;
 
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
-
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.Utils;
 
 import java.sql.SQLException;
+
+import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 
 public class CleanData {
 

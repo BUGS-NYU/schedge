@@ -1,7 +1,5 @@
 package scraping;
 
-import java.util.List;
-import java.util.stream.Stream;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -10,6 +8,9 @@ import scraping.models.CatalogQueryData;
 import scraping.models.Course;
 import scraping.parse.ParseCatalog;
 import scraping.query.QueryCatalog;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class ScrapeCatalog {
   private static Logger logger =

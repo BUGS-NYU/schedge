@@ -101,12 +101,12 @@ public class UpdateSections {
 
       Utils.setArray(stmt, s.sectionName,
                      save.code.toString() + ' ' + s.sectionName, s.campus,
-                     s.instructionMode, s.minUnits, s.maxUnits, s.location,
-                     s.grading, Utils.nullable(Types.VARCHAR, s.notes),
+                     Utils.nullable(Types.VARCHAR, s.instructionMode),
+                     s.minUnits, s.maxUnits, s.location, s.grading,
+                     Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
                      Utils.nullable(Types.VARCHAR, s.prerequisites), save.id);
-
       stmt.execute();
       ResultSet rs = stmt.getResultSet();
       if (!rs.next()) {

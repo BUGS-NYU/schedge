@@ -1,9 +1,8 @@
 package database.instructors;
 
+import java.sql.*;
 import nyu.SubjectCode;
 import utils.Utils;
-
-import java.sql.*;
 
 public final class UpsertInstructor {
 
@@ -24,9 +23,9 @@ public final class UpsertInstructor {
 
       Utils.setArray(createInstructor, instructor, subject.code,
                      subject.school);
-      if (stmt.executeUpdate() == 0)
+      if (createInstructor.executeUpdate() == 0)
         throw new RuntimeException("Why bro");
-      rs = stmt.getGeneratedKeys();
+      rs = createInstructor.getGeneratedKeys();
       if (!rs.next())
         throw new RuntimeException("man c'mon");
       instructorId = rs.getInt("id");

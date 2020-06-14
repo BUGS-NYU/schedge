@@ -4,11 +4,6 @@ plugins {
     id "org.flywaydb.flyway" version "6.2.4"
 }
 
-group 'BUGS-NYU'
-mainClassName = 'Main'
-// sourceCompatibility = JavaVersion.VERSION_12
-// targetCompatibility = JavaVersion.VERSION_12
-
 def getenv = { env_val, default_val ->
   ext.val = System.getenv(env_val)
   if (ext.val == null) {
@@ -16,10 +11,13 @@ def getenv = { env_val, default_val ->
   } else return ext.val
 }
 
-def dbUsername = getenv("DB_USERNAME", "schedge")
-def dbPassword = getenv("DB_PASSWORD", "docker")
-def dbUrl = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
-def dbDriver = 'org.postgresql.Driver'
+flyway {
+  driver = 'org.postgresql.Driver'
+  url = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
+  user = getenv("DB_USERNAME", "schedge")
+  password = getenv("DB_PASSWORD", "docker")
+  locations = ['filesystem:src/main/migrations']
+}
 
 repositories {
     mavenCentral()
@@ -27,13 +25,9 @@ repositories {
 }
 
 dependencies {
-
     implementation(
             "org.slf4j:slf4j-api:1.7.25", // Logging
-            "ch.qos.logback:logback-core:1.2.3", // Logging
-            "ch.qos.logback:logback-classic:1.2.3", // Logging
-
-            "javax.annotation:javax.annotation-api:1.2-b01", // Annotations
+            "org.slf4j:slf4j-simple:1.7.30", // Logging
 
             "org.postgresql:postgresql:42.2.12", // Database driver
             "com.zaxxer:HikariCP:3.4.1", // Database connection pool
@@ -46,111 +40,21 @@ dependencies {
             "org.asynchttpclient:async-http-client:2.10.5", // Async Http Client
 
             "info.picocli:picocli:4.1.4", // Command line args
-            "com.fasterxml.jackson.core:jackson-core:2.4.1", // JSON
             "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
-            "com.fasterxml.jackson.core:jackson-databind:2.4.1", // JSON
 
             "io.javalin:javalin:3.5.0", // Web server framework
-            "org.eclipse.jetty.http2:http2-server:9.4.25.v20191220", // HTTPS
-            "org.eclipse.jetty:jetty-alpn-conscrypt-server:9.4.25.v20191220", // HTTPS
-            "org.eclipse.jetty.alpn:alpn-api:1.1.3.v20160715", // HTTPS
             "io.swagger.core.v3:swagger-core:2.0.9", // Web server docs framework
             "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1", // JSON
     )
-
-    runtimeOnly "org.mortbay.jetty.alpn:alpn-boot:8.1.12.v20180117"
 }
-
-flyway {
-  driver = dbDriver
-  url = dbUrl
-  user = dbUsername
-  password = dbPassword
-  locations = ['filesystem:src/main/migrations']
-}
-
-// Set up Jooq to always codegen when needed, but not any other time
-project.tasks.getByName('compileJava').dependsOn -= 'generateDatabaseJooqSchemaSource'
 
 // The build directory should not begin with the same name as the script
 allprojects {
     buildDir = ".build"
-    gradle.projectsEvaluated {
-        tasks.withType(JavaCompile) {
-            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-        }
-    }
-}
-
-// https://github.com/jorgeejgonzalez/fermat/wiki/Creating-Standalone-Jar-Using-Gradle
-task fatJar(type: Jar, dependsOn: test) {
-    archiveBaseName = project.name + '-with-dependencies'
-
-    manifest {
-        attributes 'Main-Class': 'Main'
-    }
-
-    from {
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-
-    with jar
-}
-
-// Using hack from https://vocon-it.com/2016/11/15/how-to-build-a-lean-jar-file-with-gradle/
-// copy dependency jars to build/libs/dependency-jars
-task copyJarsToLib(type: Copy) {
-  def toDir = ".build/libs/dependency-jars"
-
-  // create directories, if not already done:
-  file(toDir).mkdirs()
-
-  // copy jars to lib folder:
-  from configurations.compileClasspath
-  into toDir
 }
 
 jar {
-  manifest {
-    attributes (
-      'Main-Class': 'Main',
-      // add classpath to Manifest;
-      // http://stackoverflow.com/questions/30087427/add-classpath-in-manifest-file-of-jar-in-gradle
-      "Class-Path": '. dependency-jars/' + configurations.compileClasspath.collect {
-        it.getName()
-      }.join(' dependency-jars/')
-    )
-  }
+  manifest { attributes ('Main-Class': 'Main') }
+
+  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
 }
-
-// always call copyJarsToLib when building jars:
-jar.dependsOn copyJarsToLib
-
-task checkFast {}
-checkFast.dependsOn += 'compileJava'
-
-class UpdateDbTask extends DefaultTask {
-
-    @InputDirectory
-    String inputDirectory;
-
-    @OutputFile
-    String tables;
-
-    @Internal
-    Closure run;
-
-    UpdateDbTask() {}
-
-    @TaskAction
-    def update() {
-        if (!new File(tables).exists())
-            run()
-    }
-}
-
-task updateDb {}
-updateDb.dependsOn += 'flywayClean'
-updateDb.dependsOn += 'flywayMigrate'

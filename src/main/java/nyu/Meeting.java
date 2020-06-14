@@ -2,8 +2,6 @@ package nyu;
 
 import utils.JsonSerializable;
 
-import javax.validation.constraints.NotNull;
-
 public class Meeting implements JsonSerializable {
   public final String beginDate;     // contains date and time of first event.
   public final Long minutesDuration; // Duration of meeting public
@@ -15,11 +13,11 @@ public class Meeting implements JsonSerializable {
     this.endDate = endDate;
   }
 
-  public @NotNull String getBeginDate() { return beginDate; }
+  public String getBeginDate() { return beginDate; }
 
-  public @NotNull Long getMinutesDuration() { return minutesDuration; }
+  public Long getMinutesDuration() { return minutesDuration; }
 
-  public @NotNull String getEndDate() { return endDate; }
+  public String getEndDate() { return endDate; }
 
   @Override
   public void toJson(StringBuilder s) {

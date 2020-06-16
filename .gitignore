@@ -34,3 +34,4 @@ src/main/resources/keystore.jks
 /index/*
 bin/
 .settings/
+.vscode/

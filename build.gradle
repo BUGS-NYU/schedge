@@ -4,6 +4,8 @@ plugins {
     id "org.flywaydb.flyway" version "6.2.4"
 }
 
+mainClassName = 'Main'
+
 def getenv = { env_val, default_val ->
   ext.val = System.getenv(env_val)
   if (ext.val == null) {

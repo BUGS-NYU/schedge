@@ -35,7 +35,7 @@ The following commands are valid in Schedge:
 
 #### Example
 ```sh
-./schedge scrape catalog --year 2020 --term sp --school UA --subject CSCI
+./schedge scrape catalog --year 2020 --semester sp --school UA --subject CSCI
 ```
 The above command will scrape catalog data from Albert website for Computer Science courses at the
 College of Arts and Sciences for the Spring, 2020.

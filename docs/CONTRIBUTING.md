@@ -144,7 +144,7 @@ allow you to query, scrape and parse Albert data. So shall we open the terminal 
 
 ## Build
 - `gradle build`: build the application.
-- `java-jar .build/libs/schedge-all.jar`: test the code.
+- `java -jar .build/libs/schedge.jar`: test the code.
 - `gradle checkFast`: quickly check if the code compiles.
 
 ## Issue

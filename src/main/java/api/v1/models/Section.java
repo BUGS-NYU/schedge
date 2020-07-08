@@ -19,13 +19,13 @@ public class Section {
   private List<Meeting> meetings;
   private List<Section> recitations;
   private Integer waitlistTotal;
+  private String instructionMode;
 
   // values that need to be updated
   private String name;
   private String campus;
   private Double minUnits;
   private Double maxUnits;
-  private String instructionMode;
   private String grading;
   private String location;
   private String notes;
@@ -33,7 +33,8 @@ public class Section {
 
   public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, Integer waitlistTotal) {
+                 List<Section> recitations, Integer waitlistTotal,
+                 String instructionMode) {
 
     if (type != SectionType.LEC && recitations != null) {
       throw new IllegalArgumentException(
@@ -47,6 +48,7 @@ public class Section {
     this.meetings = meetings;
     this.recitations = recitations;
     this.waitlistTotal = waitlistTotal;
+    this.instructionMode = instructionMode;
   }
 
   public Section(int registrationNumber, String code, String[] instructors,
@@ -175,7 +177,8 @@ public class Section {
     return new Section(row.registrationNumber, row.sectionCode, row.instructors,
                        row.sectionType, row.sectionStatus, row.meetings, null,
                        row.sectionName, row.waitlistTotal, null, row.minUnits,
-                       row.maxUnits, null, null, row.location, null, null);
+                       row.maxUnits, row.instructionMode, null, row.location,
+                       null, null);
   }
 
   public static Section fromFullRow(FullRow row) {

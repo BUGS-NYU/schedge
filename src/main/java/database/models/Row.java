@@ -28,6 +28,7 @@ public class Row {
   public final Double minUnits;
   public final Double maxUnits;
   public final String location;
+  public final String instructionMode;
 
   public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
     courseId = rs.getInt("id");
@@ -52,5 +53,6 @@ public class Row {
     minUnits = rs.getDouble("min_units");
     maxUnits = rs.getDouble("max_units");
     location = rs.getString("location");
+    instructionMode = rs.getString("instruction_mode");
   }
 }

@@ -30,7 +30,7 @@ public class App {
                   + "active development and is subject to change</b>."
                   + "<br/> <br/> If you'd like to contribute, "
                   +
-                  "<a href=\"https://github.com/A1Liu/schedge\">check out the repository</a>.";
+                  "<a href=\"https://github.com/BUGS-NYU/schedge\">check out the repository</a>.";
               Info info =
                   new Info().version("1.0").title("Schedge").description(
                       description);

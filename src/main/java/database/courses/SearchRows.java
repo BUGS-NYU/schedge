@@ -92,7 +92,7 @@ public final class SearchRows {
         + "sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "
         + "sections.associated_with, sections.waitlist_total, "
-        + "sections.name AS section_name, "
+        + "sections.name AS section_name, sections.instruction_mode,"
         + "sections.min_units, sections.max_units, sections.location, "
         + "array_to_string(array_agg(is_teaching_section.instructor_name),';') "
         + "AS section_instructors "

@@ -95,8 +95,11 @@ public final class NonOnlineEndpoint extends Endpoint {
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           Stream<FullRow> rows;
           if (query != null) {
-            rows = SearchRows.searchFullRows(conn, epoch, null, null, query, 2,
-                                             1, 0, 0);
+            rows =
+                SearchRows
+                    .searchFullRows(conn, epoch, null, null, query, 2, 1, 0, 0)
+                    .filter(
+                        row -> !row.instructionMode.contentEquals("Online"));
           } else {
             rows = SelectRows.selectFullRows(
                 conn, "courses.epoch = ? AND sections.instruction_mode <> ?",
@@ -109,7 +112,8 @@ public final class NonOnlineEndpoint extends Endpoint {
         Stream<Row> rows;
         if (query != null) {
           rows =
-              SearchRows.searchRows(conn, epoch, null, null, query, 2, 1, 0, 0);
+              SearchRows.searchRows(conn, epoch, null, null, query, 2, 1, 0, 0)
+                  .filter(row -> !row.instructionMode.contentEquals("Online"));
         } else {
           rows = SelectRows.selectRows(
               conn, "courses.epoch = ? AND sections.instruction_mode <> ?",

@@ -20,16 +20,11 @@ public final class SearchRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SearchCourses");
 
-  public static Stream<Row>
-  searchRows(Connection conn, int epoch, String subject, String school,
-             int resultSize, String query, int titleWeight,
-             int descriptionWeight, int notesWeight, int prereqsWeight)
-      throws SQLException {
-    if (resultSize <= 0) {
-      throw new IllegalArgumentException("result size must be positive");
-    } else if (resultSize > 50)
-      resultSize = 50;
-
+  public static Stream<Row> searchRows(Connection conn, int epoch,
+                                       String subject, String school,
+                                       String query, int titleWeight,
+                                       int descriptionWeight, int notesWeight,
+                                       int prereqsWeight) throws SQLException {
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
         prereqsWeight == 0) {
       throw new IllegalArgumentException("all of the weights were zero");
@@ -69,23 +64,19 @@ public final class SearchRows {
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
-          begin +
-          "epoch = ? AND courses.subject = ? AND courses.school = ? LIMIT ?");
-      Utils.setArray(idStmt,
-                     new Object[] {query, epoch, subject, school, resultSize});
+          begin + "epoch = ? AND courses.subject = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, epoch, subject, school);
     } else if (subject != null) {
-      idStmt = conn.prepareStatement(
-          begin + "epoch = ? AND courses.subject = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, subject, resultSize});
+      idStmt =
+          conn.prepareStatement(begin + "epoch = ? AND courses.subject = ?");
+      Utils.setArray(idStmt, query, epoch, subject);
     } else if (school != null) {
       idStmt =
-
-          conn.prepareStatement(begin +
-                                "epoch = ? AND courses.school = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, school});
+          conn.prepareStatement(begin + "epoch = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, epoch, school);
     } else {
-      idStmt = conn.prepareStatement(begin + "epoch = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, resultSize});
+      idStmt = conn.prepareStatement(begin + "epoch = ?");
+      Utils.setArray(idStmt, query, epoch);
     }
 
     ArrayList<Integer> result = new ArrayList<>();
@@ -130,14 +121,8 @@ public final class SearchRows {
 
   public static Stream<FullRow>
   searchFullRows(Connection conn, int epoch, String subject, String school,
-                 int resultSize, String query, int titleWeight,
-                 int descriptionWeight, int notesWeight, int prereqsWeight)
-      throws SQLException {
-    if (resultSize <= 0) {
-      throw new IllegalArgumentException("result size must be positive");
-    } else if (resultSize > 50)
-      resultSize = 50;
-
+                 String query, int titleWeight, int descriptionWeight,
+                 int notesWeight, int prereqsWeight) throws SQLException {
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
         prereqsWeight == 0) {
       throw new IllegalArgumentException("all of the weights were zero");
@@ -177,23 +162,19 @@ public final class SearchRows {
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
-          begin +
-          "epoch = ? AND courses.subject = ? AND courses.school = ? LIMIT ?");
-      Utils.setArray(idStmt,
-                     new Object[] {query, epoch, subject, school, resultSize});
+          begin + "epoch = ? AND courses.subject = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, epoch, subject, school);
     } else if (subject != null) {
-      idStmt = conn.prepareStatement(
-          begin + "epoch = ? AND courses.subject = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, subject, resultSize});
+      idStmt =
+          conn.prepareStatement(begin + "epoch = ? AND courses.subject = ?");
+      Utils.setArray(idStmt, query, epoch, subject);
     } else if (school != null) {
       idStmt =
-
-          conn.prepareStatement(begin +
-                                "epoch = ? AND courses.school = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, school});
+          conn.prepareStatement(begin + "epoch = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, epoch, school);
     } else {
-      idStmt = conn.prepareStatement(begin + "epoch = ? LIMIT ?");
-      Utils.setArray(idStmt, new Object[] {query, epoch, resultSize});
+      idStmt = conn.prepareStatement(begin + "epoch = ?");
+      Utils.setArray(idStmt, query, epoch);
     }
 
     ArrayList<Integer> result = new ArrayList<>();

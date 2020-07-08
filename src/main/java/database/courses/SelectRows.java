@@ -67,7 +67,7 @@ public class SelectRows {
         + "AS section_instructors, sections.associated_with, "
         + "sections.waitlist_total, sections.name as section_name, "
         + "sections.min_units, sections.max_units, sections.location,"
-        + "sections.instruction_mode"
+        + "sections.instruction_mode "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
         + "JOIN is_teaching_section its on sections.id = its.section_id "
         + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
@@ -76,7 +76,7 @@ public class SelectRows {
     ResultSet rs = stmt.executeQuery();
     ArrayList<Row> rows = new ArrayList<>();
     while (rs.next()) {
-      rows.add(new Row(rs, meetingsList.get(rs.getInt("id"))));
+      rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
     return rows.stream();
@@ -135,7 +135,7 @@ public class SelectRows {
     ResultSet rs = stmt.executeQuery();
     ArrayList<FullRow> rows = new ArrayList<>();
     while (rs.next()) {
-      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("id"))));
+      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
     return rows.stream();

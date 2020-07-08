@@ -39,7 +39,7 @@ public class RowsToCourses {
       if (s != null)
         s.addRecitation(Section.fromFullRow(row));
       else // Orphans get added to course regardless
-        courses.get(row.courseId).getSections().add(s);
+        courses.get(row.courseId).getSections().add(Section.fromFullRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());
@@ -72,7 +72,7 @@ public class RowsToCourses {
       if (s != null)
         s.addRecitation(Section.fromRow(row));
       else // Orphans get added to course regardless
-        courses.get(row.courseId).getSections().add(s);
+        courses.get(row.courseId).getSections().add(Section.fromRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());

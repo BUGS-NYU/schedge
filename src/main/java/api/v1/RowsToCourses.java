@@ -4,7 +4,6 @@ import api.v1.models.Course;
 import api.v1.models.Section;
 import database.models.FullRow;
 import database.models.Row;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +34,13 @@ public class RowsToCourses {
             .filter(i -> i.associatedWith != null)
             .collect(Collectors.toList());
 
-    recitationRecords.stream().forEach(
-        row
-        -> sections.get(row.associatedWith)
-               .addRecitation(Section.fromFullRow(row)));
+    recitationRecords.stream().forEach(row -> {
+      Section s = sections.get(row.associatedWith);
+      if (s != null)
+        s.addRecitation(Section.fromFullRow(row));
+      else // Orphans get added to course regardless
+        courses.get(row.courseId).getSections().add(s);
+    });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());
   }
@@ -65,7 +67,12 @@ public class RowsToCourses {
             .collect(Collectors.toList());
 
     recitationRecords.stream().forEach(row -> {
-      sections.get(row.associatedWith).addRecitation(Section.fromRow(row));
+      Section s = sections.get(row.associatedWith);
+
+      if (s != null)
+        s.addRecitation(Section.fromRow(row));
+      else // Orphans get added to course regardless
+        courses.get(row.courseId).getSections().add(s);
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());

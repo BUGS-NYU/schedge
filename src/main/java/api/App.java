@@ -6,15 +6,14 @@ import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.swagger.v3.oas.models.info.Info;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.Utils;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.stream.Collectors;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.Utils;
 
 public class App {
 
@@ -59,6 +58,7 @@ public class App {
     new SchoolsEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new SearchEndpoint().addTo(app);
+    new NonOnlineEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
   }
 

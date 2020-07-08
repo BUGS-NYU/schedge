@@ -1,20 +1,17 @@
 package api.v1.endpoints;
 
 import api.Endpoint;
-import api.v1.ApiError;
-import api.v1.RowsToCourses;
-import api.v1.models.Course;
-import api.v1.models.Section;
+import api.v1.*;
+import api.v1.models.*;
 import database.GetConnection;
-import database.courses.SelectRows;
+import database.courses.*;
 import database.epochs.LatestCompleteEpoch;
+import database.models.*;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.stream.Collectors;
-import nyu.SubjectCode;
-import nyu.Term;
+import java.util.*;
+import java.util.stream.*;
+import nyu.*;
 
 public final class NonOnlineEndpoint extends Endpoint {
 
@@ -43,6 +40,17 @@ public final class NonOnlineEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
+        .queryParam("query", String.class,
+                    openApiParam -> {
+                      openApiParam.description(
+                          "query string for text search, optional");
+                    })
+        .queryParam(
+            "full", Boolean.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "if present and equal to 'true', then you'll get full output");
+            })
         .json("400", ApiError.class,
               openApiParam -> {
                 openApiParam.description(
@@ -75,6 +83,7 @@ public final class NonOnlineEndpoint extends Endpoint {
       }
 
       String fullData = ctx.queryParam("full");
+      String query = ctx.queryParam("query");
 
       ctx.status(200);
       Object output = GetConnection.withConnectionReturning(conn -> {
@@ -82,19 +91,31 @@ public final class NonOnlineEndpoint extends Endpoint {
         if (epoch == null) {
           return Collections.emptyList();
         }
+
         if (fullData != null && fullData.toLowerCase().equals("true")) {
-          return RowsToCourses
-              .fullRowsToCourses(SelectRows.selectFullRows(
-                  conn, "courses.epoch = ? AND sections.instruction_mode <> ?",
-                  epoch, "Online"))
-              .collect(Collectors.toList());
+          Stream<FullRow> rows;
+          if (query != null) {
+            rows = SearchRows.searchFullRows(conn, epoch, null, null, query, 2,
+                                             1, 0, 0);
+          } else {
+            rows = SelectRows.selectFullRows(
+                conn, "courses.epoch = ? AND sections.instruction_mode <> ?",
+                epoch, "Online");
+          }
+          return RowsToCourses.fullRowsToCourses(rows).collect(
+              Collectors.toList());
         }
 
-        return RowsToCourses
-            .rowsToCourses(SelectRows.selectRows(
-                conn, "courses.epoch = ? AND sections.instruction_mode <> ?",
-                epoch, "Online"))
-            .collect(Collectors.toList());
+        Stream<Row> rows;
+        if (query != null) {
+          rows =
+              SearchRows.searchRows(conn, epoch, null, null, query, 2, 1, 0, 0);
+        } else {
+          rows = SelectRows.selectRows(
+              conn, "courses.epoch = ? AND sections.instruction_mode <> ?",
+              epoch, "Online");
+        }
+        return RowsToCourses.rowsToCourses(rows).collect(Collectors.toList());
       });
       ctx.json(output);
     };

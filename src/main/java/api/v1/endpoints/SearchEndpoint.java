@@ -43,6 +43,12 @@ public final class SearchEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
+        .queryParam(
+            "full", Boolean.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "if present and equal to 'true', then you'll get full output");
+            })
         .queryParam("query", String.class,
                     openApiParam -> {
                       openApiParam.description(
@@ -169,16 +175,16 @@ public final class SearchEndpoint extends Endpoint {
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           ctx.json(RowsToCourses
                        .fullRowsToCourses(SearchRows.searchFullRows(
-                           conn, epoch, subject, school, resultSize, args,
-                           titleWeight, descriptionWeight, notesWeight,
-                           prereqsWeight))
+                           conn, epoch, subject, school, args, titleWeight,
+                           descriptionWeight, notesWeight, prereqsWeight))
+                       .limit(resultSize)
                        .collect(Collectors.toList()));
         } else {
           ctx.json(RowsToCourses
                        .rowsToCourses(SearchRows.searchRows(
-                           conn, epoch, subject, school, resultSize, args,
-                           titleWeight, descriptionWeight, notesWeight,
-                           prereqsWeight))
+                           conn, epoch, subject, school, args, titleWeight,
+                           descriptionWeight, notesWeight, prereqsWeight))
+                       .limit(resultSize)
                        .collect(Collectors.toList()));
 
           ctx.status(200);

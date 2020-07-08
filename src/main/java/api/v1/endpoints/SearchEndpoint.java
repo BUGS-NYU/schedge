@@ -1,5 +1,7 @@
 package api.v1.endpoints;
 
+import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
+
 import api.Endpoint;
 import api.v1.ApiError;
 import api.v1.RowsToCourses;
@@ -9,13 +11,10 @@ import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import nyu.Term;
-
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
+import nyu.Term;
 
 public final class SearchEndpoint extends Endpoint {
 
@@ -94,11 +93,8 @@ public final class SearchEndpoint extends Endpoint {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
               })
-        .jsonArray("200", Course.class, openApiParam -> {
-          openApiParam.description("OK.");
-
-          ArrayList<Section> sections = new ArrayList<>();
-        });
+        .jsonArray("200", Course.class,
+                   openApiParam -> { openApiParam.description("OK."); });
   }
 
   public Handler getHandler() {
@@ -173,9 +169,9 @@ public final class SearchEndpoint extends Endpoint {
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           ctx.json(RowsToCourses
                        .fullRowsToCourses(SearchRows.searchFullRows(
-                           conn, epoch,
-                           subject, school, resultSize, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
+                           conn, epoch, subject, school, resultSize, args,
+                           titleWeight, descriptionWeight, notesWeight,
+                           prereqsWeight))
                        .collect(Collectors.toList()));
         } else {
           ctx.json(RowsToCourses

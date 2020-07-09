@@ -26,7 +26,7 @@ public final class LoginMixin {
     if (user == null) {
       throw new CommandLine.ParameterException(
           spec.commandLine(),
-          "Must provide at least one. Either --term OR --semester AND --year");
+          "Must provide --username AND --pwd");
     }
     return user;
   }

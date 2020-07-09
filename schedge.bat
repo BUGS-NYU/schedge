@@ -21,6 +21,6 @@ goto fail
 
 :init
 set CMD_LINE_ARGS=%*
-%JAVA_EXE% "-jar" "%PROJ_DIR%/.build/libs/schedge-all.jar" %CMD_LINE_ARGS%
+%JAVA_EXE% "-jar" "%PROJ_DIR%/.build/libs/schedge.jar" %CMD_LINE_ARGS%
 
 

@@ -33,15 +33,16 @@ public class SelectRows {
 
     Utils.setArray(sectionIdStmt, registrationNumber, epoch);
     ResultSet rs = sectionIdStmt.executeQuery();
-    ArrayList<Integer> sectionIds = new ArrayList<>();
     if (!rs.next())
       return Stream.empty();
 
     int sectionId = rs.getInt(1);
+    Integer[] intSectionIds = new Integer[]{sectionId};
+    Array sectionIds = conn.createArrayOf("integer", intSectionIds);
     rs.close();
     return selectRows(
         conn, "sections.id = ANY (?) OR sections.associated_with = ANY (?)",
-        sectionId, sectionId);
+        sectionIds, sectionIds);
   }
 
   public static Stream<Row> selectRowsBySectionId(Connection conn, int epoch,

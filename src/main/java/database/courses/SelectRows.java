@@ -80,6 +80,7 @@ public class SelectRows {
       rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
+    rs.close();
     return rows.stream();
   }
 
@@ -102,8 +103,10 @@ public class SelectRows {
     Utils.setArray(sectionIdStmt, registrationNumber, epoch);
     ResultSet rs = sectionIdStmt.executeQuery();
     ArrayList<Integer> sectionIds = new ArrayList<>();
-    if (!rs.next())
+    if (!rs.next()) {
+      rs.close();
       return Stream.empty();
+    }
 
     int sectionId = rs.getInt(1);
     rs.close();
@@ -138,7 +141,7 @@ public class SelectRows {
     while (rs.next()) {
       rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
     }
-
+    rs.close();
     return rows.stream();
   }
 

@@ -4,8 +4,8 @@ import utils.JsonSerializable;
 
 public class Meeting implements JsonSerializable {
   public final String beginDate;     // contains date and time of first event.
-  public final Long minutesDuration; // Duration of meeting public
-  final String endDate;              // When the meeting stops repeating
+  public final long minutesDuration; // Duration of meeting
+  public final String endDate;       // When the meeting stops repeating
 
   public Meeting(String beginDate, String minutesDuration, String endDate) {
     this.beginDate = beginDate;
@@ -15,7 +15,7 @@ public class Meeting implements JsonSerializable {
 
   public String getBeginDate() { return beginDate; }
 
-  public Long getMinutesDuration() { return minutesDuration; }
+  public long getMinutesDuration() { return minutesDuration; }
 
   public String getEndDate() { return endDate; }
 

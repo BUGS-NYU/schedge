@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// Abbrev for Course Section Rows
 public class RowsToCourses {
 
   public static Stream<Course> fullRowsToCourses(Stream<FullRow> rows) {

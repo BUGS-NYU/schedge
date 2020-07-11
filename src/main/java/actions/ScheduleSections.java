@@ -64,7 +64,7 @@ public final class ScheduleSections {
   }
 
   public static Schedule
-  generateSections(ArrayList<AugmentedMeeting> meetings) {
+  generateSchedule(ArrayList<AugmentedMeeting> meetings) {
     return null;
   }
 }

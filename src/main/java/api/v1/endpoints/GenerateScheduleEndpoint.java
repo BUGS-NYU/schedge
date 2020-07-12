@@ -32,10 +32,11 @@ public final class GenerateScheduleEndpoint extends Endpoint {
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
-              "This endpoint returns a list of courses for a specific year, semester, school, and subject.");
-          openApiOperation.summary("Courses Endpoint");
+              "This endpoint returns either an ordered schedule, or a pair"
+              + " 'conflictA' and 'conflictB'. You can use the 'valid' field "
+              + "to check whether the schedule is valid.");
+          openApiOperation.summary("Schedule Checking Endpoint");
         })
         .pathParam("year", Integer.class,
                    openApiParam -> {

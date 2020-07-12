@@ -53,7 +53,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
               })
-        .jsonArray("200", Course.class, openApiParam -> {
+        .json("200", Schedule.class, openApiParam -> {
           openApiParam.description("OK.");
 
           ArrayList<Section> sections = new ArrayList<>();

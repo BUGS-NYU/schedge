@@ -7,11 +7,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public final class ScheduleSections {
   private ScheduleSections() {}
 
   public static final class Schedule {
+    public final boolean valid;
     public final ArrayList<AugmentedMeeting> mo;
     public final ArrayList<AugmentedMeeting> tu;
     public final ArrayList<AugmentedMeeting> we;
@@ -24,11 +26,14 @@ public final class ScheduleSections {
 
     public Schedule(AugmentedMeeting a, AugmentedMeeting b) {
       mo = tu = we = th = fr = sa = su = null;
+      valid = false;
       conflictA = a;
       conflictB = b;
     }
 
     public Schedule(ArrayList<AugmentedMeeting> meetings) {
+      meetings.sort(Comparator.comparingInt(AugmentedMeeting::getMinutesInDay));
+      valid = true;
       mo = new ArrayList<>();
       tu = new ArrayList<>();
       we = new ArrayList<>();
@@ -65,6 +70,7 @@ public final class ScheduleSections {
       }
     }
 
+    public boolean getValid() { return valid; }
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public ArrayList<AugmentedMeeting> getMo() {
       return mo;

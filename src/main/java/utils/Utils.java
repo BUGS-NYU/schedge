@@ -109,6 +109,8 @@ public final class Utils {
       stmt.setFloat(index, (Float)obj);
     } else if (obj instanceof Double) {
       stmt.setDouble(index, (Double)obj);
+    } else if (obj == null) {
+      throw new IllegalArgumentException("object is null");
     } else {
       throw new IllegalArgumentException(
           "type of object is incompatible for object=" + obj.toString());

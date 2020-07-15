@@ -111,9 +111,8 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
-    System.err.println(meetings);
     for (int i = 0; i < meetings.size(); i++) {
-      for (int j = i + 1; j < meetings.size(); j++) {
+      for (int j = i; j < meetings.size(); j++) {
         if (meetingsCollide(meetings.get(i), meetings.get(j)))
           return new Schedule(meetings.get(i), meetings.get(j));
       }
@@ -123,6 +122,9 @@ public final class ScheduleSections {
 
   private static boolean meetingsCollide(AugmentedMeeting a,
                                          AugmentedMeeting b) {
+    if (a.registrationNumber == b.registrationNumber)
+      return true;
+
     if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate))
       return false;
 

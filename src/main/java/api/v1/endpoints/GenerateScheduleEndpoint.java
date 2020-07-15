@@ -85,12 +85,6 @@ public final class GenerateScheduleEndpoint extends Endpoint {
         }
 
         for (String regNumString : regNumsStrArray) {
-          Integer registrationNumber = Integer.parseInt(regNumString);
-          if (registrationNumbers.contains(registrationNumber)) {
-            ctx.status(400);
-            ctx.json(new ApiError("Duplicate registration number!"));
-            return;
-          }
           registrationNumbers.add(Integer.parseInt(regNumString));
         }
 

@@ -111,7 +111,6 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
-    System.err.println(meetings);
     for (int i = 0; i < meetings.size(); i++) {
       for (int j = i + 1; j < meetings.size(); j++) {
         if (meetingsCollide(meetings.get(i), meetings.get(j)))

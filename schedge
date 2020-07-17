@@ -27,6 +27,6 @@ if [ -f "$PROJ_DIR/.pid" ]; then
   rm .pid
 fi
 
-java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
+java -Xmx2G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
   -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ & disown
 echo "$!" > "$PROJ_DIR/.pid"

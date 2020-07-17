@@ -192,5 +192,16 @@ public class Database implements Runnable {
   serve() {
     GetConnection.initIfNecessary();
     App.run();
+
+    while (true) {
+      CleanData.cleanData();
+      UpdateData.updateData();
+
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

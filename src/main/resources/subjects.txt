@@ -562,7 +562,7 @@ TRAN1,GC,Translation
 TR,GY,Transportation
 UPADM,GP,UG Pub & Nonprofit MGT and Pol
 FMTV,UT,Undergrad Film & TV
-UGPH,GU,Undergrad Global Public Health
+UGPH,UU,Undergrad Global Public Health
 UNDSW,US,Undergrad Social Work
 UNIST,NH,University Studies
 URB,UY,Urban Studies

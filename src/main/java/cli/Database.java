@@ -5,17 +5,13 @@ import actions.ScrapeTerm;
 import actions.UpdateData;
 import api.App;
 import api.v1.SelectCourses;
-import cli.templates.OutputFileMixin;
-import cli.templates.SubjectCodeMixin;
-import cli.templates.TermMixin;
+import cli.templates.*;
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
 import java.util.concurrent.TimeUnit;
-import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
+import me.tongfei.progressbar.*;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,20 +53,16 @@ public class Database implements Runnable {
   public void
   scrape(
       @CommandLine.Mixin TermMixin termMixin,
-      @CommandLine.Option(names = "--batch-size-catalog",
-                          description = "batch size for querying the catalog")
-      Integer batchSize,
-      @CommandLine.Option(names = "--batch-size-sections",
-                          description = "batch size for querying sections")
-      Integer batchSizeSections,
+      @CommandLine.Mixin BatchSizeMixin batchSize,
       @CommandLine.Option(
           names = "--service",
           description =
-              "turns scraping into a service; if set, all other params are ignored.")
+              "turns scraping into a service; if set, --year, --semester, and --term are ignored.")
       boolean service) {
     while (service) {
       CleanData.cleanData();
-      UpdateData.updateData();
+      UpdateData.updateData(batchSize.getCatalog(20),
+                            batchSize.getSections(50));
 
       try {
         TimeUnit.DAYS.sleep(1);
@@ -81,7 +73,8 @@ public class Database implements Runnable {
 
     long start = System.nanoTime();
     ScrapeTerm.scrapeTerm(
-        termMixin.getTerm(), batchSize, batchSizeSections,
+        termMixin.getTerm(), batchSize.getCatalog(20),
+        batchSize.getSections(50),
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     GetConnection.close();
     GetClient.close();
@@ -189,13 +182,14 @@ public class Database implements Runnable {
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Serve data through an API")
   public void
-  serve() {
+  serve(@CommandLine.Mixin BatchSizeMixin batchSizeMixin) {
     GetConnection.initIfNecessary();
     App.run();
 
     while (true) {
       CleanData.cleanData();
-      UpdateData.updateData();
+      UpdateData.updateData(batchSizeMixin.getCatalog(20),
+                            batchSizeMixin.getSections(20));
 
       try {
         TimeUnit.DAYS.sleep(1);

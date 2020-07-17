@@ -21,20 +21,12 @@ if [ -f "$PROJ_DIR/.env" ]; then
   . "$PROJ_DIR/.env"
 fi
 
-if [ "$#" -eq 2 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
-  echo "Running in disowned process..."
-
-  if [ -f "$PROJ_DIR/.pid" ]; then
-    (cat "$PROJ_DIR/.pid" | xargs kill)
-    rm .pid
-  fi
-
-  java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
-    -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ \
-    2>"$PROJ_DIR/stderr.log" & disown
-  echo "$!" > "$PROJ_DIR/.pid"
-  echo "Open ./stderr.log in order to see logs of the program."
-else
-  java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
-    -jar "$PROJ_DIR/.build/libs/schedge.jar" $@
+echo "Running in disowned process..."
+if [ -f "$PROJ_DIR/.pid" ]; then
+  (cat "$PROJ_DIR/.pid" | xargs kill)
+  rm .pid
 fi
+
+java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection \
+  -jar "$PROJ_DIR/.build/libs/schedge.jar" $@ & disown
+echo "$!" > "$PROJ_DIR/.pid"

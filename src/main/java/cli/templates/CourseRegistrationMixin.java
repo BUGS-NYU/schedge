@@ -2,7 +2,7 @@ package cli.templates;
 
 import picocli.CommandLine;
 import register.RegistrationCourse;
-
+import static utils.PolyFill.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,8 +39,8 @@ public class CourseRegistrationMixin {
         regCourses.add(
             new RegistrationCourse(entry.getKey(), new ArrayList<>()));
       } else {
-        regCourses.add(new RegistrationCourse(
-            entry.getKey(), List.of(Integer.parseInt(value))));
+        regCourses.add(new RegistrationCourse(entry.getKey(),
+                                              listOf(Integer.parseInt(value))));
       }
     }
     return regCourses;

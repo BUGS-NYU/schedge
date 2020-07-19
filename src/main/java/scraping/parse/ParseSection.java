@@ -133,7 +133,7 @@ public class ParseSection {
 
     if (location.contains("Loc") || location.contains("Loc:")) {
       location = location.split("Loc")[0];
-      location = location.strip();
+      location = location.trim();
       if (pattern.matcher(location).find()) {
         if (location.contains("Rm:")) {
           String[] arrs = location.split("Rm:");

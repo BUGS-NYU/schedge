@@ -117,7 +117,7 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
-    if(meetings.size() == 0 || meetings == null) {
+    if (meetings.size() == 0 || meetings == null) {
       return new Schedule();
     }
 
@@ -132,9 +132,6 @@ public final class ScheduleSections {
 
   private static boolean meetingsCollide(AugmentedMeeting a,
                                          AugmentedMeeting b) {
-    if (a.registrationNumber == b.registrationNumber)
-      return true;
-
     if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate))
       return false;
 

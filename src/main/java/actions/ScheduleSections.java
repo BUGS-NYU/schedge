@@ -24,6 +24,12 @@ public final class ScheduleSections {
     public final AugmentedMeeting conflictA;
     public final AugmentedMeeting conflictB;
 
+    public Schedule() {
+      valid = false;
+      mo = tu = we = th = fr = sa = su = null;
+      conflictA = conflictB = null;
+    }
+
     public Schedule(AugmentedMeeting a, AugmentedMeeting b) {
       mo = tu = we = th = fr = sa = su = null;
       valid = false;
@@ -111,6 +117,10 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
+    if(meetings.size() == 0 || meetings == null) {
+      return new Schedule();
+    }
+
     for (int i = 0; i < meetings.size(); i++) {
       for (int j = i + 1; j < meetings.size(); j++) {
         if (meetingsCollide(meetings.get(i), meetings.get(j)))
@@ -122,6 +132,9 @@ public final class ScheduleSections {
 
   private static boolean meetingsCollide(AugmentedMeeting a,
                                          AugmentedMeeting b) {
+    if (a.registrationNumber == b.registrationNumber)
+      return true;
+
     if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate))
       return false;
 

@@ -136,7 +136,7 @@ public final class GetRatings {
         });
   }
 
-  private static Float parseRating(String rawData, int id) {
+  private static float parseRating(String rawData, int id) {
     rawData = rawData.trim();
     if (rawData == null || rawData.equals("")) {
       logger.warn("Got bad data: empty string");

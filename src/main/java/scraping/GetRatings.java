@@ -132,20 +132,20 @@ public final class GetRatings {
           }
 
           return new Rating(id, Integer.parseInt(url),
-                            parseRating(resp.getResponseBody()));
+                            parseRating(resp.getResponseBody(), id));
         });
   }
 
-  private static Float parseRating(String rawData) {
+  private static float parseRating(String rawData, int id) {
     rawData = rawData.trim();
     if (rawData == null || rawData.equals("")) {
       logger.warn("Got bad data: empty string");
-      return null;
+      return -1.0f;
     }
     Document doc = Jsoup.parse(rawData);
     Element body = doc.selectFirst("div#root");
     if (body == null)
-      return null;
+      return -1.0f;
     Element ratingBody =
         body.selectFirst("div.TeacherInfo__StyledTeacher-ti1fio-1.fIlNyU");
     Element ratingInnerBody = ratingBody.selectFirst("div").selectFirst(
@@ -158,8 +158,9 @@ public final class GetRatings {
     try {
       return Float.parseFloat(ratingValue);
     } catch (NumberFormatException exception) {
-      logger.warn("The instructor exist but having N/A rating");
-      return null;
+      logger.warn("The instructor with id=" + id +
+                  " exists but has an N/A rating");
+      return -1.0f;
     }
   }
 
@@ -187,7 +188,7 @@ public final class GetRatings {
     Elements professors = innerListings.select("li.listing.PROFESSOR");
     for (Element element : professors) {
       String school =
-          element.selectFirst("span.sub").toString(); //<- Bugs at this line
+          element.selectFirst("span.sub").toString(); // <- Bugs at this line
       if (school.contains("New York University") || school.contains("NYU")) {
         return element.selectFirst("a").attr("href").split("=")[1];
       }

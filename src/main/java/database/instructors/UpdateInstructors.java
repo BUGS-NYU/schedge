@@ -19,7 +19,7 @@ public class UpdateInstructors {
     ResultSet rs = stmt.executeQuery();
     ArrayList<Instructor> instructors = new ArrayList<>();
     while (rs.next()) {
-      instructors.add(new Instructor(rs.getInt("name"), rs.getString("name")));
+      instructors.add(new Instructor(rs.getInt("id"), rs.getString("name")));
     }
     return instructors;
   }
@@ -32,7 +32,7 @@ public class UpdateInstructors {
         conn.prepareStatement("UPDATE instructors SET "
                               + "rmp_rating = ?, rmp_tid  = ? WHERE id = ?");
     GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
-        .filter(rating -> rating.rmpTeacherId != -1)
+        .filter(rating -> rating.rmpTeacherId != -1 && rating.rating != -1.0f)
         .forEach(rating -> {
           try {
             if (Utils

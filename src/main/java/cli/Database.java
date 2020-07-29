@@ -182,11 +182,15 @@ public class Database implements Runnable {
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Serve data through an API")
   public void
-  serve(@CommandLine.Mixin BatchSizeMixin batchSizeMixin) {
+  serve(@CommandLine.Mixin BatchSizeMixin batchSizeMixin,
+        @CommandLine.
+        Option(names = "--scrape",
+               description = "whether or not to scrape while serving")
+        boolean scrape) {
     GetConnection.initIfNecessary();
     App.run();
 
-    while (true) {
+    while (scrape) {
       CleanData.cleanData();
       UpdateData.updateData(batchSizeMixin.getCatalog(20),
                             batchSizeMixin.getSections(20));

@@ -120,7 +120,7 @@ public final class ScheduleSections {
     if(meetings.size() == 0 || meetings == null) {
       return new Schedule();
     }
-    
+
     for (int i = 0; i < meetings.size(); i++) {
       for (int j = i + 1; j < meetings.size(); j++) {
         if (meetingsCollide(meetings.get(i), meetings.get(j)))

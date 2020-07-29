@@ -27,7 +27,8 @@ public enum SectionType {
   PRP, // Preparatory
   MAM, // Maintaining Marticulation
   DLG,
-  NCH;
+  NCH,
+  EQV;
 
   @JsonValue
   public String getName() {

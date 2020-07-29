@@ -9,19 +9,18 @@ public final class UpdateData {
 
   private static Logger logger = LoggerFactory.getLogger("actions.UpdateData");
 
-  public static void updateData() {
+  public static void updateData(Integer batchSize, Integer batchSizeSections) {
     logger.info("Updating data...");
     Term currentTerm = Term.getCurrentTerm();
     Term nextTerm = currentTerm.nextTerm();
     Term nextNextTerm = nextTerm.nextTerm();
 
     logger.info("Updating current term...");
-    ScrapeTerm.scrapeTerm(currentTerm, 20, 50);
+    ScrapeTerm.scrapeTerm(currentTerm, batchSize, batchSizeSections);
     logger.info("Updating next term...");
-    ScrapeTerm.scrapeTerm(nextTerm, 20, 50);
+    ScrapeTerm.scrapeTerm(nextTerm, batchSize, batchSizeSections);
     logger.info("Updating the term after next term...");
-    ScrapeTerm.scrapeTerm(nextNextTerm, 20, 50);
-
+    ScrapeTerm.scrapeTerm(nextNextTerm, batchSize, batchSizeSections);
     GetClient.close();
 
     logger.info("Done updating.");

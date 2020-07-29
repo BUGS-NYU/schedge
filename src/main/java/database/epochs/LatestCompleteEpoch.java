@@ -1,14 +1,13 @@
 package database.epochs;
 
-import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.Utils;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import nyu.Term;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.Utils;
 
 public final class LatestCompleteEpoch {
 
@@ -27,8 +26,13 @@ public final class LatestCompleteEpoch {
         return null;
       }
       int e = rs.getInt(1);
-      logger.info("found epoch=" + e + " for term=" + term);
-      return e;
+      if (rs.wasNull()) {
+        logger.info("Couldn't find epoch for term=" + term);
+        return null;
+      } else {
+        logger.info("found epoch=" + e + " for term=" + term);
+        return e;
+      }
     }
   }
 }

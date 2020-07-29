@@ -5,28 +5,24 @@ import actions.ScrapeTerm;
 import actions.UpdateData;
 import api.App;
 import api.v1.SelectCourses;
-import cli.templates.OutputFileMixin;
-import cli.templates.SubjectCodeMixin;
-import cli.templates.TermMixin;
+import cli.templates.*;
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
-import me.tongfei.progressbar.ProgressBar;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
+import java.util.concurrent.TimeUnit;
+import me.tongfei.progressbar.*;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.query.GetClient;
 
-import java.util.concurrent.TimeUnit;
-
 @CommandLine.
 Command(name = "db",
         description = "query/scrape/update/serve data through the database",
-        synopsisSubcommandLabel = "(scrape | query | update | serve)")
+        synopsisSubcommandLabel = "(scrape | query | update | serve | clean)",
+        subcommands = {Database.Clean.class})
 public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
   @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
@@ -57,20 +53,16 @@ public class Database implements Runnable {
   public void
   scrape(
       @CommandLine.Mixin TermMixin termMixin,
-      @CommandLine.Option(names = "--batch-size-catalog",
-                          description = "batch size for querying the catalog")
-      Integer batchSize,
-      @CommandLine.Option(names = "--batch-size-sections",
-                          description = "batch size for querying sections")
-      Integer batchSizeSections,
+      @CommandLine.Mixin BatchSizeMixin batchSize,
       @CommandLine.Option(
           names = "--service",
           description =
-              "turns scraping into a service; if set, all other params are ignored.")
+              "turns scraping into a service; if set, --year, --semester, and --term are ignored.")
       boolean service) {
     while (service) {
       CleanData.cleanData();
-      UpdateData.updateData();
+      UpdateData.updateData(batchSize.getCatalog(20),
+                            batchSize.getSections(50));
 
       try {
         TimeUnit.DAYS.sleep(1);
@@ -81,7 +73,8 @@ public class Database implements Runnable {
 
     long start = System.nanoTime();
     ScrapeTerm.scrapeTerm(
-        termMixin.getTerm(), batchSize, batchSizeSections,
+        termMixin.getTerm(), batchSize.getCatalog(20),
+        batchSize.getSections(50),
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     GetConnection.close();
     GetClient.close();
@@ -89,13 +82,14 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @CommandLine.
-  Command(name = "rmp", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n",
-          header = "Update instructors' ratings using Rate My Professor",
-          description = "Scrape Rate My Professor for ratings, parsed and updated in the database")
+  @CommandLine.Command(
+      name = "rmp", sortOptions = false,
+      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n",
+      header = "Update instructors' ratings using Rate My Professor",
+      description =
+          "Scrape Rate My Professor for ratings, parsed and updated in the database")
   public void
   rmp(@CommandLine.
       Option(names = "--batch-size",
@@ -150,9 +144,9 @@ public class Database implements Runnable {
   Command(name = "clean", sortOptions = false,
           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
           parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Serve data",
+          optionListHeading = "%nOptions:%n", header = "Clean epochs",
           description = "Clean epochs")
-  public static class clean implements Runnable {
+  public static class Clean implements Runnable {
 
     @CommandLine.Mixin TermMixin termMixin;
     @CommandLine.Option(names = "--epoch", description = "The epoch to clean")
@@ -188,8 +182,20 @@ public class Database implements Runnable {
           optionListHeading = "%nOptions:%n", header = "Serve data",
           description = "Serve data through an API")
   public void
-  serve() {
+  serve(@CommandLine.Mixin BatchSizeMixin batchSizeMixin) {
     GetConnection.initIfNecessary();
     App.run();
+
+    while (true) {
+      CleanData.cleanData();
+      UpdateData.updateData(batchSizeMixin.getCatalog(20),
+                            batchSizeMixin.getSections(20));
+
+      try {
+        TimeUnit.DAYS.sleep(1);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }

@@ -3,10 +3,10 @@ package scraping.models;
 public final class Rating {
   public final int instructorId;
   public final Integer rmpTeacherId;
-  public final Float rating;
+  public final float rating;
 
   // For the sake of simplicity, forget mostHelpful for now
-  public Rating(int instructorId, Integer rmpTeacherId, Float rating) {
+  public Rating(int instructorId, Integer rmpTeacherId, float rating) {
     this.instructorId = instructorId;
     this.rmpTeacherId = rmpTeacherId;
     this.rating = rating;

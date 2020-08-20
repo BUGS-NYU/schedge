@@ -8,6 +8,8 @@ import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.swagger.v3.oas.models.info.Info;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.stream.Collectors;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
@@ -53,6 +55,17 @@ public class App {
                                              ctx.contentType("text/html");
                                              ctx.result(docs);
                                            }));
+    app.exception(Exception.class, (e, ctx) -> {
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      String stackTrace = sw.toString();
+
+      String message = String.format(
+          "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
+          stackTrace, ctx.queryParamMap().toString(), ctx.path());
+      logger.warn(message);
+    });
 
     new SubjectsEndpoint().addTo(app);
     new SchoolsEndpoint().addTo(app);

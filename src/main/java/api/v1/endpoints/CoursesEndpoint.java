@@ -9,11 +9,10 @@ import database.GetConnection;
 import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import nyu.SubjectCode;
-import nyu.Term;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import nyu.SubjectCode;
+import nyu.Term;
 
 public final class CoursesEndpoint extends Endpoint {
 

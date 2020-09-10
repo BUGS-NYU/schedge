@@ -46,6 +46,12 @@ Finally, you need to generate DB code using
 ./gradlew updateDb
 ```
 
+OR
+
+```
+./gradlew flywayMigrate
+```
+
 To compile the project, you can then run
 
 ```

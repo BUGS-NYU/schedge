@@ -12,7 +12,7 @@
 You'll need to install a few applications to contribute to this project:
 
 - Git
-- PostgresSQl<sup>1</sup>
+- PostgreSQl<sup>1</sup>
 - Java
 - Gradle
 

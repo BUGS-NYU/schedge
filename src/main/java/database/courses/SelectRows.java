@@ -70,7 +70,7 @@ public class SelectRows {
         + "sections.min_units, sections.max_units, sections.location,"
         + "sections.instruction_mode "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "JOIN is_teaching_section its on sections.id = its.section_id "
+        + "LEFT JOIN is_teaching_section its on sections.id = its.section_id "
         + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
     Utils.setArray(stmt, objects);
 
@@ -131,7 +131,7 @@ public class SelectRows {
         + "sections.campus, sections.instruction_mode, "
         + "sections.grading, sections.notes, sections.prerequisites "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "JOIN is_teaching_section its on sections.id = its.section_id "
+        + "LEFT JOIN is_teaching_section its on sections.id = its.section_id "
         + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
 
     Utils.setArray(stmt, objects);

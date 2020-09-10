@@ -21,6 +21,7 @@ The following commands are valid in Schedge:
 ```sh
 ./schedge query catalog     # Query the catalog
 ./schedge query sections    # Query a section
+./schedge query rmp         # Query all rate my prof reviews
 ./schedge query school      # Query a school/subject
 ./schedge parse catalog     # Parse the catalog
 ./schedge parse section     # Parse the section
@@ -29,6 +30,7 @@ The following commands are valid in Schedge:
 ./schedge scrape sections   # scrape the sections
 ./schedge scrape school     # scrape the school/subject
 ./schedge db scrape         # scrape the catalog for information
+./schedge db rmp            # scrape all rate my prof reviews
 ./schedge db query          # query the database for information
 ./schedge db serve          # Serve the database data through an API
 ```

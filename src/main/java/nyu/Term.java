@@ -66,7 +66,7 @@ public final class Term {
     return new Term(getSemester(now), year);
   }
 
-  public static int semesterFromString(String sem) {
+  public static Integer semesterFromStringNullable(String sem) {
     switch (sem.toLowerCase()) {
     case "ja":
     case "january":
@@ -81,8 +81,15 @@ public final class Term {
     case "fall":
       return 8;
     default:
-      throw new IllegalArgumentException("Invalid semester string: " + sem);
+      return null;
     }
+  }
+
+  public static int semesterFromString(String sem) {
+    Integer semCode = semesterFromStringNullable(sem);
+    if (semCode == null)
+      throw new IllegalArgumentException("Invalid semester string: " + sem);
+    return semCode;
   }
 
   public static String semesterToString(int sem) {

@@ -28,6 +28,7 @@ public enum SectionType {
   MAM, // Maintaining Marticulation
   DLG,
   NCH,
+  DSL,
   EQV;
 
   @JsonValue

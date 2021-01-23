@@ -22,10 +22,10 @@ public class SelectInstructors {
     String rank =
         instructorNameWeight + " * ts_rank_cd(instructors.name_vec, q.query";
     logger.info("Retrieving ratings for: " + instructorName);
-    PreparedStatement stmt =
-        conn.prepareStatement("WITH q (query) AS (SELECT plainto_tsquery(?)) "
-                              + "SELECT DISTINCT instructors.id FROM q, instructors "
-                              + "WHERE (" + field + ")");
+    PreparedStatement stmt = conn.prepareStatement(
+        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+        + "SELECT DISTINCT instructors.id FROM q, instructors "
+        + "WHERE (" + field + ")");
     Utils.setArray(stmt, instructorName);
     List<Integer> result = new ArrayList<>();
     ResultSet rs = stmt.executeQuery();
@@ -42,8 +42,9 @@ public class SelectInstructors {
     List<Review> reviews = new ArrayList<>();
     ResultSet ratingsRs = ratingsStmt.executeQuery();
     while (ratingsRs.next()) {
-      reviews.add(
-          new Review(ratingsRs.getFloat("rmp_rating"), ratingsRs.getString("comment")));
+      reviews.add(new Review(ratingsRs.getFloat("rmp_rating"),
+                             ratingsRs.getFloat("rmp_helpful"),
+                             ratingsRs.getString("comment")));
     }
     rs.close();
     ratingsRs.close();

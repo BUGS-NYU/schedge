@@ -235,7 +235,6 @@ public class ParseCatalog implements Iterator<Course> {
         }
       }
     }
-    // logger.trace("Meetings are: {}", meetings);
 
     return meetings;
   }

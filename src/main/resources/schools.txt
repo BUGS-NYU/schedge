@@ -1,4 +1,4 @@
-GS,Silver School of Social Work
+GS,Silver School of Social Work - Graduate
 UN,Rory Meyers College of Nursing
 UT,Tisch School of the Arts
 UA,College of Arts and Science

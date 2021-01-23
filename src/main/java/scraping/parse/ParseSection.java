@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
 import utils.Utils;
 
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,6 @@ import java.util.stream.Collectors;
 public class ParseSection {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.parse.ParseSection");
-  private static DateTimeFormatter timeParser =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma");
   private static Pattern pattern = Pattern.compile("[0-9]");
 
   private static List<String> list = Utils.asResourceLines("/building.txt");

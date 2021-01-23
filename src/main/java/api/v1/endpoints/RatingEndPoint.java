@@ -19,20 +19,18 @@ import nyu.Term;
 
 public final class RatingEndPoint extends Endpoint {
 
-  public String getPath() { return "/rating"; }
+  public String getPath() { return "/rating/:instructor"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
           openApiOperation.description(
-              "This endpoint returns a list of courses for a year and semester, given search terms.");
+              "This endpoint returns a list of ratings for an instructor");
           openApiOperation.summary("Rating Search Endpoint");
         })
-        .queryParam("query", String.class,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "A query string to pass to the search engine.");
-                    })
+        .pathParam(
+            "instructor", String.class,
+            openApiParam -> { openApiParam.description("Instructor's name"); })
         .queryParam(
             "limit", Integer.class,
             openApiParam -> {
@@ -58,14 +56,11 @@ public final class RatingEndPoint extends Endpoint {
     return ctx -> {
       ctx.contentType("application/json");
 
-      String args = ctx.queryParam("query");
-      if (args == null) {
+      String args = ctx.pathParam("instructor");
+      if (args.equals("")) {
         ctx.status(400);
-        ctx.json(new ApiError("Need to provide a query."));
+        ctx.json(new ApiError("Need to provide an instructor name."));
         return;
-      } else if (args.length() > 50) {
-        ctx.status(400);
-        ctx.json(new ApiError("Query can be at most 50 characters long."));
       }
 
       int resultSize, instructorWeight;

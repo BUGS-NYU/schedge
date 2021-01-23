@@ -38,6 +38,7 @@ CREATE TABLE ratings (
                         ON DELETE CASCADE         NOT NULL,
   comment             varchar                    NOT NULL,
   rmp_rating          real,
+  rmp_helpful           real,
   PRIMARY KEY (id)
 );
 

@@ -16,13 +16,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.postgresql.shaded.com.ongres.scram.common.gssapi.Gs2Attributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
-import utils.JsonMapper;
 import utils.SimpleBatchedFutureEngine;
 
 public final class GetRatings {
@@ -65,27 +63,27 @@ public final class GetRatings {
             .filter(instructor -> instructor.name != null)
             .collect(Collectors.toList());
 
-    SimpleBatchedFutureEngine<Instructor, List<Rating>> ratingsWithPages =
+    SimpleBatchedFutureEngine<Instructor, List<RatingData>> ratingsWithPages =
         new SimpleBatchedFutureEngine<>(
             filteredRatings, batchSize,
             (instructor, __)
                 -> getPagesAsync(instructor.id,
                                  Integer.parseInt(instructor.name)));
 
-    List<Rating> ratings =
+    List<RatingData> ratings =
         StreamSupport.stream(ratingsWithPages.spliterator(), false)
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
 
-    SimpleBatchedFutureEngine<Rating, List<Rating>> ratingsEngine =
+    SimpleBatchedFutureEngine<RatingData, List<Rating>> ratingsEngine =
         new SimpleBatchedFutureEngine<>(
             ratings, batchSize,
             (rating, __)
-                ->  getRatingsAsync(rating.instructorId, rating.rmpTeacherId,
-                      rating.page));
+                -> getRatingsAsync(rating.instructorId, rating.rmpTeacherId,
+                                   rating.page));
 
-    return
-        StreamSupport.stream(ratingsEngine.spliterator(), false).flatMap(Collection::stream);
+    return StreamSupport.stream(ratingsEngine.spliterator(), false)
+        .flatMap(Collection::stream);
   }
 
   /**
@@ -126,7 +124,7 @@ public final class GetRatings {
     }
   }
 
-  private static Future<List<Rating>> getPagesAsync(int instructorId,
+  private static Future<List<RatingData>> getPagesAsync(int instructorId,
                                                     int rmpTeacherId) {
     Request request = queryRatingsAsync(rmpTeacherId, 1);
     return GetClient.getClient()
@@ -138,10 +136,10 @@ public final class GetRatings {
             return null;
           }
           Integer pages = getTotalPages(resp.getResponseBody());
-          List<Rating> instructorsWithPages = new ArrayList<>();
+          List<RatingData> instructorsWithPages = new ArrayList<>();
           for (int page = 1; page <= pages; page++) {
             instructorsWithPages.add(
-                new Rating(instructorId, rmpTeacherId, page));
+                new RatingData(instructorId, rmpTeacherId, page));
           }
           return instructorsWithPages;
         });
@@ -218,8 +216,8 @@ public final class GetRatings {
     return pages;
   }
 
-  private static List<Rating> parseRatings(String jsonString, int instructorId
-                                           , Integer rmpTeacherId, int page) {
+  private static List<Rating> parseRatings(String jsonString, int instructorId,
+                                           Integer rmpTeacherId, int page) {
     ObjectMapper mapper = new ObjectMapper();
     List<Rating> ratings = new ArrayList<>();
     try {
@@ -228,12 +226,29 @@ public final class GetRatings {
       jsonRatings.forEach(rating -> {
         ratings.add(new Rating(instructorId, rmpTeacherId,
                                rating.get("id").asInt(),
-                               rating.get("rOverall").asLong(),
+                               (float)rating.get("rOverall").asDouble(),
+                               (float)rating.get("rHelpful").asDouble(),
                                rating.get("rComments").asText(), page));
       });
     } catch (JsonProcessingException e) {
       logger.error(e.getMessage());
     }
     return ratings;
+  }
+
+  private static class RatingData {
+    private Integer instructorId;
+    private Integer rmpTeacherId;
+    private Integer page;
+
+    public RatingData(Integer instructorId, Integer rmpTeacherId, Integer page) {
+      this.instructorId = instructorId;
+      this.rmpTeacherId = rmpTeacherId;
+      this.page = page;
+    }
+
+    public String toString() {
+      return "Instructor Id: " + this.instructorId + " .RMP Id: " + this.rmpTeacherId + " .Page: " + this.page;
+    }
   }
 }

@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * This class get connection to the SQLite database using JDBC Driver
+ * This class get connection to the PostgreSQL database using JDBC Driver
  */
 public class GetConnection {
 

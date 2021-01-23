@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 import scraping.GetRatings;
 import scraping.models.Instructor;
+import scraping.models.Rating;
 import utils.Utils;
 
 public class UpdateInstructors {
@@ -23,42 +25,19 @@ public class UpdateInstructors {
     return instructors;
   }
 
-  public static void updateInstructors(Connection conn,
-                                       Iterable<Instructor> instructors,
-                                       Integer batchSizeNullable)
-      throws SQLException {
-    PreparedStatement stmt =
-        conn.prepareStatement("UPDATE instructors SET "
-                              + "rmp_rating = ?, rmp_tid  = ? WHERE id = ?");
-    GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
-        .filter(rating -> rating.rmpTeacherId != -1 && rating.rating != -1.0f)
-        .forEach(rating -> {
-          try {
-            if (Utils
-                    .setArray(stmt, rating.rating, rating.rmpTeacherId,
-                              rating.instructorId)
-                    .executeUpdate() != 1) {
-              throw new RuntimeException("what the heck");
-            }
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        });
-  }
-
   public static void addInstructorsRating(Connection conn,
-                                 Iterable<Instructor> instructors,
-                                 Integer batchSizeNullable)
+                                          Iterable<Instructor> instructors,
+                                          Integer batchSizeNullable)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(
-        "INSERT INTO ratings(instructor_id, rmp_rating, comment) VALUES(?,?,?)");
+        "INSERT INTO ratings(instructor_id, rmp_rating, rmp_helpful, comment) VALUES(?,?,?,?)");
     GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
         .filter(rating -> rating.rmpTeacherId != -1 && rating.rating != -1.0f)
         .forEach(rating -> {
           try {
             if (Utils
                     .setArray(stmt, rating.instructorId, rating.rating,
-                              rating.comment)
+                              rating.helpful, rating.comment)
                     .executeUpdate() != 1) {
               throw new RuntimeException("Fail to insert");
             }

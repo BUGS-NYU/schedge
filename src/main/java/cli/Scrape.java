@@ -4,18 +4,25 @@ import cli.templates.OutputFileMixin;
 import cli.templates.RegistrationNumberMixin;
 import cli.templates.SubjectCodeMixin;
 import cli.templates.TermMixin;
+import database.GetConnection;
+import database.instructors.UpdateInstructors;
 import nyu.SubjectCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.GetRatings;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
+import scraping.models.Instructor;
+import scraping.models.Rating;
 import scraping.parse.ParseSchoolSubjects;
+import scraping.query.GetClient;
 import scraping.query.QuerySchool;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /*
    @Todo: Add annotation for parameter.
@@ -24,7 +31,7 @@ import java.util.stream.Collectors;
 Command(name = "scrape",
         description =
             "Query then parse NYU Albert data based on different catagories",
-        synopsisSubcommandLabel = "(catalog | sections | school)")
+        synopsisSubcommandLabel = "(catalog | sections | school | rmp)")
 public class Scrape implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
 
@@ -120,5 +127,33 @@ public class Scrape implements Runnable {
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
+  }
+
+  @CommandLine.Command(
+          name = "rmp", sortOptions = false,
+          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n",
+          header = "Update instructors' ratings using Rate My Professor",
+          description =
+                  "Scrape Rate My Professor for ratings, parsed and updated in the database")
+  public void
+  rmp(@CommandLine.
+          Option(names = "--batch-size",
+          description = "batch size for querying Rate My Professor")
+              Integer batchSize) {
+    long start = System.nanoTime();
+    GetConnection.withConnection(conn -> {
+      List<Instructor> instructors =  UpdateInstructors.instructorUpdateList(conn);
+      Stream<Rating> ratings = GetRatings.getRatings(instructors.iterator(), batchSize);
+      ratings.forEach(rating -> {
+        System.out.println(rating.toString());
+      });
+    });
+    GetConnection.close();
+    GetClient.close();
+
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 }

@@ -1,12 +1,6 @@
 package cli.templates;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import picocli.CommandLine;
-import register.RegistrationCourse;
 
 public class BatchSizeMixin {
   private BatchSizeMixin() {}

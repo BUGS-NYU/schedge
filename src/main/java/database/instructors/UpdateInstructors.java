@@ -1,14 +1,13 @@
 package database.instructors;
 
-import scraping.GetRatings;
-import scraping.models.Instructor;
-import utils.Utils;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import scraping.GetRatings;
+import scraping.models.Instructor;
+import utils.Utils;
 
 public class UpdateInstructors {
 
@@ -40,6 +39,28 @@ public class UpdateInstructors {
                               rating.instructorId)
                     .executeUpdate() != 1) {
               throw new RuntimeException("what the heck");
+            }
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
+  public static void addInstructorsRating(Connection conn,
+                                 Iterable<Instructor> instructors,
+                                 Integer batchSizeNullable)
+      throws SQLException {
+    PreparedStatement stmt = conn.prepareStatement(
+        "INSERT INTO ratings(instructor_id, rmp_rating, comment) VALUES(?,?,?)");
+    GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
+        .filter(rating -> rating.rmpTeacherId != -1 && rating.rating != -1.0f)
+        .forEach(rating -> {
+          try {
+            if (Utils
+                    .setArray(stmt, rating.instructorId, rating.rating,
+                              rating.comment)
+                    .executeUpdate() != 1) {
+              throw new RuntimeException("Fail to insert");
             }
           } catch (SQLException e) {
             throw new RuntimeException(e);

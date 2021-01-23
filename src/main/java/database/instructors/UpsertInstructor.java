@@ -18,10 +18,10 @@ public final class UpsertInstructor {
     if (!rs.next()) {
       rs.close();
       PreparedStatement createInstructor = conn.prepareStatement(
-          "INSERT INTO instructors (name, subject, school) VALUES (?, ?, ?)",
+          "INSERT INTO instructors(name, name_vec, subject, school) VALUES (?, to_tsvector(?), ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
 
-      Utils.setArray(createInstructor, instructor, subject.code,
+      Utils.setArray(createInstructor, instructor, instructor, subject.code,
                      subject.school);
       if (createInstructor.executeUpdate() == 0)
         throw new RuntimeException("Why bro");

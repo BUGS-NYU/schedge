@@ -75,6 +75,7 @@ public class App {
     new SearchEndpoint().addTo(app);
     new NonOnlineEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
+    new RatingEndPoint().addTo(app);
   }
 
   private static SslContextFactory getSslContextFactory() {

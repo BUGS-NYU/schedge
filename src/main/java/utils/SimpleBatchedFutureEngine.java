@@ -11,7 +11,7 @@ import java.util.concurrent.Future;
 import java.util.function.BiFunction;
 
 /**
- * This class handles batch resoltion of futures.
+ * This class handles batch resolution of futures.
  *
  * The engine internally uses an Array to batch futures, filling the array with
  * futures then waiting on each one in turn as you call next.

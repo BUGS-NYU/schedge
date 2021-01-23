@@ -24,10 +24,20 @@ CREATE TABLE courses (
 CREATE TABLE instructors (
   id                  SERIAL                      NOT NULL,
   name                varchar                     NOT NULL,
+  name_vec            TSVECTOR,
   school              varchar                     NOT NULL,
   subject             varchar                     NOT NULL,
   rmp_rating          real,
   rmp_tid             integer,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE ratings (
+  id                  SERIAL                      NOT NULL,
+  instructor_id       int REFERENCES instructors(id)
+                        ON DELETE CASCADE         NOT NULL,
+  comment             varchar                    NOT NULL,
+  rmp_rating          real,
   PRIMARY KEY (id)
 );
 
@@ -79,3 +89,4 @@ CREATE TABLE meetings (
 CREATE INDEX sections_associated_with ON sections (associated_with);
 CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
 CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);
+CREATE INDEX instructor_idx ON ratings(instructor_id);

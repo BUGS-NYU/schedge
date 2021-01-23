@@ -10,6 +10,6 @@ public final class Instructor {
   }
 
   public String toString() {
-    return id + ". " + name;
+    return "InstructorId: " + id + ". Name(or tmp rmpId)" + name;
   }
 }

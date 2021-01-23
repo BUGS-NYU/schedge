@@ -1,5 +1,14 @@
 package scraping;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.*;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
@@ -7,25 +16,24 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.postgresql.shaded.com.ongres.scram.common.gssapi.Gs2Attributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
+import utils.JsonMapper;
 import utils.SimpleBatchedFutureEngine;
-
-import java.util.Iterator;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class GetRatings {
 
   private static Logger logger = LoggerFactory.getLogger("scraping.GetRatings");
-  private static final String RMP_ROOT_URL =
-      "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=";
   private static final String RMP_URL =
       "https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolID=675&query=";
+  private static final String RMP_ROOT_URL =
+      "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=";
+  private static final String RMP_RATING_URL =
+      "https://www.ratemyprofessors.com/paginate/professors/ratings?tid=";
 
   /**
    * Two step process, first given the list of instructors,
@@ -48,26 +56,40 @@ public final class GetRatings {
                         : 50; // @Performance what should this number be?
 
     // @TODO Change this to actually be correct in terms of types used
-    SimpleBatchedFutureEngine<Instructor, Instructor> instructorResults =
+    SimpleBatchedFutureEngine<Instructor, Instructor> instructorsResults =
         new SimpleBatchedFutureEngine<>(
             names, batchSize, (instructor, __) -> getLinkAsync(instructor));
 
-    SimpleBatchedFutureEngine<Instructor, Rating> engine =
-        new SimpleBatchedFutureEngine<>(
-            instructorResults, batchSize, (instructor, __) -> {
-              try {
-                return queryRatingAsync(instructor.name, instructor.id);
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+    List<Instructor> filteredRatings =
+        StreamSupport.stream(instructorsResults.spliterator(), false)
+            .filter(instructor -> instructor.name != null)
+            .collect(Collectors.toList());
 
-    return StreamSupport.stream(engine.spliterator(), false)
-        .filter(i -> i != null);
+    SimpleBatchedFutureEngine<Instructor, List<Rating>> ratingsWithPages =
+        new SimpleBatchedFutureEngine<>(
+            filteredRatings, batchSize,
+            (instructor, __)
+                -> getPagesAsync(instructor.id,
+                                 Integer.parseInt(instructor.name)));
+
+    List<Rating> ratings =
+        StreamSupport.stream(ratingsWithPages.spliterator(), false)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+
+    SimpleBatchedFutureEngine<Rating, List<Rating>> ratingsEngine =
+        new SimpleBatchedFutureEngine<>(
+            ratings, batchSize,
+            (rating, __)
+                ->  getRatingsAsync(rating.instructorId, rating.rmpTeacherId,
+                      rating.page));
+
+    return
+        StreamSupport.stream(ratingsEngine.spliterator(), false).flatMap(Collection::stream);
   }
 
   /**
-   * Given at instructor, will find the coresponding
+   * Given at instructor, will find the corresponding
    * rmp-id for the instructor.
    * @param instructor
    * @return
@@ -104,20 +126,9 @@ public final class GetRatings {
     }
   }
 
-  /**
-   * Given the rmp-id, we get the rating.
-   * Rating can be either a float or N/A, in the case of N/A, we return 0.0
-   * @param url
-   * @param id
-   * @return
-   */
-  private static Future<Rating> queryRatingAsync(String url, int id) {
-    Request request = new RequestBuilder()
-                          .setUri(Uri.create(RMP_ROOT_URL + url))
-                          .setRequestTimeout(60000)
-                          .setMethod("GET")
-                          .build();
-
+  private static Future<List<Rating>> getPagesAsync(int instructorId,
+                                                    int rmpTeacherId) {
+    Request request = queryRatingsAsync(rmpTeacherId, 1);
     return GetClient.getClient()
         .executeRequest(request)
         .toCompletableFuture()
@@ -126,42 +137,40 @@ public final class GetRatings {
             logger.error(throwable.getMessage());
             return null;
           }
-          if (url == null) {
-            logger.warn("URL is null for id=" + id);
-            return new Rating(id, -1, -1.0f);
+          Integer pages = getTotalPages(resp.getResponseBody());
+          List<Rating> instructorsWithPages = new ArrayList<>();
+          for (int page = 1; page <= pages; page++) {
+            instructorsWithPages.add(
+                new Rating(instructorId, rmpTeacherId, page));
           }
-
-          return new Rating(id, Integer.parseInt(url),
-                            parseRating(resp.getResponseBody(), id));
+          return instructorsWithPages;
         });
   }
 
-  private static float parseRating(String rawData, int id) {
-    rawData = rawData.trim();
-    if (rawData == null || rawData.equals("")) {
-      logger.warn("Got bad data: empty string");
-      return -1.0f;
-    }
-    Document doc = Jsoup.parse(rawData);
-    Element body = doc.selectFirst("div#root");
-    if (body == null)
-      return -1.0f;
-    Element ratingBody =
-        body.selectFirst("div.TeacherInfo__StyledTeacher-ti1fio-1.fIlNyU");
-    Element ratingInnerBody = ratingBody.selectFirst("div").selectFirst(
-        "div.RatingValue__AvgRating-qw8sqy-1.gIgExh");
-    String ratingValue =
-        ratingInnerBody
-            .selectFirst("div.RatingValue__Numerator-qw8sqy-2.gxuTRq")
-            .html()
-            .trim();
-    try {
-      return Float.parseFloat(ratingValue);
-    } catch (NumberFormatException exception) {
-      logger.warn("The instructor with id=" + id +
-                  " exists but has an N/A rating");
-      return -1.0f;
-    }
+  private static Future<List<Rating>>
+  getRatingsAsync(int instructorId, int rmpTeacherId, int page) {
+    Request request = queryRatingsAsync(rmpTeacherId, page);
+    return GetClient.getClient()
+        .executeRequest(request)
+        .toCompletableFuture()
+        .handleAsync((resp, throwable) -> {
+          if (resp == null) {
+            logger.error(throwable.getMessage());
+            return null;
+          }
+          return parseRatings(resp.getResponseBody(), instructorId,
+                              rmpTeacherId, page);
+        });
+  }
+
+  private static Request queryRatingsAsync(int rmpTeacherId, int page) {
+    Request request =
+        new RequestBuilder()
+            .setUri(Uri.create(RMP_RATING_URL + rmpTeacherId + "&page=" + page))
+            .setRequestTimeout(60000)
+            .setMethod("GET")
+            .build();
+    return request;
   }
 
   private static String parseLink(String rawData) {
@@ -195,5 +204,36 @@ public final class GetRatings {
     }
 
     return null;
+  }
+
+  private static Integer getTotalPages(String jsonString) {
+    ObjectMapper mapper = new ObjectMapper();
+    Integer pages = 1;
+    try {
+      JsonNode node = mapper.readTree(jsonString);
+      pages += node.get("remaining").asInt();
+    } catch (JsonProcessingException e) {
+      logger.error(e.getMessage());
+    }
+    return pages;
+  }
+
+  private static List<Rating> parseRatings(String jsonString, int instructorId
+                                           , Integer rmpTeacherId, int page) {
+    ObjectMapper mapper = new ObjectMapper();
+    List<Rating> ratings = new ArrayList<>();
+    try {
+      JsonNode node = mapper.readTree(jsonString);
+      ArrayNode jsonRatings = (ArrayNode)node.get("ratings");
+      jsonRatings.forEach(rating -> {
+        ratings.add(new Rating(instructorId, rmpTeacherId,
+                               rating.get("id").asInt(),
+                               rating.get("rOverall").asLong(),
+                               rating.get("rComments").asText(), page));
+      });
+    } catch (JsonProcessingException e) {
+      logger.error(e.getMessage());
+    }
+    return ratings;
   }
 }

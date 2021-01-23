@@ -97,7 +97,7 @@ public class Database implements Runnable {
       Integer batchSize) {
     long start = System.nanoTime();
     GetConnection.withConnection(conn -> {
-      UpdateInstructors.updateInstructors(
+      UpdateInstructors.addInstructorsRating(
           conn,
           ProgressBar.wrap(UpdateInstructors.instructorUpdateList(conn),
                            barBuilder),

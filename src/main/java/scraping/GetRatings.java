@@ -53,7 +53,6 @@ public final class GetRatings {
                         ? batchSizeNullable
                         : 50; // @Performance what should this number be?
 
-    // @TODO Change this to actually be correct in terms of types used
     SimpleBatchedFutureEngine<Instructor, Instructor> instructorsResults =
         new SimpleBatchedFutureEngine<>(
             names, batchSize, (instructor, __) -> getLinkAsync(instructor));
@@ -63,6 +62,7 @@ public final class GetRatings {
             .filter(instructor -> instructor.name != null)
             .collect(Collectors.toList());
 
+    // grab total number of pages since the response is paginated
     SimpleBatchedFutureEngine<Instructor, List<RatingData>> ratingsWithPages =
         new SimpleBatchedFutureEngine<>(
             filteredRatings, batchSize,
@@ -75,6 +75,7 @@ public final class GetRatings {
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
 
+    // scrape all reviews given page number
     SimpleBatchedFutureEngine<RatingData, List<Rating>> ratingsEngine =
         new SimpleBatchedFutureEngine<>(
             ratings, batchSize,

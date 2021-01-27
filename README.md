@@ -47,3 +47,4 @@ If you'd like to write a front end to this API, you can list it below!
 
 - https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )
+- https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )

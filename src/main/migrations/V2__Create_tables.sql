@@ -36,9 +36,9 @@ CREATE TABLE ratings (
   id                  SERIAL                      NOT NULL,
   instructor_id       int REFERENCES instructors(id)
                         ON DELETE CASCADE         NOT NULL,
-  comment             varchar                    NOT NULL,
+  comment             varchar                     NOT NULL,
   rmp_rating          real,
-  rmp_helpful           real,
+  rmp_helpful         real,
   PRIMARY KEY (id)
 );
 

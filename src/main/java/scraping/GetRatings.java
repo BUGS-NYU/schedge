@@ -28,8 +28,6 @@ public final class GetRatings {
   private static Logger logger = LoggerFactory.getLogger("scraping.GetRatings");
   private static final String RMP_URL =
       "https://www.ratemyprofessors.com/search.jsp?queryBy=teacherName&schoolID=675&query=";
-  private static final String RMP_ROOT_URL =
-      "https://www.ratemyprofessors.com/ShowRatings.jsp?tid=";
   private static final String RMP_RATING_URL =
       "https://www.ratemyprofessors.com/paginate/professors/ratings?tid=";
 

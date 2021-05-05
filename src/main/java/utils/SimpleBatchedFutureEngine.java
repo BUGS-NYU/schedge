@@ -1,6 +1,6 @@
 package utils;
 
-import org.jetbrains.annotations.NotNull;
+import static utils.TryCatch.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -9,6 +9,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.
@@ -29,18 +30,6 @@ public class SimpleBatchedFutureEngine<Input, Output>
   private Object[] mailboxes;
   private Iterator<Input> inputData;
   private BiFunction<Input, Integer, Future<Output>> callback;
-
-  public SimpleBatchedFutureEngine(
-      SimpleBatchedFutureEngine<? extends Object, Input> inputData,
-      int batchSize, BiFunction<Input, Integer, Future<Output>> callback) {
-    this(inputData.iterator(), batchSize, callback);
-  }
-
-  public SimpleBatchedFutureEngine(
-      Iterable<Input> inputData, int batchSize,
-      BiFunction<Input, Integer, Future<Output>> callback) {
-    this(inputData.iterator(), batchSize, callback);
-  }
 
   public SimpleBatchedFutureEngine(
       Iterator<Input> inputData, int batchSize,
@@ -126,12 +115,10 @@ public class SimpleBatchedFutureEngine<Input, Output>
           mailboxes[pendingRequests] = null;
         }
 
-        if (value == null)
-          return Optional.empty();
-        else
-          return Optional.of(value);
+        return Optional.ofNullable(value);
       }
     }
+
     return null;
   }
 
@@ -140,17 +127,12 @@ public class SimpleBatchedFutureEngine<Input, Output>
     if (pendingRequests <= 0)
       throw new NoSuchElementException();
 
-    Optional<Output> fetchedResult;
     while (pendingRequests > 0) {
-      fetchedResult = checkMailboxes();
-      if (fetchedResult != null) {
+      Optional<Output> fetchedResult = checkMailboxes();
+      if (fetchedResult != null)
         return fetchedResult.orElse(null);
-      } else {
-        try {
-          Thread.sleep(timeout);
-        } catch (InterruptedException e) {
-        }
-      }
+
+      tcIgnore(() -> Thread.sleep(timeout));
     }
 
     return null;

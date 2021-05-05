@@ -9,8 +9,8 @@ import picocli.CommandLine;
 public class Schedge implements Runnable {
 
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
-  @CommandLine.
-          Option(names = {"-h", "--help"}, usageHelp = true, description = "display a help message")
+  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
+                      description = "display a help message")
   boolean displayHelp;
 
   public void run() {

@@ -1,5 +1,11 @@
 package register;
 
+import static register.Context.getContextAsync;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
@@ -7,13 +13,6 @@ import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-
-import static register.Context.getContextAsync;
 
 public class AddToCart {
   // We will do undergrad for now
@@ -52,7 +51,7 @@ public class AddToCart {
     }
 
     SimpleBatchedFutureEngine engine = new SimpleBatchedFutureEngine<>(
-        courses, size,
+        courses.iterator(), size,
         (course, idx) -> addToCart(user, term, course, contexts[idx]));
 
     engine.iterator();
@@ -234,7 +233,7 @@ public class AddToCart {
   }
 
   //@ToDo: Change the start date based on term. Handle different start dates and
-  //different acad_career
+  // different acad_career
   private static String getOptionForm(Term term, RegistrationCourse course,
                                       Context.HttpContext context) {
     if (course.units == Math.round(course.units)) {

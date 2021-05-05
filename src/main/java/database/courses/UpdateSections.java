@@ -1,6 +1,7 @@
 package database.courses;
 
 import static scraping.query.QuerySection.querySectionAsync;
+import static utils.TryCatch.*;
 
 import database.instructors.UpsertInstructor;
 import database.models.SectionID;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
 import utils.SimpleBatchedFutureEngine;
+import utils.TryCatch;
 import utils.Utils;
 
 /**
@@ -60,17 +62,12 @@ public class UpdateSections {
       if (save == null)
         continue;
 
-      SectionAttribute s;
-      try {
-        s = ParseSection.parse(save.data);
-      } catch (NullPointerException e) {
-        logger.warn("Parse error on registrationNumber=" +
-                    save.registrationNumber);
-        throw e;
-      }
+      TryCatch tryCatch =
+          tc(logger, "Parse error on term={}, registrationNumber={}", term,
+             save.registrationNumber);
+      SectionAttribute s = tryCatch.pass(() -> ParseSection.parse(save.data));
       if (s == null) {
-        logger.warn("Parse error on registrationNumber=" +
-                    save.registrationNumber);
+        tryCatch.output();
         continue;
       }
 

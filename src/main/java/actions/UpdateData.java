@@ -1,5 +1,7 @@
 package actions;
 
+import static utils.TryCatch.*;
+
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +17,16 @@ public final class UpdateData {
     Term nextTerm = currentTerm.nextTerm();
     Term nextNextTerm = nextTerm.nextTerm();
 
-    logger.info("Updating current term...");
-    ScrapeTerm.scrapeTerm(currentTerm, batchSize, batchSizeSections);
-    logger.info("Updating next term...");
-    ScrapeTerm.scrapeTerm(nextTerm, batchSize, batchSizeSections);
-    logger.info("Updating the term after next term...");
-    ScrapeTerm.scrapeTerm(nextNextTerm, batchSize, batchSizeSections);
+    logger.info("Updating current term... ({})", currentTerm);
+    tcLogVoid(logger, ScrapeTerm::scrapeTerm, currentTerm, batchSize,
+              batchSizeSections);
+    logger.info("Updating next term... ({})", nextTerm);
+    tcLogVoid(logger, ScrapeTerm::scrapeTerm, nextTerm, batchSize,
+              batchSizeSections);
+    logger.info("Updating the term after next term... ({})", nextNextTerm);
+    tcLogVoid(logger, ScrapeTerm::scrapeTerm, nextNextTerm, batchSize,
+              batchSizeSections);
+
     GetClient.close();
 
     logger.info("Done updating.");

@@ -28,6 +28,7 @@ public enum SectionType {
   MAM, // Maintaining Marticulation
   DLG,
   NCH,
+  NCL, // Non-Credit Lab
   EQV;
 
   @JsonValue
@@ -79,6 +80,8 @@ public enum SectionType {
       return "Practicum";
     case LLB:
       return "Lecture for Lab";
+    case NCL:
+      return "Non-Credit Lab";
     default:
       return this.toString();
     }

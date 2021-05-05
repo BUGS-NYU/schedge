@@ -1,5 +1,7 @@
 package scraping.query;
 
+import static utils.TryCatch.*;
+
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
@@ -28,6 +30,7 @@ public final class QueryCatalog {
   private static final Uri DATA_URI =
       Uri.create("https://m.albert.nyu.edu/app/catalog/getClassSearch");
 
+  // does anybody even use this?
   public static CatalogQueryData queryCatalog(Term term,
                                               SubjectCode subjectCode) {
     CatalogQueryData queryData = null;
@@ -62,14 +65,11 @@ public final class QueryCatalog {
         contextFutures[i] = getContextAsync();
       }
       logger.info("Collecting context requests... (x{})", batchSize);
+
       for (int i = 0; i < batchSize; i++) {
-        try {
-          contexts[i] = contextFutures[i].get();
-        } catch (ExecutionException | InterruptedException e) {
-          throw new RuntimeException("Failed to get HttpContext.", e);
-        }
-        if (contexts[i] == null)
-          throw new RuntimeException("Failed to get HttpContext.");
+        contexts[i] = tcPass((idx)
+                                 -> tcNonnull(contextFutures[idx].get()),
+                             "Failed to get HttpContext.", i);
       }
     }
 
@@ -77,7 +77,7 @@ public final class QueryCatalog {
 
     return StreamSupport
         .stream(new SimpleBatchedFutureEngine<>(
-                    subjectCodes, batchSize,
+                    subjectCodes.iterator(), batchSize,
                     (subjectCode,
                      idx) -> queryCatalog(term, subjectCode, contexts[idx]))
                     .spliterator(),

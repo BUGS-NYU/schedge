@@ -1,5 +1,7 @@
 package cli;
 
+import static utils.TryCatch.*;
+
 import actions.CleanData;
 import actions.ScrapeTerm;
 import actions.UpdateData;
@@ -64,11 +66,7 @@ public class Database implements Runnable {
       UpdateData.updateData(batchSize.getCatalog(20),
                             batchSize.getSections(50));
 
-      try {
-        TimeUnit.DAYS.sleep(1);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
 
     long start = System.nanoTime();
@@ -195,11 +193,13 @@ public class Database implements Runnable {
       UpdateData.updateData(batchSizeMixin.getCatalog(20),
                             batchSizeMixin.getSections(20));
 
-      try {
-        TimeUnit.DAYS.sleep(1);
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
-      }
+      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
+  }
+}
+
+final class Hello {
+  public static String hello(String input) {
+    throw new RuntimeException(input);
   }
 }

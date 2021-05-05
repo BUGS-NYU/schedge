@@ -1,5 +1,7 @@
 package scraping;
 
+import java.util.List;
+import java.util.stream.Stream;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
@@ -8,9 +10,6 @@ import scraping.models.CatalogQueryData;
 import scraping.models.Course;
 import scraping.parse.ParseCatalog;
 import scraping.query.QueryCatalog;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 public class ScrapeCatalog {
   private static Logger logger =
@@ -30,6 +29,8 @@ public class ScrapeCatalog {
           try {
             return ParseCatalog.parse(rawData.getData(), rawData.getSubject());
           } catch (Exception e) {
+            logger.warn("Catalog parsing threw with term={}, subject={}", term,
+                        rawData.getSubject());
             logger.warn(e.getMessage());
             return null;
           }

@@ -1,13 +1,14 @@
 package scraping.query;
 
+import static utils.TryCatch.*;
+
+import java.io.IOException;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClientConfig;
 
-import java.io.IOException;
-
 public final class GetClient {
-  private static AsyncHttpClient client;
+  private static volatile AsyncHttpClient client;
 
   public static AsyncHttpClient getClient() {
     if (client == null)
@@ -19,13 +20,8 @@ public final class GetClient {
   }
 
   public static void close() {
-    if (client != null) {
-      try {
-        client.close();
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
+    if (client != null)
+      tcPass(client::close);
     client = null;
   }
 }

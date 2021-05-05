@@ -124,7 +124,8 @@ public final class Term {
   public int getId() { return year * 10 + semester; }
 
   public String toString() {
-    return "Term(" + semesterToString(semester) + ',' + (year + 1900) + ")";
+    return "Term(" + semesterToString(semester) + ' ' + (year + 1900) +
+        ",id=" + getId() + ")";
   }
 
   @Override

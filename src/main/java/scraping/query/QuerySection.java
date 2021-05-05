@@ -1,5 +1,7 @@
 package scraping.query;
 
+import static utils.TryCatch.*;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -43,7 +45,7 @@ public final class QuerySection {
   querySections(Term term, List<Integer> registrationNumbers, int batchSize) {
     return StreamSupport
         .stream(new SimpleBatchedFutureEngine<>(
-                    registrationNumbers, batchSize,
+                    registrationNumbers.iterator(), batchSize,
                     (registrationNumber,
                      __) -> querySectionAsync(term, registrationNumber))
                     .spliterator(),
@@ -78,10 +80,11 @@ public final class QuerySection {
         .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
-            logger.error("Error (registrationNumber={}): {}",
+            logger.error("Error (term={}, registrationNumber={}): {}", term,
                          registrationNumber, throwable.getMessage());
             return null;
           }
+
           return transform.apply(resp.getResponseBody());
         });
   }

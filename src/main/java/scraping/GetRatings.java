@@ -1,5 +1,11 @@
 package scraping;
 
+import static utils.TryCatch.*;
+
+import java.util.Iterator;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
@@ -13,11 +19,6 @@ import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
-
-import java.util.Iterator;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public final class GetRatings {
 
@@ -54,13 +55,10 @@ public final class GetRatings {
 
     SimpleBatchedFutureEngine<Instructor, Rating> engine =
         new SimpleBatchedFutureEngine<>(
-            instructorResults, batchSize, (instructor, __) -> {
-              try {
-                return queryRatingAsync(instructor.name, instructor.id);
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
+            instructorResults, batchSize,
+            (instructor, __)
+                -> tcPass(logger, GetRatings::queryRatingAsync, instructor.name,
+                          instructor.id));
 
     return StreamSupport.stream(engine.spliterator(), false)
         .filter(i -> i != null);

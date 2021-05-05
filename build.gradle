@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "application"
-    id "org.flywaydb.flyway" version "6.2.4"
+    id "org.flywaydb.flyway" version "7.8.2"
 }
 
 mainClassName = 'Main'
@@ -23,7 +23,6 @@ flyway {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
@@ -57,6 +56,10 @@ allprojects {
 
 jar {
   manifest { attributes ('Main-Class': 'Main') }
+  duplicatesStrategy = "include"
 
-  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+  dependsOn configurations.runtimeClasspath
+  from {
+    configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+  }
 }

@@ -1,5 +1,7 @@
 package database;
 
+import static utils.TryCatch.*;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
@@ -61,12 +63,10 @@ public class GetConnection {
   }
 
   public static void close() {
-    try {
+    tcFatal(() -> {
       if (dataSource != null)
         dataSource.close();
       dataSource = null;
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+    });
   }
 }

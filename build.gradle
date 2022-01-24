@@ -13,6 +13,11 @@ def getenv = { String env_val, default_val ->
   } else return ext.val
 }
 
+tasks.named('wrapper') {
+    jarFile = "${project.projectDir}/src/main/gradle/wrapper/gradle-wrapper.jar"
+}
+
+
 flyway {
   driver = 'org.postgresql.Driver'
   url = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")

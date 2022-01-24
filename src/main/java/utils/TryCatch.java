@@ -192,6 +192,7 @@ public final class TryCatch {
   // However, it shouldn't be ambiguous, since the return value of
   // one overload interface is void and the other is a type variable, and
   // there's no conversion from E -> void
+  @SuppressWarnings("unchecked")
   public static <P1> void tcLogVoid(Logger logger, Consumer<P1> callable,
                                     P1 p1) {
     _tcLog(logger, (p) -> {

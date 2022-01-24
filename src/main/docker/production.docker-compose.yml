@@ -1,0 +1,81 @@
+version: '3.3'
+
+services:
+  reverse-proxy:
+    # The official v2.1 Traefik docker image
+    image: traefik:v2.1
+    restart: always
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      - "--api.insecure=true"
+      - "--api.debug=true"
+
+      # You need to actively say traefik.enable=true
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web2.address=:4358"
+      - "--entrypoints.websecure.address=:443"
+
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=albertymliu@gmail.com"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=.letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./.letsencrypt:/.letsencrypt"
+
+  postgres:
+    image: postgres:10.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    expose:
+      - "5432"
+    volumes:
+      - "./src/main/migrations:/docker-entrypoint-initdb.d"
+
+  schedge:
+    image: a1liu/schedge:latest
+    environment:
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - JDBC_URL=jdbc:postgresql://postgres/postgres
+    labels:
+      - "traefik.enable=true"
+      - "com.centurylinklabs.watchtower.enable=true"
+
+        # HTTPS
+      - "traefik.http.routers.schedge-https.rule=Host(`nyu.a1liu.com`)"
+      - "traefik.http.routers.schedge-https.service=schedge-https"
+      - "traefik.http.routers.schedge-https.entrypoints=websecure"
+      - "traefik.http.services.schedge-https.loadbalancer.server.port=4358"
+      - "traefik.http.routers.schedge-https.tls.certresolver=mytlschallenge"
+
+        #HTTP
+      - "traefik.http.routers.schedge-http.rule=Host(`nyu.a1liu.com`, `localhost`)"
+      - "traefik.http.routers.schedge-http.service=schedge-http"
+      - "traefik.http.routers.schedge-http.entrypoints=web,web2"
+      - "traefik.http.services.schedge-http.loadbalancer.server.port=4358"
+
+    expose:
+      - "4358"
+
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --cleanup --label-enable
+    restart: unless-stopped

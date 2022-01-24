@@ -1,0 +1,36 @@
+version: '3.3'
+
+services:
+  postgres:
+    image: postgres:10.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    expose:
+      - "5432"
+    volumes:
+      - "./src/main/migrations:/docker-entrypoint-initdb.d"
+
+  schedge:
+    build:
+      context: .
+      dockerfile: ./src/main/docker/Dockerfile
+    environment:
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - JDBC_URL=jdbc:postgresql://postgres/postgres
+
+    ports:
+      - "4358:4358"
+
+  watchtower:
+    image: v2tec/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --cleanup --label-enable --no-pull
+    restart: unless-stopped

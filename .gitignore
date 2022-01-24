@@ -10,6 +10,9 @@
 # IDEA IDE
 .idea
 
+# letsencrypt stuffs
+.letsencrypt
+
 # Ignore Gradle build output directory
 .build
 

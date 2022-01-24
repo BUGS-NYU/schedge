@@ -8,11 +8,11 @@ import nyu.SubjectCode;
 
 public class Course {
 
-  private String name;
-  private String deptCourseId;
-  private String description;
-  private SubjectCode subjectCode;
-  private List<Section> sections;
+  public String name;
+  public String deptCourseId;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+  public SubjectCode subjectCode;
+  public List<Section> sections;
 
   public Course(String name, String deptCourseId, String description,
                 SubjectCode subjectCode, List<Section> sections) {
@@ -22,19 +22,6 @@ public class Course {
     this.subjectCode = subjectCode;
     this.sections = sections;
   }
-
-  public @NotNull String getName() { return name; }
-
-  public @NotNull String getDeptCourseId() { return deptCourseId; }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getDescription() {
-    return description;
-  }
-
-  public @NotNull SubjectCode getSubjectCode() { return subjectCode; }
-
-  public @NotNull List<Section> getSections() { return sections; }
 
   @JsonIgnore
   public String getSubject() {

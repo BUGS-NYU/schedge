@@ -21,7 +21,7 @@ public class RowsToCourses {
               if (row.associatedWith == null) {
                 Section s = Section.fromFullRow(row);
                 sections.put(row.sectionId, s);
-                courses.get(row.courseId).getSections().add(s);
+                courses.get(row.courseId).sections.add(s);
               }
               return row;
             })
@@ -33,7 +33,7 @@ public class RowsToCourses {
       if (s != null)
         s.addRecitation(Section.fromFullRow(row));
       else // Orphans get added to course regardless
-        courses.get(row.courseId).getSections().add(Section.fromFullRow(row));
+        courses.get(row.courseId).sections.add(Section.fromFullRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());
@@ -53,7 +53,7 @@ public class RowsToCourses {
               if (row.associatedWith == null) {
                 Section s = Section.fromRow(row);
                 sections.put(row.sectionId, s);
-                courses.get(row.courseId).getSections().add(s);
+                courses.get(row.courseId).sections.add(s);
               }
               return row;
             })
@@ -66,7 +66,7 @@ public class RowsToCourses {
       if (s != null)
         s.addRecitation(Section.fromRow(row));
       else // Orphans get added to course regardless
-        courses.get(row.courseId).getSections().add(Section.fromRow(row));
+        courses.get(row.courseId).sections.add(Section.fromRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());

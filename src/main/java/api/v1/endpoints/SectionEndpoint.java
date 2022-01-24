@@ -92,13 +92,13 @@ public final class SectionEndpoint extends Endpoint {
               .fullRowsToCourses(
                   SelectRows.selectFullRow(conn, epoch, registrationNumber))
               .findAny()
-              .map(c -> c.getSections().get(0))
+              .map(c -> c.sections.get(0))
               .orElse(null);
         return RowsToCourses
             .rowsToCourses(
                 SelectRows.selectRow(conn, epoch, registrationNumber))
             .findAny()
-            .map(c -> c.getSections().get(0))
+            .map(c -> c.sections.get(0))
             .orElse(null);
       });
       if (output == null) {

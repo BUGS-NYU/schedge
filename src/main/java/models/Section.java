@@ -11,25 +11,25 @@ import nyu.SectionStatus;
 import nyu.SectionType;
 
 public class Section {
-  private int registrationNumber;
-  private String code;
-  private String[] instructors;
-  private SectionType type;
-  private SectionStatus status;
-  private List<Meeting> meetings;
-  private List<Section> recitations;
-  private Integer waitlistTotal;
-  private String instructionMode;
+  public int registrationNumber;
+  public String code;
+  public String[] instructors;
+  public SectionType type;
+  public SectionStatus status;
+  public List<Meeting> meetings;
+  public List<Section> recitations;
+  public Integer waitlistTotal;
+  public String instructionMode;
 
   // values that need to be updated
-  private String name;
-  private String campus;
-  private Double minUnits;
-  private Double maxUnits;
-  private String grading;
-  private String location;
-  private String notes;
-  private String prerequisites;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String campus;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public Double minUnits;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public Double maxUnits;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String grading;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
 
   public Section(int registrationNumber, String code, String[] instructors,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
@@ -81,67 +81,11 @@ public class Section {
     this.prerequisites = prerequisites;
   }
 
-  public int getRegistrationNumber() { return registrationNumber; }
-
-  public String getCode() { return code; }
-
-  public String[] getInstructors() { return instructors; }
-
-  public SectionType getType() { return type; }
-
-  public SectionStatus getStatus() { return status; }
-
-  public List<Meeting> getMeetings() { return meetings; }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public List<Section> getRecitations() {
-    return recitations;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Integer getWaitlistTotal() {
-    return waitlistTotal;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getCampus() {
-    return campus;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getName() {
-    return name;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Double getMinUnits() {
-    return minUnits;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public Double getMaxUnits() {
-    return maxUnits;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getInstructionMode() {
-    return instructionMode;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getGrading() {
-    return grading;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getLocation() {
-    return location;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getNotes() {
-    return notes;
-  }
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public String getPrerequisites() {
-    return prerequisites;
-  }
-
   public void addRecitation(Section s) {
     if (recitations == null) {
       recitations = new ArrayList<>();
     }
+
     recitations.add(s);
   }
 

@@ -18,6 +18,7 @@ public class Section {
   public SectionType type;
   public SectionStatus status;
   public List<Meeting> meetings;
+
   @JsonInclude(JsonInclude.Include.NON_NULL) public List<Section> recitations;
   @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;

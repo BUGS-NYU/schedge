@@ -28,7 +28,6 @@ public final class CoursesEndpoint extends Endpoint {
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
               "This endpoint returns a list of courses for a specific year, semester, school, and subject.");
           openApiOperation.summary("Courses Endpoint");

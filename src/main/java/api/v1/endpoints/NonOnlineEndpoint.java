@@ -27,7 +27,6 @@ public final class NonOnlineEndpoint extends Endpoint {
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
               "This endpoint returns a list of courses for a specific year, semester that aren't online.");
           openApiOperation.summary("Non-Online Endpoint");

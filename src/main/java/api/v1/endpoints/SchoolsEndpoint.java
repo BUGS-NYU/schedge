@@ -17,13 +17,11 @@ public final class SchoolsEndpoint extends Endpoint {
   @NotNull
   @Override
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
-          openApiOperation.description(
-              "This endpoint returns an object where keys are school codes, and values are their full names.");
-          openApiOperation.summary("Schools Endpoint");
-        });
+    return docs.operation(openApiOperation -> {
+      openApiOperation.description(
+          "This endpoint returns an object where keys are school codes, and values are their full names.");
+      openApiOperation.summary("Schools Endpoint");
+    });
   }
 
   @NotNull

@@ -30,7 +30,6 @@ public final class SearchEndpoint extends Endpoint {
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
               "This endpoint returns a list of courses for a year and semester, given search terms.");
           openApiOperation.summary("Search Endpoint");

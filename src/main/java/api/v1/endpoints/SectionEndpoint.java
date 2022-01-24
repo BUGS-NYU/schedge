@@ -10,10 +10,9 @@ import database.courses.SelectRows;
 import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import nyu.Term;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import nyu.Term;
 
 public final class SectionEndpoint extends Endpoint {
 
@@ -29,7 +28,6 @@ public final class SectionEndpoint extends Endpoint {
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
-          // openApiOperation.operationId("Operation Id");
           openApiOperation.description(
               "This endpoint returns a section for a specific year, semester, and registration number.");
           openApiOperation.summary("Section Endpoint");

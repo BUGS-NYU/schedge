@@ -9,6 +9,7 @@ import java.util.Objects;
 import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
+import utils.JsonMapper;
 
 public class Section {
   public int registrationNumber;
@@ -81,4 +82,6 @@ public class Section {
 
     return s;
   }
+
+  public String toString() { return JsonMapper.toJson(this); }
 }

@@ -1,10 +1,9 @@
 package scraping.models;
 
+import java.util.List;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;
-
-import java.util.List;
 
 public class Section {
   public final int registrationNumber;

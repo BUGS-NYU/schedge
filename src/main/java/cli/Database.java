@@ -156,7 +156,7 @@ public class Database implements Runnable {
       Term term = termMixin.getTermAllowNull();
       GetConnection.withConnection(conn -> {
         if (epoch == null && term == null) {
-          logger.info("Cleaning old epochs...");
+          logger.info("Cleaning all old epochs...");
           CleanData.cleanData();
         } else if (epoch != null && term == null) {
           logger.info("Cleaning epoch={}...", epoch);
@@ -195,11 +195,5 @@ public class Database implements Runnable {
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
-  }
-}
-
-final class Hello {
-  public static String hello(String input) {
-    throw new RuntimeException(input);
   }
 }

@@ -17,9 +17,9 @@ public class Section {
   public SectionType type;
   public SectionStatus status;
   public List<Meeting> meetings;
-  public List<Section> recitations;
-  public Integer waitlistTotal;
-  public String instructionMode;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public List<Section> recitations;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;
 
   // values that need to be updated
   @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
@@ -31,56 +31,6 @@ public class Section {
   @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
 
-  public Section(int registrationNumber, String code, String[] instructors,
-                 SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, Integer waitlistTotal,
-                 String instructionMode) {
-
-    if (type != SectionType.LEC && recitations != null) {
-      throw new IllegalArgumentException(
-          "If the section type isn't a lecture, it can't have recitations!");
-    }
-    this.registrationNumber = registrationNumber;
-    this.code = code;
-    this.instructors = instructors;
-    this.type = type;
-    this.status = status;
-    this.meetings = meetings;
-    this.recitations = recitations;
-    this.waitlistTotal = waitlistTotal;
-    this.instructionMode = instructionMode;
-  }
-
-  public Section(int registrationNumber, String code, String[] instructors,
-                 SectionType type, SectionStatus status, List<Meeting> meetings,
-                 List<Section> recitations, String name, Integer waitlistTotal,
-                 String campus, Double minUnits, Double maxUnits,
-                 String instructionMode, String grading, String location,
-                 String notes, String prerequisites) {
-    if (type != SectionType.LEC && recitations != null) {
-      throw new IllegalArgumentException(
-          "If the section type isn't a lecture, it can't have recitations!");
-    }
-
-    this.waitlistTotal = waitlistTotal;
-    this.name = name;
-    this.registrationNumber = registrationNumber;
-    this.code = code;
-    this.instructors = instructors;
-    this.type = type;
-    this.status = status;
-    this.meetings = meetings;
-    this.recitations = recitations;
-    this.campus = campus;
-    this.minUnits = minUnits;
-    this.maxUnits = maxUnits;
-    this.instructionMode = instructionMode;
-    this.grading = grading;
-    this.notes = notes;
-    this.location = location;
-    this.prerequisites = prerequisites;
-  }
-
   public void addRecitation(Section s) {
     if (recitations == null) {
       recitations = new ArrayList<>();
@@ -89,47 +39,43 @@ public class Section {
     recitations.add(s);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    Section section = (Section)o;
-    return registrationNumber == section.registrationNumber &&
-        Objects.equals(name, section.name) && code.equals(section.code) &&
-        instructors.equals(section.instructors) && type == section.type &&
-        status == section.status &&
-        Objects.equals(waitlistTotal, section.waitlistTotal) &&
-        Objects.equals(campus, section.campus) &&
-        Objects.equals(minUnits, section.minUnits) &&
-        Objects.equals(maxUnits, section.maxUnits) &&
-        Objects.equals(instructionMode, section.instructionMode) &&
-        Objects.equals(grading, section.grading) &&
-        Objects.equals(location, section.location) &&
-        Objects.equals(prerequisites, section.prerequisites);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(name, registrationNumber, code, instructors, type,
-                        status, waitlistTotal, campus, minUnits, maxUnits,
-                        instructionMode, grading, location, prerequisites);
-  }
-
   public static Section fromRow(Row row) {
-    return new Section(row.registrationNumber, row.sectionCode, row.instructors,
-                       row.sectionType, row.sectionStatus, row.meetings, null,
-                       row.sectionName, row.waitlistTotal, null, row.minUnits,
-                       row.maxUnits, row.instructionMode, null, row.location,
-                       null, null);
+    Section s = new Section();
+    s.waitlistTotal = row.waitlistTotal;
+    s.name = row.sectionName;
+    s.registrationNumber = row.registrationNumber;
+    s.code = row.sectionCode;
+    s.instructors = row.instructors;
+    s.type = row.sectionType;
+    s.status = row.sectionStatus;
+    s.meetings = row.meetings;
+    s.minUnits = row.minUnits;
+    s.maxUnits = row.maxUnits;
+    s.instructionMode = row.instructionMode;
+    s.location = row.location;
+
+    return s;
   }
 
   public static Section fromFullRow(FullRow row) {
-    return new Section(row.registrationNumber, row.sectionCode, row.instructors,
-                       row.sectionType, row.sectionStatus, row.meetings, null,
-                       row.sectionName, row.waitlistTotal, row.campus,
-                       row.minUnits, row.maxUnits, row.instructionMode,
-                       row.grading, row.location, row.notes, row.prerequisites);
+    Section s = new Section();
+    s.waitlistTotal = row.waitlistTotal;
+    s.name = row.sectionName;
+    s.registrationNumber = row.registrationNumber;
+    s.code = row.sectionCode;
+    s.instructors = row.instructors;
+    s.type = row.sectionType;
+    s.status = row.sectionStatus;
+    s.meetings = row.meetings;
+    s.campus = row.campus;
+    s.minUnits = row.minUnits;
+    s.maxUnits = row.maxUnits;
+    s.instructionMode = row.instructionMode;
+    s.grading = row.grading;
+    s.notes = row.notes;
+    s.location = row.location;
+    s.prerequisites = row.prerequisites;
+
+    return s;
   }
 }

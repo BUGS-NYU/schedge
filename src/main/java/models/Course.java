@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import nyu.SubjectCode;
 
 public class Course {
-
   public String name;
   public String deptCourseId;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String description;

@@ -19,9 +19,9 @@ tasks.named('wrapper') {
   jarFile = "${project.projectDir}/src/main/gradle/gradle-wrapper.jar"
 }
 
-tasks.withType(JavaCompile) {
-  options.compilerArgs << "-Xlint:unchecked"
-}
+// tasks.withType(JavaCompile) {
+//   options.compilerArgs << "-Xlint:unchecked"
+// }
 
 flyway {
   driver = 'org.postgresql.Driver'

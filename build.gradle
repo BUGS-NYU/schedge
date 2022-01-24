@@ -5,6 +5,8 @@ plugins {
 }
 
 mainClassName = 'Main'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 def getenv = { String env_val, default_val ->
   ext.val = System.getenv(env_val)
@@ -16,7 +18,6 @@ def getenv = { String env_val, default_val ->
 tasks.named('wrapper') {
     jarFile = "${project.projectDir}/src/main/gradle/gradle-wrapper.jar"
 }
-
 
 flyway {
   driver = 'org.postgresql.Driver'

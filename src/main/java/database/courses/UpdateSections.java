@@ -9,11 +9,11 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import models.Section;
 import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.models.SectionAttribute;
 import scraping.parse.ParseSection;
 import utils.SimpleBatchedFutureEngine;
 import utils.TryCatch;
@@ -65,7 +65,7 @@ public class UpdateSections {
       TryCatch tryCatch =
           tc(logger, "Parse error on term={}, registrationNumber={}", term,
              save.registrationNumber);
-      SectionAttribute s = tryCatch.pass(() -> ParseSection.parse(save.data));
+      Section s = tryCatch.pass(() -> ParseSection.parse(save.data));
       if (s == null) {
         tryCatch.output();
         continue;
@@ -96,9 +96,8 @@ public class UpdateSections {
                                 + "WHERE sections.id = ?"
                                 + "RETURNING sections.course_id");
 
-      Utils.setArray(stmt, s.sectionName,
-                     save.code.toString() + ' ' + s.sectionName, s.campus,
-                     Utils.nullable(Types.VARCHAR, s.instructionMode),
+      Utils.setArray(stmt, s.name, save.code.toString() + ' ' + s.name,
+                     s.campus, Utils.nullable(Types.VARCHAR, s.instructionMode),
                      s.minUnits, s.maxUnits, s.location, s.grading,
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.notes),

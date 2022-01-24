@@ -21,7 +21,7 @@ public class Section {
   @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;
 
-  // values that need to be updated
+  // Values that need to be updated
   @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String campus;
   @JsonInclude(JsonInclude.Include.NON_NULL) public Double minUnits;
@@ -30,6 +30,9 @@ public class Section {
   @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
+
+  // Values that are sometimes necessary
+  @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
 
   public void addRecitation(Section s) {
     if (recitations == null) {

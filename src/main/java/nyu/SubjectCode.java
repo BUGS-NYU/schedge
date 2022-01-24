@@ -1,11 +1,10 @@
 package nyu;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import utils.Utils;
-
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import utils.Utils;
 
 public final class SubjectCode {
 

@@ -1,22 +1,18 @@
 package scraping.parse;
 
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import models.Section;
 import nyu.SectionStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scraping.models.SectionAttribute;
+import org.slf4j.*;
 import utils.Utils;
-
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Parses a section string.
@@ -37,8 +33,8 @@ public class ParseSection {
           .collect(
               Collectors.toMap(strings -> strings[0], strings -> strings[1]));
 
-  public static SectionAttribute parse(@NotNull String rawData) {
-    logger.debug("parsing raw catalog section data into SectionAttribute...");
+  public static Section parse(@NotNull String rawData) {
+    logger.debug("parsing raw catalog section data into Section...");
 
     rawData = rawData.trim();
 
@@ -90,9 +86,9 @@ public class ParseSection {
     return map;
   }
 
-  public static @NotNull
-  SectionAttribute parsingElements(Map<String, String> secData,
-                                   String sectionName, String link) {
+  public static @NotNull Section parsingElements(Map<String, String> secData,
+                                                 String sectionName,
+                                                 String link) {
     String units = secData.get("Units");
     double minUnits = 0, maxUnits;
     if (units.contains("-")) {
@@ -115,15 +111,22 @@ public class ParseSection {
 
     String[] instructors = secData.get("Instructor(s)").split(", *\\n *\\n");
 
-    return new SectionAttribute(
-        sectionName.equals("") ? null : sectionName,
-        Integer.parseInt(secData.get("Class Number")),
-        SectionStatus.parseStatus(secData.get("Status")),
-        secData.get("Location"), secData.get("Description"),
-        secData.get("Instruction Mode"), instructors, minUnits, maxUnits,
-        secData.get("Grading"), secData.getOrDefault("Notes", null),
-        secData.getOrDefault("Enrollment Requirements", null),
-        secData.get("Room"));
+    Section s = new Section();
+    s.name = sectionName.equals("") ? null : sectionName;
+    s.registrationNumber = Integer.parseInt(secData.get("Class Number"));
+    s.status = SectionStatus.parseStatus(secData.get("Status"));
+    s.campus = secData.get("Location");
+    s.description = secData.get("Description");
+    s.instructionMode = secData.get("Instruction Mode");
+    s.instructors = instructors;
+    s.minUnits = minUnits;
+    s.maxUnits = maxUnits;
+    s.grading = secData.get("Grading");
+    s.notes = secData.getOrDefault("Notes", null);
+    s.prerequisites = secData.getOrDefault("Enrollment Requirements", null);
+    s.location = secData.get("Room");
+
+    return s;
   }
 
   public static void parseBuilding(Map<String, String> secData, String link) {

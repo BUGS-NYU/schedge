@@ -2,6 +2,8 @@ package utils;
 
 import static utils.TryCatch.*;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import java.io.File;
@@ -9,8 +11,9 @@ import java.io.IOException;
 
 public class JsonMapper {
   private static ObjectMapper objMapper =
-      new ObjectMapper().setPropertyNamingStrategy(
-          PropertyNamingStrategy.SNAKE_CASE);
+      new ObjectMapper()
+          .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+          .setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 
   public static <E> E fromJson(String json, Class<E> clazz) {
     return tcFatal(

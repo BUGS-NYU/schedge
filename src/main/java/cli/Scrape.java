@@ -48,12 +48,13 @@ public class Scrape implements Runnable {
           description = "Scrape existing Schedge instance")
   public void
   schedge(
+      @CommandLine.Mixin TermMixin termMixin,
       @CommandLine.
       Option(names = "--domain", defaultValue = "schedge.a1liu.com",
              description = "domain to scrape as if it's an instance of schedge")
       String domain,
       @CommandLine.Mixin OutputFileMixin outputFileMixin) {
-    // TODO this will eventually scrape directly from the new API  instead of
+    // TODO this will eventually scrape directly from the new API instead of
     // the old one
     long start = System.nanoTime();
 

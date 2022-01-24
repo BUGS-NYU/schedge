@@ -41,7 +41,7 @@ public class App {
               config.enableWebjars();
               config.registerPlugin(new OpenApiPlugin(options));
             })
-            .start(8080);
+            .start(4358);
     Logger logger = LoggerFactory.getLogger("app");
 
     String docs = new BufferedReader(

@@ -53,6 +53,17 @@ public class GetConnection {
       config.setPassword(getEnvDefault("DB_PASSWORD", ""));
       config.setJdbcUrl(getEnvDefault(
           "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/schedge"));
+
+      // We retry a few times so that schedge doesn't hard-crash when running in
+      // docker-compose
+      for (int i = 0; i < 10; i++) {
+        dataSource = tcIgnore(() -> new HikariDataSource(config));
+        if (dataSource != null)
+          return;
+
+        tcIgnore(() -> Thread.sleep(3000));
+      }
+
       dataSource = new HikariDataSource(config);
     }
   }

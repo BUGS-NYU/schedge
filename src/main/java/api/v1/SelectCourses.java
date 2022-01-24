@@ -1,19 +1,16 @@
 package api.v1;
 
-import api.v1.models.Course;
-import database.courses.SelectRows;
-import nyu.SubjectCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static api.v1.RowsToCourses.rowsToCourses;
+import static database.courses.SelectRows.selectRowsBySectionId;
 
+import database.courses.SelectRows;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static api.v1.RowsToCourses.rowsToCourses;
-import static database.courses.SelectRows.selectRowsBySectionId;
+import java.util.stream.*;
+import models.*;
+import nyu.*;
+import org.slf4j.*;
 
 public class SelectCourses {
 
@@ -30,8 +27,7 @@ public class SelectCourses {
   public static Stream<Course> selectCourses(Connection conn, int epoch,
                                              SubjectCode code) {
     try {
-      return rowsToCourses(
-          SelectRows.selectRows(conn, epoch, code));
+      return rowsToCourses(SelectRows.selectRows(conn, epoch, code));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -46,12 +42,12 @@ public class SelectCourses {
 
   public static Stream<Course> selectFullCourses(Connection conn, int epoch,
                                                  SubjectCode code) {
-      try {
-          return RowsToCourses.fullRowsToCourses(
-              SelectRows.selectFullRows(conn, epoch, code));
-      } catch (SQLException e) {
-          throw new RuntimeException(e);
-      }
+    try {
+      return RowsToCourses.fullRowsToCourses(
+          SelectRows.selectFullRows(conn, epoch, code));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   public static List<Course>

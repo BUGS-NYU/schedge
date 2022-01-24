@@ -2,7 +2,6 @@ package api.v1.endpoints;
 
 import api.Endpoint;
 import api.v1.*;
-import api.v1.models.*;
 import database.GetConnection;
 import database.courses.*;
 import database.epochs.LatestCompleteEpoch;
@@ -11,6 +10,7 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.*;
+import models.*;
 import nyu.*;
 
 public final class NonOnlineEndpoint extends Endpoint {

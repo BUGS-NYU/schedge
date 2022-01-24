@@ -6,18 +6,23 @@ import java.util.stream.*;
 import models.*;
 
 public class RowsToCourses {
-
   public static Stream<Course> fullRowsToCourses(Stream<FullRow> rows) {
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
     List<FullRow> recitationRecords =
         rows.map(row -> {
-              if (!courses.containsKey(row.courseId))
-                courses.put(row.courseId,
-                            new Course(row.name, row.deptCourseId,
-                                       row.description, row.subject,
-                                       new ArrayList<>()));
+              if (!courses.containsKey(row.courseId)) {
+                Course c = new Course();
+                c.name = row.name;
+                c.deptCourseId = row.deptCourseId;
+                c.description = row.description;
+                c.subjectCode = row.subject;
+                c.sections = new ArrayList<>();
+
+                courses.put(row.courseId, c);
+              }
+
               if (row.associatedWith == null) {
                 Section s = Section.fromFullRow(row);
                 sections.put(row.sectionId, s);
@@ -46,10 +51,17 @@ public class RowsToCourses {
 
     List<Row> recitationRecords =
         rows.map(row -> {
-              if (!courses.containsKey(row.courseId))
-                courses.put(row.courseId,
-                            new Course(row.name, row.deptCourseId, null,
-                                       row.subject, new ArrayList<>()));
+              if (!courses.containsKey(row.courseId)) {
+                Course c = new Course();
+                c.name = row.name;
+                c.deptCourseId = row.deptCourseId;
+                c.description = null;
+                c.subjectCode = row.subject;
+                c.sections = new ArrayList<>();
+
+                courses.put(row.courseId, c);
+              }
+
               if (row.associatedWith == null) {
                 Section s = Section.fromRow(row);
                 sections.put(row.sectionId, s);

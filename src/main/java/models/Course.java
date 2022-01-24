@@ -14,15 +14,6 @@ public class Course {
   public SubjectCode subjectCode;
   public List<Section> sections;
 
-  public Course(String name, String deptCourseId, String description,
-                SubjectCode subjectCode, List<Section> sections) {
-    this.name = name;
-    this.deptCourseId = deptCourseId;
-    this.description = description;
-    this.subjectCode = subjectCode;
-    this.sections = sections;
-  }
-
   @JsonIgnore
   public String getSubject() {
     return subjectCode.code;

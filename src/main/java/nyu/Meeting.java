@@ -1,8 +1,6 @@
 package nyu;
 
-import utils.JsonSerializable;
-
-public class Meeting implements JsonSerializable {
+public class Meeting {
   public final String beginDate;    // contains date and time of first event.
   public final int minutesDuration; // Duration of meeting
   public final String endDate;      // When the meeting stops repeating
@@ -11,18 +9,5 @@ public class Meeting implements JsonSerializable {
     this.beginDate = beginDate;
     this.minutesDuration = Integer.parseInt(minutesDuration);
     this.endDate = endDate;
-  }
-
-  public String getBeginDate() { return beginDate; }
-
-  public long getMinutesDuration() { return minutesDuration; }
-
-  public String getEndDate() { return endDate; }
-
-  @Override
-  public void toJson(StringBuilder s) {
-    s.append(String.format(
-        "{\"beginDate\":\"%s\",\"duration\":\"%s\",\"endDate\":\"%s\"}",
-        beginDate, minutesDuration, endDate));
   }
 }

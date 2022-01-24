@@ -16,7 +16,11 @@ def getenv = { String env_val, default_val ->
 }
 
 tasks.named('wrapper') {
-    jarFile = "${project.projectDir}/src/main/gradle/gradle-wrapper.jar"
+  jarFile = "${project.projectDir}/src/main/gradle/gradle-wrapper.jar"
+}
+
+tasks.withType(JavaCompile) {
+  options.compilerArgs << "-Xlint:unchecked"
 }
 
 flyway {

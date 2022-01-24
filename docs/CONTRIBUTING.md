@@ -119,7 +119,7 @@ brew install gradle
 - Choose where you want to save the project locally on your computer then run
   `git clone [Your URL/Git here]`.
 - We recommend to develop your feature through another branch other than the
-  `master` branch. So, run `git checkout -b [name of your branch here]` and develop
+  `main` branch. So, run `git checkout -b [name of your branch here]` and develop
   the feature. You can switch between branches by the same command by removing `-b`.
 - Once you finish, you can run the normal `git add`, `git commit` & `git push`.
 - Make a [PR](#user-content-pull-request) when the feature is fully finished or
@@ -152,7 +152,7 @@ Remember to include enough information if you're reporting a bug.
 Asking question through an issue is totally fine as well.
 
 ## Pull Request
-It would be best to develop your feature with a new branch other than master.
+It would be best to develop your feature with a new branch other than main.
 Every PR will be considered.
 
 ### Before Creating a PR

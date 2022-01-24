@@ -1,17 +1,21 @@
 package utils;
 
+import static utils.TryCatch.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-
 import java.io.File;
 import java.io.IOException;
 
-// @Performance replace this with version that serializes using interface and
-// stringbuilder
 public class JsonMapper {
   private static ObjectMapper objMapper =
       new ObjectMapper().setPropertyNamingStrategy(
           PropertyNamingStrategy.SNAKE_CASE);
+
+  public static <E> E fromJson(String json, Class<E> clazz) {
+    return tcFatal(
+        () -> objMapper.readValue(json, clazz), "Failed to parse JSON");
+  }
 
   public static String toJson(Object o) { return toJson(o, false); }
 

@@ -1,9 +1,8 @@
 package scraping.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import nyu.SubjectCode;
-
 import java.util.List;
+import nyu.SubjectCode;
 
 public final class Course {
 

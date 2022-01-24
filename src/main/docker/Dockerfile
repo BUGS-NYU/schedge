@@ -1,8 +1,6 @@
 FROM gradle:7.3.3-jdk11-alpine AS build
 WORKDIR /home/gradle/schedge
 
-RUN mkdir -p ./.build/libs
-
 COPY --chown=gradle:gradle ./build.gradle ./build.gradle
 
 # This run takes 20 seconds, the next one also takes around 20 seconds when this

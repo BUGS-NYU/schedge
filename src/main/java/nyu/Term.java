@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Term {
+  public enum Semester { sp, ja, fa, su }
+
   public final int semester;
   public final int year;
 
@@ -104,6 +106,22 @@ public final class Term {
       return "Fall";
     default:
       throw new IllegalArgumentException("Invalid semester value: " + sem);
+    }
+  }
+
+  public String semString() {
+    switch (this.semester) {
+    case 2:
+      return "ja";
+    case 4:
+      return "sp";
+    case 6:
+      return "su";
+    case 8:
+      return "fa";
+    default:
+      throw new IllegalArgumentException("Invalid semester value: " +
+                                         this.semester);
     }
   }
 

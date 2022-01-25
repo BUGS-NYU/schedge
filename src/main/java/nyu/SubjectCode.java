@@ -39,7 +39,7 @@ public final class SubjectCode {
                                          this.toString() + "'");
   }
 
-  public static Map<String, SchoolMetadata> allSchools() {
+  public static synchronized Map<String, SchoolMetadata> allSchools() {
     if (schools == null) {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
@@ -50,7 +50,7 @@ public final class SubjectCode {
     return schools;
   }
 
-  public static Map<String, Map<String, SubjectMetadata>>
+  public static synchronized Map<String, Map<String, SubjectMetadata>>
   getAvailableSubjectInfo() {
     if (availableSubjectInfo == null) {
       availableSubjectInfo = new HashMap<>();
@@ -67,7 +67,8 @@ public final class SubjectCode {
     return availableSubjectInfo;
   }
 
-  public static Map<String, List<SubjectCode>> getAvailableSubjects() {
+  public static synchronized Map<String, List<SubjectCode>>
+  getAvailableSubjects() {
     if (availableSubjects == null) {
       BiFunction<String, Set<String>, List<SubjectCode>> f = (school, subjects)
           -> subjects.stream()
@@ -80,7 +81,7 @@ public final class SubjectCode {
     return availableSubjects;
   }
 
-  public static List<SubjectCode> allSubjects() {
+  public static synchronized List<SubjectCode> allSubjects() {
     if (allSubjects == null) {
       allSubjects = getAvailableSubjects()
                         .entrySet()

@@ -12,18 +12,24 @@ import database.GetConnection;
 import database.epochs.CleanEpoch;
 import database.epochs.LatestCompleteEpoch;
 import database.instructors.UpdateInstructors;
+import database.models.FullRow;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.*;
 import me.tongfei.progressbar.*;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
+import scraping.ScrapeSchedge;
 import scraping.query.GetClient;
 
 @CommandLine.
 Command(name = "db",
         description = "query/scrape/update/serve data through the database",
-        synopsisSubcommandLabel = "(scrape | query | update | serve | clean)",
+        synopsisSubcommandLabel =
+            "(scrape | query | update | serve | clean | populate)",
         subcommands = {Database.Clean.class})
 public class Database implements Runnable {
   @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
@@ -195,5 +201,36 @@ public class Database implements Runnable {
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
+  }
+
+  @CommandLine.
+  Command(name = "populate", sortOptions = false, headerHeading = "Command: ",
+          descriptionHeading = "%nDescription:%n%n",
+          parameterListHeading = "%nParameters:%n",
+          optionListHeading = "%nOptions:%n",
+          header = "populate database using production API",
+          description = "Scrape existing Schedge instance")
+  public void
+  populate(
+      @CommandLine.Mixin TermMixin termMixin,
+      @CommandLine.
+      Option(names = "--domain", defaultValue = "schedge.a1liu.com",
+             description = "domain to scrape as if it's an instance of schedge")
+      String domain) {
+    // TODO this will eventually scrape directly from the new API instead of
+    // the old one
+    long start = System.nanoTime();
+
+    List<FullRow> courses = ScrapeSchedge.scrapeFromSchedge(termMixin.getTerm())
+                                .flatMap(course -> {
+                                  ArrayList<FullRow> rows = new ArrayList<>();
+
+                                  return rows.stream();
+                                })
+                                .collect(Collectors.toList());
+
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + "seconds");
   }
 }

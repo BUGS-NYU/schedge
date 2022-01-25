@@ -31,28 +31,35 @@ public class Row {
   public final String instructionMode;
 
   public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
-    courseId = rs.getInt("id");
-    name = rs.getString("name");
-    subject = new SubjectCode(rs.getString("subject"), rs.getString("school"));
-    deptCourseId = rs.getString("dept_course_id");
-    sectionId = rs.getInt("section_id");
-    registrationNumber = rs.getInt("registration_number");
-    sectionCode = rs.getString("section_code");
-    String instructorString = rs.getString("section_instructors");
-    instructors = instructorString.equals("") ? new String[] {"Staff"}
-                                              : instructorString.split(";");
+    this.courseId = rs.getInt("id");
+    this.name = rs.getString("name");
+    this.subject =
+        new SubjectCode(rs.getString("subject"), rs.getString("school"));
+    this.deptCourseId = rs.getString("dept_course_id");
+    this.sectionId = rs.getInt("section_id");
+    this.registrationNumber = rs.getInt("registration_number");
+    this.sectionCode = rs.getString("section_code");
 
-    sectionType = SectionType.values()[rs.getInt("section_type")];
-    sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+    String instructorString = rs.getString("section_instructors");
+    this.instructors = instructorString.equals("")
+                           ? new String[] {"Staff"}
+                           : instructorString.split(";");
+
+    this.sectionType = SectionType.values()[rs.getInt("section_type")];
+    this.sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+
     int associatedWith = rs.getInt("associated_with");
     this.associatedWith = rs.wasNull() ? null : associatedWith;
+
     this.meetings = meetings;
+
     int waitListTotal = rs.getInt("waitlist_total");
     this.waitlistTotal = rs.wasNull() ? null : waitListTotal;
-    sectionName = rs.getString("section_name");
-    minUnits = rs.getDouble("min_units");
-    maxUnits = rs.getDouble("max_units");
-    location = rs.getString("location");
-    instructionMode = rs.getString("instruction_mode");
+
+    this.sectionName = rs.getString("section_name");
+    this.minUnits = rs.getDouble("min_units");
+    this.maxUnits = rs.getDouble("max_units");
+    this.location = rs.getString("location");
+    this.instructionMode = rs.getString("instruction_mode");
   }
 }

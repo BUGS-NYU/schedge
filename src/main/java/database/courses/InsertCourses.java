@@ -32,6 +32,7 @@ public class InsertCourses {
                                   + "dept_course_id, term_id) "
                                   + "VALUES (?, ?, to_tsvector(?), ?, ?, ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
+
     for (Course c : courses) {
       Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.school,
                      c.subjectCode.code, c.deptCourseId, term.getId());

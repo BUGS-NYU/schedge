@@ -1,13 +1,9 @@
 package nyu;
 
-public class Meeting {
-  public final String beginDate;    // contains date and time of first event.
-  public final int minutesDuration; // Duration of meeting
-  public final String endDate;      // When the meeting stops repeating
+import java.sql.*;
 
-  public Meeting(String beginDate, String minutesDuration, String endDate) {
-    this.beginDate = beginDate;
-    this.minutesDuration = Integer.parseInt(minutesDuration);
-    this.endDate = endDate;
-  }
+public class Meeting {
+  public Timestamp beginDate;  // contains date and time of first event.
+  public long minutesDuration; // Duration of meeting
+  public Timestamp endDate;    // When the meeting stops repeating
 }

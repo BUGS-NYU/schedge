@@ -37,7 +37,7 @@ public class SelectRows {
       return Stream.empty();
 
     int sectionId = rs.getInt(1);
-    Integer[] intSectionIds = new Integer[]{sectionId};
+    Integer[] intSectionIds = new Integer[] {sectionId};
     Array sectionIds = conn.createArrayOf("integer", intSectionIds);
     rs.close();
     return selectRows(
@@ -145,41 +145,39 @@ public class SelectRows {
     return rows.stream();
   }
 
-  public static List<Meeting>
-  meetingList(String beginString, String durationString, String endString) {
-    if (beginString == null)
-      return Collections.emptyList();
-    String[] beginDates = beginString.split(";");
-    String[] durations = durationString.split(";");
-    String[] endDates = endString.split(";");
-    ArrayList<Meeting> meetings = new ArrayList<>(beginDates.length);
-    for (int i = 0; i < beginDates.length; i++) {
-      meetings.add(new Meeting(beginDates[i], durations[i], endDates[i]));
-    }
-    return meetings;
-  }
-
   public static Map<Integer, List<Meeting>>
   selectMeetings(Connection conn, String conditions, Object... objects)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(
         "SELECT sections.id as section_id, "
-        + "array_to_string(array_agg(meetings.begin_date),';'), "
-        + "array_to_string(array_agg(meetings.duration),';'), "
-        + "array_to_string(array_agg(meetings.end_date),';') "
+        + "meetings.begin_date, meetings.duration, meetings.end_date "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
         + "JOIN meetings ON sections.id = meetings.section_id "
-        + "WHERE " + conditions + " GROUP BY sections.id");
+        + "WHERE " + conditions);
     Utils.setArray(stmt, objects);
 
+    HashMap<Integer, List<Meeting>> meetingsBySection = new HashMap<>();
+
     ResultSet rs = stmt.executeQuery();
-    HashMap<Integer, List<Meeting>> meetings = new HashMap<>();
     while (rs.next()) {
-      meetings.put(
-          rs.getInt("section_id"),
-          meetingList(rs.getString(2), rs.getString(3), rs.getString(4)));
+      Integer sectionId = rs.getInt("section_id");
+
+      List<Meeting> meetings = meetingsBySection.get(sectionId);
+      if (meetings == null) {
+        meetings = new ArrayList<>();
+
+        meetingsBySection.put(sectionId, meetings);
+      }
+
+      Meeting meeting = new Meeting();
+      meeting.beginDate = rs.getTimestamp(2);
+      meeting.minutesDuration = rs.getInt(3);
+      meeting.endDate = rs.getTimestamp(4);
+
+      meetings.add(meeting);
     }
     rs.close();
-    return meetings;
+
+    return meetingsBySection;
   }
 }

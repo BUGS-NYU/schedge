@@ -1,6 +1,7 @@
 package scraping.models;
 
 import java.util.List;
+import nyu.Meeting;
 import nyu.SectionStatus;
 import nyu.SectionType;
 import nyu.SubjectCode;

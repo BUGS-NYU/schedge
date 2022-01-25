@@ -70,9 +70,9 @@ CREATE TABLE meetings (
   id                  SERIAL                          NOT NULL,
   section_id          int REFERENCES sections(id)
                       ON DELETE CASCADE               NOT NULL,
-  begin_date          timestamp                       NOT NULL,
-  end_date            timestamp                       NOT NULL,
-  duration            bigint                          NOT NULL,
+  begin_date          timestamp with time zone        NOT NULL,
+  end_date            timestamp with time zone        NOT NULL,
+  duration            integer                         NOT NULL,
   PRIMARY KEY (id)
 );
 

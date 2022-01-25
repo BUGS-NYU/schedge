@@ -1,11 +1,14 @@
 package scraping.parse;
 
 import java.io.IOException;
+import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import nyu.*;
+import nyu.Meeting;
 import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,7 +16,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
 import scraping.models.*;
-import scraping.models.Meeting;
 import utils.Utils;
 
 /**
@@ -151,23 +153,15 @@ public class ParseCatalog implements Iterator<Course> {
     String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 
-    // <div class="secondary-head class-title-header" id=MATHUA9129903>
-    int idIndex;
-    String idString = divTag.attr("id");
-    for (idIndex = 0; idIndex < idString.length(); idIndex++)
-      if (Character.isDigit(idString.charAt(idIndex)))
-        break;
-    // Long courseId = Long.parseLong(idString.substring(idIndex));
-
     return new CourseMetadata(courseName, deptCourseId, subject);
   }
 
   List<Meeting> parseSectionTimesData(String times, String dates)
       throws IOException {
     logger.trace("Parsing section times data...");
+
     // MoWe 9:30am - 10:45am Fr
     // 2:00pm - 4:00pm Fr 2:00pm - 4:00pm
-
     Iterator<String> timeTokens = Arrays.asList(times.split(" "))
                                       .stream()
                                       .filter(s -> !s.equals("-"))
@@ -205,10 +199,7 @@ public class ParseCatalog implements Iterator<Course> {
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
         LocalDateTime stopDateTime = LocalDateTime.from(timeParser.parse(
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
-        // logger.trace("Begin date: {}, End date: {}", beginDateTime,
-        //             stopDateTime);
         duration = ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
-        // logger.trace("Duration of meeting is {} minutes", duration);
       }
 
       LocalDateTime endDate =
@@ -219,18 +210,24 @@ public class ParseCatalog implements Iterator<Course> {
       for (int i = 0; i < beginDays.length() - 1; i += 2) {
         String dayString = beginDays.substring(i, i + 2);
         int dayValue = Utils.parseDayOfWeek(dayString).getValue();
-        // logger.trace("day: {} translates to ", dayString, dayValue);
+
         daysList[dayValue % 7] = true;
       }
 
-      for (int day = 0; day < 7;
-           day++, beginDateTime = beginDateTime.plusDays(1)) {
-        if (daysList[beginDateTime.getDayOfWeek().getValue() % 7]) {
-          meetings.add(new Meeting(beginDateTime, duration, endDate));
-        }
+      ZoneOffset tz = ZoneOffset.UTC;
+      int dayOfWeek = beginDateTime.getDayOfWeek().getValue();
+      for (int i = 0; i < 7; i++, dayOfWeek++) {
+        if (!daysList[dayOfWeek % 7])
+          continue;
+
+        Meeting meeting = new Meeting();
+        meeting.beginDate = Timestamp.from(beginDateTime.toInstant(tz));
+        meeting.minutesDuration = duration;
+        meeting.endDate = Timestamp.from(beginDateTime.toInstant(tz));
+
+        meetings.add(meeting);
       }
     }
-    // logger.trace("Meetings are: {}", meetings);
 
     return meetings;
   }
@@ -243,7 +240,6 @@ public class ParseCatalog implements Iterator<Course> {
   @Override
   @NotNull
   public Course next() {
-
     if (!hasNext())
       throw new NoSuchElementException("No more elements in the iterator!");
 

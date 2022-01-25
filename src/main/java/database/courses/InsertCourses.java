@@ -5,11 +5,11 @@ import java.sql.*;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import nyu.Meeting;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.Course;
-import scraping.models.Meeting;
 import scraping.models.Section;
 import utils.Utils;
 
@@ -119,10 +119,9 @@ public class InsertCourses {
         "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
 
     for (Meeting m : meetings) {
-      Utils.setArray(stmt, sectionId,
-                     Timestamp.from(m.beginDate.toInstant(ZoneOffset.UTC)),
-                     m.duration,
-                     Timestamp.from(m.endDate.toInstant(ZoneOffset.UTC)));
+      Utils.setArray(stmt, sectionId, m.beginDate, m.minutesDuration,
+                     m.endDate);
+
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("Why did this fail?");
     }

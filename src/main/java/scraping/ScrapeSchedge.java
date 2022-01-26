@@ -26,7 +26,8 @@ public final class ScrapeSchedge {
       String[] components = new String[] {"" + term.year, term.semString(),
                                           subjectCode.school, subjectCode.code};
 
-      Uri uri = Uri.create(SCHEDGE_URL + String.join("/", components));
+      Uri uri =
+          Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
       Request request = new RequestBuilder().setUri(uri).build();
       return GetClient.getClient()
@@ -40,7 +41,9 @@ public final class ScrapeSchedge {
               return null;
             }
 
-            return resp.getResponseBody();
+            String text = resp.getResponseBody();
+
+            return text;
           });
     };
 
@@ -54,7 +57,9 @@ public final class ScrapeSchedge {
             return new ArrayList<Course>().stream();
           }
 
-          return JsonMapper.fromJsonArray(text, Course.class).stream();
+          List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
+
+          return courses.stream();
         });
   }
 }

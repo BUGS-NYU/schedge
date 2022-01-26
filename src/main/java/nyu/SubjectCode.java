@@ -13,8 +13,10 @@ public final class SubjectCode {
   private static Map<String, SchoolMetadata> schools;
   private static List<SubjectCode> allSubjects;
 
-  public final String code;
-  public final String school;
+  public String code;
+  public String school;
+
+  public SubjectCode() {}
 
   public SubjectCode(String subjectCode) {
     String[] code = subjectCode.split("-", 2);

@@ -15,6 +15,7 @@ services:
       - "5432"
     volumes:
       - "./src/main/migrations:/docker-entrypoint-initdb.d"
+      - "./.build/postgres:/var/lib/postgresql/data"
 
   schedge:
     build:
@@ -31,10 +32,11 @@ services:
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.stop-signal=SIGKILL"
 
   watchtower:
-    image: v2tec/watchtower
+    image: containrrr/watchtower:1.4.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 300 --cleanup --label-enable --no-pull
+    command: --interval 1 --cleanup --label-enable --no-pull
     restart: unless-stopped

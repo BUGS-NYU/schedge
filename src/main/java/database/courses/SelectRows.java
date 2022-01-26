@@ -74,13 +74,18 @@ public class SelectRows {
         + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
     Utils.setArray(stmt, objects);
 
-    ResultSet rs = stmt.executeQuery();
+    ArrayList<Meeting> empty = new ArrayList<>();
     ArrayList<Row> rows = new ArrayList<>();
-    while (rs.next()) {
-      rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
-    }
 
+    ResultSet rs = stmt.executeQuery();
+    while (rs.next()) {
+      List<Meeting> meetings =
+          meetingsList.getOrDefault(rs.getInt("section_id"), empty);
+
+      rows.add(new Row(rs, meetings));
+    }
     rs.close();
+
     return rows.stream();
   }
 

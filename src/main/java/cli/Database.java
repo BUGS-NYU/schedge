@@ -196,8 +196,16 @@ public class Database implements Runnable {
         Option(names = "--scrape",
                description = "whether or not to scrape while serving")
         boolean scrape) {
-    GetConnection.initIfNecessary();
     App.run();
+
+    // This SHOULD eagerly create the connection pool, so that there's not a
+    // situation where the first person to request from the database is
+    // guarranteed to get screwed
+    //                        - Albert Liu, Jan 26, 2022 Wed 00:06 EST
+    GetConnection.withConnection(conn -> {
+      Term term = new Term("sp", 2022);
+      Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+    });
 
     while (scrape) {
       CleanData.cleanData();
@@ -222,18 +230,24 @@ public class Database implements Runnable {
       Option(names = "--domain", defaultValue = "schedge.a1liu.com",
              description = "domain to scrape as if it's an instance of schedge")
       String domain) {
-    // TODO this will eventually scrape directly from the new API instead of
-    // the old one
-    //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
-    List<Course> courses =
-        ScrapeSchedge.scrapeFromSchedge(term).collect(Collectors.toList());
 
     GetConnection.withConnection(conn -> {
       int epoch = GetNewEpoch.getNewEpoch(conn, term);
-      InsertFullCourses.insertCourses(conn, term, epoch, courses);
+
+      // TODO this will eventually scrape directly from the new API instead of
+      // the old one
+      //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
+      ScrapeSchedge.scrapeFromSchedge(term).forEach(course -> {
+        ArrayList<Course> courses = new ArrayList<>();
+        courses.add(course);
+
+        tcFatal(
+            () -> InsertFullCourses.insertCourses(conn, term, epoch, courses));
+      });
+
       CompleteEpoch.completeEpoch(conn, term, epoch);
     });
 

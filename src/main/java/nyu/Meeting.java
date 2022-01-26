@@ -1,9 +1,14 @@
 package nyu;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.sql.*;
 
 public class Meeting {
-  public Timestamp beginDate;  // contains date and time of first event.
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  public Timestamp beginDate; // contains date and time of first event.
+
   public long minutesDuration; // Duration of meeting
-  public Timestamp endDate;    // When the meeting stops repeating
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+  public Timestamp endDate; // When the meeting stops repeating
 }

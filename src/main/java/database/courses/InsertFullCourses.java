@@ -55,13 +55,14 @@ public class InsertFullCourses {
                          "?", "?", "to_tsvector(?)", "?", "to_tsvector(?)", "?",
                          "?", "?", "?", "?", "?"});
 
+  // TODO add instructors
   private static String fieldNames = String.join(
-      ",", new String[] {"name", "name_vec", "registration_number", "campus",
-                         "min_units", "max_units", "instruction_mode",
-                         "location", "grading", "notes", "notes_vec",
-                         "prerequisites", "prerequisites_vec", "course_id",
-                         "section_code", "section_type", "section_status",
-                         "waitlist_total", "associated_with"});
+      ",",
+      new String[] {"name", "name_vec", "registration_number", "campus",
+                    "min_units", "max_units", "instruction_mode", "location",
+                    "grading", "notes", "notes_vec", "prerequisites",
+                    "prereqs_vec", "course_id", "section_code", "section_type",
+                    "section_status", "waitlist_total", "associated_with"});
 
   public static void
   insertSections(Connection conn, int courseId, SubjectCode subjectCode,
@@ -127,6 +128,10 @@ public class InsertFullCourses {
   public static void insertMeetings(Connection conn, int sectionId,
                                     List<Meeting> meetings)
       throws SQLException {
+    // safety measure for now, because production code is a lil broken
+    if (meetings == null)
+      return;
+
     PreparedStatement deleteStmt =
         conn.prepareStatement("DELETE FROM meetings WHERE section_id = ?");
     deleteStmt.setInt(1, sectionId);

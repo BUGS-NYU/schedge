@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class JsonMapper {
-  private static ObjectMapper objMapper =
-      new ObjectMapper()
-          .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-          .setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
+  private static ObjectMapper objMapper = new ObjectMapper();
 
   public static <E> E fromJson(String json, Class<E> clazz) {
     return tcFatal(

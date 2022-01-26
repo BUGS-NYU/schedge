@@ -22,4 +22,8 @@ public class Course {
   public String getSchool() {
     return subjectCode.school;
   }
+
+  public String toString() {
+    return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
+  }
 }

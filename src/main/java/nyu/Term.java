@@ -18,7 +18,7 @@ public final class Term {
 
   public Term(int semester, int year) {
     this.semester = semester;
-    this.year = year - 1900;
+    this.year = year;
   }
 
   public static Term fromId(int id) {
@@ -27,8 +27,9 @@ public final class Term {
   }
 
   public void checkTerm() {
-    if (year < 0)
+    if (year < 1900)
       throw new IllegalArgumentException("Year was invalid: " + year);
+
     if (semester != 2 && semester != 4 && semester != 6 && semester != 8)
       throw new IllegalArgumentException("Semester was invalid: " + semester);
   }
@@ -127,23 +128,22 @@ public final class Term {
 
   public Term prevTerm() {
     if (semester == JANUARY)
-      return new Term(FALL, year + 1899);
+      return new Term(FALL, year - 1);
     else
-      return new Term(semester - 2, year + 1900);
+      return new Term(semester - 2, year);
   }
 
   public Term nextTerm() {
     if (semester == FALL)
-      return new Term(JANUARY, year + 1901);
+      return new Term(JANUARY, year + 1);
     else
-      return new Term(semester + 2, year + 1900);
+      return new Term(semester + 2, year);
   }
 
-  public int getId() { return year * 10 + semester; }
+  public int getId() { return (year - 1900) * 10 + semester; }
 
   public String toString() {
-    return "Term(" + semesterToString(semester) + ' ' + (year + 1900) +
-        ",id=" + getId() + ")";
+    return "Term(" + semString() + ' ' + year + ",id=" + getId() + ")";
   }
 
   @Override

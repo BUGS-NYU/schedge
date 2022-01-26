@@ -1,4 +1,4 @@
-FROM openjdk:11.0.13-jre
+FROM openjdk:18-jdk-alpine3.15
 
 EXPOSE 4358
 

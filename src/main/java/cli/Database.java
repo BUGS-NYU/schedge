@@ -9,8 +9,8 @@ import api.App;
 import api.v1.SelectCourses;
 import cli.templates.*;
 import database.GetConnection;
-import database.epochs.CleanEpoch;
-import database.epochs.LatestCompleteEpoch;
+import database.courses.InsertFullCourses;
+import database.epochs.*;
 import database.instructors.UpdateInstructors;
 import database.models.FullRow;
 import java.util.ArrayList;
@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.*;
 import me.tongfei.progressbar.*;
+import models.Course;
+import nyu.SubjectCode;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,15 +128,18 @@ public class Database implements Runnable {
         @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
         @CommandLine.Mixin OutputFileMixin outputFile) {
     long start = System.nanoTime();
+
+    Term term = termMixin.getTerm();
+    List<SubjectCode> codes = subjectCodeMixin.getSubjectCodes();
     GetConnection.withConnection(conn -> {
-      Term term = termMixin.getTerm();
       Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
       if (epoch == null) {
         logger.warn("No completed epoch for term=" + term);
         return;
       }
-      outputFile.writeOutput(SelectCourses.selectCourses(
-          conn, epoch, subjectCodeMixin.getSubjectCodes()));
+
+      Object o = SelectCourses.selectCourses(conn, epoch, codes);
+      outputFile.writeOutput(o);
     });
 
     GetConnection.close();
@@ -219,15 +224,20 @@ public class Database implements Runnable {
       String domain) {
     // TODO this will eventually scrape directly from the new API instead of
     // the old one
+    //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
     long start = System.nanoTime();
 
-    List<FullRow> courses = ScrapeSchedge.scrapeFromSchedge(termMixin.getTerm())
-                                .flatMap(course -> {
-                                  ArrayList<FullRow> rows = new ArrayList<>();
+    Term term = termMixin.getTerm();
+    List<Course> courses =
+        ScrapeSchedge.scrapeFromSchedge(term).collect(Collectors.toList());
 
-                                  return rows.stream();
-                                })
-                                .collect(Collectors.toList());
+    GetConnection.withConnection(conn -> {
+      int epoch = GetNewEpoch.getNewEpoch(conn, term);
+      InsertFullCourses.insertCourses(conn, term, epoch, courses);
+      CompleteEpoch.completeEpoch(conn, term, epoch);
+    });
+
+    GetConnection.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

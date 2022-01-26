@@ -16,12 +16,15 @@ a general overview of the project and how to contribute.
 The API documentation is available at https://schedge.a1liu.com .
 
 ## TODO
-- Fix bugs from issues
-- Remove all the different `models` folders
-- Add RMP support
+- Fix bugs reported in issues
+- Remove all the different `models` folders, simplify database edits and whatnot
 - Deploy with CI/CD
 - Fix time formatting/time zone stuffs
 - Make schools list dynamic
+- Make a dedicated frontend
+- Improve 1st query performance (3-4 seconds is concerning, even if its only during
+  warm-up)
+- Add full RMP support
 
 ## Commands
 The following commands are valid in Schedge:

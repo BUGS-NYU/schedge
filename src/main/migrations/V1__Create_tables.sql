@@ -13,7 +13,7 @@ CREATE TABLE courses (
   name                varchar                     NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
   school              varchar                     NOt NULL,
-  subject             varchar                     NOT NULL, -- could probably be lower
+  subject             varchar                     NOT NULL,
   dept_course_id      varchar                     NOT NULL,
   term_id             integer                     NOT NULL,
   description         varchar,
@@ -76,6 +76,12 @@ CREATE TABLE meetings (
   PRIMARY KEY (id)
 );
 
-CREATE INDEX sections_associated_with ON sections (associated_with);
+CREATE INDEX epochs_term_idx ON epochs (term_id);
+CREATE INDEX courses_epoch_idx ON courses (epoch);
+CREATE INDEX sections_registration_number_idx ON sections (registration_number);
+CREATE INDEX sections_course_id_idx ON courses (course_id);
+CREATE INDEX meetings_section_id_idx ON meetings (section_id);
+
+CREATE INDEX sections_associated_with_idx ON sections (associated_with);
 CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
 CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);

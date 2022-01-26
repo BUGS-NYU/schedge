@@ -15,6 +15,14 @@ a general overview of the project and how to contribute.
 ## API Documentation
 The API documentation is available at https://schedge.a1liu.com .
 
+## TODO
+- Fix bugs from issues
+- Remove all the different `models` folders
+- Add RMP support
+- Deploy with CI/CD
+- Fix time formatting/time zone stuffs
+- Make schools list dynamic
+
 ## Commands
 The following commands are valid in Schedge:
 

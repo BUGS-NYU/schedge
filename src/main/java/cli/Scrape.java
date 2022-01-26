@@ -1,9 +1,10 @@
 package cli;
 
-import cli.templates.OutputFileMixin;
-import cli.templates.RegistrationNumberMixin;
-import cli.templates.SubjectCodeMixin;
-import cli.templates.TermMixin;
+import static picocli.CommandLine.Command;
+import static picocli.CommandLine.Mixin;
+import static picocli.CommandLine.Option;
+import static picocli.CommandLine.Spec;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -19,17 +20,16 @@ import scraping.query.QuerySchool;
 /*
    @Todo: Add annotation for parameter.
 */
-@CommandLine.
-Command(name = "scrape",
-        description =
-            "Query then parse NYU Albert data based on different catagories",
-        synopsisSubcommandLabel = "(catalog | sections | school)")
+@Command(name = "scrape",
+         description =
+             "Query then parse NYU Albert data based on different catagories",
+         synopsisSubcommandLabel = "(catalog | sections | school)")
 public class Scrape implements Runnable {
-  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
+  @Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Scrape");
-  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
-                      description = "display a help message")
+  @Option(names = {"-h", "--help"}, usageHelp = true,
+          description = "display a help message")
   boolean displayHelp;
 
   @Override
@@ -48,17 +48,15 @@ public class Scrape implements Runnable {
       description =
           "Scrape section based on term and registration number, OR school and subject")
   public void
-  sections(@CommandLine.Mixin TermMixin termMixin,
-           @CommandLine.Mixin RegistrationNumberMixin registrationNumberMixin,
-           @CommandLine.
-           Option(names = "--batch-size-catalog",
-                  description = "batch size if query more than one catalog")
+  sections(@Mixin Mixins.Term termMixin,
+           @Mixin Mixins.RegistrationNumber registrationNumberMixin,
+           @Option(names = "--batch-size-catalog",
+                   description = "batch size if query more than one catalog")
            Integer batchSize,
-           @CommandLine.
-           Option(names = "--batch-size-sections",
-                  description = "batch size if query more than one catalog")
+           @Option(names = "--batch-size-sections",
+                   description = "batch size if query more than one catalog")
            Integer batchSizeSections,
-           @CommandLine.Mixin OutputFileMixin outputFileMixin) {
+           @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
     List<SubjectCode> subjectCodes = registrationNumberMixin.getSubjectCodes();
     if (subjectCodes == null) {
@@ -77,7 +75,7 @@ public class Scrape implements Runnable {
     logger.info(duration + "seconds");
   }
 
-  @CommandLine.Command(
+  @Command(
       name = "catalog", sortOptions = false,
       headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
@@ -85,13 +83,12 @@ public class Scrape implements Runnable {
       description =
           "Scrape catalog based on term, subject codes, or school for one or multiple subjects/schools")
   public void
-  catalog(@CommandLine.Mixin TermMixin termMixin,
-          @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
-          @CommandLine.
-          Option(names = "--batch-size",
-                 description = "batch size if query more than one catalog")
+  catalog(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.SubjectCode subjectCodeMixin,
+          @Option(names = "--batch-size",
+                  description = "batch size if query more than one catalog")
           Integer batchSize,
-          @CommandLine.Mixin OutputFileMixin outputFileMixin) {
+          @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
     outputFileMixin.writeOutput(
         ScrapeCatalog
@@ -103,15 +100,13 @@ public class Scrape implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @CommandLine.
-  Command(name = "school", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-          description = "Scrape school/subject based on term")
+  @Command(name = "school", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
+           description = "Scrape school/subject based on term")
   public void
-  school(@CommandLine.Mixin TermMixin termMixin,
-         @CommandLine.Mixin OutputFileMixin outputFileMixin)
+  school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
       throws ExecutionException, InterruptedException {
     long start = System.nanoTime();
     outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(

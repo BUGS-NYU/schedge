@@ -1,28 +1,29 @@
 package cli;
 
-import cli.templates.InputFileMixin;
-import cli.templates.OutputFileMixin;
+import static picocli.CommandLine.Command;
+import static picocli.CommandLine.Mixin;
+import static picocli.CommandLine.Option;
+import static picocli.CommandLine.Spec;
+
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
-
-import java.util.Map;
 /*
    @Todo: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
-@CommandLine.
-Command(name = "parse",
-        description = "Parsing NYU data based on different categories",
-        synopsisSubcommandLabel = "(catalog | section | school)",
-        subcommands = {Parse.School.class})
+@Command(name = "parse",
+         description = "Parsing NYU data based on different categories",
+         synopsisSubcommandLabel = "(catalog | section | school)",
+         subcommands = {Parse.School.class})
 public class Parse implements Runnable {
-  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
-  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
-                      description = "display a help message")
+  @Spec private CommandLine.Model.CommandSpec spec;
+  @Option(names = {"-h", "--help"}, usageHelp = true,
+          description = "display a help message")
   boolean displayHelp;
 
   Logger logger = LoggerFactory.getLogger("cli.Parse");
@@ -34,16 +35,14 @@ public class Parse implements Runnable {
             + " display help message for possible subcommands");
   }
 
-  @CommandLine.
-  Command(name = "section", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Parse section data",
-          description = "Parse section based on term, subject codes, "
-                        + "or school for one or multiple subjects/schools")
+  @Command(name = "section", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n", header = "Parse section data",
+           description = "Parse section based on term, subject codes, "
+                         + "or school for one or multiple subjects/schools")
   public void
-  section(@CommandLine.Mixin InputFileMixin in,
-          @CommandLine.Mixin OutputFileMixin out) {
+  section(@Mixin Mixins.InputFile in, @Mixin Mixins.OutputFile out) {
     long start = System.nanoTime();
     out.writeOutput(ParseSection.parse(in.getInput()));
     long end = System.nanoTime();
@@ -51,7 +50,7 @@ public class Parse implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @CommandLine.Command(
+  @Command(
       name = "catalog", sortOptions = false,
       headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
@@ -59,8 +58,7 @@ public class Parse implements Runnable {
       description =
           "Parse catalog based on input file. If not provided, read from stdin")
   public void
-  catalog(@CommandLine.Mixin InputFileMixin in,
-          @CommandLine.Mixin OutputFileMixin out) {
+  catalog(@Mixin Mixins.InputFile in, @Mixin Mixins.OutputFile out) {
     long start = System.nanoTime();
     out.writeOutput(ParseCatalog.parse(in.getInput(), null));
     long end = System.nanoTime();
@@ -69,28 +67,27 @@ public class Parse implements Runnable {
   }
 
   // @ToDo: Fix this with two options
-  @CommandLine.
-  Command(name = "school", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n",
-          header = "Parse school/subject data",
-          description = "Parse school/subject based on input file")
+  @Command(name = "school", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Parse school/subject data",
+           description = "Parse school/subject based on input file")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
-    @CommandLine.Option(
+    @Option(
         names = "--school",
         description =
             "Enter no if not want. If none provided, will read the school values")
     private String school;
-    @CommandLine.Option(
+    @Option(
         names = "--subject",
         description =
             "Enter no if not want. If none provided, will read the subject values")
     private String subject;
-    @CommandLine.Mixin private InputFileMixin inputFile;
-    @CommandLine.Mixin private OutputFileMixin outputFile;
+    @Mixin private Mixins.InputFile inputFile;
+    @Mixin private Mixins.OutputFile outputFile;
 
     private static class SchoolSubjectPair {
       Map<String, String> schools, subjects;

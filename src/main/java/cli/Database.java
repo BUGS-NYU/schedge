@@ -1,5 +1,9 @@
 package cli;
 
+import static picocli.CommandLine.Command;
+import static picocli.CommandLine.Mixin;
+import static picocli.CommandLine.Option;
+import static picocli.CommandLine.Spec;
 import static utils.TryCatch.*;
 
 import actions.CleanData;
@@ -7,7 +11,6 @@ import actions.ScrapeTerm;
 import actions.UpdateData;
 import api.App;
 import api.v1.SelectCourses;
-import cli.templates.*;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import database.epochs.*;
@@ -21,22 +24,20 @@ import me.tongfei.progressbar.*;
 import models.Course;
 import nyu.SubjectCode;
 import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
 import scraping.query.GetClient;
 
-@CommandLine.
-Command(name = "db",
-        description = "query/scrape/update/serve data through the database",
-        synopsisSubcommandLabel =
-            "(scrape | query | update | serve | clean | populate)",
-        subcommands = {Database.Clean.class})
+@Command(name = "db",
+         description = "query/scrape/update/serve data through the database",
+         synopsisSubcommandLabel =
+             "(scrape | query | update | serve | clean | populate)",
+         subcommands = {Database.Clean.class})
 public class Database implements Runnable {
-  @CommandLine.Spec private CommandLine.Model.CommandSpec spec;
-  @CommandLine.Option(names = {"-h", "--help"}, usageHelp = true,
-                      description = "display a help message")
+  @Spec private CommandLine.Model.CommandSpec spec;
+  @Option(names = {"-h", "--help"}, usageHelp = true,
+          description = "display a help message")
   boolean displayHelp;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
@@ -53,7 +54,7 @@ public class Database implements Runnable {
             + " display help message for possible subcommands");
   }
 
-  @CommandLine.Command(
+  @Command(
       name = "scrape", sortOptions = false,
       headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
@@ -62,9 +63,8 @@ public class Database implements Runnable {
           "Scrape section based on term and registration number, OR school and subject from db")
   public void
   scrape(
-      @CommandLine.Mixin TermMixin termMixin,
-      @CommandLine.Mixin BatchSizeMixin batchSize,
-      @CommandLine.Option(
+      @Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
+      @Option(
           names = "--service",
           description =
               "turns scraping into a service; if set, --year, --semester, and --term are ignored.")
@@ -88,7 +88,7 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @CommandLine.Command(
+  @Command(
       name = "rmp", sortOptions = false,
       headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
@@ -97,9 +97,8 @@ public class Database implements Runnable {
       description =
           "Scrape Rate My Professor for ratings, parsed and updated in the database")
   public void
-  rmp(@CommandLine.
-      Option(names = "--batch-size",
-             description = "batch size for querying Rate My Professor")
+  rmp(@Option(names = "--batch-size",
+              description = "batch size for querying Rate My Professor")
       Integer batchSize) {
     long start = System.nanoTime();
     GetConnection.withConnection(conn -> {
@@ -116,7 +115,7 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @CommandLine.Command(
+  @Command(
       name = "query", sortOptions = false,
       headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
       parameterListHeading = "%nParameters:%n",
@@ -124,9 +123,9 @@ public class Database implements Runnable {
       description =
           "Query section based on term and registration number, OR school and subject from db")
   public void
-  query(@CommandLine.Mixin TermMixin termMixin,
-        @CommandLine.Mixin SubjectCodeMixin subjectCodeMixin,
-        @CommandLine.Mixin OutputFileMixin outputFile) {
+  query(@Mixin Mixins.Term termMixin,
+        @Mixin Mixins.SubjectCode subjectCodeMixin,
+        @Mixin Mixins.OutputFile outputFile) {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
@@ -149,19 +148,18 @@ public class Database implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @CommandLine.
-  Command(name = "clean", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Clean epochs",
-          description = "Clean epochs")
+  @Command(name = "clean", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n", header = "Clean epochs",
+           description = "Clean epochs")
   public static class Clean implements Runnable {
 
-    @CommandLine.Mixin TermMixin termMixin;
-    @CommandLine.Option(names = "--epoch", description = "The epoch to clean")
+    @Mixin Mixins.Term termMixin;
+    @Option(names = "--epoch", description = "The epoch to clean")
     Integer epoch;
 
-    @CommandLine.Spec CommandLine.Model.CommandSpec spec;
+    @Spec CommandLine.Model.CommandSpec spec;
 
     public void run() {
       Term term = termMixin.getTermAllowNull();
@@ -184,17 +182,15 @@ public class Database implements Runnable {
     }
   }
 
-  @CommandLine.
-  Command(name = "serve", sortOptions = false,
-          headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n", header = "Serve data",
-          description = "Serve data through an API")
+  @Command(name = "serve", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n", header = "Serve data",
+           description = "Serve data through an API")
   public void
-  serve(@CommandLine.Mixin BatchSizeMixin batchSizeMixin,
-        @CommandLine.
-        Option(names = "--scrape",
-               description = "whether or not to scrape while serving")
+  serve(@Mixin Mixins.BatchSize batchSizeMixin,
+        @Option(names = "--scrape",
+                description = "whether or not to scrape while serving")
         boolean scrape) {
     App.run();
 
@@ -216,20 +212,18 @@ public class Database implements Runnable {
     }
   }
 
-  @CommandLine.
-  Command(name = "populate", sortOptions = false, headerHeading = "Command: ",
-          descriptionHeading = "%nDescription:%n%n",
-          parameterListHeading = "%nParameters:%n",
-          optionListHeading = "%nOptions:%n",
-          header = "populate database using production API",
-          description = "Scrape existing Schedge instance")
+  @Command(name = "populate", sortOptions = false, headerHeading = "Command: ",
+           descriptionHeading = "%nDescription:%n%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "populate database using production API",
+           description = "Scrape existing Schedge instance")
   public void
-  populate(
-      @CommandLine.Mixin TermMixin termMixin,
-      @CommandLine.
-      Option(names = "--domain", defaultValue = "schedge.a1liu.com",
-             description = "domain to scrape as if it's an instance of schedge")
-      String domain) {
+  populate(@Mixin Mixins.Term termMixin,
+           @Option(names = "--domain", defaultValue = "schedge.a1liu.com",
+                   description =
+                       "domain to scrape as if it's an instance of schedge")
+           String domain) {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();

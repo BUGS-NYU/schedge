@@ -214,7 +214,7 @@ public class ParseCatalog implements Iterator<Course> {
         daysList[dayValue % 7] = true;
       }
 
-      // TODO Add support for time zone of the local area
+      // @TODO Add support for time zone of the local area
       //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
       ZoneOffset tz = ZoneOffset.UTC;
       int dayOfWeek = beginDateTime.getDayOfWeek().getValue();

@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "application"
     id "org.flywaydb.flyway" version "7.8.2"
+    id 'com.avast.gradle.docker-compose' version '0.15.0'
 }
 
 mainClassName = 'Main'
@@ -79,4 +80,10 @@ jar {
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
   }
+}
+
+composeBuild.dependsOn build
+dockerCompose {
+  buildBeforeUp = false
+  projectName = 'schedge'
 }

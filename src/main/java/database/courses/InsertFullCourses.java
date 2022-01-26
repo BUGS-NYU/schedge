@@ -55,7 +55,7 @@ public class InsertFullCourses {
                          "?", "?", "to_tsvector(?)", "?", "to_tsvector(?)", "?",
                          "?", "?", "?", "?", "?"});
 
-  // TODO add instructors
+  // @TODO add instructors
   private static String fieldNames = String.join(
       ",",
       new String[] {"name", "name_vec", "registration_number", "campus",

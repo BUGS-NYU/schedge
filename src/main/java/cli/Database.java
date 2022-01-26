@@ -204,7 +204,7 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       int epoch = GetNewEpoch.getNewEpoch(conn, term);
 
-      // TODO this will eventually scrape directly from the new API instead of
+      // @TODO this will eventually scrape directly from the new API instead of
       // the old one
       //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
       ScrapeSchedge.scrapeFromSchedge(term).forEach(course -> {

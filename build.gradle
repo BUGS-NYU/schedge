@@ -16,8 +16,9 @@ def getenv = { String env_val, default_val ->
 }
 
 tasks.named('wrapper') {
-  jarFile = "${project.projectDir}/src/main/gradle/gradle-wrapper.jar"
+  jarFile = "${project.projectDir}/src/build/gradle/gradle-wrapper.jar"
 }
+
 
 // tasks.withType(JavaCompile) {
 //   options.compilerArgs << "-Xlint:unchecked"
@@ -69,6 +70,12 @@ jar {
   duplicatesStrategy = "include"
 
   dependsOn configurations.runtimeClasspath
+
+  // This will become relevant in a little bit when we move off of flyway
+  from('src/main') {
+      include 'migrations/*.sql'
+   }
+
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
   }

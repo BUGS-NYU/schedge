@@ -33,7 +33,7 @@ services:
       - "./.letsencrypt:/.letsencrypt"
 
   postgres:
-    image: postgres:10.5
+    image: postgres:14.1-alpine
     restart: always
     environment:
       - POSTGRES_USER=postgres
@@ -53,6 +53,10 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - JDBC_URL=jdbc:postgresql://postgres/postgres
+
+    expose:
+      - "4358"
+
     labels:
       - "traefik.enable=true"
       - "com.centurylinklabs.watchtower.enable=true"
@@ -69,9 +73,6 @@ services:
       - "traefik.http.routers.schedge-http.service=schedge-http"
       - "traefik.http.routers.schedge-http.entrypoints=web,web2"
       - "traefik.http.services.schedge-http.loadbalancer.server.port=4358"
-
-    expose:
-      - "4358"
 
   watchtower:
     image: v2tec/watchtower

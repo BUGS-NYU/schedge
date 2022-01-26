@@ -238,6 +238,7 @@ public class Database implements Runnable {
     });
 
     GetConnection.close();
+    GetClient.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

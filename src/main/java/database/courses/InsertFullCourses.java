@@ -96,9 +96,7 @@ public class InsertFullCourses {
       };
 
       try {
-        Utils.setArray(stmt, s.registrationNumber, courseId, s.code,
-                       s.type.ordinal(), s.status.ordinal(),
-                       Utils.nullable(Types.INTEGER, s.waitlistTotal));
+        Utils.setArray(stmt, fieldValues);
 
         if (stmt.executeUpdate() == 0)
           throw new RuntimeException("inserting section=" + s.toString() +

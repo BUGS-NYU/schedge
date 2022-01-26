@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
   postgres:
-    image: postgres:10.5
+    image: postgres:14.1-alpine
     restart: always
     environment:
       - POSTGRES_USER=postgres
@@ -19,7 +19,8 @@ services:
   schedge:
     build:
       context: .
-      dockerfile: ./src/main/docker/Dockerfile
+      dockerfile: ./src/build/docker/Dockerfile
+    restart: always
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -27,6 +28,9 @@ services:
 
     ports:
       - "4358:4358"
+
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
 
   watchtower:
     image: v2tec/watchtower

@@ -21,9 +21,9 @@ import utils.Utils;
  */
 public class ParseSection {
   private static Logger logger =
-      LoggerFactory.getLogger("services.ParseSection");
+      LoggerFactory.getLogger("scraping.parse.ParseSection");
   private static DateTimeFormatter timeParser =
-      DateTimeFormat.forPattern("MM/dd/yyyy h:mma");
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma");
   private static Pattern pattern = Pattern.compile("[0-9]");
 
   private static List<String> list = Utils.asResourceLines("/building.txt");
@@ -101,13 +101,7 @@ public class ParseSection {
     sectionName +=
         secData.containsKey("Topic") ? " " + secData.get("Topic") : "";
 
-    String location = secData.get("Room");
-    if (location.contains("Loc:")) {
-      location = location.split("Loc:")[0];
-      secData.put("Room", location);
-    }
-
-    // parseBuilding(secData, link);
+    parseBuilding(secData, link);
 
     String[] instructors = secData.get("Instructor(s)").split(", *\\n *\\n");
 

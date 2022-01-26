@@ -5,6 +5,8 @@ services:
     # The official v2.1 Traefik docker image
     image: traefik:v2.1
     restart: always
+    network_mode: "host"
+
     # Enables the web UI and tells Traefik to listen to docker
     command:
       - "--api.insecure=true"
@@ -21,6 +23,7 @@ services:
       - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
       - "--certificatesresolvers.mytlschallenge.acme.email=albertymliu@gmail.com"
       - "--certificatesresolvers.mytlschallenge.acme.storage=.letsencrypt/acme.json"
+
     ports:
       - "80:80"
       - "443:443"
@@ -50,6 +53,7 @@ services:
 
   schedge:
     image: a1liu/schedge:latest
+    restart: always
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -61,6 +65,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.stop-signal=SIGKILL"
 
         # HTTPS
       - "traefik.http.routers.schedge-https.rule=Host(`nyu.a1liu.com`)"

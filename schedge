@@ -1,0 +1,37 @@
+#!/bin/bash
+
+PROJ_DIR="$(dirname "$0")"
+
+if [ "$#" -gt 0 ] && [ "$1" = "--kill" ]; then
+  shift
+  if [ -f "$PROJ_DIR/.pid" ]; then
+    sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")'"
+    rm "$PROJ_DIR/.pid" 2>/dev/null
+  else
+    echo "Nothing to kill!"
+  fi
+  if [ "$#" -eq 0 ]; then
+    exit 0
+  fi
+fi
+
+if [ "$#" -gt 0 ] && [ "$1" = "db" ] && [ "$2" = "serve" ]; then
+  if [ -f "$PROJ_DIR/.pid" ]; then
+    sudo bash -c "kill '$(cat "$PROJ_DIR/.pid")'"
+  fi
+  if [ -f "$PROJ_DIR/.env" ]; then
+    . "$PROJ_DIR/.env"
+  fi
+
+  echo "Running in disowned process as root..."
+  sudo echo -n ""
+  sudo -E java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@ & disown
+  echo "$!" > "$PROJ_DIR/.pid"
+else
+  java -jar "$PROJ_DIR/.build/libs/schedge-all.jar" $@
+  rm "$PROJ_DIR/.pid" 2>/dev/null
+fi
+
+
+
+

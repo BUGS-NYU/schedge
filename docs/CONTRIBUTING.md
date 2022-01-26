@@ -37,18 +37,18 @@ You'll need to install a few applications to contribute to this project:
   if you would like feedback on your changes.
 
 ### Build with Command Line/Terminal
-- `./gradlew check`: Check your code
-- `./gradlew composeUp`: start up the development servers
-- `./gradlew composeBuild`: build the application, and update the development server.
+- `./gradlew check`: Check the application for compile-time errors
+- `./gradlew composeUp`: Start up the development servers
+- `./gradlew composeBuild`: Build the application, and update the development server.
 - `docker-compose down`: close the servers when development is done
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:
 
-- `@HelpWanted` - We need contributors for this code
-- `@TODO` - We need to finish this code
+- `@Help` - Help wanted
+- `@TODO` - Code has something that's yet to be done
 - `@Performance` - This area can be tweaked/rewritten to improve performance
-- `@CodeOrg` - We should reorganize this code
+- `@Organize` - We should reorganize this code
 
 ### Before Creating a PR
 - Making sure that the code compiles and test your code.

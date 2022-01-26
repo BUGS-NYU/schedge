@@ -209,12 +209,11 @@ public final class Mixins {
   public static final class Term {
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    @Option(
-        names = "--term",
-        description =
-            " Term is the shortcut for year and semester. To get term value, take year - 1900 then append \n"
-            +
-            " ja = 2, sp = 4, su = 6 or fa = 8. \n Eg: Fall 2020 = (2020 - 1900) + 4 = 120 + 4 = 1204")
+    @Option(names = "--term",
+            description = "Term is the shortcut for year and semester. "
+                          + "To get term value, take year - 1900 then append \n"
+                          + "ja = 2, sp = 4, su = 6 or fa = 8.\n Eg: "
+                          + "Fall 2020 = (2020 - 1900) + 4 = 120 + 4 = 1204")
     private Integer termId;
 
     @Option(names = "--semester", description = "semester: ja, sp, su, or fa")
@@ -250,7 +249,7 @@ public final class Mixins {
       if (t == null) {
         throw new CommandLine.ParameterException(
             spec.commandLine(),
-            "Must provide at least one. Either --term OR --semester AND --year");
+            "Must provide at least one: --term   OR   --semester AND --year");
       } else {
         return t;
       }

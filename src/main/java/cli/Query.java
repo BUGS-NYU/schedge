@@ -22,8 +22,7 @@ import scraping.query.QuerySection;
           Adding multiple options for querying
    @Help: Add annotations, comments to code
 */
-@Command(name = "query", description = "Querying data from NYU Albert",
-         synopsisSubcommandLabel = "(catalog | section | school | rmp)")
+@Command(name = "query", description = "Query data from NYU Albert")
 public class Query implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
   @Option(names = {"-h", "--help"}, usageHelp = true,
@@ -35,18 +34,13 @@ public class Query implements Runnable {
   @Override
   public void run() {
     throw new CommandLine.ParameterException(
-        spec.commandLine(),
-        "\nMissing required subcommand. Try ./schedge query [subcommand] --help to"
-            + " display help message for possible subcommands");
+        spec.commandLine(), "Need to use a subcommand here.\n");
   }
 
-  @Command(
-      name = "catalog", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Query catalog",
-      description =
-          "Query catalog based on term, subject codes, or school for one or multiple subjects/schools")
+  @Command(name = "catalog",
+           description =
+               "Query catalog based on term, subject codes, or school for one "
+               + "or multiple subjects/schools.\n")
   public void
   catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.SubjectCode subjectCodes,
           @Option(names = "--batch-size",
@@ -61,12 +55,9 @@ public class Query implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  // @ToDo: Adding query section for multiple sections
-  @Command(name = "section", sortOptions = false, headerHeading = "Command: ",
-           descriptionHeading = "%nDescription:%n%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Query section",
-           description = "Query section based on registration number")
+  // @TODO: Adding query section for multiple sections
+  @Command(name = "section",
+           description = "Query section based on registration number.\n")
   public void
   section(@Mixin Mixins.Term termMixin,
           @Option(names = "--registration-number",
@@ -80,13 +71,9 @@ public class Query implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @Command(name = "school", sortOptions = false, headerHeading = "Command: ",
-           descriptionHeading = "%nDescription:%n%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Query school",
-           description = "Query school based on term")
-  public void
-  school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFile) {
+  @Command(name = "school", description = "Query school based on term.\n")
+  public void school(@Mixin Mixins.Term termMixin,
+                     @Mixin Mixins.OutputFile outputFile) {
     long start = System.nanoTime();
     outputFile.writeOutput(QuerySchool.querySchool(termMixin.getTerm()));
     long end = System.nanoTime();
@@ -94,13 +81,9 @@ public class Query implements Runnable {
   }
 
   @Command(
-      name = "rmp", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n",
-      header = "Query rating for professors from Rate My Professor",
+      name = "rmp",
       description =
-          "Query rating for professors based on term from Rate My Professor")
+          "Query rating for professors based on term from Rate My Professor.\n")
   public void
   rmp(@Mixin Mixins.OutputFile outputFile, Integer batchSize) {
     long start = System.nanoTime();

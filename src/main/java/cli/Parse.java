@@ -13,12 +13,11 @@ import scraping.parse.ParseCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.parse.ParseSection;
 /*
-   @Todo: Add annotation for parameter. Fix the method to parse
+   @TODO: Add annotation for parameter. Fix the method to parse
    @Help: Add annotations, comments to code
 */
 @Command(name = "parse",
-         description = "Parsing NYU data based on different categories",
-         synopsisSubcommandLabel = "(catalog | section | school)",
+         description = "Parse NYU data based on different categories.\n",
          subcommands = {Parse.School.class})
 public class Parse implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
@@ -29,63 +28,52 @@ public class Parse implements Runnable {
   Logger logger = LoggerFactory.getLogger("cli.Parse");
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(
-        spec.commandLine(),
-        "\nMissing required subcommand. Try ./schedge parse [subcommand] --help to"
-            + " display help message for possible subcommands");
+    throw new CommandLine.ParameterException(spec.commandLine(),
+                                             "Missing required subcommand.\n");
   }
 
-  @Command(name = "section", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Parse section data",
+  @Command(name = "section",
            description = "Parse section based on term, subject codes, "
-                         + "or school for one or multiple subjects/schools")
+                         + "or school for one or multiple subjects/schools.\n")
   public void
   section(@Mixin Mixins.InputFile in, @Mixin Mixins.OutputFile out) {
     long start = System.nanoTime();
+
     out.writeOutput(ParseSection.parse(in.getInput()));
+
     long end = System.nanoTime();
     long duration = (end - start) / 1000000000;
     logger.info(duration + " seconds");
   }
 
-  @Command(
-      name = "catalog", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Parse catalog data",
-      description =
-          "Parse catalog based on input file. If not provided, read from stdin")
+  @Command(name = "catalog",
+           description = "Parse catalog based on input file. If "
+                         + "not provided, read from stdin.\n")
   public void
   catalog(@Mixin Mixins.InputFile in, @Mixin Mixins.OutputFile out) {
     long start = System.nanoTime();
+
     out.writeOutput(ParseCatalog.parse(in.getInput(), null));
+
     long end = System.nanoTime();
     long duration = (end - start) / 1000000000;
     logger.info(duration + " seconds");
   }
 
   // @ToDo: Fix this with two options
-  @Command(name = "school", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Parse school/subject data",
-           description = "Parse school/subject based on input file")
+  @Command(name = "school",
+           description = "Parse school/subject based on input file.\n")
   public static class School implements Runnable {
     private Logger logger = LoggerFactory.getLogger("parse.catalog");
 
-    @Option(
-        names = "--school",
-        description =
-            "Enter no if not want. If none provided, will read the school values")
+    @Option(names = "--school",
+            description = "If none provided, will read the school values")
     private String school;
-    @Option(
-        names = "--subject",
-        description =
-            "Enter no if not want. If none provided, will read the subject values")
+
+    @Option(names = "--subject",
+            description = "If none provided, will read the subject values")
     private String subject;
+
     @Mixin private Mixins.InputFile inputFile;
     @Mixin private Mixins.OutputFile outputFile;
 
@@ -103,6 +91,7 @@ public class Parse implements Runnable {
     @Override
     public void run() {
       long start = System.nanoTime();
+
       String input = inputFile.getInput();
       if (school == null && subject == null) {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
@@ -115,6 +104,7 @@ public class Parse implements Runnable {
         Map<String, String> schools = ParseSchoolSubjects.parseSchool(input);
         outputFile.writeOutput(schools);
       }
+
       long end = System.nanoTime();
       long duration = (end - start) / 1000000000;
       logger.info(duration + " seconds");

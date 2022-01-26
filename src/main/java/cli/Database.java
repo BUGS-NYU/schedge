@@ -29,18 +29,17 @@ import picocli.CommandLine;
 import scraping.ScrapeSchedge;
 import scraping.query.GetClient;
 
-@Command(name = "db",
-         description = "query/scrape/update/serve data through the database",
-         synopsisSubcommandLabel =
-             "(scrape | query | update | serve | clean | populate)",
+@Command(name = "db", description = "Operate on data in the database.\n",
          subcommands = {Database.Clean.class})
 public class Database implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
+
   @Option(names = {"-h", "--help"}, usageHelp = true,
           description = "display a help message")
   boolean displayHelp;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
+
   private static ProgressBarBuilder barBuilder =
       new ProgressBarBuilder()
           .setStyle(ProgressBarStyle.ASCII)
@@ -48,27 +47,20 @@ public class Database implements Runnable {
 
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(
-        spec.commandLine(),
-        "\nMissing required subcommand. Try ./schedge db [subcommand] --help to"
-            + " display help message for possible subcommands");
+    throw new CommandLine.ParameterException(spec.commandLine(),
+                                             "Missing required subcommand.\n");
   }
 
   @Command(
-      name = "scrape", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Scrape section from db",
-      description =
-          "Scrape section based on term and registration number, OR school and subject from db")
+      name = "scrape",
+      description = "Scrape section based on term and registration number, "
+                    + "OR school and subject from db.\n")
   public void
-  scrape(
-      @Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
-      @Option(
-          names = "--service",
-          description =
-              "turns scraping into a service; if set, --year, --semester, and --term are ignored.")
-      boolean service) {
+  scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
+         @Option(names = "--service",
+                 description = "turns scraping into a service; if set, "
+                               + "--year, --semester, and --term are ignored.")
+         boolean service) {
     while (service) {
       CleanData.cleanData();
       UpdateData.updateData(batchSize.getCatalog(20),
@@ -88,14 +80,9 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @Command(
-      name = "rmp", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n",
-      header = "Update instructors' ratings using Rate My Professor",
-      description =
-          "Scrape Rate My Professor for ratings, parsed and updated in the database")
+  @Command(name = "rmp", description = "Scrape Rate My Professor for ratings, "
+                                       +
+                                       "parsed and updated in the database.\n")
   public void
   rmp(@Option(names = "--batch-size",
               description = "batch size for querying Rate My Professor")
@@ -115,13 +102,9 @@ public class Database implements Runnable {
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @Command(
-      name = "query", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Query section",
-      description =
-          "Query section based on term and registration number, OR school and subject from db")
+  @Command(name = "query",
+           description = "Query section based on term and registration number, "
+                         + "OR school and subject from db.\n")
   public void
   query(@Mixin Mixins.Term termMixin,
         @Mixin Mixins.SubjectCode subjectCodeMixin,
@@ -148,14 +131,10 @@ public class Database implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @Command(name = "clean", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Clean epochs",
-           description = "Clean epochs")
+  @Command(name = "clean", description = "Clean unused epoch data.\n")
   public static class Clean implements Runnable {
-
     @Mixin Mixins.Term termMixin;
+
     @Option(names = "--epoch", description = "The epoch to clean")
     Integer epoch;
 
@@ -182,11 +161,7 @@ public class Database implements Runnable {
     }
   }
 
-  @Command(name = "serve", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Serve data",
-           description = "Serve data through an API")
+  @Command(name = "serve", description = "Serve data through the API.\n")
   public void
   serve(@Mixin Mixins.BatchSize batchSizeMixin,
         @Option(names = "--scrape",
@@ -212,12 +187,10 @@ public class Database implements Runnable {
     }
   }
 
-  @Command(name = "populate", sortOptions = false, headerHeading = "Command: ",
-           descriptionHeading = "%nDescription:%n%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "populate database using production API",
-           description = "Scrape existing Schedge instance")
+  @Command(
+      name = "populate",
+      description = "Populate the database by scraping the existing production "
+                    + "Schedge instance.\n")
   public void
   populate(@Mixin Mixins.Term termMixin,
            @Option(names = "--domain", defaultValue = "schedge.a1liu.com",

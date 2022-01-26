@@ -7,7 +7,7 @@ CREATE TABLE epochs (
 );
 
 CREATE TABLE courses (
-  id                  SERIAL                      NOT NULL,
+  id                  SERIAL                      NOT NULL UNIQUE,
   epoch               int REFERENCES epochs(id)
                           ON DELETE CASCADE       NOT NULL,
   name                varchar                     NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE courses (
 );
 
 CREATE TABLE instructors (
-  id                  SERIAL                      NOT NULL,
+  id                  SERIAL                      NOT NULL UNIQUE,
   name                varchar                     NOT NULL,
   school              varchar                     NOT NULL,
   subject             varchar                     NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE instructors (
 );
 
 CREATE TABLE sections (
-  id                  SERIAL                      NOT NULL,
+  id                  SERIAL                      NOT NULL UNIQUE,
   registration_number integer                     NOT NULL,
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
@@ -59,15 +59,16 @@ CREATE TABLE sections (
 );
 
 CREATE TABLE is_teaching_section (
-  id                  SERIAL                      NOT NULL,
+  id                  SERIAL                      NOT NULL UNIQUE,
   instructor_id       integer                     NOT NULL,
-  section_id          integer                     NOT NULL,
+  section_id          int REFERENCES sections(id)
+                      ON DELETE CASCADE           NOT NULL,
   instructor_name     varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE meetings (
-  id                  SERIAL                          NOT NULL,
+  id                  SERIAL                          NOT NULL UNIQUE,
   section_id          int REFERENCES sections(id)
                       ON DELETE CASCADE               NOT NULL,
   begin_date          timestamp with time zone        NOT NULL,
@@ -78,10 +79,10 @@ CREATE TABLE meetings (
 
 CREATE INDEX epochs_term_idx ON epochs (term_id);
 CREATE INDEX courses_epoch_idx ON courses (epoch);
-CREATE INDEX sections_registration_number_idx ON sections (registration_number);
 CREATE INDEX sections_course_id_idx ON courses (course_id);
 CREATE INDEX meetings_section_id_idx ON meetings (section_id);
 
+CREATE INDEX sections_registration_number_idx ON sections (registration_number);
 CREATE INDEX sections_associated_with_idx ON sections (associated_with);
 CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
 CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);

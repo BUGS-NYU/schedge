@@ -1,6 +1,9 @@
 package scraping.parse;
 
-import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,16 +11,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class ParseSchoolSubjects {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.parse.ParseSection");
 
-  public static @NotNull String parseSchoolSubject(String rawData) {
+  public static String parseSchoolSubject(String rawData) {
     logger.info("parsing raw school data...");
     Document doc = Jsoup.parse(rawData);
     Elements scripts = doc.select("script");

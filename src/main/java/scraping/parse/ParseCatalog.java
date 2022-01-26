@@ -9,7 +9,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import nyu.*;
 import nyu.Meeting;
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -240,7 +239,6 @@ public class ParseCatalog implements Iterator<Course> {
   }
 
   @Override
-  @NotNull
   public Course next() {
     if (!hasNext())
       throw new NoSuchElementException("No more elements in the iterator!");
@@ -310,7 +308,6 @@ public class ParseCatalog implements Iterator<Course> {
       this.waitlistTotal = waitlistTotal;
     }
 
-    @NotNull
     static ArrayList<Section>
     getSectionsFrom(ArrayList<SectionMetadata> sectionData, SubjectCode code) {
       ArrayList<Section> sections = new ArrayList<>();
@@ -371,7 +368,6 @@ public class ParseCatalog implements Iterator<Course> {
       this.subject = subject;
     }
 
-    @NotNull
     Course getCourse(ArrayList<SectionMetadata> sections) {
       return new Course(courseName, deptCourseId, subject,
                         SectionMetadata.getSectionsFrom(sections, subject));

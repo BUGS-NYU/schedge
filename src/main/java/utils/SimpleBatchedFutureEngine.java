@@ -9,7 +9,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.BiFunction;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This class handles batch resoltion of futures.
@@ -138,7 +137,6 @@ public class SimpleBatchedFutureEngine<Input, Output>
     return null;
   }
 
-  @NotNull
   @Override
   public Iterator<Output> iterator() {
     return this;

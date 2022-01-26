@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import models.Section;
 import nyu.SectionStatus;
-import org.jetbrains.annotations.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -33,7 +32,7 @@ public class ParseSection {
           .collect(
               Collectors.toMap(strings -> strings[0], strings -> strings[1]));
 
-  public static Section parse(@NotNull String rawData) {
+  public static Section parse(String rawData) {
     logger.debug("parsing raw catalog section data into Section...");
 
     rawData = rawData.trim();
@@ -73,8 +72,7 @@ public class ParseSection {
     return parsingElements(secData, courseName, link);
   }
 
-  static @NotNull Map<String, String>
-  parseSectionAttributes(@NotNull Elements attributeData) {
+  static Map<String, String> parseSectionAttributes(Elements attributeData) {
     Map<String, String> map = new HashMap<>();
     for (Element e : attributeData) {
       if (e.child(0).text().equals("Topic") &&
@@ -86,9 +84,8 @@ public class ParseSection {
     return map;
   }
 
-  public static @NotNull Section parsingElements(Map<String, String> secData,
-                                                 String sectionName,
-                                                 String link) {
+  public static Section parsingElements(Map<String, String> secData,
+                                        String sectionName, String link) {
     String units = secData.get("Units");
     double minUnits = 0, maxUnits;
     if (units.contains("-")) {

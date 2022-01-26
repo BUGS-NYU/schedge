@@ -79,7 +79,7 @@ CREATE TABLE meetings (
 
 CREATE INDEX epochs_term_idx ON epochs (term_id);
 CREATE INDEX courses_epoch_idx ON courses (epoch);
-CREATE INDEX sections_course_id_idx ON courses (course_id);
+CREATE INDEX sections_course_id_idx ON sections (course_id);
 CREATE INDEX meetings_section_id_idx ON meetings (section_id);
 
 CREATE INDEX sections_registration_number_idx ON sections (registration_number);

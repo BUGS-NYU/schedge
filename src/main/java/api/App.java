@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.util.stream.Collectors;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;
@@ -75,20 +74,5 @@ public class App {
     new SearchEndpoint().addTo(app);
     new NonOnlineEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
-  }
-
-  private static SslContextFactory getSslContextFactory() {
-    SslContextFactory sslContextFactory = new SslContextFactory.Server();
-    URL resource = Utils.class.getResource("/keystore.jks");
-    if (resource == null) {
-      logger.info("Couldn't find keystore at src/main/resources/keystore.jks");
-      return null;
-    } else {
-      logger.info("Using keystore for HTTPS");
-    }
-
-    sslContextFactory.setKeyStorePath(resource.toExternalForm());
-    sslContextFactory.setKeyStorePassword("password");
-    return sslContextFactory;
   }
 }

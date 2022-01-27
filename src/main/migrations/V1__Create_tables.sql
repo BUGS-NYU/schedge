@@ -1,7 +1,19 @@
+CREATE TABLE schedge_meta (
+  id                  SERIAL                        NOT NULL UNIQUE,
+  created_at          timestamp WITH TIME ZONE      NOT NULL,
+  updated_at          timestamp WITH TIME ZONE      NOT NULL,
+  name                varchar                       NOT NULL UNIQUE,
+  value               varchar                       NOT NULL,
+  PRIMARY KEY (id)
+);
+
+INSERT  INTO schedge_meta (created_at, updated_at, name, value)
+        VALUES (NOW(), NOW(), 'version', '1');
+
 CREATE TABLE epochs (
   id                  SERIAL                        NOT NULL UNIQUE,
-  started_at          timestamp WITHOUT TIME ZONE   NOT NULL UNIQUE,
-  completed_at        timestamp WITHOUT TIME ZONE   UNIQUE,
+  started_at          timestamp WITH TIME ZONE      NOT NULL UNIQUE,
+  completed_at        timestamp WITH TIME ZONE      UNIQUE,
   term_id             integer                       NOT NULL,
   PRIMARY KEY (id)
 );

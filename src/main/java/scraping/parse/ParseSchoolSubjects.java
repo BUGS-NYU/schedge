@@ -32,10 +32,11 @@ public class ParseSchoolSubjects {
     String HTML = parseSchoolSubject(rawData);
     List<String> schools = new ArrayList<>();
     List<String> descriptions = new ArrayList<>();
-    Map<String, String> map = new HashMap<>();
+
     String output = HTML.substring(HTML.lastIndexOf("acad_groups"),
                                    HTML.indexOf("nyuSchoolsUrl"));
     output = output.substring(output.indexOf("[") + 1, output.lastIndexOf("]"));
+
     String[] outputs = output.split(",");
     for (String value : outputs) {
       if (value.contains("acad_group")) {
@@ -47,6 +48,7 @@ public class ParseSchoolSubjects {
       }
     }
 
+    Map<String, String> map = new HashMap<>();
     for (int i = 0; i < schools.size(); i++) {
       map.put(schools.get(i), descriptions.get(i));
     }

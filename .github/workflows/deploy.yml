@@ -38,7 +38,7 @@ jobs:
           context: .
           file: src/build/docker/Dockerfile
           push: true
-          tags: a1liu/schedge:latest
+          tags: ghcr.io/A1Liu/schedge:latest
 
   Frontend:
     runs-on: ubuntu-latest

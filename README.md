@@ -19,7 +19,7 @@ The API documentation is available at https://schedge.a1liu.com .
 - [x] Deploy with CI/CD
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
-- [ ] Make a first-party frontend
+- [-] Make a first-party frontend
 - [ ] Add full RMP support
 
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot

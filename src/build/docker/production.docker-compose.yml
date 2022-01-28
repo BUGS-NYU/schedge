@@ -65,10 +65,16 @@ services:
 
       - "traefik.http.services.schedge.loadbalancer.server.port=4358"
 
+        # HTTPS
       - "traefik.http.routers.schedge-https.rule=Host(`nyu.a1liu.com`)"
       - "traefik.http.routers.schedge-https.service=schedge"
-      - "traefik.http.routers.schedge-https.entrypoints=web,websecure"
+      - "traefik.http.routers.schedge-https.entrypoints=websecure"
       - "traefik.http.routers.schedge-https.tls.certresolver=mytlschallenge"
+
+        #HTTP
+      - "traefik.http.routers.schedge-http.rule=Host(`nyu.a1liu.com`)"
+      - "traefik.http.routers.schedge-http.service=schedge"
+      - "traefik.http.routers.schedge-http.entrypoints=web"
 
   watchtower:
     image: containrrr/watchtower:1.4.0

@@ -7,8 +7,8 @@ CREATE TABLE schedge_meta (
   PRIMARY KEY (id)
 );
 
-INSERT  INTO schedge_meta (created_at, updated_at, name, value)
-        VALUES (NOW(), NOW(), 'version', '1');
+INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
+        VALUES            (NOW(),       NOW(),      'version',  '1');
 
 CREATE TABLE epochs (
   id                  SERIAL                        NOT NULL UNIQUE,

@@ -23,8 +23,8 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Add full RMP support
 
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
-- [ ] Make the schools list dynamic
-- [?] Improve 1st query performance
+- [ ] Make the schools list dynamic (use `schedge_meta` table)
+- [ ] Improve 1st query performance (this might be a mac-specific problem tbh)
 
 ## Commands
 The following commands are valid in Schedge:

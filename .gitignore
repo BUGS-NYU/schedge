@@ -1,40 +1,14 @@
-# Ignore Gradle project-specific cache directory
-.gradle
-
-# Environment vars
-.env
-
-# PID's of old running programs
-.pid
-
-# IDEA IDE
-.idea
-
-# letsencrypt stuffs
-.letsencrypt
-
-# Ignore Gradle build output directory
-.build
-
-# Ignore logging files
-*.log
-
-/postgres/*
-!/postgres/.gitkeep
-
-.kotlintest
-
-logging.txt
-tables.db
-
-src/main/java/database/generated
-src/main/resources/keystore.jks
-
+# Java stuffs
+/.gradle
+/.idea
 /.classpath
 /.project
 
-/local/*
-/index/*
-bin/
-.settings/
-.vscode/
+# Schedge-specific
+/.letsencrypt
+/.build
+*.log
+
+# JavaScript
+/.next
+/node_modules

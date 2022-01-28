@@ -1,0 +1,18 @@
+{
+  "name": "schedge",
+  "scripts": {
+    "dev": "next dev -p 9100",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "12.0.9",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "eslint": "8.7.0",
+    "eslint-config-next": "12.0.9"
+  }
+}

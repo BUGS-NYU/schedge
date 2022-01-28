@@ -42,6 +42,10 @@ services:
 
     # NOTE Using absolute paths because relative didn't work. IDK why. Either way,
     # the production environment is stable so absolute paths work fine here.
+    #
+    # You might then ask, why does this project use Docker? Honestly, its just
+    # to make development and deployment easier. Doesn't really provide much in
+    # terms of product improvement, but at least setup involves less steps.
     #                                   - Albert Liu, Jan 27, 2022 Thu 22:32 EST
     volumes:
       - "/home/ubuntu/schedge/src/main/migrations:/docker-entrypoint-initdb.d"

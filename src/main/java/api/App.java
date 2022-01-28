@@ -29,11 +29,11 @@ public class App {
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
                   + "active development and is subject to change</b>."
-                  + "<br/> <br/> If you'd like to contribute, "
-                  +
-                  "<a href=\"https://github.com/BUGS-NYU/schedge\">check out the repository</a>.";
+                  + "<br/><br/>If you'd like to contribute, "
+                  + "<a href=\"https://github.com/A1Liu/schedge\">"
+                  + "check out the repository</a>.";
               Info info =
-                  new Info().version("1.0").title("Schedge").description(
+                  new Info().version("0.1").title("Schedge").description(
                       description);
               OpenApiOptions options =
                   new OpenApiOptions(info).path("/swagger.json");

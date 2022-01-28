@@ -1,6 +1,6 @@
-package api.v1;
+package api;
 
-import static api.v1.RowsToCourses.rowsToCourses;
+import static api.RowsToCourses.rowsToCourses;
 import static database.courses.SelectRows.selectRowsBySectionId;
 
 import database.courses.SelectRows;

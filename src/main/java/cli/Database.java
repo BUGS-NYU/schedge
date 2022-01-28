@@ -10,7 +10,7 @@ import actions.CleanData;
 import actions.ScrapeTerm;
 import actions.UpdateData;
 import api.App;
-import api.v1.SelectCourses;
+import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import database.epochs.*;

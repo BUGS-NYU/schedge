@@ -1,4 +1,4 @@
-package api.v1.endpoints;
+package api.v1;
 
 import api.Endpoint;
 import io.javalin.http.Handler;

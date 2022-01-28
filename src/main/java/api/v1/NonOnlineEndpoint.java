@@ -1,7 +1,6 @@
-package api.v1.endpoints;
+package api.v1;
 
-import api.Endpoint;
-import api.v1.*;
+import api.*;
 import database.GetConnection;
 import database.courses.*;
 import database.epochs.LatestCompleteEpoch;

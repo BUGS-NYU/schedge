@@ -1,4 +1,4 @@
-package api.v1;
+package api;
 
 import database.models.*;
 import java.util.*;

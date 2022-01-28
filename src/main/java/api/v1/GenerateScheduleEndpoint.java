@@ -1,10 +1,10 @@
-package api.v1.endpoints;
+package api.v1;
 
 import static actions.ScheduleSections.*;
 
+import api.ApiError;
 import api.Endpoint;
-import api.v1.ApiError;
-import api.v1.SelectCourses;
+import api.SelectCourses;
 import database.GetConnection;
 import database.SelectAugmentedMeetings;
 import database.epochs.LatestCompleteEpoch;

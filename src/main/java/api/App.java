@@ -1,6 +1,6 @@
 package api;
 
-import api.v1.endpoints.*;
+import api.v1.*;
 import io.javalin.Javalin;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;

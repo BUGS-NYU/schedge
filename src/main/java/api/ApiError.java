@@ -1,4 +1,4 @@
-package api.v1;
+package api;
 
 public class ApiError {
   private String message;

@@ -12,7 +12,6 @@ services:
       - "--providers.docker.exposedbydefault=false"
 
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web2.address=:4358"
       - "--entrypoints.websecure.address=:443"
 
       - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
@@ -64,18 +63,18 @@ services:
       - "com.centurylinklabs.watchtower.enable=true"
       - "com.centurylinklabs.watchtower.stop-signal=SIGKILL"
 
+      - "traefik.http.services.schedge.loadbalancer.server.port=4358"
+
         # HTTPS
       - "traefik.http.routers.schedge-https.rule=Host(`nyu.a1liu.com`)"
-      - "traefik.http.routers.schedge-https.service=schedge-https"
+      - "traefik.http.routers.schedge-https.service=schedge"
       - "traefik.http.routers.schedge-https.entrypoints=websecure"
-      - "traefik.http.services.schedge-https.loadbalancer.server.port=4358"
       - "traefik.http.routers.schedge-https.tls.certresolver=mytlschallenge"
 
         #HTTP
-      - "traefik.http.routers.schedge-http.rule=Host(`nyu.a1liu.com`, `localhost`)"
-      - "traefik.http.routers.schedge-http.service=schedge-http"
-      - "traefik.http.routers.schedge-http.entrypoints=web,web2"
-      - "traefik.http.services.schedge-http.loadbalancer.server.port=4358"
+      - "traefik.http.routers.schedge-http.rule=Host(`nyu.a1liu.com`)"
+      - "traefik.http.routers.schedge-http.service=schedge"
+      - "traefik.http.routers.schedge-http.entrypoints=web"
 
   watchtower:
     image: containrrr/watchtower:1.4.0

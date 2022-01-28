@@ -26,7 +26,7 @@ services:
     volumes:
       # So that Traefik can listen to the Docker events
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./.letsencrypt:/.letsencrypt"
+      - "/home/ubuntu/schedge/.letsencrypt:/.letsencrypt"
 
   postgres:
     image: postgres:14.1-alpine
@@ -34,16 +34,19 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - PGDATA=/var/lib/postgresql/data
     logging:
       options:
         max-size: 10m
         max-file: "3"
     expose:
       - "5432"
+
+    # NOTE Using absolute paths because relative didn't work. IDK why. Either way,
+    # the production environment is stable so absolute paths work fine here.
+    #                                   - Albert Liu, Jan 27, 2022 Thu 22:32 EST
     volumes:
-      - "./src/main/migrations:/docker-entrypoint-initdb.d"
-      - "./.build/postgres:/var/lib/postgresql/data"
+      - "/home/ubuntu/schedge/src/main/migrations:/docker-entrypoint-initdb.d"
+      - "/home/ubuntu/schedge/.build/postgres:/var/lib/postgresql/data"
 
   schedge:
     image: ghcr.io/a1liu/schedge:latest

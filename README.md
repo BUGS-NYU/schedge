@@ -25,6 +25,7 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
 - [ ] Make the schools list dynamic (use `schedge_meta` table)
 - [ ] Improve 1st query performance (this might be a mac-specific problem tbh)
+- [ ] Make an admin portal
 
 ## Commands
 The following commands are valid in Schedge:

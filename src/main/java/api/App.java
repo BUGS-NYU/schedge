@@ -41,7 +41,6 @@ public class App {
               config.registerPlugin(new OpenApiPlugin(options));
             })
             .start(4358);
-    Logger logger = LoggerFactory.getLogger("app");
 
     String docs = new BufferedReader(
                       new InputStreamReader(
@@ -54,6 +53,7 @@ public class App {
                                              ctx.contentType("text/html");
                                              ctx.result(docs);
                                            }));
+
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);

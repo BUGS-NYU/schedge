@@ -3,4 +3,7 @@
 /.build/libs/*
 !/.build/libs/schedge.jar
 
-/src/main/gradle
+/.git
+/.gradle
+
+/src/build/gradle

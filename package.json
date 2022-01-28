@@ -4,7 +4,8 @@
     "dev": "next dev -p 9100",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "deploy": "git push origin main:production"
   },
   "dependencies": {
     "next": "12.0.9",

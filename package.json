@@ -9,10 +9,33 @@
   "dependencies": {
     "next": "12.0.9",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "classnames": "2.3.1"
   },
   "devDependencies": {
-    "eslint": "8.7.0",
-    "eslint-config-next": "12.0.9"
+    "postcss-flexbugs-fixes": "5.0.2",
+    "postcss-preset-env": "7.0.1"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 0.25%",
+    "not dead",
+    "not ie 11",
+    "not op_mini all"
+  ],
+  "postcss": {
+    "plugins": {
+      "postcss-flexbugs-fixes": {},
+      "postcss-preset-env": {
+        "autoprefixer": {
+          "flexbox": "no-2009"
+        },
+        "stage": 3,
+        "features": {
+          "nesting-rules": true,
+          "custom-properties": false
+        }
+      }
+    }
   }
 }

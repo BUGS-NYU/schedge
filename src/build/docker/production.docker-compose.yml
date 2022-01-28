@@ -52,7 +52,7 @@ services:
       - "./.build/postgres:/var/lib/postgresql/data"
 
   schedge:
-    image: a1liu/schedge:latest
+    image: https://docker.pkg.github.com/a1liu/schedge/schedge:latest
     restart: always
     environment:
       - DB_USERNAME=postgres

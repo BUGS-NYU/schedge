@@ -21,11 +21,12 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
 - [ ] Add full RMP support
+- [ ] Make the schools list dynamic (use `schedge_meta` table)
 
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
-- [ ] Make the schools list dynamic (use `schedge_meta` table)
 - [ ] Improve 1st query performance (this might be a mac-specific problem tbh)
 - [ ] Make an admin portal
+- [ ] Fuzzer? Some kind of tester I guess
 
 ## Commands
 The following commands are valid in Schedge:

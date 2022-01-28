@@ -5,7 +5,6 @@ services:
     # The official v2.1 Traefik docker image
     image: traefik:v2.1
     restart: always
-    network_mode: "host"
 
     # Enables the web UI and tells Traefik to listen to docker
     command:

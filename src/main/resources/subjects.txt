@@ -1,577 +1,577 @@
-AELS,UF,Academic English for Liberal Study
-ACCT,GB,Accounting
-ACCT,UB,Accounting
-ACE,UE,Advanced College Essay
-MSWAC,GS,Advanced Concentration Courses
-WRTNG,UG,Advanced Writing Courses
-AWS,UF,Advanced Writing Studio
-AE,UY,Aerospace Engineering
-AFGC,UF,African Cultures- Global Cultu
-AFRS,GA,Africana Studies
-ASL,UE,American Sign Language
-AMST,GA,American Studies
-ANST,GA,Animal Studies
-ANST,UA,Animal Studies
-ANTH,GA,Anthropology
-ANTH,UA,Anthropology
-ANTH,UH,Anthropology
-ANTH1,UC,Anthropology
-ASH,GE,Appl Stat, Social Sci, & Human
-ADAV1,UC,Applied Data Analytics and Vis
-APSY,GE,Applied Psychology
-APSY,UE,Applied Psychology
-APSTA,GE,Applied Statistics
-APSTA,UE,Applied Statistics
-APRGS,UF,Approaches to Global Studies
-APR,UF,Approaches: Sophomore Seminar
-ACS,UH,Arab Crossroads Studies
-ARABL,UH,Arabic Language
-ART,SHU,Art
-ARTP,GE,Art & Art Professions
-ARTED,GE,Art Education
-ARTH,UA,Art History
-ARTH,UH,Art History
-ARTH1,UC,Art History
-ARTCR,GE,Art Theory & Critical Studies
-ARTCR,UE,Art Theory & Critical Studies
-ARTT,GE,Art Therapy
-ARTT,UE,Art Therapy
-ARTH,GA,Art and Architecture
-ARCS,UE,Art and Costume Studies
-ARTS1,UC,Arts
-ARTS,UG,Arts Workshops
-BMSC,GA,Basic Medical Science
-BAS01,DN,Basic Sciences
-BAS06,DN,Basic Sciences
-BASCI,CD,Basic Sciences
-BASCI,DN,Basic Sciences
-BEH01,DN,Behavioral Sciences
-BEH03,DN,Behavioral Sciences
-BEH05,DN,Behavioral Sciences
-BEHSC,CD,Behavioral Sciences
-BILED,GE,Bilingual Education
-BE,GY,BioEngineering
-BIOE,GA,Bioethics
-BI,GY,Bioinformatics
-BIOL,GA,Biology
-BIOL,SHU,Biology
-BIOL,UA,Biology
-BIOL,UH,Biology
-BIOMS,DN,Biomaterials
-BMIN,GA,Biomedical Informatics
-BMS,UY,Biomolecular Science
-BT,GY,Biotechnology
-BTE,GY,Biotechnology & Entrepreneursh
-BUSN1,UC,Business
-BUSOR,UH,Business & Organizational Std
-BPEP,SHU,Business & Political Economy P
-BSPA,GB,Business & Society
-BUSF,SHU,Business and Finance
-BPEP,UB,Business and Political Economy
-BSPA,UB,Business and Society
-SCHOL,UA,CAS Scholars Program
-CAP,GP,Capstone
-CBE,UY,Chemical & Biological Enginrng
-CBE,GY,Chemical & Biological Engnrng
-CHEM,GA,Chemistry
-CHEM,SHU,Chemistry
-CHEM,UA,Chemistry
-CHEM,UH,Chemistry
-CM,GY,Chemistry
-CM,UY,Chemistry
-CAMS,UA,Child/Adoles Mental Hlth Stds
-CHDED,GE,Childhood Education
-CHDED,UE,Childhood Education
-CHIN,SHU,Chinese Language
-CHINL,UH,Chinese Language
-CINE,GT,Cinema Studies
-CINE,UT,Cinema Studies
-CE,GY,Civil & Urban Engineering
-CE,UY,Civil & Urban Engineering
-CLASS,GA,Classics
-CLASS,UA,Classics
-CLS03,DN,Clinical Sciences
-CLS09,DN,Clinical Sciences
-CLSCI,DN,Clinical Sciences
-CP,GY,Co-op Education Program
-CP,UY,Co-op Education Program
-CORE,UA,College Core Curriculum
-COLLQ,UG,Colloquium
-COLU,UA,Columbia Language Exchange
-CSCD,GE,Communicative Sciences &
-CSCD,UE,Communicative Sciences &
-CEL,SHU,Community-Engaged Learning
-COLIT,GA,Comparative Literature
-COLIT,UA,Comparative Literature
-CENG,SHU,Computer Engineering
-CS,GY,Computer Science
-CS,UH,Computer Science
-CS,UY,Computer Science
-CSCI,GA,Computer Science
-CSCI,SHU,Computer Science
-CSCI,UA,Computer Science
-TECH,UB,Computing and Data Science
-CONM1,GC,Construction Management MA/GC
-CORE,GG,Core
-COR1,GB,Core Course
-COR2,GB,Core Course, capstone
-CCST,SHU,Core Science
-CADT,UH,Core: Arts, Design & Technolgy
-CCOL,UH,Core: Colloquium
-CCEA,UH,Core: Cultural Exploration & A
-CDAD,UH,Core: Data and Discovery
-CSTS,UH,Core: Strct of Thogh & Society
-ARCS,GE,Costume Studies
-CRWR,SHU,Creative Writing
-CRWRI,GA,Creative Writing
-CRWRI,UA,Creative Writing
-CWP,UF,Creative Writing
-CWRG1,UC,Creative Writing
-CWGV,UF,Creative Writing: Global Voice
-CRED1,DC,Credit Analysis Diploma
-ASPP,GT,Ctr for Art, Society & Pub Pol
-ASPP,UT,Ctr for Art, Society & Pub Pol
-CEH,GA,Ctr for Experiment Humanities
-CUSP,GX,Ctr for Urban Sci and Progress
-CFI,UF,Cultural Foundations I
-CFII,UF,Cultural Foundations II
-CFIII,UF,Cultural Foundations III
-CAM,UY,Culture, Arts, and Media
-DANC,GT,Dance
-DANC,UT,Dance
-MPADE,GE,Dance Education
-MPADE,UE,Dance Education
-DS,GA,Data Science
-DS,UA,Data Science
-DC,UF,Dean's Circle
-DHYG3,UD,Dental Hygiene BS
-DHYG1,UD,Dental Hygiene Level 1
-DHYG2,UD,Dental Hygiene Level 2
-MPAGC,GE,Departmental Courses
-MPAGC,UE,Departmental Courses
-DESG,GT,Design
-DGS03,DN,Diagnostic Sciences
-DGS06,DN,Diagnostic Sciences
-DGSCI,CD,Diagnostic Sciences
-DGCM1,UC,Digital Communications & Media
-FILV1,UC,Digital Communications & Media
-DHSS,GA,Digital Humanities & Soc Sci
-DSWSW,GS,Doctor of Social Welfare
-PHD,GP,Doctoral
-PHDSW,GS,Doctoral
-DCADV,GE,Doctoral Advisement
-THEA,UT,Drama
-MPADT,GE,Drama Therapy
-DRLIT,UA,Dramatic Literature
-DWPG,GT,Dramatic Writing
-DWPG,UT,Dramatic Writing
-ECED,GE,Early Childhood
-ECED,UE,Early Childhood
-EAGC,UF,East Asian Cultures- Global Cu
-EAST,GA,East Asian Studies
-EAST,UA,East Asian Studies
-ECON,GA,Economics
-ECON,GB,Economics
-ECON,SHU,Economics
-ECON,UA,Economics
-ECON,UB,Economics
-ECON,UH,Economics
-ECON1,UC,Economics
-ECI,UF,Economics I
-ECII,UF,Economics II
-EJST,GE,Education & Jewish Studies
-EDST,UE,Education Studies
-EDLED,GE,Educational Administration Edu
-EDCT,UE,Educational Communication and
-EDCT,GE,Educational Communications &
-EDPLY,GE,Educational Policy
-MPAET,GE,Educational Theatre
-MPAET,UE,Educational Theatre
-ECE,GY,Elect. Engineering - ECE GRAD
-ECE,UY,Elect. Engineering - ECE UGRD
-ELEC,GG,Electives
-MSWEL,GS,Electives
-EENG,SHU,Electrical Engineering
-ENGR,GH,Engineering
-ENGR,NY,Engineering
-ENGR,UH,Engineering
-EN,UY,English
-ENGL,GA,English
-ENGL,UA,English
-ENGED,GE,English Education
-ENGED,UE,English Education
-ESL,NI,English as a Second Language
-EAP,SHU,English for Academic Purpose
-ENYC,GE,Environmental Conservation Ed
-EHSC,GA,Environmental Health Science
-ENSTU,UF,Environmental Studies
-ENVST,UA,Environmental Studies
-ETHIC,CD,Ethics
-EURO,GA,European and Mediterranean Stu
-EURO,UA,European and Mediterranean Stu
-MSEM1,GC,Event Management
-EX,UY,Exam Hour
-MTRO,NE,Excel - NYU Connect
-EXEC,GP,Executive MPA
-CCEX,SHU,Exper Discovery in Nat World
-EXL,UF,Experiential Learning
-EXLI,SHU,Experiential Learning
-EXPOS,UA,Expository Writing
-EXWR1,UC,Expository Writing
-MSWFD,GS,Fieldlearning
-FWS,UF,Fieldwork Seminar
-FILMM,UH,Film and New Media
-FIN,UY,Finance
-FINC,GB,Finance
-FINC,UB,Finance
-FRE,GY,Finance and Risk Engineering
-FINH,GA,Fine Arts
-FIRST,UG,First Year program
-COHRT,UA,First-Year Cohort Meeting
-FYSEM,UA,First-Year Seminars
-FOOD,GE,Food Studies
-FOOD,UE,Food Studies
-FLGED,GE,Foreign Language Education
-FLGED,UE,Foreign Language Education
-FREN,GA,French
-FREN,UA,French
-FREN,SHU,French Language
-FRENL,UH,French Language
-FDGR1,GC,Fundraising MS
-PHTI,NT,Future Imagemakers Workshop
-THEA,NT,Future Theatre Artists Worksho
-GAMES,GT,Game Design
-GAMES,UT,Game Design
-EG,UY,General Engineering
-GERM,GA,German
-GERM,UA,German
-GSCC1,GC,Glob Sec, Conflict, Cybercrime
-GCHN,SHU,Global China Studies
-GPH,GU,Global Public Health
-GLSP1,GC,Global Sport
-GLOB1,GC,Global Studies
-GT,UF,Global Topics
-DBIN,GB,Global Trip
-GSAS,GA,Grad School of Arts & Science
-SHBI,GB,Grad Stern/NYU Shanghai Degree
-ACTG,GT,Graduate Acting
-GFMTV,GT,Graduate Film & TV
-GCOM1,GC,Graphic Communications
-MHA,GP,Health Administration
-HPAM,GP,Health policy and management
-HEAL1,UC,Healthcare Management
-HBRJD,UA,Hebrew & Judaic Studies
-HBRJD,GA,Hebrew and Judaic Studies
-HEL,GA,Hellenic Studies
-HEL,UA,Hellenic Studies
-HERST,UH,Heritage Studies
-HPSE,GE,Higher & Post-Secondary Educ
-HPSE,UE,Higher & Post-Secondary Educ
-HEOP,UE,Higher Education Opportunities
-HIST,GA,History
-HIST,SHU,History
-HIST,UA,History
-HIST,UH,History
-HIST1,UC,History
-HISTN,UH,History - AEP/ESP
-HSED,GE,History of Education
-HSED,UE,History of Education
-HOU,UF,History of the Universe
-HONR,UB,Honors Seminar (non-credit)
-TCHS1,GC,Hospitality Management MA/GC
-TCHT1,UC,Hotel & Tourism Management
-HCAT1,GC,Human Capital Analytics & Tech
-HUMN,SHU,Humanities
-HUMN1,UC,Humanities
-IMPLA,CD,Implant Dentistry
-IF,UF,Independent Fieldwork
-IND,UF,Independent Study
-INDIV,GG,Individualized Projects
-INDIV,UG,Individualized Projects
-IE,GY,Industrial Engineering
-ISMM1,UC,Information Systems Management
-ISAW,GA,Inst Study of the Ancient Wrld
-IFST,GA,Institute of French Studies
-ISPEC,UT,Int'l Pgms TSOA Special Pgms
-ICINE,UT,Int`l Pgms, Cinema Studies
-ITHEA,UT,Int`l Pgms, Drama
-IDWPG,UT,Int`l Pgms, Dramatic Writing
-IFMTV,UT,Int`l Pgms, Film & Television
-IPHTI,UT,Int`l Pgms, Photography
-DM,GY,Integrated Digital Media
-DM,UY,Integrated Digital Media
-INTG1,GC,Integrated Marketing
-IUCD,GE,Inter-University Doctoral Cons
-IM,UH,Interactive Media
-IMNY,UT,Interactive Media Arts
-INTM,SHU,Interactive Media Arts
-IMBX,SHU,Interactive Media and Business
-MPAIA,GE,Interactive Music Courses
-MPAIA,UE,Interactive Music Courses
-ITPG,GT,Interactive Telecommunications
-INTA,GB,Interarea
-RESCH,GE,Interdepartmental Research
-IDSEM,UG,Interdisciplinary Seminars
-INTE,GE,International Education
-INTE,UE,International Education
-INTRL,GA,International Relations
-INTRL,UA,International Relations
-IRISH,GA,Irish Studies
-IRISH,UA,Irish Studies
-ITAL,GA,Italian
-ITAL,UA,Italian
-JAPN,SHU,Japanese Language 
-JOUR,GA,Journalism
-JOUR,SHU,Journalism
-JOUR,UA,Journalism
-JIRS,UF,Junior Independent Research Se
-LANED,GE,Language Education
-LATC,GA,Latin Amer-Caribbean Studies
-LATC,UA,Latin Amer-Caribbean Studies
-LAGC,UF,Latin American Cultures- Globa
-LWSOC,GA,Law and Society
-LWSOC,UA,Law and Society
-LRMS1,UC,Leadership and Management Stud
-LAW,UH,Legal Studies
-LISCI,UF,Life Science
-LING,GA,Linguistics
-LING,UA,Linguistics
-LITC,GE,Literacy Education
-LITC,UE,Literacy Education
-LITR1,UC,Literature
-LITCW,UH,Literature & Creative Writing
-LIVN,UF,Living in the Anthropocene
-MSPP,GP,M.S. in Public Policy Courses
-MPAP,NE,MPAP Summer Programs
-HRCM1,GC,MS in Human Resources
-MSPM1,GC,MS in Project Management
-MAINT,GA,Maintenance
-MAINT,GC,Maintenance
-MAINT,GE,Maintenance
-MAINT,GN,Maintenance
-MAINT,GP,Maintenance
-MAINT,GS,Maintenance
-MAINT,GT,Maintenance
-MAINT,GU,Maintenance
-MAINT,UA,Maintenance
-MAINT,UE,Maintenance
-MAINT,UN,Maintenance
-MAINT,UT,Maintenance
-MG,GY,Management
-MG,UY,Management
-MGMT,GB,Management
-MGMT,SHU,Management
-MGMT,UB,Management
-MASY1,GC,Management & Systems MA/GC
-MCOM,GB,Management Communication
-MN,GY,Manufacturing Engineering
-MKTG,GB,Marketing
-MKTG,SHU,Marketing
-MKTG,UB,Marketing
-MKAN1,UC,Marketing Analytics
-MATH,UA,Math
-MATH1,UC,Math
-MA,GY,Mathematics
-MA,UY,Mathematics
-MATH,GA,Mathematics
-MATH,SHU,Mathematics
-MATH,UH,Mathematics
-MTHED,GE,Mathematics Education
-MTHED,UE,Mathematics Education
-ME,GY,Mechanical Engineering
-ME,UY,Mechanical Engineering
-MD,UY,Media Studies
-MEST1,UC,Media Studies
-MCC,GE,Media, Culture & Communication
-MCC,UE,Media, Culture & Communication
-MCC,SHU,Media, Culture, & Communicatio
-MEDI,GA,Medieval & Renaissance Studies
-MEDI,UA,Medieval & Renaissance Studies
-MEIS,UA,Middle Eastern & Islam Studies
-MEGC,UF,Middle Eastern Cultures- Globa
-MEIS,GA,Middle Eastern Studies
-MULT,UB,Multidisciplinary
-MSMS,GA,Museum Studies
-MUS,SHU,Music
-MUSIC,GA,Music
-MUSIC,UA,Music
-MUSIC,UH,Music
-MPAMB,GE,Music Business
-MPAMB,UE,Music Business
-MPAME,GE,Music Education
-MPAME,UE,Music Education
-MPABR,GE,Music Instrumental: Brass
-MPABR,UE,Music Instrumental: Brass
-MPAJZ,GE,Music Instrumental: Jazz
-MPAJZ,UE,Music Instrumental: Jazz
-MPAPS,GE,Music Instrumental: Percussion
-MPAPS,UE,Music Instrumental: Percussion
-MPAPE,GE,Music Instrumental: Piano
-MPAPE,UE,Music Instrumental: Piano
-MPASS,GE,Music Instrumental: Strings
-MPASS,UE,Music Instrumental: Strings
-MPAVP,GE,Music Instrumental: Voice
-MPAVP,UE,Music Instrumental: Voice
-MPAWW,GE,Music Instrumental: Woodwinds
-MPAWW,UE,Music Instrumental: Woodwinds
-MPATE,GE,Music Technology
-MPATE,UE,Music Technology
-MPATC,GE,Music Theory and Composition
-MPATC,UE,Music Theory and Composition
-MPAMT,GE,Music Therapy
-MPAMT,UE,Music Therapy
-GMTW,GT,Musical Theatre
-GMTW,UT,Musical Theatre
-NYU,SHU,NYU Shanghai
-NEST,GA,Near Eastern Studies
-NEUR,SHU,Neural Science
-NEURL,GA,Neural Science
-NEURL,UA,Neural Science
-NOCR,GB,Non-Credit
-NODEP,UA,Non-Departmental
-NONCR,GP,Noncredit
-NURSE,GN,Nursing - Graduate
-NURSE,UN,Nursing - Undergraduate
-NUTR,GE,Nutrition & Dietetics
-NUTR,UE,Nutrition & Dietetics
-OT,GE,Occupational Therapy
-OT,UE,Occupational Therapy
-OART,GT,Open Arts Curriculum
-OART,UT,Open Arts Curriculum
-OPMG,GB,Operations Management
-OPMG,UB,Operations Management
-ORBC1,UC,Organizational Behavior & Chan
-PHDC,GB,PHD Consortium
-PARAL,DC,Paralegal
-PEACE,UH,Peace Studies
-PERF,GT,Performance Studies
-PERF,UT,Performance Studies
-MPAPA,GE,Performing Arts Administration
-PHIL,GA,Philosophy
-PHIL,SHU,Philosophy
-PHIL,UA,Philosophy
-PHIL,UH,Philosophy
-PHED,GE,Philosophy of Education
-PHED,UE,Philosophy of Education
-PHTI,GT,Photography and Imaging
-PHTI,UT,Photography and Imaging
-PHYED,UH,Physical Education
-PT,GE,Physical Therapy
-PH,GY,Physics
-PH,UY,Physics
-PHYS,GA,Physics
-PHYS,SHU,Physics
-PHYS,UA,Physics
-PHYS,UH,Physics
-POET,GA,Poetics and Theory
-POLSC,UH,Political Science
-POL,GA,Politics
-POL,UA,Politics
-POLS1,UC,Politics
-PORT,GA,Portuguese
-PORT,UA,Portuguese
-PRACT,UG,Practicum
-PCL03,DN,Preclinical Skills
-PCL08,DN,Preclinical Skills
-PCL09,DN,Preclinical Skills
-PHP,UY,Prehealth Prep
-MSWPF,GS,Professional Foundation Course
-PWRT1,GC,Professional Writing
-PSYC,SHU,Psychology
-PSYC1,UC,Psychology
-PSYCH,GA,Psychology
-PSYCH,UA,Psychology
-PSYCH,UH,Psychology
-PDPSA,GA,Psychotherapy & Psychoanalysis
-PADM,GP,Pub and Nonprofit MGMT and Pol
-PUBPL,UA,Public Policy
-PRCC1,GC,Public Relations MS
-PUBB1,GC,Publishing Masters
-QUAL1,GC,Quality Assurance
-DEVE1,GC,RE Development
-REAL1,UC,Real Estate
-REAL1,GC,Real Estate Masters/GC
-RWLD1,GC,Real World Graduate
-RWLD1,UC,Real World Undergraduate
-REMU,UT,Recorded Music
-RE,GY,Registrar
-RELS,SHU,Religious Studies
-RELST,GA,Religious Studies
-RELST,UA,Religious Studies
-RUSSN,GA,Russian & Slavic Studies
-RUSSN,UA,Russian & Slavic Studies
-REBS1,UC,Schack Undergraduate Real Esta
-SCHOL,GG,Scholarly Communities
-CORE,GP,School-wide core
-SCIEN,UH,Science
-SCNC1,UC,Science
-SCIED,GE,Science Education
-SCIED,UE,Science Education
-STS,UY,Science and Technology
-SCTEC,UF,Science of Technology
-SCAI,UF,Senior Capstone I
-SRTH,UF,Senior Thesis
-SMSP,UH,Sheikh Mohamed Scholars Prog
-CCSF,SHU,Social Foundations
-SFI,UF,Social Foundations I
-SFII,UF,Social Foundations II
-SFIII,UF,Social Foundations III
-SOIM,UB,Social Impact
-SRPP,UH,Social Research & Public Polic
-SOCS,SHU,Social Science
-SOCS1,UC,Social Sciences
-SOCSC,UH,Social Sciences
-EMAT,GE,Social Studies Edu - Distance
-SOCED,GE,Social Studies Education
-SOCED,UE,Social Studies Education
-SCA,UA,Social and Cultural Analysis
-SEG,UY,Society, Envirnmnt, & Globaliz
-SOC,GA,Sociology
-SOC,UA,Sociology
-SOCY1,UC,Sociology
-SOED,GE,Sociology of Education
-SAGC,UF,South Asian Cultures- Global C
-SPAN,GA,Spanish
-SPAN,UA,Spanish
-SPAN,SHU,Spanish Language
-SPCED,GE,Special Education
-SPCED,UE,Special Education
-TCSB1,GC,Sports Business Magmt. MA/GC
-TCSM1,UC,Sports Management
-SFMTV,UT,Spr Sem at Tisch - Film & TV
-STAT,UB,Statistics & Operations Resear
-STAT,GB,Statistics & Operations Rsrch
-STRN,NB,Stern On-line Programs
-SAHS,GE,Student Affairs Honors & Semin
-SAHS,UE,Student Affairs Honors & Semin
-SL,UY,Student Life
-ART,GE,Studio Art
-ART,UE,Studio Art
-SASEM,UG,Study Away Seminar
-SPEC,UT,TSOA Special Programs
-TCHL,GE,Teaching & Learning
-TCHL,UE,Teaching & Learning
-TESOL,GE,Teaching English as a Second
-TECH,GB,Technology
-AW,UH,The Ancient World
-ENVR,UH,The Environment
-THEAT,UH,Theater
-ELEC,UF,Topics in Humanities
-TCTM1,GC,Tourism Management
-TRAN1,GC,Translation
-TR,GY,Transportation
-UPADM,GP,UG Pub & Nonprofit MGT and Pol
-FMTV,UT,Undergrad Film & TV
-UGPH,UU,Undergrad Global Public Health
-UNDSW,US,Undergrad Social Work
-UNIST,NH,University Studies
-URB,UY,Urban Studies
-URPL,GP,Urban planning
-VIP,UY,Vertically Integrated Projects
-VISAR,UH,Visual Arts
-ARVA,GE,Visual Arts Administration
-WRIT,SHU,Writing
-WRIT,UH,Writing
-WRI,UF,Writing I
-WRII,UF,Writing II
-MAINT,GX,maintenance
+AELS-UF,UF,Academic English for Liberal Study
+ACCT-GB,GB,Accounting
+ACCT-UB,UB,Accounting
+ACE-UE,UE,Advanced College Essay
+MSWAC-GS,GS,Advanced Concentration Courses
+WRTNG-UG,UG,Advanced Writing Courses
+AWS-UF,UF,Advanced Writing Studio
+AE-UY,UY,Aerospace Engineering
+AFGC-UF,UF,African Cultures- Global Cultu
+AFRS-GA,GA,Africana Studies
+ASL-UE,UE,American Sign Language
+AMST-GA,GA,American Studies
+ANST-GA,GA,Animal Studies
+ANST-UA,UA,Animal Studies
+ANTH-GA,GA,Anthropology
+ANTH-UA,UA,Anthropology
+ANTH-UH,UH,Anthropology
+ANTH1-UC,UC,Anthropology
+ASH-GE,GE,Appl Stat, Social Sci, & Human
+ADAV1-UC,UC,Applied Data Analytics and Vis
+APSY-GE,GE,Applied Psychology
+APSY-UE,UE,Applied Psychology
+APSTA-GE,GE,Applied Statistics
+APSTA-UE,UE,Applied Statistics
+APRGS-UF,UF,Approaches to Global Studies
+APR-UF,UF,Approaches: Sophomore Seminar
+ACS-UH,UH,Arab Crossroads Studies
+ARABL-UH,UH,Arabic Language
+ART-SHU,UI,Art
+ARTP-GE,GE,Art & Art Professions
+ARTED-GE,GE,Art Education
+ARTH-UA,UA,Art History
+ARTH-UH,UH,Art History
+ARTH1-UC,UC,Art History
+ARTCR-GE,GE,Art Theory & Critical Studies
+ARTCR-UE,UE,Art Theory & Critical Studies
+ARTT-GE,GE,Art Therapy
+ARTT-UE,UE,Art Therapy
+ARTH-GA,GA,Art and Architecture
+ARCS-UE,UE,Art and Costume Studies
+ARTS1-UC,UC,Arts
+ARTS-UG,UG,Arts Workshops
+BMSC-GA,GA,Basic Medical Science
+BAS01-DN,DN,Basic Sciences
+BAS06-DN,DN,Basic Sciences
+BASCI-CD,CD,Basic Sciences
+BASCI-DN,DN,Basic Sciences
+BEH01-DN,DN,Behavioral Sciences
+BEH03-DN,DN,Behavioral Sciences
+BEH05-DN,DN,Behavioral Sciences
+BEHSC-CD,CD,Behavioral Sciences
+BILED-GE,GE,Bilingual Education
+BE-GY,GY,BioEngineering
+BIOE-GA,GA,Bioethics
+BI-GY,GY,Bioinformatics
+BIOL-GA,GA,Biology
+BIOL-SHU,UI,Biology
+BIOL-UA,UA,Biology
+BIOL-UH,UH,Biology
+BIOMS-DN,DN,Biomaterials
+BMIN-GA,GA,Biomedical Informatics
+BMS-UY,UY,Biomolecular Science
+BT-GY,GY,Biotechnology
+BTE-GY,GY,Biotechnology & Entrepreneursh
+BUSN1-UC,UC,Business
+BUSOR-UH,UH,Business & Organizational Std
+BPEP-SHU,UI,Business & Political Economy P
+BSPA-GB,GB,Business & Society
+BUSF-SHU,UI,Business and Finance
+BPEP-UB,UB,Business and Political Economy
+BSPA-UB,UB,Business and Society
+SCHOL-UA,UA,CAS Scholars Program
+CAP-GP,GP,Capstone
+CBE-UY,UY,Chemical & Biological Enginrng
+CBE-GY,GY,Chemical & Biological Engnrng
+CHEM-GA,GA,Chemistry
+CHEM-SHU,UI,Chemistry
+CHEM-UA,UA,Chemistry
+CHEM-UH,UH,Chemistry
+CM-GY,GY,Chemistry
+CM-UY,UY,Chemistry
+CAMS-UA,UA,Child/Adoles Mental Hlth Stds
+CHDED-GE,GE,Childhood Education
+CHDED-UE,UE,Childhood Education
+CHIN-SHU,UI,Chinese Language
+CHINL-UH,UH,Chinese Language
+CINE-GT,GT,Cinema Studies
+CINE-UT,UT,Cinema Studies
+CE-GY,GY,Civil & Urban Engineering
+CE-UY,UY,Civil & Urban Engineering
+CLASS-GA,GA,Classics
+CLASS-UA,UA,Classics
+CLS03-DN,DN,Clinical Sciences
+CLS09-DN,DN,Clinical Sciences
+CLSCI-DN,DN,Clinical Sciences
+CP-GY,GY,Co-op Education Program
+CP-UY,UY,Co-op Education Program
+CORE-UA,UA,College Core Curriculum
+COLLQ-UG,UG,Colloquium
+COLU-UA,UA,Columbia Language Exchange
+CSCD-GE,GE,Communicative Sciences &
+CSCD-UE,UE,Communicative Sciences &
+CEL-SHU,UI,Community-Engaged Learning
+COLIT-GA,GA,Comparative Literature
+COLIT-UA,UA,Comparative Literature
+CENG-SHU,UI,Computer Engineering
+CS-GY,GY,Computer Science
+CS-UH,UH,Computer Science
+CS-UY,UY,Computer Science
+CSCI-GA,GA,Computer Science
+CSCI-SHU,UI,Computer Science
+CSCI-UA,UA,Computer Science
+TECH-UB,UB,Computing and Data Science
+CONM1-GC,GC,Construction Management MA/GC
+CORE-GG,GG,Core
+COR1-GB,GB,Core Course
+COR2-GB,GB,Core Course, capstone
+CCST-SHU,UI,Core Science
+CADT-UH,UH,Core: Arts, Design & Technolgy
+CCOL-UH,UH,Core: Colloquium
+CCEA-UH,UH,Core: Cultural Exploration & A
+CDAD-UH,UH,Core: Data and Discovery
+CSTS-UH,UH,Core: Strct of Thogh & Society
+ARCS-GE,GE,Costume Studies
+CRWR-SHU,UI,Creative Writing
+CRWRI-GA,GA,Creative Writing
+CRWRI-UA,UA,Creative Writing
+CWP-UF,UF,Creative Writing
+CWRG1-UC,UC,Creative Writing
+CWGV-UF,UF,Creative Writing: Global Voice
+CRED1-DC,DC,Credit Analysis Diploma
+ASPP-GT,GT,Ctr for Art, Society & Pub Pol
+ASPP-UT,UT,Ctr for Art, Society & Pub Pol
+CEH-GA,GA,Ctr for Experiment Humanities
+CUSP-GX,GX,Ctr for Urban Sci and Progress
+CFI-UF,UF,Cultural Foundations I
+CFII-UF,UF,Cultural Foundations II
+CFIII-UF,UF,Cultural Foundations III
+CAM-UY,UY,Culture, Arts, and Media
+DANC-GT,GT,Dance
+DANC-UT,UT,Dance
+MPADE-GE,GE,Dance Education
+MPADE-UE,UE,Dance Education
+DS-GA,GA,Data Science
+DS-UA,UA,Data Science
+DC-UF,UF,Dean's Circle
+DHYG3-UD,UD,Dental Hygiene BS
+DHYG1-UD,UD,Dental Hygiene Level 1
+DHYG2-UD,UD,Dental Hygiene Level 2
+MPAGC-GE,GE,Departmental Courses
+MPAGC-UE,UE,Departmental Courses
+DESG-GT,GT,Design
+DGS03-DN,DN,Diagnostic Sciences
+DGS06-DN,DN,Diagnostic Sciences
+DGSCI-CD,CD,Diagnostic Sciences
+DGCM1-UC,UC,Digital Communications & Media
+FILV1-UC,UC,Digital Communications & Media
+DHSS-GA,GA,Digital Humanities & Soc Sci
+DSWSW-GS,GS,Doctor of Social Welfare
+PHD-GP,GP,Doctoral
+PHDSW-GS,GS,Doctoral
+DCADV-GE,GE,Doctoral Advisement
+THEA-UT,UT,Drama
+MPADT-GE,GE,Drama Therapy
+DRLIT-UA,UA,Dramatic Literature
+DWPG-GT,GT,Dramatic Writing
+DWPG-UT,UT,Dramatic Writing
+ECED-GE,GE,Early Childhood
+ECED-UE,UE,Early Childhood
+EAGC-UF,UF,East Asian Cultures- Global Cu
+EAST-GA,GA,East Asian Studies
+EAST-UA,UA,East Asian Studies
+ECON-GA,GA,Economics
+ECON-GB,GB,Economics
+ECON-SHU,UI,Economics
+ECON-UA,UA,Economics
+ECON-UB,UB,Economics
+ECON-UH,UH,Economics
+ECON1-UC,UC,Economics
+ECI-UF,UF,Economics I
+ECII-UF,UF,Economics II
+EJST-GE,GE,Education & Jewish Studies
+EDST-UE,UE,Education Studies
+EDLED-GE,GE,Educational Administration Edu
+EDCT-UE,UE,Educational Communication and
+EDCT-GE,GE,Educational Communications &
+EDPLY-GE,GE,Educational Policy
+MPAET-GE,GE,Educational Theatre
+MPAET-UE,UE,Educational Theatre
+ECE-GY,GY,Elect. Engineering - ECE GRAD
+ECE-UY,UY,Elect. Engineering - ECE UGRD
+ELEC-GG,GG,Electives
+MSWEL-GS,GS,Electives
+EENG-SHU,UI,Electrical Engineering
+ENGR-GH,GH,Engineering
+ENGR-NY,NY,Engineering
+ENGR-UH,UH,Engineering
+EN-UY,UY,English
+ENGL-GA,GA,English
+ENGL-UA,UA,English
+ENGED-GE,GE,English Education
+ENGED-UE,UE,English Education
+ESL-NI,NI,English as a Second Language
+EAP-SHU,UI,English for Academic Purpose
+ENYC-GE,GE,Environmental Conservation Ed
+EHSC-GA,GA,Environmental Health Science
+ENSTU-UF,UF,Environmental Studies
+ENVST-UA,UA,Environmental Studies
+ETHIC-CD,CD,Ethics
+EURO-GA,GA,European and Mediterranean Stu
+EURO-UA,UA,European and Mediterranean Stu
+MSEM1-GC,GC,Event Management
+EX-UY,UY,Exam Hour
+MTRO-NE,NE,Excel - NYU Connect
+EXEC-GP,GP,Executive MPA
+CCEX-SHU,UI,Exper Discovery in Nat World
+EXL-UF,UF,Experiential Learning
+EXLI-SHU,UI,Experiential Learning
+EXPOS-UA,UA,Expository Writing
+EXWR1-UC,UC,Expository Writing
+MSWFD-GS,GS,Fieldlearning
+FWS-UF,UF,Fieldwork Seminar
+FILMM-UH,UH,Film and New Media
+FIN-UY,UY,Finance
+FINC-GB,GB,Finance
+FINC-UB,UB,Finance
+FRE-GY,GY,Finance and Risk Engineering
+FINH-GA,GA,Fine Arts
+FIRST-UG,UG,First Year program
+COHRT-UA,UA,First-Year Cohort Meeting
+FYSEM-UA,UA,First-Year Seminars
+FOOD-GE,GE,Food Studies
+FOOD-UE,UE,Food Studies
+FLGED-GE,GE,Foreign Language Education
+FLGED-UE,UE,Foreign Language Education
+FREN-GA,GA,French
+FREN-UA,UA,French
+FREN-SHU,UI,French Language
+FRENL-UH,UH,French Language
+FDGR1-GC,GC,Fundraising MS
+PHTI-NT,NT,Future Imagemakers Workshop
+THEA-NT,NT,Future Theatre Artists Worksho
+GAMES-GT,GT,Game Design
+GAMES-UT,UT,Game Design
+EG-UY,UY,General Engineering
+GERM-GA,GA,German
+GERM-UA,UA,German
+GSCC1-GC,GC,Glob Sec, Conflict, Cybercrime
+GCHN-SHU,UI,Global China Studies
+GPH-GU,GU,Global Public Health
+GLSP1-GC,GC,Global Sport
+GLOB1-GC,GC,Global Studies
+GT-UF,UF,Global Topics
+DBIN-GB,GB,Global Trip
+GSAS-GA,GA,Grad School of Arts & Science
+SHBI-GB,GB,Grad Stern/NYU Shanghai Degree
+ACTG-GT,GT,Graduate Acting
+GFMTV-GT,GT,Graduate Film & TV
+GCOM1-GC,GC,Graphic Communications
+MHA-GP,GP,Health Administration
+HPAM-GP,GP,Health policy and management
+HEAL1-UC,UC,Healthcare Management
+HBRJD-UA,UA,Hebrew & Judaic Studies
+HBRJD-GA,GA,Hebrew and Judaic Studies
+HEL-GA,GA,Hellenic Studies
+HEL-UA,UA,Hellenic Studies
+HERST-UH,UH,Heritage Studies
+HPSE-GE,GE,Higher & Post-Secondary Educ
+HPSE-UE,UE,Higher & Post-Secondary Educ
+HEOP-UE,UE,Higher Education Opportunities
+HIST-GA,GA,History
+HIST-SHU,UI,History
+HIST-UA,UA,History
+HIST-UH,UH,History
+HIST1-UC,UC,History
+HISTN-UH,UH,History - AEP/ESP
+HSED-GE,GE,History of Education
+HSED-UE,UE,History of Education
+HOU-UF,UF,History of the Universe
+HONR-UB,UB,Honors Seminar (non-credit)
+TCHS1-GC,GC,Hospitality Management MA/GC
+TCHT1-UC,UC,Hotel & Tourism Management
+HCAT1-GC,GC,Human Capital Analytics & Tech
+HUMN-SHU,UI,Humanities
+HUMN1-UC,UC,Humanities
+IMPLA-CD,CD,Implant Dentistry
+IF-UF,UF,Independent Fieldwork
+IND-UF,UF,Independent Study
+INDIV-GG,GG,Individualized Projects
+INDIV-UG,UG,Individualized Projects
+IE-GY,GY,Industrial Engineering
+ISMM1-UC,UC,Information Systems Management
+ISAW-GA,GA,Inst Study of the Ancient Wrld
+IFST-GA,GA,Institute of French Studies
+ISPEC-UT,UT,Int'l Pgms TSOA Special Pgms
+ICINE-UT,UT,Int`l Pgms, Cinema Studies
+ITHEA-UT,UT,Int`l Pgms, Drama
+IDWPG-UT,UT,Int`l Pgms, Dramatic Writing
+IFMTV-UT,UT,Int`l Pgms, Film & Television
+IPHTI-UT,UT,Int`l Pgms, Photography
+DM-GY,GY,Integrated Digital Media
+DM-UY,UY,Integrated Digital Media
+INTG1-GC,GC,Integrated Marketing
+IUCD-GE,GE,Inter-University Doctoral Cons
+IM-UH,UH,Interactive Media
+IMNY-UT,UT,Interactive Media Arts
+INTM-SHU,UI,Interactive Media Arts
+IMBX-SHU,UI,Interactive Media and Business
+MPAIA-GE,GE,Interactive Music Courses
+MPAIA-UE,UE,Interactive Music Courses
+ITPG-GT,GT,Interactive Telecommunications
+INTA-GB,GB,Interarea
+RESCH-GE,GE,Interdepartmental Research
+IDSEM-UG,UG,Interdisciplinary Seminars
+INTE-GE,GE,International Education
+INTE-UE,UE,International Education
+INTRL-GA,GA,International Relations
+INTRL-UA,UA,International Relations
+IRISH-GA,GA,Irish Studies
+IRISH-UA,UA,Irish Studies
+ITAL-GA,GA,Italian
+ITAL-UA,UA,Italian
+JAPN-SHU,UI,Japanese Language
+JOUR-GA,GA,Journalism
+JOUR-SHU,UI,Journalism
+JOUR-UA,UA,Journalism
+JIRS-UF,UF,Junior Independent Research Se
+LANED-GE,GE,Language Education
+LATC-GA,GA,Latin Amer-Caribbean Studies
+LATC-UA,UA,Latin Amer-Caribbean Studies
+LAGC-UF,UF,Latin American Cultures- Globa
+LWSOC-GA,GA,Law and Society
+LWSOC-UA,UA,Law and Society
+LRMS1-UC,UC,Leadership and Management Stud
+LAW-UH,UH,Legal Studies
+LISCI-UF,UF,Life Science
+LING-GA,GA,Linguistics
+LING-UA,UA,Linguistics
+LITC-GE,GE,Literacy Education
+LITC-UE,UE,Literacy Education
+LITR1-UC,UC,Literature
+LITCW-UH,UH,Literature & Creative Writing
+LIVN-UF,UF,Living in the Anthropocene
+MSPP-GP,GP,M.S. in Public Policy Courses
+MPAP-NE,NE,MPAP Summer Programs
+HRCM1-GC,GC,MS in Human Resources
+MSPM1-GC,GC,MS in Project Management
+MAINT-GA,GA,Maintenance
+MAINT-GC,GC,Maintenance
+MAINT-GE,GE,Maintenance
+MAINT-GN,GN,Maintenance
+MAINT-GP,GP,Maintenance
+MAINT-GS,GS,Maintenance
+MAINT-GT,GT,Maintenance
+MAINT-GU,GU,Maintenance
+MAINT-UA,UA,Maintenance
+MAINT-UE,UE,Maintenance
+MAINT-UN,UN,Maintenance
+MAINT-UT,UT,Maintenance
+MG-GY,GY,Management
+MG-UY,UY,Management
+MGMT-GB,GB,Management
+MGMT-SHU,UI,Management
+MGMT-UB,UB,Management
+MASY1-GC,GC,Management & Systems MA/GC
+MCOM-GB,GB,Management Communication
+MN-GY,GY,Manufacturing Engineering
+MKTG-GB,GB,Marketing
+MKTG-SHU,UI,Marketing
+MKTG-UB,UB,Marketing
+MKAN1-UC,UC,Marketing Analytics
+MATH-UA,UA,Math
+MATH1-UC,UC,Math
+MA-GY,GY,Mathematics
+MA-UY,UY,Mathematics
+MATH-GA,GA,Mathematics
+MATH-SHU,UI,Mathematics
+MATH-UH,UH,Mathematics
+MTHED-GE,GE,Mathematics Education
+MTHED-UE,UE,Mathematics Education
+ME-GY,GY,Mechanical Engineering
+ME-UY,UY,Mechanical Engineering
+MD-UY,UY,Media Studies
+MEST1-UC,UC,Media Studies
+MCC-GE,GE,Media, Culture & Communication
+MCC-UE,UE,Media, Culture & Communication
+MCC-SHU,UI,Media, Culture, & Communicatio
+MEDI-GA,GA,Medieval & Renaissance Studies
+MEDI-UA,UA,Medieval & Renaissance Studies
+MEIS-UA,UA,Middle Eastern & Islam Studies
+MEGC-UF,UF,Middle Eastern Cultures- Globa
+MEIS-GA,GA,Middle Eastern Studies
+MULT-UB,UB,Multidisciplinary
+MSMS-GA,GA,Museum Studies
+MUS-SHU,UI,Music
+MUSIC-GA,GA,Music
+MUSIC-UA,UA,Music
+MUSIC-UH,UH,Music
+MPAMB-GE,GE,Music Business
+MPAMB-UE,UE,Music Business
+MPAME-GE,GE,Music Education
+MPAME-UE,UE,Music Education
+MPABR-GE,GE,Music Instrumental: Brass
+MPABR-UE,UE,Music Instrumental: Brass
+MPAJZ-GE,GE,Music Instrumental: Jazz
+MPAJZ-UE,UE,Music Instrumental: Jazz
+MPAPS-GE,GE,Music Instrumental: Percussion
+MPAPS-UE,UE,Music Instrumental: Percussion
+MPAPE-GE,GE,Music Instrumental: Piano
+MPAPE-UE,UE,Music Instrumental: Piano
+MPASS-GE,GE,Music Instrumental: Strings
+MPASS-UE,UE,Music Instrumental: Strings
+MPAVP-GE,GE,Music Instrumental: Voice
+MPAVP-UE,UE,Music Instrumental: Voice
+MPAWW-GE,GE,Music Instrumental: Woodwinds
+MPAWW-UE,UE,Music Instrumental: Woodwinds
+MPATE-GE,GE,Music Technology
+MPATE-UE,UE,Music Technology
+MPATC-GE,GE,Music Theory and Composition
+MPATC-UE,UE,Music Theory and Composition
+MPAMT-GE,GE,Music Therapy
+MPAMT-UE,UE,Music Therapy
+GMTW-GT,GT,Musical Theatre
+GMTW-UT,UT,Musical Theatre
+NYU-SHU,UI,NYU Shanghai
+NEST-GA,GA,Near Eastern Studies
+NEUR-SHU,UI,Neural Science
+NEURL-GA,GA,Neural Science
+NEURL-UA,UA,Neural Science
+NOCR-GB,GB,Non-Credit
+NODEP-UA,UA,Non-Departmental
+NONCR-GP,GP,Noncredit
+NURSE-GN,GN,Nursing - Graduate
+NURSE-UN,UN,Nursing - Undergraduate
+NUTR-GE,GE,Nutrition & Dietetics
+NUTR-UE,UE,Nutrition & Dietetics
+OT-GE,GE,Occupational Therapy
+OT-UE,UE,Occupational Therapy
+OART-GT,GT,Open Arts Curriculum
+OART-UT,UT,Open Arts Curriculum
+OPMG-GB,GB,Operations Management
+OPMG-UB,UB,Operations Management
+ORBC1-UC,UC,Organizational Behavior & Chan
+PHDC-GB,GB,PHD Consortium
+PARAL-DC,DC,Paralegal
+PEACE-UH,UH,Peace Studies
+PERF-GT,GT,Performance Studies
+PERF-UT,UT,Performance Studies
+MPAPA-GE,GE,Performing Arts Administration
+PHIL-GA,GA,Philosophy
+PHIL-SHU,UI,Philosophy
+PHIL-UA,UA,Philosophy
+PHIL-UH,UH,Philosophy
+PHED-GE,GE,Philosophy of Education
+PHED-UE,UE,Philosophy of Education
+PHTI-GT,GT,Photography and Imaging
+PHTI-UT,UT,Photography and Imaging
+PHYED-UH,UH,Physical Education
+PT-GE,GE,Physical Therapy
+PH-GY,GY,Physics
+PH-UY,UY,Physics
+PHYS-GA,GA,Physics
+PHYS-SHU,UI,Physics
+PHYS-UA,UA,Physics
+PHYS-UH,UH,Physics
+POET-GA,GA,Poetics and Theory
+POLSC-UH,UH,Political Science
+POL-GA,GA,Politics
+POL-UA,UA,Politics
+POLS1-UC,UC,Politics
+PORT-GA,GA,Portuguese
+PORT-UA,UA,Portuguese
+PRACT-UG,UG,Practicum
+PCL03-DN,DN,Preclinical Skills
+PCL08-DN,DN,Preclinical Skills
+PCL09-DN,DN,Preclinical Skills
+PHP-UY,UY,Prehealth Prep
+MSWPF-GS,GS,Professional Foundation Course
+PWRT1-GC,GC,Professional Writing
+PSYC-SHU,UI,Psychology
+PSYC1-UC,UC,Psychology
+PSYCH-GA,GA,Psychology
+PSYCH-UA,UA,Psychology
+PSYCH-UH,UH,Psychology
+PDPSA-GA,GA,Psychotherapy & Psychoanalysis
+PADM-GP,GP,Pub and Nonprofit MGMT and Pol
+PUBPL-UA,UA,Public Policy
+PRCC1-GC,GC,Public Relations MS
+PUBB1-GC,GC,Publishing Masters
+QUAL1-GC,GC,Quality Assurance
+DEVE1-GC,GC,RE Development
+REAL1-UC,UC,Real Estate
+REAL1-GC,GC,Real Estate Masters/GC
+RWLD1-GC,GC,Real World Graduate
+RWLD1-UC,UC,Real World Undergraduate
+REMU-UT,UT,Recorded Music
+RE-GY,GY,Registrar
+RELS-SHU,UI,Religious Studies
+RELST-GA,GA,Religious Studies
+RELST-UA,UA,Religious Studies
+RUSSN-GA,GA,Russian & Slavic Studies
+RUSSN-UA,UA,Russian & Slavic Studies
+REBS1-UC,UC,Schack Undergraduate Real Esta
+SCHOL-GG,GG,Scholarly Communities
+CORE-GP,GP,School-wide core
+SCIEN-UH,UH,Science
+SCNC1-UC,UC,Science
+SCIED-GE,GE,Science Education
+SCIED-UE,UE,Science Education
+STS-UY,UY,Science and Technology
+SCTEC-UF,UF,Science of Technology
+SCAI-UF,UF,Senior Capstone I
+SRTH-UF,UF,Senior Thesis
+SMSP-UH,UH,Sheikh Mohamed Scholars Prog
+CCSF-SHU,UI,Social Foundations
+SFI-UF,UF,Social Foundations I
+SFII-UF,UF,Social Foundations II
+SFIII-UF,UF,Social Foundations III
+SOIM-UB,UB,Social Impact
+SRPP-UH,UH,Social Research & Public Polic
+SOCS-SHU,UI,Social Science
+SOCS1-UC,UC,Social Sciences
+SOCSC-UH,UH,Social Sciences
+EMAT-GE,GE,Social Studies Edu - Distance
+SOCED-GE,GE,Social Studies Education
+SOCED-UE,UE,Social Studies Education
+SCA-UA,UA,Social and Cultural Analysis
+SEG-UY,UY,Society, Envirnmnt, & Globaliz
+SOC-GA,GA,Sociology
+SOC-UA,UA,Sociology
+SOCY1-UC,UC,Sociology
+SOED-GE,GE,Sociology of Education
+SAGC-UF,UF,South Asian Cultures- Global C
+SPAN-GA,GA,Spanish
+SPAN-UA,UA,Spanish
+SPAN-SHU,UI,Spanish Language
+SPCED-GE,GE,Special Education
+SPCED-UE,UE,Special Education
+TCSB1-GC,GC,Sports Business Magmt. MA/GC
+TCSM1-UC,UC,Sports Management
+SFMTV-UT,UT,Spr Sem at Tisch - Film & TV
+STAT-UB,UB,Statistics & Operations Resear
+STAT-GB,GB,Statistics & Operations Rsrch
+STRN-NB,NB,Stern On-line Programs
+SAHS-GE,GE,Student Affairs Honors & Semin
+SAHS-UE,UE,Student Affairs Honors & Semin
+SL-UY,UY,Student Life
+ART-GE,GE,Studio Art
+ART-UE,UE,Studio Art
+SASEM-UG,UG,Study Away Seminar
+SPEC-UT,UT,TSOA Special Programs
+TCHL-GE,GE,Teaching & Learning
+TCHL-UE,UE,Teaching & Learning
+TESOL-GE,GE,Teaching English as a Second
+TECH-GB,GB,Technology
+AW-UH,UH,The Ancient World
+ENVR-UH,UH,The Environment
+THEAT-UH,UH,Theater
+ELEC-UF,UF,Topics in Humanities
+TCTM1-GC,GC,Tourism Management
+TRAN1-GC,GC,Translation
+TR-GY,GY,Transportation
+UPADM-GP,GP,UG Pub & Nonprofit MGT and Pol
+FMTV-UT,UT,Undergrad Film & TV
+UGPH-GU,UU,Undergrad Global Public Health
+UNDSW-US,US,Undergrad Social Work
+UNIST-NH,NH,University Studies
+URB-UY,UY,Urban Studies
+URPL-GP,GP,Urban planning
+VIP-UY,UY,Vertically Integrated Projects
+VISAR-UH,UH,Visual Arts
+ARVA-GE,GE,Visual Arts Administration
+WRIT-SHU,UI,Writing
+WRIT-UH,UH,Writing
+WRI-UF,UF,Writing I
+WRII-UF,UF,Writing II
+MAINT-GX,GX,maintenance

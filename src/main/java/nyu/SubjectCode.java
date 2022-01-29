@@ -38,9 +38,23 @@ public final class SubjectCode {
     return new SubjectCode(schoolCode, code, name);
   }
 
-  @JsonCreator
+  static {
+    for (String line : Utils.asResourceLines("/subject.txt")) {
+      String[] s = line.split(",", 3);
+      String subject = s[0], school = s[1], name = s[2];
+
+      addSubject(school, subject, name);
+    }
+  }
+
   public static SubjectCode fromCode(String code) {
     synchronized (subjects) { return subjectsByCode.get(code); }
+  }
+
+  @JsonCreator
+  public static SubjectCode fromCode(@JsonProperty("code") String code,
+                                     @JsonProperty("school") String school) {
+    synchronized (subjects) { return subjectsByCode.get(code + "-" + school); }
   }
 
   public static SubjectCode fromOrdinal(int ordinal) {

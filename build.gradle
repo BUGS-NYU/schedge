@@ -53,7 +53,8 @@ dependencies {
             "org.asynchttpclient:async-http-client:2.10.5", // Async Http Client
 
             "info.picocli:picocli:4.1.4", // Command line args
-            "com.fasterxml.jackson.core:jackson-annotations:2.4.1", // JSON
+
+            "com.fasterxml.jackson.core:jackson-annotations:2.7.4", // JSON
 
             "io.javalin:javalin:3.5.0", // Web server framework
             "io.swagger.core.v3:swagger-core:2.0.9", // Web server docs framework

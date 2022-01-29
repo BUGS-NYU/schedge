@@ -20,10 +20,7 @@ public final class SubjectCode {
   private static Map<String, SubjectCode> subjectsByCode = new HashMap<>();
   private static Map<String, SchoolMetadata> schools;
 
-  @JsonCreator
-  public SubjectCode(@JsonProperty("schoolCode") String schoolCode,
-                     @JsonProperty("subject") String code,
-                     @JsonProperty("name") String name) {
+  private SubjectCode(String schoolCode, String code, String name) {
     this.schoolCode = schoolCode;
     this.code = code;
     this.name = name;
@@ -34,6 +31,16 @@ public final class SubjectCode {
       subjects.add(this);
       subjectsByCode.put(this.code, this);
     }
+  }
+
+  public static SubjectCode addSubject(String schoolCode, String code,
+                                       String name) {
+    return new SubjectCode(schoolCode, code, name);
+  }
+
+  @JsonCreator
+  public static SubjectCode fromCode(String code) {
+    synchronized (subjects) { return subjectsByCode.get(code); }
   }
 
   public static SubjectCode fromOrdinal(int ordinal) {
@@ -73,10 +80,6 @@ public final class SubjectCode {
     }
 
     return localSubjects;
-  }
-
-  public static SubjectCode fromCode(String code) {
-    synchronized (subjects) { return subjectsByCode.get(code); }
   }
 
   public String toString() { return this.code; }

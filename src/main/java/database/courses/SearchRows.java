@@ -53,10 +53,13 @@ public final class SearchRows {
                    " * ts_rank_cd(sections.prereqs_vec, q.query)");
     }
 
+    // @TODO fix all this shit
+
     if (subject != null)
       subject = subject.toUpperCase();
     if (school != null)
       school = school.toUpperCase();
+
     String begin = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
                    + "SELECT DISTINCT courses.id FROM q, "
                    + "courses JOIN sections ON courses.id = sections.course_id "

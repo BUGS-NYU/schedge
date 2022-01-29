@@ -6,6 +6,7 @@ import java.lang.Void;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
+import org.slf4j.helpers.MessageFormatter;
 
 public final class TryCatch {
 
@@ -310,10 +311,12 @@ public final class TryCatch {
     }
   }
 
-  public static <E> E tcFatal(CallSupplier<E> supplier, String message) {
+  public static <E> E tcFatal(CallSupplier<E> supplier, String format,
+                              Object... obj) {
     try {
       return supplier.get();
     } catch (Exception e) {
+      String message = MessageFormatter.arrayFormat(format, obj).getMessage();
       throw new Error(message, e);
     }
   }
@@ -332,10 +335,11 @@ public final class TryCatch {
 
   public static void tcAssert(CallBoolSupplier supplier, String message) {
     boolean check;
+
     try {
       check = supplier.get();
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(message, e);
     }
 
     if (!check)
@@ -351,10 +355,11 @@ public final class TryCatch {
   tcCreateAssert(Callable1<P1, Boolean> callable, String message) {
     return (p1) -> {
       boolean check;
+
       try {
         check = callable.call1(p1);
       } catch (Exception e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(message, e);
       }
 
       if (!check)

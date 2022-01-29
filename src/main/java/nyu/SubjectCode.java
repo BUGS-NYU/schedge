@@ -38,8 +38,9 @@ public final class SubjectCode {
     return new SubjectCode(schoolCode, code, name);
   }
 
+  // Init stuffs
   static {
-    for (String line : Utils.asResourceLines("/subject.txt")) {
+    for (String line : Utils.asResourceLines("/subjects.txt")) {
       String[] s = line.split(",", 3);
       String subject = s[0], school = s[1], name = s[2];
 

@@ -15,15 +15,17 @@ public class JsonMapper {
   private static ObjectMapper objMapper = new ObjectMapper();
 
   public static <E> E fromJson(String json, Class<E> clazz) {
-    return tcFatal(
-        () -> objMapper.readValue(json, clazz), "Failed to parse JSON");
+    return tcFatal(()
+                       -> objMapper.readValue(json, clazz),
+                   "Failed to parse JSON (value={})", json);
   }
   public static <E> List<E> fromJsonArray(String json, Class<E> clazz) {
     CollectionType type =
         objMapper.getTypeFactory().constructCollectionType(List.class, clazz);
 
-    return tcFatal(
-        () -> objMapper.readValue(json, type), "Failed to parse JSON");
+    return tcFatal(()
+                       -> objMapper.readValue(json, type),
+                   "Failed to parse JSON (value={})", json);
   }
 
   public static String toJson(Object o) { return toJson(o, false); }

@@ -25,13 +25,13 @@ public class InsertFullCourses {
                                    List<Course> courses) throws SQLException {
     PreparedStatement stmt =
         conn.prepareStatement("INSERT INTO courses "
-                                  + "(epoch, name, name_vec, subject, "
+                                  + "(epoch, name, name_vec, subject_code, "
                                   + "dept_course_id, term_id) "
-                                  + "VALUES (?, ?, to_tsvector(?), ?, ?, ?, ?)",
+                                  + "VALUES (?, ?, to_tsvector(?), ?, ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
 
     for (Course c : courses) {
-      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.code,
+      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.ordinal,
                      c.deptCourseId, term.getId());
 
       if (stmt.executeUpdate() == 0) {

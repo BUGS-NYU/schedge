@@ -18,13 +18,20 @@ public final class ScrapeSchedge {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge");
 
-  private static final String SCHEDGE_URL = "https://nyu.a1liu.com/";
+  private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
   public static Stream<Course> scrapeFromSchedge(Term term) {
-    BiFunction<SubjectCode, Integer, Future<String>> func =
-        (subjectCode, idx) -> {
+    BiFunction<SubjectCode, Integer, Future<String>> func = (subject, idx) -> {
+      String school = subject.schoolCode;
+      String major = subject.code.split("-")[0];
+
+      // @TODO Fix this hack to work around weird behavior from V1 and NYU
+      if (school.contentEquals("UI")) {
+        school = "SHU";
+      }
+
       String[] components =
-          new String[] {"" + term.year, term.semString(), subjectCode.code};
+          new String[] {"" + term.year, term.semString(), school, major};
 
       Uri uri =
           Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
@@ -35,14 +42,13 @@ public final class ScrapeSchedge {
           .toCompletableFuture()
           .handleAsync((resp, throwable) -> {
             if (resp == null) {
-              logger.error("Error (subjectCode={}): {}", subjectCode,
+              logger.error("Error (subject={}): {}", subject,
                            throwable.getMessage());
 
               return null;
             }
 
             String text = resp.getResponseBody();
-
             return text;
           });
     };
@@ -58,7 +64,6 @@ public final class ScrapeSchedge {
           }
 
           List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
-
           return courses.stream();
         });
   }

@@ -91,7 +91,8 @@ public final class CurrentCoursesEndpoint extends Endpoint {
 
       SubjectCode subject;
       try {
-        subject = SubjectCode.fromCode(ctx.pathParam("subject"));
+        String subjectString = ctx.pathParam("subject").toUpperCase();
+        subject = SubjectCode.fromCode(subjectString);
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));

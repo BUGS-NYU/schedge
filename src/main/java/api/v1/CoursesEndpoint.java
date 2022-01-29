@@ -55,14 +55,13 @@ public final class CoursesEndpoint extends Endpoint {
 
   public Handler getHandler() {
     return ctx -> {
-      ctx.contentType("application/json");
-
       int year;
       try {
         year = Integer.parseInt(ctx.pathParam("year"));
       } catch (NumberFormatException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
+
         return;
       }
 
@@ -70,27 +69,33 @@ public final class CoursesEndpoint extends Endpoint {
       SubjectCode subject;
       try {
         term = new Term(ctx.pathParam("semester"), year);
-        subject = SubjectCode.fromCode(ctx.pathParam("subject"));
+
+        String subjectString = ctx.pathParam("subject").toUpperCase();
+        subject = SubjectCode.fromCode(subjectString);
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
+
         return;
       }
 
       String fullData = ctx.queryParam("full");
 
-      ctx.status(200);
       Object output = GetConnection.withConnectionReturning(conn -> {
         Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
-        if (epoch == null) {
+        if (epoch == null)
           return Collections.emptyList();
-        }
+
         if (fullData != null && fullData.toLowerCase().equals("true"))
           return SelectCourses.selectFullCourses(
               conn, epoch, Collections.singletonList(subject));
+
         return SelectCourses.selectCourses(conn, epoch,
                                            Collections.singletonList(subject));
       });
+
+      ctx.status(200);
+      ctx.contentType("application/json");
       ctx.json(output);
     };
   }

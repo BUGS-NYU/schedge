@@ -14,7 +14,7 @@ CREATE TABLE epochs (
   id                  SERIAL                        NOT NULL UNIQUE,
   started_at          timestamp WITH TIME ZONE      NOT NULL UNIQUE,
   completed_at        timestamp WITH TIME ZONE      UNIQUE,
-  term_id             integer                       NOT NULL,
+  term_id             int                           NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -22,12 +22,13 @@ CREATE TABLE courses (
   id                  SERIAL                      NOT NULL UNIQUE,
   epoch               int REFERENCES epochs(id)
                           ON DELETE CASCADE       NOT NULL,
+
   name                varchar                     NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
-  school              varchar                     NOt NULL,
-  subject             varchar                     NOT NULL,
+
+  subject_code        int                         NOT NULL,
   dept_course_id      varchar                     NOT NULL,
-  term_id             integer                     NOT NULL,
+  term_id             int                         NOT NULL,
   description         varchar,
   description_vec     TSVECTOR,
   PRIMARY KEY (id)
@@ -36,24 +37,23 @@ CREATE TABLE courses (
 CREATE TABLE instructors (
   id                  SERIAL                      NOT NULL UNIQUE,
   name                varchar                     NOT NULL,
-  school              varchar                     NOT NULL,
-  subject             varchar                     NOT NULL,
+  subject_code        int                         NOT NULL,
   rmp_rating          real,
-  rmp_tid             integer,
+  rmp_tid             int,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE sections (
   id                  SERIAL                      NOT NULL UNIQUE,
-  registration_number integer                     NOT NULL,
+  registration_number int                         NOT NULL,
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
   section_code        varchar                     NOT NULL,
-  section_type        integer                     NOT NULL,
-  section_status      integer                     NOT NULL,
-  associated_with     integer REFERENCES sections(id),
+  section_type        int                         NOT NULL,
+  section_status      int                         NOT NULL,
+  associated_with     int REFERENCES sections(id),
 
-  waitlist_total      integer,
+  waitlist_total      int,
   name                varchar,
   name_vec            TSVECTOR,
   min_units           float,
@@ -72,7 +72,7 @@ CREATE TABLE sections (
 
 CREATE TABLE is_teaching_section (
   id                  SERIAL                      NOT NULL UNIQUE,
-  instructor_id       integer                     NOT NULL,
+  instructor_id       int                         NOT NULL,
   section_id          int REFERENCES sections(id)
                       ON DELETE CASCADE           NOT NULL,
   instructor_name     varchar                     NOT NULL,
@@ -85,7 +85,7 @@ CREATE TABLE meetings (
                       ON DELETE CASCADE               NOT NULL,
   begin_date          timestamp with time zone        NOT NULL,
   end_date            timestamp with time zone        NOT NULL,
-  duration            integer                         NOT NULL,
+  duration            int                             NOT NULL,
   PRIMARY KEY (id)
 );
 

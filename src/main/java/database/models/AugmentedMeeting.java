@@ -33,7 +33,7 @@ public class AugmentedMeeting {
       DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
 
   public AugmentedMeeting(ResultSet rs) throws SQLException {
-    subject = new SubjectCode(rs.getString("subject"), rs.getString("school"));
+    subject = SubjectCode.fromOrdinal(rs.getInt("subject_code"));
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
@@ -47,28 +47,13 @@ public class AugmentedMeeting {
     minutesDuration = rs.getInt("duration");
   }
 
-  public String getSectionName() { return sectionName; }
-
-  public SubjectCode getSubject() { return subject; }
-
-  public String getDeptCourseId() { return deptCourseId; }
-
-  public String getSectionCode() { return sectionCode; }
-
-  public int getRegistrationNumber() { return registrationNumber; }
-
-  public SectionType getSectionType() { return sectionType; }
-
-  public SectionStatus getSectionStatus() { return sectionStatus; }
-
-  public String getInstructionMode() { return instructionMode; }
-
-  public String getLocation() { return location; }
   public String getBeginDate() { return beginDate.format(formatter); }
 
   public int getMinutesDuration() { return minutesDuration; }
 
-  public int getMinutesInDay() { return beginDate.get(ChronoField.MINUTE_OF_DAY); }
+  public int getMinutesInDay() {
+    return beginDate.get(ChronoField.MINUTE_OF_DAY);
+  }
 
   public String getEndDate() { return endDate.format(formatter); }
 

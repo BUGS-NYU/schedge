@@ -27,7 +27,7 @@ public final class SubjectsEndpoint extends Endpoint {
   public Handler getHandler() {
     return ctx -> {
       ctx.contentType("application/json");
-      ctx.json(SubjectCode.getAvailableSubjectInfo());
+      ctx.json(SubjectCode.allSchools());
     };
   }
 }

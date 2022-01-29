@@ -25,14 +25,14 @@ public class InsertFullCourses {
                                    List<Course> courses) throws SQLException {
     PreparedStatement stmt =
         conn.prepareStatement("INSERT INTO courses "
-                                  + "(epoch, name, name_vec, school, subject, "
+                                  + "(epoch, name, name_vec, subject, "
                                   + "dept_course_id, term_id) "
                                   + "VALUES (?, ?, to_tsvector(?), ?, ?, ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
 
     for (Course c : courses) {
-      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.school,
-                     c.subjectCode.code, c.deptCourseId, term.getId());
+      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.code,
+                     c.deptCourseId, term.getId());
 
       if (stmt.executeUpdate() == 0) {
         throw new RuntimeException("inserting course=" + c.toString() +
@@ -46,7 +46,8 @@ public class InsertFullCourses {
 
       int courseId = rs.getInt(1);
       rs.close();
-      insertSections(conn, courseId, c.subjectCode, c.sections, null);
+
+      insertSections(conn, courseId, c.sections, null);
     }
   }
 
@@ -64,9 +65,9 @@ public class InsertFullCourses {
                     "prereqs_vec", "course_id", "section_code", "section_type",
                     "section_status", "waitlist_total", "associated_with"});
 
-  public static void
-  insertSections(Connection conn, int courseId, SubjectCode subjectCode,
-                 List<Section> sections, Integer associatedWith)
+  public static void insertSections(Connection conn, int courseId,
+                                    List<Section> sections,
+                                    Integer associatedWith)
       throws SQLException {
     PreparedStatement stmt =
         conn.prepareStatement("INSERT INTO sections (" + fieldNames +
@@ -116,7 +117,7 @@ public class InsertFullCourses {
           if (associatedWith != null)
             throw new RuntimeException("why did this happen?");
 
-          insertSections(conn, courseId, subjectCode, s.recitations, sectionId);
+          insertSections(conn, courseId, s.recitations, sectionId);
         }
       } catch (Exception e) {
         logger.error("throwing with section={}", s.toString());

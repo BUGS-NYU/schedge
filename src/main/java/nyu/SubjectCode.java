@@ -1,6 +1,9 @@
 package nyu;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -8,37 +11,33 @@ import utils.Utils;
 
 public final class SubjectCode {
 
-  private static Map<String, List<SubjectCode>> availableSubjects;
-  private static Map<String, Map<String, SubjectMetadata>> availableSubjectInfo;
+  @JsonIgnore public String schoolCode;
+  @JsonValue public String code;
+  @JsonIgnore public String name;
+  @JsonIgnore public final int ordinal;
+
+  private static ArrayList<SubjectCode> subjects = new ArrayList<>();
+  private static Map<String, SubjectCode> subjectsByCode = new HashMap<>();
   private static Map<String, SchoolMetadata> schools;
-  private static List<SubjectCode> allSubjects;
 
-  public String code;
-  public String school;
+  @JsonCreator
+  public SubjectCode(@JsonProperty("schoolCode") String schoolCode,
+                     @JsonProperty("subject") String code,
+                     @JsonProperty("name") String name) {
+    this.schoolCode = schoolCode;
+    this.code = code;
+    this.name = name;
 
-  public SubjectCode() {}
+    synchronized (subjects) {
+      this.ordinal = subjects.size();
 
-  public SubjectCode(String subjectCode) {
-    String[] code = subjectCode.split("-", 2);
-    this.code = code[0].toUpperCase();
-    this.school = code[1].toUpperCase();
+      subjects.add(this);
+      subjectsByCode.put(this.code, this);
+    }
   }
 
-  public SubjectCode(String code, String school) {
-    this.code = code.toUpperCase();
-    this.school = school.toUpperCase();
-  }
-
-  public void checkValid() {
-    if (!school.equals("UU") && !getAvailableSubjects().containsKey(school))
-      throw new IllegalArgumentException("School code '" + school +
-                                         "' in subject '" + this.toString() +
-                                         "' is not valid");
-    if (!school.equals("UU") &&
-        !getAvailableSubjects().get(school).contains(this))
-      throw new IllegalArgumentException("School '" + school +
-                                         "' doesn't contain subject '" +
-                                         this.toString() + "'");
+  public static SubjectCode fromOrdinal(int ordinal) {
+    synchronized (subjects) { return subjects.get(ordinal); }
   }
 
   public static synchronized Map<String, SchoolMetadata> allSchools() {
@@ -46,99 +45,44 @@ public final class SubjectCode {
       schools = Utils.asResourceLines("/schools.txt")
                     .stream()
                     .map(str -> str.split(",", 2))
-                    .collect(Collectors.toMap(
-                        s -> s[0], s -> new SchoolMetadata(s[1])));
+                    .collect(Collectors.toMap(s -> s[0], s -> {
+                      SchoolMetadata school = new SchoolMetadata();
+                      school.name = s[1];
+                      school.subjects = new ArrayList<>();
+
+                      return school;
+                    }));
+
+      synchronized (subjects) {
+        for (SubjectCode code : subjects) {
+          schools.get(code.schoolCode).subjects.add(code);
+        }
+      }
     }
+
     return schools;
   }
 
-  public static synchronized Map<String, Map<String, SubjectMetadata>>
-  getAvailableSubjectInfo() {
-    if (availableSubjectInfo == null) {
-      availableSubjectInfo = new HashMap<>();
-      Utils.asResourceLines("/subjects.txt")
-          .stream()
-          .map(it -> it.split(","))
-          .forEach(s -> {
-            if (!availableSubjectInfo.containsKey(s[1])) {
-              availableSubjectInfo.put(s[1], new HashMap<>());
-            }
-            availableSubjectInfo.get(s[1]).put(s[0], new SubjectMetadata(s[2]));
-          });
-    }
-    return availableSubjectInfo;
-  }
-
-  public static synchronized Map<String, List<SubjectCode>>
-  getAvailableSubjects() {
-    if (availableSubjects == null) {
-      BiFunction<String, Set<String>, List<SubjectCode>> f = (school, subjects)
-          -> subjects.stream()
-                 .map(it -> new SubjectCode(it, school))
-                 .collect(Collectors.toList());
-      availableSubjects = getAvailableSubjectInfo().entrySet().stream().collect(
-          Collectors.toMap(Map.Entry::getKey,
-                           e -> f.apply(e.getKey(), e.getValue().keySet())));
-    }
-    return availableSubjects;
-  }
-
   public static synchronized List<SubjectCode> allSubjects() {
-    if (allSubjects == null) {
-      allSubjects = getAvailableSubjects()
-                        .entrySet()
-                        .stream()
-                        .flatMap(entry -> entry.getValue().stream())
-                        .collect(Collectors.toList());
+    ArrayList<SubjectCode> localSubjects = new ArrayList<>();
+
+    synchronized (subjects) {
+      for (SubjectCode code : subjects) {
+        localSubjects.add(code);
+      }
     }
-    return allSubjects;
+
+    return localSubjects;
   }
 
-  public static List<SubjectCode> allSubjectsForSchool(String school) {
-    return getAvailableSubjects().get(school);
+  public static SubjectCode fromCode(String code) {
+    synchronized (subjects) { return subjectsByCode.get(code); }
   }
 
-  @JsonIgnore
-  public String getAbbrev() {
-    return code + '-' + school;
-  }
-
-  public String toString() { return getAbbrev(); }
-
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    SubjectCode that = (SubjectCode)o;
-    return this.school.equals(that.school) && this.code.equals(that.code);
-  }
-
-  public static final class SubjectMetadata {
-    private String name;
-    SubjectMetadata(String name) { this.name = name; }
-    public String getName() { return name; }
-  }
+  public String toString() { return this.code; }
 
   public static final class SchoolMetadata {
-    private String name;
-    SchoolMetadata(String name) { this.name = name; }
-
-    public String getName() { return name; }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-      SchoolMetadata that = (SchoolMetadata)o;
-      return name.equals(that.name);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(name);
-    }
+    public String name;
+    public ArrayList<SubjectCode> subjects;
   }
 }

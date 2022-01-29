@@ -57,6 +57,7 @@ public final class Mixins {
 
     public List<RegistrationCourse> convertCourses() {
       List<RegistrationCourse> regCourses = new ArrayList<>();
+
       for (Map.Entry<Integer, String> entry : courses.entrySet()) {
         String value = entry.getValue();
         if (value.contains(",")) {
@@ -131,7 +132,8 @@ public final class Mixins {
     @Option(names = "--school", description = "school code: UA, UT, UY, etc")
     private String school;
 
-    @Option(names = "--subject", description = "subject code: CSCI, MATH, etc")
+    @Option(names = "--subject",
+            description = "subject code: CSCI-UA, MATH-UA, etc")
     private String subject;
 
     @Option(
@@ -162,12 +164,11 @@ public final class Mixins {
         return nyu.SubjectCode.allSubjects();
       } else if (subject == null) {
         if (registrationNumber == null)
-          return nyu.SubjectCode.allSubjectsForSchool(school);
+          return nyu.SubjectCode.allSchools().get(school).subjects;
         else
           return null;
       } else {
-        nyu.SubjectCode s = new nyu.SubjectCode(subject, school);
-        s.checkValid();
+        nyu.SubjectCode s = nyu.SubjectCode.fromCode(subject);
         return Arrays.asList(s);
       }
     }
@@ -183,7 +184,8 @@ public final class Mixins {
     @Option(names = "--school", description = "school code: UA, UT, UY, etc")
     private String school;
 
-    @Option(names = "--subject", description = "subject code: CSCI, MATH, etc")
+    @Option(names = "--subject",
+            description = "subject code: CSCI-UA, MATH-UA, etc")
     private String subject;
 
     @Spec private CommandLine.Model.CommandSpec spec;
@@ -197,10 +199,9 @@ public final class Mixins {
         }
         return nyu.SubjectCode.allSubjects();
       } else if (subject == null) {
-        return nyu.SubjectCode.allSubjectsForSchool(school);
+        return nyu.SubjectCode.allSchools().get(school).subjects;
       } else {
-        nyu.SubjectCode s = new nyu.SubjectCode(subject, school);
-        s.checkValid();
+        nyu.SubjectCode s = nyu.SubjectCode.fromCode(subject);
         return Arrays.asList(s);
       }
     }

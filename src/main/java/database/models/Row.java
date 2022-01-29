@@ -33,8 +33,7 @@ public class Row {
   public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
-    this.subject =
-        new SubjectCode(rs.getString("subject"), rs.getString("school"));
+    this.subject = SubjectCode.fromOrdinal(rs.getInt("subject_code"));
     this.deptCourseId = rs.getString("dept_course_id");
     this.sectionId = rs.getInt("section_id");
     this.registrationNumber = rs.getInt("registration_number");

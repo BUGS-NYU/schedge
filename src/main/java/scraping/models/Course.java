@@ -19,16 +19,6 @@ public final class Course {
     this.sections = sections;
   }
 
-  @JsonIgnore
-  public String getSubject() {
-    return subjectCode.code;
-  }
-
-  @JsonIgnore
-  public String getSchool() {
-    return subjectCode.school;
-  }
-
   public String toString() {
     return "Course(name=" + name + ",deptCourseId=" + deptCourseId +
         ",subjectCode=" + subjectCode + ",sections=" + sections + ")";

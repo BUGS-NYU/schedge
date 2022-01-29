@@ -30,28 +30,25 @@ public final class QueryCatalog {
       Uri.create("https://m.albert.nyu.edu/app/catalog/getClassSearch");
 
   // does anybody even use this?
-  public static CatalogQueryData queryCatalog(Term term,
-                                              SubjectCode subjectCode) {
+  public static CatalogQueryData queryCatalog(Term term, SubjectCode subject) {
     CatalogQueryData queryData = null;
+
     try {
-      queryData =
-          queryCatalog(term, subjectCode, getContextAsync().get()).get();
+      queryData = queryCatalog(term, subject, getContextAsync().get()).get();
     } catch (ExecutionException | InterruptedException e) {
       throw new RuntimeException(
-          "No classes found matching criteria school=" + subjectCode.school +
-              ", subject=" + subjectCode.getAbbrev(),
-          e);
+          "No classes found matching criteria subject=" + subject.code, e);
     }
 
     if (queryData == null)
-      throw new RuntimeException(
-          "No classes found matching criteria school=" + subjectCode.school +
-          ", subject=" + subjectCode.getAbbrev());
+      throw new RuntimeException("No classes found matching criteria subject=" +
+                                 subject.code);
+
     return queryData;
   }
 
   public static Stream<CatalogQueryData>
-  queryCatalog(Term term, Iterable<SubjectCode> subjectCodes, int batchSize) {
+  queryCatalog(Term term, Iterable<SubjectCode> subjects, int batchSize) {
     logger.debug("querying catalog for term={} with multiple subjects...",
                  term);
 
@@ -75,12 +72,12 @@ public final class QueryCatalog {
     logger.info("Collected context requests... (x{})", batchSize);
 
     return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<>(
-                    subjectCodes.iterator(), batchSize,
-                    (subjectCode,
-                     idx) -> queryCatalog(term, subjectCode, contexts[idx]))
-                    .spliterator(),
-                false)
+        .stream(
+            new SimpleBatchedFutureEngine<>(
+                subjects.iterator(), batchSize,
+                (subject, idx) -> queryCatalog(term, subject, contexts[idx]))
+                .spliterator(),
+            false)
         .filter(i -> i != null);
   }
 
@@ -93,28 +90,23 @@ public final class QueryCatalog {
    * code: UU and subject code: {subject}-GU. They will be
    * changed at runtime.
    * @param term
-   * @param subjectCode
+   * @param subject
    * @param context
    */
   private static Future<CatalogQueryData>
-  queryCatalog(Term term, SubjectCode subjectCode, HttpContext context) {
+  queryCatalog(Term term, SubjectCode subject, HttpContext context) {
     logger.debug("querying catalog for term=" + term +
-                 " and subject=" + subjectCode + "...");
+                 " and subject=" + subject + "...");
 
-    String subject = subjectCode.getAbbrev();
-    if (subject.equals("UGPH-UU")) {
-      subject = "UGPH-GU";
-    }
+    String csrf = context.csrfToken;
+    int id = term.getId();
+    String code = subject.code;
+    String school = subject.schoolCode;
 
-    String school = subjectCode.school;
-    if (school.equals("SHU")) {
-      school = "UI";
-    }
-    String params =
-        String.format("CSRFToken=%s&term=%d&acad_group=%s&subject=%s",
-                      context.csrfToken, term.getId(), school, subject);
-
+    String format = "CSRFToken=%s&term=%d&acad_group=%s&subject=%s";
+    String params = String.format(format, csrf, id, school, code);
     logger.debug("Params are {}.", params);
+
     Request request =
         new RequestBuilder()
             .setUri(DATA_URI)
@@ -144,20 +136,20 @@ public final class QueryCatalog {
         .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
-            logger.error("Error (subjectCode={}): {}", subjectCode,
+            logger.error("Error (subject={}): {}", subject,
                          throwable.getMessage());
             return null;
           }
 
-          if (resp.getResponseBody().equals(
-                  "No classes found matching your criteria.")) {
-            logger.warn(
-                "No classes found matching criteria school={}, subject={}",
-                subjectCode.school, subjectCode.getAbbrev());
+          String body = resp.getResponseBody();
+          if (body.contentEquals("No classes found matching your criteria.")) {
+            logger.warn("No classes found matching criteria subject={}",
+                        subject.code);
+
             return null;
-          } else {
-            return new CatalogQueryData(subjectCode, resp.getResponseBody());
           }
+
+          return new CatalogQueryData(subject, body);
         });
   }
 
@@ -181,16 +173,20 @@ public final class QueryCatalog {
                   .stream()
                   .map(cookie -> ClientCookieDecoder.STRICT.decode(cookie))
                   .collect(Collectors.toList());
+
           Cookie csrfCookie =
               cookies.stream()
-                  .filter(cookie -> cookie.name().equals("CSRFCookie"))
+                  .filter(cookie -> cookie.name().contentEquals("CSRFCookie"))
                   .findAny()
                   .orElse(null);
+
           if (csrfCookie == null) {
             logger.error("Couldn't find cookie with name=CSRFCookie");
             return null;
           }
+
           logger.debug("Retrieved CSRF token `{}`", csrfCookie.value());
+
           return new HttpContext(csrfCookie.value(), cookies);
         });
   }

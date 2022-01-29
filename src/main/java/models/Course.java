@@ -12,16 +12,6 @@ public class Course {
   public SubjectCode subjectCode;
   public List<Section> sections;
 
-  @JsonIgnore
-  public String getSubject() {
-    return subjectCode.code;
-  }
-
-  @JsonIgnore
-  public String getSchool() {
-    return subjectCode.school;
-  }
-
   public String toString() {
     return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
   }

@@ -19,7 +19,7 @@ public final class CurrentCoursesEndpoint extends Endpoint {
     current;
   }
 
-  public String getPath() { return "/current/:semester/:school/:subject"; }
+  public String getPath() { return "/current/:semester/:subject"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -32,12 +32,6 @@ public final class CurrentCoursesEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
-        .pathParam(
-            "school", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid school code. Take a look at the docs for the schools endpoint for more information.");
-            })
         .pathParam(
             "subject", String.class,
             openApiParam -> {
@@ -97,9 +91,7 @@ public final class CurrentCoursesEndpoint extends Endpoint {
 
       SubjectCode subject;
       try {
-        subject =
-            new SubjectCode(ctx.pathParam("subject"), ctx.pathParam("school"));
-        subject.checkValid();
+        subject = SubjectCode.fromCode(ctx.pathParam("subject"));
       } catch (IllegalArgumentException e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));

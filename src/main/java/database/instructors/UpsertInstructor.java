@@ -11,23 +11,25 @@ public final class UpsertInstructor {
       throws SQLException {
 
     PreparedStatement stmt = conn.prepareStatement(
-        "SELECT id from instructors WHERE subject = ? AND school = ? AND name = ?");
-    Utils.setArray(stmt, subject.code, subject.school, instructor);
+        "SELECT id from instructors WHERE subject_code = ? AND name = ?");
+    Utils.setArray(stmt, subject.ordinal, instructor);
     ResultSet rs = stmt.executeQuery();
     int instructorId;
     if (!rs.next()) {
       rs.close();
-      PreparedStatement createInstructor = conn.prepareStatement(
-          "INSERT INTO instructors (name, subject, school) VALUES (?, ?, ?)",
-          Statement.RETURN_GENERATED_KEYS);
 
-      Utils.setArray(createInstructor, instructor, subject.code,
-                     subject.school);
+      PreparedStatement createInstructor = conn.prepareStatement(
+          "INSERT INTO instructors (name, subject_code) VALUES (?, ?)",
+          Statement.RETURN_GENERATED_KEYS, subject.ordinal);
+
+      Utils.setArray(createInstructor, instructor);
       if (createInstructor.executeUpdate() == 0)
         throw new RuntimeException("Why bro");
+
       rs = createInstructor.getGeneratedKeys();
       if (!rs.next())
         throw new RuntimeException("man c'mon");
+
       instructorId = rs.getInt("id");
       rs.close();
     } else {

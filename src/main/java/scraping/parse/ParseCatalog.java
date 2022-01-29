@@ -148,7 +148,7 @@ public class ParseCatalog implements Iterator<Course> {
       throw new IOException("Couldn't find substring \" - \" in divTag.text");
     }
 
-    SubjectCode subject = new SubjectCode(text.substring(0, textIndex1));
+    SubjectCode subject = SubjectCode.fromCode(text.substring(0, textIndex1));
     String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 

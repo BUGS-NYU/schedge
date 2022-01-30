@@ -34,7 +34,7 @@ public class UpdateInstructors {
       throws SQLException {
     PreparedStatement stmt =
         conn.prepareStatement("UPDATE instructors SET rmp_rating = ?, "
-                              + "rmp_tid  = ? WHERE id = ?");
+                              + "rmp_tid = ? WHERE id = ?");
 
     TryCatch tc = tcNew(e -> {});
 

@@ -20,9 +20,9 @@ public final class UpsertInstructor {
 
       PreparedStatement createInstructor = conn.prepareStatement(
           "INSERT INTO instructors (name, subject_code) VALUES (?, ?)",
-          Statement.RETURN_GENERATED_KEYS, subject.ordinal);
+          Statement.RETURN_GENERATED_KEYS);
 
-      Utils.setArray(createInstructor, instructor);
+      Utils.setArray(createInstructor, instructor, subject.ordinal);
       if (createInstructor.executeUpdate() == 0)
         throw new RuntimeException("Why bro");
 

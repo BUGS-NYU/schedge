@@ -69,10 +69,12 @@ public class Database implements Runnable {
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
 
+    int catalogBatch = batchSize.getCatalog(20);
+    int sectionsBatch = batchSize.getSections(50);
+
     long start = System.nanoTime();
     ScrapeTerm.scrapeTerm(
-        termMixin.getTerm(), batchSize.getCatalog(20),
-        batchSize.getSections(50),
+        termMixin.getTerm(), catalogBatch, sectionsBatch,
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     GetConnection.close();
     GetClient.close();

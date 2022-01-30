@@ -58,9 +58,11 @@ public final class QueryCatalog {
       @SuppressWarnings("unchecked")
       Future<HttpContext>[] contextFutures = new Future[batchSize];
       logger.info("Sending context requests... (x{})", batchSize);
+
       for (int i = 0; i < batchSize; i++) {
         contextFutures[i] = getContextAsync();
       }
+
       logger.info("Collecting context requests... (x{})", batchSize);
 
       TryCatch tc = tcNew(logger, "Failed to get HttpContext.");
@@ -111,9 +113,8 @@ public final class QueryCatalog {
     Request request =
         new RequestBuilder()
             .setUri(DATA_URI)
-            .setRequestTimeout(60000)
+            .setRequestTimeout(10000)
             .setHeader("Referer", ROOT_URL_STRING + "/" + term.getId())
-            .setHeader("Referrer", "${ROOT_URL}/${term.id}")
             .setHeader("Host", "m.albert.nyu.edu")
             .setHeader("Accept-Language", "en-US,en;q=0.5")
             .setHeader("Accept-Encoding", "gzip, deflate, br")

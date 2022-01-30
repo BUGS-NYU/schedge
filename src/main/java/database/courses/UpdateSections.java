@@ -65,7 +65,8 @@ public class UpdateSections {
       TryCatch tryCatch =
           tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
                 save.registrationNumber);
-      Section s = tryCatch.pass(() -> ParseSection.parse(save.data));
+      Section s = tryCatch.pass(() -> nonnull(ParseSection.parse(save.data)));
+
       if (s == null) {
         tryCatch.onError(null);
         continue;
@@ -120,6 +121,7 @@ public class UpdateSections {
         "UPDATE courses SET description = ? WHERE id = ?");
     for (Map.Entry<Integer, String> entry : courseDescriptions.entrySet()) {
       Utils.setArray(stmt, entry.getValue(), entry.getKey());
+
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("why did this fail?");
     }

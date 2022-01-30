@@ -38,6 +38,7 @@ public final class QuerySection {
       throw new RuntimeException(
           "No section found matching criteria registrationNumber=" +
           registrationNumber);
+
     return queryData;
   }
 
@@ -61,17 +62,18 @@ public final class QuerySection {
   public static <T> Future<T> querySectionAsync(Term term,
                                                 int registrationNumber,
                                                 Function<String, T> transform) {
-
-    logger.debug("Querying section in term=" + term +
-                 " with registrationNumber=" + registrationNumber + "...");
     if (registrationNumber < 0)
       throw new IllegalArgumentException(
           "Registration numbers aren't negative!");
 
+    // @TODO CSRF tokens seem to be necessary to get responses from this API
+    logger.debug("Querying section in term=" + term +
+                 " with registrationNumber=" + registrationNumber);
+
     Request request = new RequestBuilder()
                           .setUri(Uri.create(DATA_URL_STRING + term.getId() +
                                              "/" + registrationNumber))
-                          .setRequestTimeout(60000)
+                          .setRequestTimeout(10000)
                           .setMethod("GET")
                           .build();
 
@@ -80,8 +82,10 @@ public final class QuerySection {
         .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
-            logger.error("Error (term={}, registrationNumber={}): {}", term,
-                         registrationNumber, throwable.getMessage());
+            logger.error(
+                "Querying section failed: term={}, registrationNumber={}", term,
+                registrationNumber, throwable);
+
             return null;
           }
 

@@ -62,21 +62,18 @@ public class UpdateSections {
       if (save == null)
         continue;
 
-      TryCatch tryCatch =
+      TryCatch tc =
           tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
                 save.registrationNumber);
-      Section s = tryCatch.pass(() -> nonnull(ParseSection.parse(save.data)));
 
-      if (s == null) {
-        tryCatch.onError(null);
-        continue;
-      }
+      Section s = tc.pass(() -> nonnull(ParseSection.parse(save.data)));
 
       logger.debug("Adding section information...");
 
       for (String i : s.instructors) {
         if (i.equals("Staff"))
           continue;
+
         UpsertInstructor.upsertInstructor(conn, save.code, save.id, i);
       }
 
@@ -105,10 +102,11 @@ public class UpdateSections {
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
                      Utils.nullable(Types.VARCHAR, s.prerequisites), save.id);
       stmt.execute();
+
       ResultSet rs = stmt.getResultSet();
-      if (!rs.next()) {
+      if (!rs.next())
         throw new RuntimeException("why");
-      }
+
       int courseId = rs.getInt(1);
       rs.close();
 
@@ -119,6 +117,7 @@ public class UpdateSections {
 
     PreparedStatement stmt = conn.prepareStatement(
         "UPDATE courses SET description = ? WHERE id = ?");
+
     for (Map.Entry<Integer, String> entry : courseDescriptions.entrySet()) {
       Utils.setArray(stmt, entry.getValue(), entry.getKey());
 

@@ -30,8 +30,8 @@ public class ScrapeCatalog {
             return ParseCatalog.parse(rawData.getData(), rawData.getSubject());
           } catch (Exception e) {
             logger.warn("Catalog parsing threw with term={}, subject={}", term,
-                        rawData.getSubject());
-            logger.warn(e.getMessage());
+                        rawData.getSubject(), e);
+
             return null;
           }
         })

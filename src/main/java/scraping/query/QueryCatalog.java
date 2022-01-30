@@ -138,8 +138,9 @@ public final class QueryCatalog {
         .toCompletableFuture()
         .handleAsync((resp, throwable) -> {
           if (resp == null) {
-            logger.error("Error (subject={}): {}", subject,
-                         throwable.getMessage());
+            logger.error("Exception thrown for request: subject={}", subject,
+                         throwable);
+
             return null;
           }
 

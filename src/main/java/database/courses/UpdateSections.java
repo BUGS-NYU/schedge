@@ -63,11 +63,11 @@ public class UpdateSections {
         continue;
 
       TryCatch tryCatch =
-          tc(logger, "Parse error on term={}, registrationNumber={}", term,
-             save.registrationNumber);
+          tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
+                save.registrationNumber);
       Section s = tryCatch.pass(() -> ParseSection.parse(save.data));
       if (s == null) {
-        tryCatch.output();
+        tryCatch.onError(null);
         continue;
       }
 

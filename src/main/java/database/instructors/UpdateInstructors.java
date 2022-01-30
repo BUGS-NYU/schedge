@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import scraping.GetRatings;
 import scraping.models.Instructor;
 import scraping.models.Rating;
+import utils.TryCatch;
 import utils.Utils;
 
 public class UpdateInstructors {
@@ -32,14 +33,22 @@ public class UpdateInstructors {
                                        Integer batchSizeNullable)
       throws SQLException {
     PreparedStatement stmt =
-        conn.prepareStatement("UPDATE instructors SET "
-                              + "rmp_rating = ?, rmp_tid  = ? WHERE id = ?");
-    Callable1<Rating, Boolean> update = (rating)
-        -> Utils.setArray(stmt, rating.rating, rating.rmpTeacherId,
-                          rating.instructorId)
-                   .executeUpdate() == 1;
+        conn.prepareStatement("UPDATE instructors SET rmp_rating = ?, "
+                              + "rmp_tid  = ? WHERE id = ?");
+
+    TryCatch tc = tcNew(e -> {});
+
     GetRatings.getRatings(instructors.iterator(), batchSizeNullable)
         .filter(rating -> rating.rmpTeacherId != -1 && rating.rating != -1.0f)
-        .forEach(tcCreateAssert(update));
+        .forEach(rating -> {
+          Utils.setArray(stmt, rating.rating, rating.rmpTeacherId,
+                         rating.instructorId);
+
+          tc.pass(() -> {
+            if (stmt.executeUpdate() != 1) {
+              throw new RuntimeException("failed to update instructors");
+            }
+          });
+        });
   }
 }

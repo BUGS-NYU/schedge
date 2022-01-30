@@ -19,6 +19,7 @@ import scraping.models.Instructor;
 import scraping.models.Rating;
 import scraping.query.GetClient;
 import utils.SimpleBatchedFutureEngine;
+import utils.TryCatch;
 
 public final class GetRatings {
 
@@ -53,12 +54,15 @@ public final class GetRatings {
         new SimpleBatchedFutureEngine<>(
             names, batchSize, (instructor, __) -> getLinkAsync(instructor));
 
+    TryCatch tc = tcNew(logger);
+
     SimpleBatchedFutureEngine<Instructor, Rating> engine =
         new SimpleBatchedFutureEngine<>(
             instructorResults, batchSize,
             (instructor, __)
-                -> tcPass(logger, GetRatings::queryRatingAsync, instructor.name,
-                          instructor.id));
+                -> tc.pass(()
+                               -> GetRatings.queryRatingAsync(instructor.name,
+                                                              instructor.id)));
 
     return StreamSupport.stream(engine.spliterator(), false)
         .filter(i -> i != null);

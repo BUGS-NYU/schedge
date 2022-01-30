@@ -6,6 +6,7 @@ import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.query.GetClient;
+import utils.TryCatch;
 
 public final class UpdateData {
 
@@ -13,19 +14,18 @@ public final class UpdateData {
 
   public static void updateData(Integer batchSize, Integer batchSizeSections) {
     logger.info("Updating data...");
-    Term currentTerm = Term.getCurrentTerm();
-    Term nextTerm = currentTerm.nextTerm();
-    Term nextNextTerm = nextTerm.nextTerm();
+    Term current = Term.getCurrentTerm();
+    Term next = current.nextTerm();
+    Term next2 = next.nextTerm();
 
-    logger.info("Updating current term... ({})", currentTerm);
-    tcLogVoid(logger, ScrapeTerm::scrapeTerm, currentTerm, batchSize,
-              batchSizeSections);
-    logger.info("Updating next term... ({})", nextTerm);
-    tcLogVoid(logger, ScrapeTerm::scrapeTerm, nextTerm, batchSize,
-              batchSizeSections);
-    logger.info("Updating the term after next term... ({})", nextNextTerm);
-    tcLogVoid(logger, ScrapeTerm::scrapeTerm, nextNextTerm, batchSize,
-              batchSizeSections);
+    TryCatch tc = tcNew(e -> logger.error("Failed to update term", e));
+
+    logger.info("Updating current term... ({})", current);
+    tc.log(() -> ScrapeTerm.scrapeTerm(current, batchSize, batchSizeSections));
+    logger.info("Updating next term... ({})", next);
+    tc.log(() -> ScrapeTerm.scrapeTerm(next, batchSize, batchSizeSections));
+    logger.info("Updating the term after next term... ({})", next2);
+    tc.log(() -> ScrapeTerm.scrapeTerm(next2, batchSize, batchSizeSections));
 
     GetClient.close();
 

@@ -18,6 +18,7 @@ import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
 import scraping.models.CatalogQueryData;
 import utils.SimpleBatchedFutureEngine;
+import utils.TryCatch;
 
 public final class QueryCatalog {
 
@@ -62,10 +63,10 @@ public final class QueryCatalog {
       }
       logger.info("Collecting context requests... (x{})", batchSize);
 
+      TryCatch tc = tcNew(logger, "Failed to get HttpContext.");
       for (int i = 0; i < batchSize; i++) {
-        contexts[i] = tcPass((idx)
-                                 -> tcNonnull(contextFutures[idx].get()),
-                             "Failed to get HttpContext.", i);
+        int idx = i;
+        contexts[idx] = tc.pass(() -> nonnull(contextFutures[idx].get()));
       }
     }
 

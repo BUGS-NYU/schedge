@@ -66,7 +66,8 @@ public final class QuerySection {
       throw new IllegalArgumentException(
           "Registration numbers aren't negative!");
 
-    // @TODO CSRF tokens seem to be necessary to get responses from this API
+    // @TODO CSRF tokens seem to now be necessary to get responses from this API
+    //                                  - Albert Liu, Jan 30, 2022 Sun 16:49 EST
     logger.debug("Querying section in term=" + term +
                  " with registrationNumber=" + registrationNumber);
 
@@ -77,19 +78,15 @@ public final class QuerySection {
                           .setMethod("GET")
                           .build();
 
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error(
-                "Querying section failed: term={}, registrationNumber={}", term,
-                registrationNumber, throwable);
+    return GetClient.send(request, (resp, throwable) -> {
+      if (resp == null) {
+        logger.error("Querying section failed: term={}, registrationNumber={}",
+                     term, registrationNumber, throwable);
 
-            return null;
-          }
+        return null;
+      }
 
-          return transform.apply(resp.getResponseBody());
-        });
+      return transform.apply(resp.getResponseBody());
+    });
   }
 }

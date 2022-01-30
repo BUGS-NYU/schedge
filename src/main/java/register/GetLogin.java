@@ -2,16 +2,15 @@ package register;
 
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 public class GetLogin {
   private static final String LOGIN_ROOT_URL_STRING =
@@ -47,15 +46,8 @@ public class GetLogin {
             .setMethod("POST")
             .setBody(params)
             .build();
-    Response response = null;
-    try {
-      response = GetClient.getClient()
-                     .executeRequest(request)
-                     .toCompletableFuture()
-                     .get();
-    } catch (InterruptedException | ExecutionException e) {
-      e.printStackTrace();
-    }
+
+    Response response = GetClient.sendSync(request);
 
     // Retrive the session tokens and cookies
     List<Cookie> cookies =

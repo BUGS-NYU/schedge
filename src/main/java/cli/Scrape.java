@@ -15,6 +15,7 @@ import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.ScrapeSection;
 import scraping.parse.ParseSchoolSubjects;
+import scraping.query.GetClient;
 import scraping.query.QuerySchool;
 
 /*
@@ -22,8 +23,7 @@ import scraping.query.QuerySchool;
 */
 @Command(name = "scrape",
          description =
-             "Query then parse NYU Albert data based on different catagories",
-         synopsisSubcommandLabel = "(catalog | sections | school)")
+             "Query then parse NYU Albert data based on different catagories")
 public class Scrape implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
 
@@ -34,19 +34,14 @@ public class Scrape implements Runnable {
 
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(
-        spec.commandLine(),
-        "\nMissing required subcommand. Try ./schedge scrape [subcommand] --help to"
-            + " display help message for possible subcommands");
+    throw new CommandLine.ParameterException(spec.commandLine(),
+                                             "\nMissing required subcommand.");
   }
 
   @CommandLine.Command(
-      name = "sections", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Scrape section",
-      description =
-          "Scrape section based on term and registration number, OR school and subject")
+      name = "sections",
+      description = "Scrape section based on term and registration number, OR "
+                    + "school and subject.\n")
   public void
   sections(@Mixin Mixins.Term termMixin,
            @Mixin Mixins.RegistrationNumber registrationNumberMixin,
@@ -58,6 +53,7 @@ public class Scrape implements Runnable {
            Integer batchSizeSections,
            @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
+
     List<SubjectCode> subjectCodes = registrationNumberMixin.getSubjectCodes();
     if (subjectCodes == null) {
       outputFileMixin.writeOutput(ScrapeSection.scrapeFromSection(
@@ -70,31 +66,34 @@ public class Scrape implements Runnable {
                                  batchSizeSections)
               .collect(Collectors.toList()));
     }
+
+    GetClient.close();
+
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + "seconds");
   }
 
-  @Command(
-      name = "catalog", sortOptions = false,
-      headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-      parameterListHeading = "%nParameters:%n",
-      optionListHeading = "%nOptions:%n", header = "Scrape catalog",
-      description =
-          "Scrape catalog based on term, subject codes, or school for one or multiple subjects/schools")
+  @Command(name = "catalog",
+           description = "Scrape catalog based on term, subject codes, "
+                         + "or school for one or multiple subjects/schools")
   public void
   catalog(@Mixin Mixins.Term termMixin,
           @Mixin Mixins.SubjectCode subjectCodeMixin,
-          @Option(names = "--batch-size",
+          @Option(names = "--batch-size", defaultValue = "20",
                   description = "batch size if query more than one catalog")
           Integer batchSize,
           @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
+
     outputFileMixin.writeOutput(
         ScrapeCatalog
             .scrapeFromCatalog(termMixin.getTerm(),
                                subjectCodeMixin.getSubjectCodes(), batchSize)
             .collect(Collectors.toList()));
+
+    GetClient.close();
+
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");
@@ -109,8 +108,12 @@ public class Scrape implements Runnable {
   school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
       throws ExecutionException, InterruptedException {
     long start = System.nanoTime();
+
     outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
         QuerySchool.querySchool(termMixin.getTerm())));
+
+    GetClient.close();
+
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
     logger.info(duration + " seconds");

@@ -47,6 +47,7 @@ The codebase uses the following annotations in the comments:
 
 - `@Help` - Help wanted
 - `@TODO` - Code has something that's yet to be done
+- `@Note` - A note for readers
 - `@Performance` - This area can be tweaked/rewritten to improve performance
 - `@Organize` - We should reorganize this code
 

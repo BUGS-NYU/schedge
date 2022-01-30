@@ -82,7 +82,15 @@ public interface TryCatch {
 
   public static TryCatch tcNew(Logger logger, String message,
                                Object... params) {
-    return e -> logger.warn(message, params, e);
+    Object[] errorParams = new Object[params.length + 1];
+
+    for (int i = 0; i < params.length; i++)
+      errorParams[i] = params;
+
+    return e -> {
+      errorParams[params.length] = e;
+      logger.warn(message, errorParams);
+    };
   }
 
   public static TryCatch tcNew(TryCatch t) { return t; }

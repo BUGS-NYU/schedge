@@ -1,17 +1,16 @@
 package register;
 
+import static register.GetLogin.getLoginSession;
+
+import java.util.List;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import nyu.Term;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import scraping.query.GetClient;
-
-import java.util.List;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-
-import static register.GetLogin.getLoginSession;
 
 public class EnrollCourses {
   private static final String DATA_URL_STRING =
@@ -66,22 +65,23 @@ public class EnrollCourses {
             .setMethod("POST")
             .setBody(enrollForm)
             .build();
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> resp.getResponseBody()));
+
+    return GetClient.send(request, (resp, e) -> resp.getResponseBody());
   }
 
   public static void removeFromCart(User user, Term term,
                                     List<Integer> registrationNumbers,
                                     Context.HttpContext context) {
     Context.HttpContext newContext = getLoginSession(user, context);
+
     /*
     "https://m.albert.nyu.edu/app/student/enrollmentcart/enroll/NYUNV/UGRD/1204"
     "Can change to more by adding more selected field
      */
+
     String deleteForm =
         setUpForm(term, registrationNumbers, "&delete=", newContext);
+
     Request request =
         new RequestBuilder()
             .setUri(Uri.create(DATA_URL_STRING + term.getId()))
@@ -102,14 +102,13 @@ public class EnrollCourses {
             .setMethod("POST")
             .setBody(deleteForm)
             .build();
-    GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> {
-          System.out.println(resp.getHeaders());
-          System.out.println(resp.getStatusCode());
-          System.out.println(resp.getResponseBody());
-          return null;
-        }));
+
+    GetClient.send(request, (resp, throwable) -> {
+      System.out.println(resp.getHeaders());
+      System.out.println(resp.getStatusCode());
+      System.out.println(resp.getResponseBody());
+
+      return null;
+    });
   }
 }

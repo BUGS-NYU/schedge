@@ -1,12 +1,16 @@
 package scraping.query;
 
+import static utils.TryCatch.*;
+
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import nyu.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import utils.TryCatch;
 
 public final class QuerySchool {
 
@@ -19,16 +23,10 @@ public final class QuerySchool {
     logger.info("querying school for term={}", term);
 
     Request request =
-        new RequestBuilder().setUri(ROOT_URI).setRequestTimeout(60000).build();
+        new RequestBuilder().setUri(ROOT_URI).setRequestTimeout(10000).build();
 
-    try {
-      return GetClient.getClient()
-          .executeRequest(request)
-          .get()
-          .getResponseBody();
-    } catch (InterruptedException | ExecutionException e) {
-      logger.error("Error (term=" + term + "): " + e.getMessage());
-      return null;
-    }
+    TryCatch tc = tcNew(logger, "Failed to get school list: term={}", term);
+
+    return tc.log(() -> GetClient.sendSync(request).getResponseBody());
   }
 }

@@ -37,20 +37,17 @@ public final class ScrapeSchedge {
           Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
       Request request = new RequestBuilder().setUri(uri).build();
-      return GetClient.getClient()
-          .executeRequest(request)
-          .toCompletableFuture()
-          .handleAsync((resp, throwable) -> {
-            if (resp == null) {
-              logger.error("Error (subject={}): {}", subject,
-                           throwable.getMessage());
+      return GetClient.send(request, (resp, throwable) -> {
+        if (resp == null) {
+          logger.error("Error (subject={}): {}", subject,
+                       throwable.getMessage());
 
-              return null;
-            }
+          return null;
+        }
 
-            String text = resp.getResponseBody();
-            return text;
-          });
+        String text = resp.getResponseBody();
+        return text;
+      });
     };
 
     return StreamSupport

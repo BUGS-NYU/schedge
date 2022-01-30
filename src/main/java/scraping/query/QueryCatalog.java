@@ -110,6 +110,10 @@ public final class QueryCatalog {
     String params = String.format(format, csrf, id, school, code);
     logger.debug("Params are {}.", params);
 
+    // @Note not sure why all these headers are necessary, but NYU's API will
+    // fast-fail if these aren't present. Potentially some kind of anti-scraping
+    // protection measure.
+    //                              - Albert Liu, Jan 30, 2022 Sun 17:12 EST
     Request request =
         new RequestBuilder()
             .setUri(DATA_URI)
@@ -133,27 +137,24 @@ public final class QueryCatalog {
             .setBody(params)
             .build();
 
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error("Exception thrown for request: subject={}", subject,
-                         throwable);
+    return GetClient.send(request, (resp, throwable) -> {
+      if (resp == null) {
+        logger.error("Exception thrown for request: subject={}", subject,
+                     throwable);
 
-            return null;
-          }
+        return null;
+      }
 
-          String body = resp.getResponseBody();
-          if (body.contentEquals("No classes found matching your criteria.")) {
-            logger.warn("No classes found matching criteria subject={}",
-                        subject.code);
+      String body = resp.getResponseBody();
+      if (body.contentEquals("No classes found matching your criteria.")) {
+        logger.warn("No classes found matching criteria subject={}",
+                    subject.code);
 
-            return null;
-          }
+        return null;
+      }
 
-          return new CatalogQueryData(subject, body);
-        });
+      return new CatalogQueryData(subject, body);
+    });
   }
 
   private static Future<HttpContext> getContextAsync() {
@@ -161,37 +162,39 @@ public final class QueryCatalog {
     Request request =
         new RequestBuilder().setUri(ROOT_URI).setMethod("GET").build();
 
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error(throwable.getMessage());
-            return null;
-          }
+    return GetClient.send(request, (resp, throwable) -> {
+      if (resp == null) {
+        logger.error(throwable.getMessage());
+        return null;
+      }
 
-          List<Cookie> cookies =
-              resp.getHeaders()
-                  .getAll("Set-Cookie")
-                  .stream()
-                  .map(cookie -> ClientCookieDecoder.STRICT.decode(cookie))
-                  .collect(Collectors.toList());
+      List<Cookie> cookies =
+          resp.getHeaders()
+              .getAll("Set-Cookie")
+              .stream()
+              .map(cookie -> ClientCookieDecoder.STRICT.decode(cookie))
+              .collect(Collectors.toList());
 
-          Cookie csrfCookie =
-              cookies.stream()
-                  .filter(cookie -> cookie.name().contentEquals("CSRFCookie"))
-                  .findAny()
-                  .orElse(null);
+      Cookie csrfCookie =
+          cookies.stream()
+              .filter(cookie -> cookie.name().contentEquals("CSRFCookie"))
+              .findAny()
+              .orElse(null);
 
-          if (csrfCookie == null) {
-            logger.error("Couldn't find cookie with name=CSRFCookie");
-            return null;
-          }
+      if (csrfCookie == null) {
+        logger.error("Couldn't find cookie with name=CSRFCookie");
 
-          logger.debug("Retrieved CSRF token `{}`", csrfCookie.value());
+        return null;
+      }
 
-          return new HttpContext(csrfCookie.value(), cookies);
-        });
+      String csrf = csrfCookie.value();
+      logger.info("Retrieved Cookies `{}`",
+                  cookies.stream()
+                      .map(it -> it.name() + '=' + it.value())
+                      .collect(Collectors.joining("; ")));
+
+      return new HttpContext(csrf, cookies);
+    });
   }
 
   private static class HttpContext {

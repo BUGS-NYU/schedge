@@ -81,20 +81,17 @@ public final class GetRatings {
                           .setRequestTimeout(60000)
                           .setMethod("GET")
                           .build();
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error(throwable.getMessage());
-            return null;
-          }
-          String link = parseLink(resp.getResponseBody());
-          if (link == null)
-            logger.warn("Instructor query " + instructor.name +
-                        " returned no results.");
-          return new Instructor(instructor.id, link);
-        });
+    return GetClient.send(request, (resp, throwable) -> {
+      if (resp == null) {
+        logger.error(throwable.getMessage());
+        return null;
+      }
+      String link = parseLink(resp.getResponseBody());
+      if (link == null)
+        logger.warn("Instructor query " + instructor.name +
+                    " returned no results.");
+      return new Instructor(instructor.id, link);
+    });
   }
 
   private static String parseInstructorName(String name) {
@@ -120,22 +117,19 @@ public final class GetRatings {
                           .setMethod("GET")
                           .build();
 
-    return GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync((resp, throwable) -> {
-          if (resp == null) {
-            logger.error(throwable.getMessage());
-            return null;
-          }
-          if (url == null) {
-            logger.warn("URL is null for id=" + id);
-            return new Rating(id, -1, -1.0f);
-          }
+    return GetClient.send(request, (resp, throwable) -> {
+      if (resp == null) {
+        logger.error(throwable.getMessage());
+        return null;
+      }
+      if (url == null) {
+        logger.warn("URL is null for id=" + id);
+        return new Rating(id, -1, -1.0f);
+      }
 
-          return new Rating(id, Integer.parseInt(url),
-                            parseRating(resp.getResponseBody(), id));
-        });
+      return new Rating(id, Integer.parseInt(url),
+                        parseRating(resp.getResponseBody(), id));
+    });
   }
 
   private static float parseRating(String rawData, int id) {

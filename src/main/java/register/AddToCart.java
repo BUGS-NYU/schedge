@@ -88,16 +88,15 @@ public class AddToCart {
                                      .collect(Collectors.joining("; ")))
             .setMethod("GET")
             .build();
-    //    GetClient.getClient()
-    //            .executeRequest(request)
-    //            .toCompletableFuture()
-    //            .handleAsync(((resp, throwable) -> {
-    //              //if status code is 200 then there is an error
-    //              return null;
-    //            }));
+
+    // GetClient.send(request, (resp, throwable) -> {
+    //   // if status code is 200 then there is an error
+    //   return null;
+    // });
 
     if (sectionsForm != null) {
       System.out.println(sectionsForm);
+
       Request sectionRequest =
           new RequestBuilder()
               .setUri(Uri.create(ADD_RELATED_DATA_URL_STRING))
@@ -120,19 +119,14 @@ public class AddToCart {
               .setBody(sectionsForm)
               .build();
 
-      GetClient.getClient()
-          .executeRequest(sectionRequest)
-          .toCompletableFuture()
-          .handleAsync(((resp, throwable) -> { return null; }));
+      GetClient.send(sectionRequest, (resp, e) -> null);
     }
 
-    GetClient.getClient()
-        .executeRequest(request)
-        .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> {
-          // if status code is 200 then there is an error
-          return null;
-        }));
+    GetClient.send(request, (resp, e) -> {
+      // if status code is 200 then there is an error
+      return null;
+    });
+
     return null;
   }
 
@@ -168,10 +162,8 @@ public class AddToCart {
             .setBody(form)
             .build();
 
-    GetClient.getClient()
-        .executeRequest(sectionRequest)
-        .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> { return null; }));
+    GetClient.send(sectionRequest, (resp, throwable) -> { return null; });
+
     return null;
   }
 
@@ -210,10 +202,9 @@ public class AddToCart {
             .setMethod("POST")
             .setBody(form)
             .build();
-    GetClient.getClient()
-        .executeRequest(optionRequest)
-        .toCompletableFuture()
-        .handleAsync(((resp, throwable) -> { return null; }));
+
+    GetClient.send(optionRequest, (resp, throwable) -> { return null; });
+
     return null;
   }
 

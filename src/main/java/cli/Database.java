@@ -169,15 +169,6 @@ public class Database implements Runnable {
         boolean scrape) {
     App.run();
 
-    // This SHOULD eagerly create the connection pool, so that there's not a
-    // situation where the first person to request from the database is
-    // guarranteed to get screwed
-    //                        - Albert Liu, Jan 26, 2022 Wed 00:06 EST
-    GetConnection.withConnection(conn -> {
-      Term term = new Term("sp", 2022);
-      Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
-    });
-
     while (scrape) {
       CleanData.cleanData();
       UpdateData.updateData(batchSizeMixin.getCatalog(20),

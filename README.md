@@ -16,15 +16,16 @@ you a general overview of the project and how to contribute.
 The API documentation is available at https://schedge.a1liu.com .
 
 ## TODO
-- [x] Deploy with CI/CD
+- [x] Deploy with CI/CD (`nyu.a1liu.com`)
+- [x] Make the schools/subjects list more dynamic
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
 - [ ] Add full RMP support
-- [ ] Make the schools list dynamic (use `schedge_meta` table)
 
+#### Delayed for now
+- [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
-- [ ] Improve 1st query performance (this might be a mac-specific problem tbh)
 - [ ] Make an admin portal
 - [ ] Fuzzer? Some kind of tester I guess
 

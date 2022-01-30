@@ -22,7 +22,6 @@ import utils.SimpleBatchedFutureEngine;
 import utils.TryCatch;
 
 public final class QueryCatalog {
-
   private static Logger logger =
       LoggerFactory.getLogger("scraping.query.QueryCatalog");
   private static final String ROOT_URL =

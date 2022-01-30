@@ -54,8 +54,6 @@ public final class GetClient {
                                 .map(it -> it.getKey() + '=' + it.getValue())
                                 .collect(Collectors.joining("; "));
 
-      logger.info("Retrieved Cookies `{}`", cookieString);
-
       return new Ctx(csrf, cookieString);
     });
   }

@@ -37,16 +37,4 @@ public class ScrapeCatalog {
         })
         .filter(i -> i != null);
   }
-
-  /**
-   * Scraping the catalogs from Albert Mobile given one subject code
-   * @param term The term for which we should be scraping
-   * @param subjectCode The subject for which we should be scraping
-   * @return List of courses
-   */
-  public static List<Course> scrapeFromCatalog(Term term,
-                                               SubjectCode subjectCode) {
-    CatalogQueryData data = QueryCatalog.queryCatalog(term, subjectCode);
-    return ParseCatalog.parse(data.getData(), data.getSubject());
-  }
 }

@@ -2,32 +2,82 @@ package scraping.query;
 
 import static utils.TryCatch.*;
 
+import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
-import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClientConfig;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.Response;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.Collectors;
+import org.asynchttpclient.*;
 import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
+import org.slf4j.*;
 
 public final class GetClient {
+  private static Logger logger =
+      LoggerFactory.getLogger("scraping.query.GetClient");
+
   private static volatile AsyncHttpClient client;
 
-  // Utility function for sending requests.
+  public static final class Ctx {
+    public final String csrfToken;
+    public final String cookies;
+
+    public Ctx(String tok, String cookies) {
+      this.csrfToken = tok;
+      this.cookies = cookies;
+    }
+  }
+
+  public static Future<Ctx> getCtx(String uri) {
+    Request request =
+        new RequestBuilder().setUri(Uri.create(uri)).setMethod("GET").build();
+
+    return send(request, (resp, e) -> {
+      if (resp == null) {
+        logger.error("Failed to get context: uri={}", uri, e);
+
+        return null;
+      }
+
+      Map<String, String> cookies = cookiesFrom(resp);
+      String csrf = cookies.get("CSRFCookie");
+      if (csrf == null) {
+        logger.error("Missing cookie with name=CSRFCookie: cookies={}",
+                     cookies);
+
+        return null;
+      }
+
+      String cookieString = cookies.entrySet()
+                                .stream()
+                                .map(it -> it.getKey() + '=' + it.getValue())
+                                .collect(Collectors.joining("; "));
+
+      logger.info("Retrieved Cookies `{}`", cookieString);
+
+      return new Ctx(csrf, cookieString);
+    });
+  }
+
+  public static Map<String, String> cookiesFrom(Response resp) {
+    HashMap<String, String> cookies = new HashMap<>();
+
+    for (String header : resp.getHeaders().getAll("Set-Cookie")) {
+      Cookie cookie = ClientCookieDecoder.STRICT.decode(header);
+      cookies.put(cookie.name(), cookie.value());
+    }
+
+    return cookies;
+  }
+
+  // Utility function for sending requests. Mostly useful during
+  // development, before it's known what exact behavior is best.
   public static Response sendSync(Request request) {
     Throwable[] eRef = new Throwable[1];
     try {
       Future<Response> fut = send(request, (resp, e) -> {
-        if (resp == null) {
-          eRef[0] = e;
-        }
+        eRef[0] = e;
 
         return resp;
       });
@@ -35,11 +85,11 @@ public final class GetClient {
       Response resp = fut.get();
       if (resp != null)
         return resp;
-    } catch (Exception e) {
+
+      throw eRef[0];
+    } catch (Throwable e) {
       throw new RuntimeException(e);
     }
-
-    throw new RuntimeException(eRef[0]);
   }
 
   // Utility function for sending requests.
@@ -59,11 +109,11 @@ public final class GetClient {
   public static void close() {
     if (client != null)
       tcPass(client::close);
+
     client = null;
   }
 
   private static class BlackholeCookieStore implements CookieStore {
-
     private final static BlackholeCookieStore BLACK_HOLE =
         new BlackholeCookieStore();
 

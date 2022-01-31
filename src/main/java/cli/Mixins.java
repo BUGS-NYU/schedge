@@ -6,7 +6,6 @@ import static utils.PolyFill.*;
 import java.util.*;
 import java.util.stream.*;
 import picocli.CommandLine;
-import register.RegistrationCourse;
 import types.User;
 import utils.*;
 
@@ -35,44 +34,6 @@ public final class Mixins {
         return defaultValue;
       else
         return sections;
-    }
-  }
-
-  public static final class CourseRegistration {
-    @Option(names = "--courses") Map<Integer, String> courses;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public Map<Integer, String> getCourses() {
-      if (courses == null) {
-        throw new CommandLine.ParameterException(
-            spec.commandLine(), "Must provide key value pairs");
-      }
-      return courses;
-    }
-
-    public List<RegistrationCourse> convertCourses() {
-      List<RegistrationCourse> regCourses = new ArrayList<>();
-
-      for (Map.Entry<Integer, String> entry : courses.entrySet()) {
-        String value = entry.getValue();
-        if (value.contains(",")) {
-          int[] values = Arrays.stream(value.split(","))
-                             .mapToInt(Integer::parseInt)
-                             .toArray();
-          List<Integer> sectionsRelated =
-              Arrays.stream(values).boxed().collect(Collectors.toList());
-          regCourses.add(
-              new RegistrationCourse(entry.getKey(), sectionsRelated));
-        } else if (value.trim().equals("")) {
-          regCourses.add(
-              new RegistrationCourse(entry.getKey(), new ArrayList<>()));
-        } else {
-          regCourses.add(new RegistrationCourse(
-              entry.getKey(), listOf(Integer.parseInt(value))));
-        }
-      }
-      return regCourses;
     }
   }
 

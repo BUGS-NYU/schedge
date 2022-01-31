@@ -20,6 +20,8 @@ public final class QuerySection {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.query.QuerySection");
 
+  private static final String ROOT_URL =
+      "https://m.albert.nyu.edu/app/catalog/classSearch";
   private static String DATA_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/";
 
@@ -66,17 +68,28 @@ public final class QuerySection {
       throw new IllegalArgumentException(
           "Registration numbers aren't negative!");
 
-    // @TODO CSRF tokens seem to now be necessary to get responses from this API
-    //                                  - Albert Liu, Jan 30, 2022 Sun 16:49 EST
     logger.debug("Querying section in term=" + term +
                  " with registrationNumber=" + registrationNumber);
 
-    Request request = new RequestBuilder()
-                          .setUri(Uri.create(DATA_URL_STRING + term.getId() +
-                                             "/" + registrationNumber))
-                          .setRequestTimeout(10000)
-                          .setMethod("GET")
-                          .build();
+    Request request =
+        new RequestBuilder()
+            .setUri(Uri.create(DATA_URL_STRING + term.getId() + "/" +
+                               registrationNumber))
+            .setHeader("Referer", ROOT_URL + "/" + term.getId())
+            .setHeader("Host", "m.albert.nyu.edu")
+            .setHeader("Accept-Language", "en-US,en;q=0.5")
+            .setHeader("Accept-Encoding", "gzip, deflate, br")
+            .setHeader("Content-Type",
+                       "application/x-www-form-urlencoded; charset=UTF-8")
+            .setHeader("X-Requested-With", "XMLHttpRequest")
+            .setHeader("Origin", "https://m.albert.nyu.edu")
+            .setHeader("DNT", "1")
+            .setHeader("Connection", "keep-alive")
+            .setHeader("Referer",
+                       "https://m.albert.nyu.edu/app/catalog/classSearch")
+            .setRequestTimeout(20000)
+            .setMethod("GET")
+            .build();
 
     return GetClient.send(request, (resp, throwable) -> {
       if (resp == null) {

@@ -17,11 +17,6 @@ import org.slf4j.*;
 import scraping.models.*;
 import utils.Utils;
 
-/**
- * Parses a catalog string in a stream.
- *
- * @author Albert Liu
- */
 public class ParseCatalog implements Iterator<Course> {
 
   private static Logger logger =
@@ -68,6 +63,7 @@ public class ParseCatalog implements Iterator<Course> {
       logger.error("CSS query `div.primary-head ~ *` returned "
                    + "a list whose first element was not a 'div' (subject=" +
                    subjectCode + ").");
+
       throw new RuntimeException("NYU sent back data we weren't expecting.");
     } else if (currentElement.text().equals(
                    "No classes found matching your criteria.")) {

@@ -82,21 +82,20 @@ public class Scrape implements Runnable {
           @Mixin Mixins.SubjectCode subjectCodeMixin,
           @Option(names = "--batch-size", defaultValue = "20",
                   description = "batch size if query more than one catalog")
-          Integer batchSize,
+          int batchSize,
           @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
-    outputFileMixin.writeOutput(
-        ScrapeCatalog
-            .scrapeFromCatalog(termMixin.getTerm(),
-                               subjectCodeMixin.getSubjectCodes(), batchSize)
-            .collect(Collectors.toList()));
+    List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
+        termMixin.getTerm(), subjectCodeMixin.getSubjectCodes(), batchSize);
+
+    outputFileMixin.writeOutput(courses);
 
     GetClient.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
+    logger.info("{} seconds for {} courses", duration, courses.size());
   }
 
   @Command(name = "school", sortOptions = false,

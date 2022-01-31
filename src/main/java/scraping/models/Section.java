@@ -19,7 +19,7 @@ public class Section {
   public Section(SubjectCode code, int registrationNumber, String sectionCode,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
-    if (type != SectionType.LEC && recitations != null) {
+    if (type != SectionType.LEC && !recitations.isEmpty()) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
     }

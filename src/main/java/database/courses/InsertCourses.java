@@ -92,13 +92,16 @@ public class InsertCourses {
 
         int sectionId = rs.getInt(1);
         rs.close();
+
         states.add(
             new SectionID(s.subjectCode, sectionId, s.registrationNumber));
+
         insertMeetings(conn, sectionId, s.meetings);
-        if (s.recitations != null) {
+        if (!s.recitations.isEmpty()) {
           if (associatedWith != null) {
             throw new RuntimeException("why did this happen?");
           }
+
           insertSections(conn, courseId, s.recitations, sectionId, states);
         }
       } catch (Exception e) {

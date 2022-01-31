@@ -19,17 +19,12 @@ public final class GetClient {
 
   private static volatile AsyncHttpClient client;
 
-  public static final class Ctx {
-    public final String csrfToken;
-    public final String cookies;
-
-    public Ctx(String tok, String cookies) {
-      this.csrfToken = tok;
-      this.cookies = cookies;
-    }
+  public static class Ctx {
+    public String csrfToken;
+    public String cookies;
   }
 
-  public static Future<Ctx> getCtx(String uri) {
+  public static CompletableFuture<Ctx> getCtx(String uri) {
     Request request = new RequestBuilder()
                           .setUri(Uri.create(uri))
                           .setRequestTimeout(10000)
@@ -57,7 +52,11 @@ public final class GetClient {
                                 .map(it -> it.getKey() + '=' + it.getValue())
                                 .collect(Collectors.joining("; "));
 
-      return new Ctx(csrf, cookieString);
+      Ctx context = new Ctx();
+      context.csrfToken = csrf;
+      context.cookies = cookieString;
+
+      return context;
     });
   }
 
@@ -94,7 +93,7 @@ public final class GetClient {
   }
 
   // Utility function for sending requests.
-  public static synchronized<E> Future<E>
+  public static synchronized<E> CompletableFuture<E>
   send(Request request,
        BiFunction<? super Response, Throwable, ? extends E> fn) {
     if (client == null) {

@@ -1,8 +1,9 @@
 package actions;
 
+import static database.courses.InsertCourses.*;
+import static database.courses.UpdateSections.*;
+
 import database.GetConnection;
-import database.courses.InsertCourses;
-import database.courses.UpdateSections;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
 import database.models.SectionID;
@@ -13,6 +14,7 @@ import java.util.function.Function;
 import nyu.SubjectCode;
 import nyu.Term;
 import scraping.ScrapeCatalog;
+import scraping.models.Course;
 
 public class ScrapeTerm {
 
@@ -24,24 +26,16 @@ public class ScrapeTerm {
   public static void
   scrapeTerm(Term term, int batchSize, int batchSizeSections,
              Function<List<SubjectCode>, Iterable<SubjectCode>> f) {
+    List<SubjectCode> allSubjects = SubjectCode.allSubjects();
+    List<Course> courses =
+        ScrapeCatalog.scrapeCatalog(term, f.apply(allSubjects), batchSize);
+
     GetConnection.withConnection(conn -> {
       int epoch = GetNewEpoch.getNewEpoch(conn, term);
-      List<SubjectCode> allSubjects = SubjectCode.allSubjects();
 
-      Iterator<SectionID> s =
-          ScrapeCatalog.scrapeFromCatalog(term, f.apply(allSubjects), batchSize)
-              .flatMap(courseList -> {
-                try {
-                  return InsertCourses
-                      .insertCourses(conn, term, epoch, courseList)
-                      .stream();
-                } catch (SQLException e) {
-                  throw new RuntimeException(e);
-                }
-              })
-              .iterator();
+      List<SectionID> s = insertCourses(conn, term, epoch, courses);
 
-      UpdateSections.updateSections(conn, term, s, batchSizeSections);
+      updateSections(conn, term, s.iterator(), batchSizeSections);
 
       CompleteEpoch.completeEpoch(conn, term, epoch);
     });

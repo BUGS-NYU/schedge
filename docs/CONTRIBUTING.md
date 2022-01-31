@@ -38,9 +38,13 @@ You'll need to install a few applications to contribute to this project:
 
 ### Build with Command Line/Terminal
 - `./gradlew check`: Check the application for compile-time errors
-- `./gradlew composeUp`: Start up the development servers
-- `./gradlew composeBuild`: Build the application, and update the development server.
-- `docker-compose down`: close the servers when development is done
+- `./gradlew composeUp`: Start up the development servers; Schedge will start
+  on port `4358`
+- `./gradlew composeBuild`: Build the application, and update the development server
+- `./gradlew build`: Just build the application
+- `docker-compose build`: Build the Docker image (the dev server will restart with
+  new changes automatically)
+- `docker-compose down`: Close the servers when development is done
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

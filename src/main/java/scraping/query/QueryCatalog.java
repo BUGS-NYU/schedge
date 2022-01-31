@@ -3,23 +3,16 @@ package scraping.query;
 import static scraping.query.GetClient.*;
 import static utils.TryCatch.*;
 
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
-import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import nyu.SubjectCode;
-import nyu.Term;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.RequestBuilder;
+import nyu.*;
+import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
 import scraping.models.CatalogQueryData;
-import utils.SimpleBatchedFutureEngine;
-import utils.TryCatch;
+import utils.*;
 
 public final class QueryCatalog {
   private static Logger logger =
@@ -66,18 +59,6 @@ public final class QueryCatalog {
         .filter(i -> i != null);
   }
 
-  /**
-   * Note: This is the meat of the catalog query.
-   * To make the query, two most important things are
-   * school code and subject code. For NYU Shanghai, the
-   * school code: UI and subject code: {subject}-SHU.
-   * For NYU Undegraduate School of Public Health, school
-   * code: UU and subject code: {subject}-GU. They will be
-   * changed at runtime.
-   * @param term
-   * @param subject
-   * @param context
-   */
   private static Future<CatalogQueryData>
   queryCatalog(Term term, SubjectCode subject, Ctx context) {
     logger.debug("querying catalog for term=" + term +

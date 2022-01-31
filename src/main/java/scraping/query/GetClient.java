@@ -30,8 +30,11 @@ public final class GetClient {
   }
 
   public static Future<Ctx> getCtx(String uri) {
-    Request request =
-        new RequestBuilder().setUri(Uri.create(uri)).setMethod("GET").build();
+    Request request = new RequestBuilder()
+                          .setUri(Uri.create(uri))
+                          .setRequestTimeout(10000)
+                          .setMethod("GET")
+                          .build();
 
     return send(request, (resp, e) -> {
       if (resp == null) {

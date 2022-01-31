@@ -46,7 +46,7 @@ public final class QueryCatalog {
 
       logger.info("Collecting context requests... (x{})", batchSize);
 
-      TryCatch tc = tcNew(logger, "Failed to get context.");
+      TryCatch tc = tcNew(logger, "Failed to get context");
       for (int i = 0; i < batchSize; i++) {
         int idx = i;
         contexts[idx] = tc.pass(() -> nonnull(contextFutures[idx].get()));

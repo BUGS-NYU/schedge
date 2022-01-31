@@ -13,11 +13,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.*;
 import utils.Utils;
 
-/**
- * Parses a section string.
- *
- * @author Albert Liu
- */
 public class ParseSection {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.parse.ParseSection");
@@ -25,12 +20,16 @@ public class ParseSection {
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma");
   private static Pattern pattern = Pattern.compile("[0-9]");
 
-  private static List<String> list = Utils.asResourceLines("/building.txt");
-  private static Map<String, String> buildings =
-      list.stream()
-          .map(str -> str.split(",", 2))
-          .collect(
-              Collectors.toMap(strings -> strings[0], strings -> strings[1]));
+  private static Map<String, String> buildings;
+
+  static {
+    buildings = new HashMap<>();
+    for (String line : Utils.asResourceLines("/building.txt")) {
+      String[] entry = line.split(",", 2);
+
+      buildings.put(entry[0], entry[1]);
+    }
+  }
 
   public static Section parse(String rawData) {
     logger.debug("parsing raw catalog section data into Section...");

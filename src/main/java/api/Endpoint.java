@@ -10,7 +10,7 @@ public abstract class Endpoint {
   public abstract OpenApiDocumentation configureDocs(OpenApiDocumentation docs);
   public abstract Handler getHandler();
   public final void addTo(Javalin app) {
-    app.get(getPath(),
+    app.get("/api" + getPath(),
             OpenApiBuilder.documented(configureDocs(OpenApiBuilder.document()),
                                       getHandler()));
   }

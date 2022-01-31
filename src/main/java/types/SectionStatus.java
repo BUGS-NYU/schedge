@@ -1,4 +1,4 @@
-package nyu;
+package types;
 
 /**
  * Enum class for status of the section based on the availability

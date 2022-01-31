@@ -3,9 +3,9 @@ package scraping.parse;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import models.Section;
-import nyu.SectionStatus;
+
+import types.Section;
+import types.SectionStatus;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

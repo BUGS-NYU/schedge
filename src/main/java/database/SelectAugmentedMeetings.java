@@ -3,7 +3,6 @@ package database;
 import database.models.AugmentedMeeting;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.*;
 import utils.Utils;
 
 public final class SelectAugmentedMeetings {

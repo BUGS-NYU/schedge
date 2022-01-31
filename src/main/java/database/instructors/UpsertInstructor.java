@@ -1,7 +1,7 @@
 package database.instructors;
 
 import java.sql.*;
-import nyu.SubjectCode;
+import types.SubjectCode;
 import utils.Utils;
 
 public final class UpsertInstructor {

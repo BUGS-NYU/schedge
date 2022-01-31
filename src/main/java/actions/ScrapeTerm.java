@@ -7,12 +7,11 @@ import database.GetConnection;
 import database.epochs.CompleteEpoch;
 import database.epochs.GetNewEpoch;
 import database.models.SectionID;
-import java.sql.SQLException;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.function.Function;
-import nyu.SubjectCode;
-import nyu.Term;
+import types.SubjectCode;
+import types.Term;
 import scraping.ScrapeCatalog;
 import scraping.models.Course;
 

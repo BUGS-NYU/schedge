@@ -1,4 +1,4 @@
-package nyu;
+package types;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 

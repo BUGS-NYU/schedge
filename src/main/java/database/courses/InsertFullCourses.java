@@ -1,14 +1,10 @@
 package database.courses;
 
-import database.models.SectionID;
 import java.sql.*;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
-import models.*;
-import nyu.Meeting;
-import nyu.SubjectCode;
-import nyu.Term;
+import types.*;
+import types.Meeting;
+import types.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Utils;

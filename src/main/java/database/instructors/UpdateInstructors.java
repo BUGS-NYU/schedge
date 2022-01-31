@@ -2,16 +2,11 @@ package database.instructors;
 
 import static utils.TryCatch.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import scraping.GetRatings;
 import scraping.models.Instructor;
-import scraping.models.Rating;
-import utils.TryCatch;
-import utils.Utils;
+import utils.*;
 
 public class UpdateInstructors {
 

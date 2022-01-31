@@ -3,7 +3,7 @@ package api;
 import database.models.*;
 import java.util.*;
 import java.util.stream.*;
-import models.*;
+import types.*;
 
 public class RowsToCourses {
   public static Stream<Course> fullRowsToCourses(Stream<FullRow> rows) {

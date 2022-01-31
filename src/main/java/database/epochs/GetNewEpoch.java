@@ -1,8 +1,7 @@
 package database.epochs;
 
-import nyu.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import types.Term;
+import org.slf4j.*;
 import utils.Utils;
 
 import java.sql.*;

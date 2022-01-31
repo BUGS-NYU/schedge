@@ -3,7 +3,7 @@ package scraping.query;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-import nyu.Term;
+import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;

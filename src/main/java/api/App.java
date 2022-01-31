@@ -6,15 +6,9 @@ import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
 import io.swagger.v3.oas.models.info.Info;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
+import java.io.*;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.Utils;
+import org.slf4j.*;
 
 public class App {
 

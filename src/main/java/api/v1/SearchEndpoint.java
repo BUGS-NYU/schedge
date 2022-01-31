@@ -9,8 +9,8 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.Collectors;
-import models.*;
-import nyu.Term;
+import types.*;
+import types.Term;
 
 public final class SearchEndpoint extends Endpoint {
 

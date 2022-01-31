@@ -1,17 +1,15 @@
 package cli;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static picocli.CommandLine.*;
+
+import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import utils.Client;
 import scraping.query.QuerySchool;
-
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import static picocli.CommandLine.*;
 
 /*
    @Todo: Add annotation for parameter.

@@ -7,8 +7,8 @@ import static picocli.CommandLine.Spec;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import nyu.Term;
-import nyu.User;
+import types.Term;
+import types.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;

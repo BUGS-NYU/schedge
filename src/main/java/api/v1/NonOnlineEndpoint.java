@@ -9,8 +9,7 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.*;
-import models.*;
-import nyu.*;
+import types.*;
 
 public final class NonOnlineEndpoint extends Endpoint {
 

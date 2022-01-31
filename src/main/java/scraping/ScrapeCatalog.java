@@ -10,7 +10,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
-import nyu.*;
+
+import types.*;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
@@ -18,7 +19,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
-import scraping.models.*;
+import scraping.models.Course;
+import scraping.models.Section;
 import utils.*;
 
 public class ScrapeCatalog {

@@ -1,11 +1,9 @@
 package actions;
 
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
-
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import java.sql.SQLException;
-import nyu.Term;
+import types.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

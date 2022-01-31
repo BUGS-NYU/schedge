@@ -2,10 +2,8 @@ package database;
 
 import static utils.TryCatch.*;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.zaxxer.hikari.*;
+import java.sql.*;
 
 /**
  * This class get connection to the SQLite database using JDBC Driver

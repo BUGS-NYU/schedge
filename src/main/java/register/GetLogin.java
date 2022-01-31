@@ -4,7 +4,7 @@ import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.stream.Collectors;
-import nyu.User;
+import types.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;

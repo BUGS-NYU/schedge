@@ -2,16 +2,11 @@ package database.models;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
-import nyu.SectionStatus;
-import nyu.SectionType;
-import nyu.SubjectCode;
+import types.*;
 
 // A meeting plus section information
 public class AugmentedMeeting {

@@ -1,11 +1,10 @@
-package nyu;
+package types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import utils.Utils;
 

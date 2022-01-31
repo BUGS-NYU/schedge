@@ -1,4 +1,4 @@
-package nyu;
+package types;
 
 public class User {
   public final String username;

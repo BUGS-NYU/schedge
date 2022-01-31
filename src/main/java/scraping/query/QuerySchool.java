@@ -2,7 +2,7 @@ package scraping.query;
 
 import static utils.TryCatch.*;
 
-import nyu.Term;
+import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;

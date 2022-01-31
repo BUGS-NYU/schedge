@@ -7,8 +7,8 @@ import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
-import models.*;
-import nyu.Term;
+import types.*;
+import types.Term;
 
 public final class SectionEndpoint extends Endpoint {
 

@@ -8,8 +8,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.*;
-import models.*;
-import nyu.*;
+import types.*;
 import org.slf4j.*;
 
 public class SelectCourses {

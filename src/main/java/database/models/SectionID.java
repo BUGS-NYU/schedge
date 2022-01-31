@@ -1,6 +1,6 @@
 package database.models;
 
-import nyu.SubjectCode;
+import types.SubjectCode;
 
 public class SectionID {
   public final SubjectCode subjectCode;

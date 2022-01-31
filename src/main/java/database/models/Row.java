@@ -3,10 +3,7 @@ package database.models;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import nyu.Meeting;
-import nyu.SectionStatus;
-import nyu.SectionType;
-import nyu.SubjectCode;
+import types.*;
 
 public class Row {
   public final int courseId;

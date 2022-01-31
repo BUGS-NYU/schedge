@@ -3,7 +3,7 @@ package api.v1;
 import api.Endpoint;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import nyu.SubjectCode;
+import types.SubjectCode;
 
 public final class SchoolsEndpoint extends Endpoint {
 

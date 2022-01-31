@@ -1,7 +1,7 @@
 package scraping.models;
 
 import java.util.List;
-import nyu.SubjectCode;
+import types.SubjectCode;
 
 public final class Course {
 

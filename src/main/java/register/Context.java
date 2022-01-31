@@ -5,7 +5,7 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import nyu.Term;
+import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;

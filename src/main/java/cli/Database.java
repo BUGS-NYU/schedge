@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import me.tongfei.progressbar.*;
-import models.Course;
-import nyu.SubjectCode;
-import nyu.Term;
+import types.Course;
+import types.SubjectCode;
+import types.Term;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;

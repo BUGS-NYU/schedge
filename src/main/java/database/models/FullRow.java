@@ -2,7 +2,7 @@ package database.models;
 
 import java.sql.*;
 import java.util.List;
-import nyu.*;
+import types.Meeting;
 
 public class FullRow extends Row {
   public String campus;

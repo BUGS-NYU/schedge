@@ -1,19 +1,15 @@
 package scraping;
 
-import static scraping.query.GetClient.*;
+import static utils.Client.*;
 import static utils.TryCatch.*;
 
-import java.io.IOException;
 import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import nyu.*;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
@@ -23,9 +19,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
 import scraping.models.*;
-import scraping.models.CatalogQueryData;
-import scraping.parse.ParseCatalog;
-import scraping.query.QueryCatalog;
 import utils.*;
 
 public class ScrapeCatalog {
@@ -39,23 +32,6 @@ public class ScrapeCatalog {
 
   private static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
-
-  public static Stream<List<Course>>
-  scrapeFromCatalog(Term term, Iterable<SubjectCode> subjectCodes,
-                    Integer batchSize) {
-    return QueryCatalog.queryCatalog(term, subjectCodes, batchSize)
-        .map(rawData -> {
-          try {
-            return ParseCatalog.parse(rawData.getData(), rawData.getSubject());
-          } catch (Exception e) {
-            logger.warn("Catalog parsing threw with term={}, subject={}", term,
-                        rawData.getSubject(), e);
-
-            return null;
-          }
-        })
-        .filter(i -> i != null);
-  }
 
   public static List<Course>
   scrapeCatalog(Term term, Iterable<SubjectCode> subjects_, int batchSize) {

@@ -5,7 +5,7 @@ import static utils.TryCatch.*;
 import nyu.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scraping.query.GetClient;
+import utils.Client;
 import utils.TryCatch;
 
 public final class UpdateData {
@@ -27,7 +27,7 @@ public final class UpdateData {
     logger.info("Updating the term after next term... ({})", next2);
     tc.log(() -> ScrapeTerm.scrapeTerm(next2, batchSize, batchSizeSections));
 
-    GetClient.close();
+    Client.close();
 
     logger.info("Done updating.");
   }

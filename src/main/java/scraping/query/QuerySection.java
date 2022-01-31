@@ -1,20 +1,15 @@
 package scraping.query;
 
-import static utils.TryCatch.*;
-
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 import nyu.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import utils.SimpleBatchedFutureEngine;
+import utils.Client;
 
 public final class QuerySection {
   private static Logger logger =
@@ -24,37 +19,6 @@ public final class QuerySection {
       "https://m.albert.nyu.edu/app/catalog/classSearch";
   private static String DATA_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/";
-
-  public static String querySection(Term term, int registrationNumber) {
-    String queryData = null;
-    try {
-      queryData = querySectionAsync(term, registrationNumber).get();
-    } catch (ExecutionException | InterruptedException e) {
-      throw new RuntimeException(
-          "No section found matching criteria registrationNumber=" +
-              registrationNumber,
-          e);
-    }
-
-    if (queryData == null)
-      throw new RuntimeException(
-          "No section found matching criteria registrationNumber=" +
-          registrationNumber);
-
-    return queryData;
-  }
-
-  public static Stream<String>
-  querySections(Term term, List<Integer> registrationNumbers, int batchSize) {
-    return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<>(
-                    registrationNumbers.iterator(), batchSize,
-                    (registrationNumber,
-                     __) -> querySectionAsync(term, registrationNumber))
-                    .spliterator(),
-                false)
-        .filter(i -> i != null);
-  }
 
   public static Future<String> querySectionAsync(Term term,
                                                  int registrationNumber) {
@@ -91,7 +55,7 @@ public final class QuerySection {
             .setMethod("GET")
             .build();
 
-    return GetClient.send(request, (resp, throwable) -> {
+    return Client.send(request, (resp, throwable) -> {
       if (resp == null) {
         logger.error("Querying section failed: term={}, registrationNumber={}",
                      term, registrationNumber, throwable);

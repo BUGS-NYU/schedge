@@ -1,4 +1,4 @@
-package scraping.query;
+package utils;
 
 import static utils.TryCatch.*;
 
@@ -13,9 +13,9 @@ import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
 
-public final class GetClient {
+public final class Client {
   private static Logger logger =
-      LoggerFactory.getLogger("scraping.query.GetClient");
+      LoggerFactory.getLogger("utils.Client");
 
   private static volatile AsyncHttpClient client;
 

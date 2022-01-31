@@ -10,7 +10,7 @@ import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import scraping.query.GetClient;
+import utils.Client;
 
 public class EnrollCourses {
   private static final String DATA_URL_STRING =
@@ -66,7 +66,7 @@ public class EnrollCourses {
             .setBody(enrollForm)
             .build();
 
-    return GetClient.send(request, (resp, e) -> resp.getResponseBody());
+    return Client.send(request, (resp, e) -> resp.getResponseBody());
   }
 
   public static void removeFromCart(User user, Term term,
@@ -103,7 +103,7 @@ public class EnrollCourses {
             .setBody(deleteForm)
             .build();
 
-    GetClient.send(request, (resp, throwable) -> {
+    Client.send(request, (resp, throwable) -> {
       System.out.println(resp.getHeaders());
       System.out.println(resp.getStatusCode());
       System.out.println(resp.getResponseBody());

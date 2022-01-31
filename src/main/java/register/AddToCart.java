@@ -11,7 +11,7 @@ import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import scraping.query.GetClient;
+import utils.Client;
 import utils.SimpleBatchedFutureEngine;
 
 public class AddToCart {
@@ -119,10 +119,10 @@ public class AddToCart {
               .setBody(sectionsForm)
               .build();
 
-      GetClient.send(sectionRequest, (resp, e) -> null);
+      Client.send(sectionRequest, (resp, e) -> null);
     }
 
-    GetClient.send(request, (resp, e) -> {
+    Client.send(request, (resp, e) -> {
       // if status code is 200 then there is an error
       return null;
     });
@@ -162,7 +162,7 @@ public class AddToCart {
             .setBody(form)
             .build();
 
-    GetClient.send(sectionRequest, (resp, throwable) -> { return null; });
+    Client.send(sectionRequest, (resp, throwable) -> { return null; });
 
     return null;
   }
@@ -203,7 +203,7 @@ public class AddToCart {
             .setBody(form)
             .build();
 
-    GetClient.send(optionRequest, (resp, throwable) -> { return null; });
+    Client.send(optionRequest, (resp, throwable) -> { return null; });
 
     return null;
   }

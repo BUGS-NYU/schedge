@@ -9,7 +9,7 @@ import nyu.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import scraping.query.GetClient;
+import utils.Client;
 
 public class Context {
   private final static String ROOT_URI =
@@ -20,7 +20,7 @@ public class Context {
                           .setMethod("GET")
                           .build();
 
-    return GetClient.send(request, (resp, throwable) -> {
+    return Client.send(request, (resp, throwable) -> {
       if (resp == null) {
         return null;
       }

@@ -15,11 +15,11 @@ import database.GetConnection;
 import database.courses.InsertFullCourses;
 import database.epochs.*;
 import database.instructors.UpdateInstructors;
-import database.models.FullRow;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.*;
+
 import me.tongfei.progressbar.*;
 import models.Course;
 import nyu.SubjectCode;
@@ -27,7 +27,7 @@ import nyu.Term;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
-import scraping.query.GetClient;
+import utils.Client;
 
 @Command(name = "db", description = "Operate on data in the database.\n",
          subcommands = {Database.Clean.class})
@@ -77,7 +77,7 @@ public class Database implements Runnable {
         termMixin.getTerm(), catalogBatch, sectionsBatch,
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     GetConnection.close();
-    GetClient.close();
+    Client.close();
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
@@ -98,7 +98,7 @@ public class Database implements Runnable {
           batchSize);
     });
     GetConnection.close();
-    GetClient.close();
+    Client.close();
 
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
@@ -212,7 +212,7 @@ public class Database implements Runnable {
     });
 
     GetConnection.close();
-    GetClient.close();
+    Client.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scraping.models.Instructor;
 import scraping.models.Rating;
-import scraping.query.GetClient;
+import utils.Client;
 import utils.SimpleBatchedFutureEngine;
 import utils.TryCatch;
 
@@ -81,7 +81,7 @@ public final class GetRatings {
                           .setRequestTimeout(60000)
                           .setMethod("GET")
                           .build();
-    return GetClient.send(request, (resp, throwable) -> {
+    return Client.send(request, (resp, throwable) -> {
       if (resp == null) {
         logger.error(throwable.getMessage());
         return null;
@@ -117,7 +117,7 @@ public final class GetRatings {
                           .setMethod("GET")
                           .build();
 
-    return GetClient.send(request, (resp, throwable) -> {
+    return Client.send(request, (resp, throwable) -> {
       if (resp == null) {
         logger.error(throwable.getMessage());
         return null;

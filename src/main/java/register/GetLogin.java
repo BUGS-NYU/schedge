@@ -3,14 +3,13 @@ package register;
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import nyu.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.uri.Uri;
-import scraping.query.GetClient;
+import utils.Client;
 
 public class GetLogin {
   private static final String LOGIN_ROOT_URL_STRING =
@@ -47,7 +46,7 @@ public class GetLogin {
             .setBody(params)
             .build();
 
-    Response response = GetClient.sendSync(request);
+    Response response = Client.sendSync(request);
 
     // Retrive the session tokens and cookies
     List<Cookie> cookies =

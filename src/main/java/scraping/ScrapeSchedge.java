@@ -11,7 +11,7 @@ import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
-import scraping.query.GetClient;
+import utils.Client;
 import utils.*;
 
 public final class ScrapeSchedge {
@@ -37,7 +37,7 @@ public final class ScrapeSchedge {
           Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
       Request request = new RequestBuilder().setUri(uri).build();
-      return GetClient.send(request, (resp, throwable) -> {
+      return Client.send(request, (resp, throwable) -> {
         if (resp == null) {
           logger.error("Error (subject={}): {}", subject,
                        throwable.getMessage());

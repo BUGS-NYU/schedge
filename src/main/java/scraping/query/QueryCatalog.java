@@ -37,6 +37,7 @@ public final class QueryCatalog {
     Ctx[] contexts = new Ctx[batchSize];
     {
       @SuppressWarnings("unchecked")
+
       Future<Ctx>[] contextFutures = new Future[batchSize];
       logger.info("Sending context requests... (x{})", batchSize);
 

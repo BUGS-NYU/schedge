@@ -21,9 +21,9 @@ tasks.named('wrapper') {
 }
 
 
-// tasks.withType(JavaCompile) {
-//   options.compilerArgs << "-Xlint:unchecked"
-// }
+tasks.withType(JavaCompile) {
+  options.compilerArgs << "-Xlint:unchecked"
+}
 
 flyway {
   driver = 'org.postgresql.Driver'

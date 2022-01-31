@@ -3,16 +3,13 @@ package register;
 import static register.Context.getContextAsync;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
-import types.Term;
-import types.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import utils.Client;
-import utils.SimpleBatchedFutureEngine;
+import types.*;
+import utils.*;
 
 public class AddToCart {
   // We will do undergrad for now

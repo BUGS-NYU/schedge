@@ -1,8 +1,8 @@
 package database.epochs;
 
 import java.sql.*;
-import types.Term;
 import org.slf4j.*;
+import types.Term;
 import utils.Utils;
 
 public final class LatestCompleteEpoch {

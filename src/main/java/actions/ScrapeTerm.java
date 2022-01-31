@@ -4,16 +4,13 @@ import static database.courses.InsertCourses.*;
 import static database.courses.UpdateSections.*;
 
 import database.GetConnection;
-import database.epochs.CompleteEpoch;
-import database.epochs.GetNewEpoch;
+import database.epochs.*;
 import database.models.SectionID;
-
 import java.util.List;
 import java.util.function.Function;
-import types.SubjectCode;
-import types.Term;
 import scraping.ScrapeCatalog;
 import scraping.models.Course;
+import types.*;
 
 public class ScrapeTerm {
 

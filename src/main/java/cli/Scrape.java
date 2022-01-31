@@ -2,14 +2,14 @@ package cli;
 
 import static picocli.CommandLine.*;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
 import scraping.parse.ParseSchoolSubjects;
-import utils.Client;
 import scraping.query.QuerySchool;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import utils.Client;
 
 /*
    @Todo: Add annotation for parameter.

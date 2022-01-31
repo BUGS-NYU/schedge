@@ -1,16 +1,14 @@
 package scraping;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.*;
-import types.*;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
-import utils.Client;
+import types.*;
 import utils.*;
 
 public final class ScrapeSchedge {

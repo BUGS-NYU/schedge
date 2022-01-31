@@ -2,14 +2,9 @@ package utils;
 
 import java.io.*;
 import java.lang.Runnable;
-import java.sql.Array;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.time.DayOfWeek;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
 
 public final class Utils {

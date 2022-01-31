@@ -6,18 +6,11 @@ import static utils.TryCatch.*;
 import database.instructors.UpsertInstructor;
 import database.models.SectionID;
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import types.Section;
-import types.SubjectCode;
-import types.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.*;
+import org.slf4j.*;
 import scraping.parse.ParseSection;
-import utils.SimpleBatchedFutureEngine;
-import utils.TryCatch;
-import utils.Utils;
+import types.*;
+import utils.*;
 
 /**
  * This class insert courses into the Postgresql database based on

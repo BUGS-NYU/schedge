@@ -5,10 +5,10 @@ import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
+import types.Term;
 import utils.Client;
 
 public class Context {

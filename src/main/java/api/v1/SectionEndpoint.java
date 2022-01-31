@@ -8,7 +8,6 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
-import types.Term;
 
 public final class SectionEndpoint extends Endpoint {
 

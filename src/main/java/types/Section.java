@@ -1,11 +1,8 @@
 package types;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import database.models.FullRow;
-import database.models.Row;
-import java.util.ArrayList;
-import java.util.List;
-
+import database.models.*;
+import java.util.*;
 import utils.JsonMapper;
 
 public class Section {

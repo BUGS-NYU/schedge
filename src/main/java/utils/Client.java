@@ -14,8 +14,7 @@ import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
 
 public final class Client {
-  private static Logger logger =
-      LoggerFactory.getLogger("utils.Client");
+  private static Logger logger = LoggerFactory.getLogger("utils.Client");
 
   private static volatile AsyncHttpClient client;
 

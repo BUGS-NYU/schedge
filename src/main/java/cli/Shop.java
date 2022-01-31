@@ -1,18 +1,13 @@
 package cli;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Mixin;
-import static picocli.CommandLine.Option;
-import static picocli.CommandLine.Spec;
+import static picocli.CommandLine.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import types.Term;
-import types.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 import picocli.CommandLine;
 import register.*;
+import types.*;
 
 @Command(name = "shop")
 public class Shop implements Runnable {

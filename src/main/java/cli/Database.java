@@ -6,27 +6,20 @@ import static picocli.CommandLine.Option;
 import static picocli.CommandLine.Spec;
 import static utils.TryCatch.*;
 
-import actions.CleanData;
-import actions.ScrapeTerm;
-import actions.UpdateData;
+import actions.*;
 import api.App;
 import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import database.epochs.*;
 import database.instructors.UpdateInstructors;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
 import me.tongfei.progressbar.*;
-import types.Course;
-import types.SubjectCode;
-import types.Term;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
+import types.*;
 import utils.Client;
 
 @Command(name = "db", description = "Operate on data in the database.\n",

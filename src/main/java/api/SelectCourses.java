@@ -8,8 +8,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.*;
-import types.*;
 import org.slf4j.*;
+import types.*;
 
 public class SelectCourses {
 

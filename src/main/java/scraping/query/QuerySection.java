@@ -2,13 +2,11 @@ package scraping.query;
 
 import java.util.concurrent.Future;
 import java.util.function.Function;
-
-import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
+import types.Term;
 import utils.Client;
 
 public final class QuerySection {

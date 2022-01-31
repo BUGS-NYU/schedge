@@ -2,12 +2,11 @@ package scraping.query;
 
 import static utils.TryCatch.*;
 
-import types.Term;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
+import types.Term;
 import utils.Client;
 import utils.TryCatch;
 

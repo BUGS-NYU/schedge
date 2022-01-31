@@ -2,11 +2,9 @@ package actions;
 
 import static utils.TryCatch.*;
 
+import org.slf4j.*;
 import types.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import utils.Client;
-import utils.TryCatch;
+import utils.*;
 
 public final class UpdateData {
 

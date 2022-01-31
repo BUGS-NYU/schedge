@@ -5,9 +5,9 @@ import static utils.PolyFill.*;
 
 import java.util.*;
 import java.util.stream.*;
-import types.User;
 import picocli.CommandLine;
 import register.RegistrationCourse;
+import types.User;
 import utils.*;
 
 public final class Mixins {

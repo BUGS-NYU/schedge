@@ -3,9 +3,8 @@ package actions;
 import database.GetConnection;
 import database.epochs.CleanEpoch;
 import java.sql.SQLException;
+import org.slf4j.*;
 import types.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CleanData {
 

@@ -4,11 +4,11 @@ import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.List;
 import java.util.stream.Collectors;
-import types.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.uri.Uri;
+import types.User;
 import utils.Client;
 
 public class GetLogin {

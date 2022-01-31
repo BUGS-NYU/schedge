@@ -5,11 +5,10 @@ import static register.GetLogin.getLoginSession;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import types.Term;
-import types.User;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
+import types.*;
 import utils.Client;
 
 public class EnrollCourses {

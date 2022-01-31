@@ -1,14 +1,11 @@
 package database.courses;
 
-import database.models.FullRow;
-import database.models.Row;
+import database.models.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
-import types.Meeting;
-import types.SubjectCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
+import types.*;
 import utils.Utils;
 
 public class SelectRows {

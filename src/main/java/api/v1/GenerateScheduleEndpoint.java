@@ -2,16 +2,13 @@ package api.v1;
 
 import static actions.ScheduleSections.*;
 
-import api.ApiError;
-import api.Endpoint;
-import database.GetConnection;
-import database.SelectAugmentedMeetings;
+import api.*;
+import database.*;
 import database.epochs.LatestCompleteEpoch;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.ArrayList;
-
 import types.*;
 
 public final class GenerateScheduleEndpoint extends Endpoint {

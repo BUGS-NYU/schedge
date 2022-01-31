@@ -1,11 +1,10 @@
 package database.epochs;
 
-import types.Term;
-import org.slf4j.*;
-import utils.Utils;
-
 import java.sql.*;
 import java.time.Instant;
+import org.slf4j.*;
+import types.Term;
+import utils.Utils;
 
 public final class GetNewEpoch {
 

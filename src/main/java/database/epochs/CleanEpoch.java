@@ -1,11 +1,8 @@
 package database.epochs;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import org.slf4j.*;
 import types.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import utils.Utils;
 
 public final class CleanEpoch {

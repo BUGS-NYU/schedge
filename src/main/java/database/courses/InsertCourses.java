@@ -2,14 +2,11 @@ package database.courses;
 
 import database.models.SectionID;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import org.slf4j.*;
+import scraping.models.*;
 import types.Meeting;
 import types.Term;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import scraping.models.Course;
-import scraping.models.Section;
 import utils.Utils;
 
 /**

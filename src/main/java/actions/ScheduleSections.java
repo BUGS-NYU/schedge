@@ -6,8 +6,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 
 public final class ScheduleSections {
   private ScheduleSections() {}

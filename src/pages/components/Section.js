@@ -21,14 +21,11 @@ import {
   parseDate,
 } from "../utils";
 
-// Import major progressions
-import * as actions from "../redux/modules/wishlist";
+import localStorageContainer from "../localstorage";
 
 function Section({
   year,
   semester,
-  wishlist,
-  wishlistCourse,
   section,
   sortedSectionMeetings,
   courseData,
@@ -48,16 +45,14 @@ function Section({
   };
 
   const handleOnClick = (course) => {
-    wishlistCourse({ year, semester, course });
+    const localStorage = new localStorageContainer();
+    const courses = localStorage.getState("wishlist");
+    courses.push(course);
+    localStorage.saveState({ wishlist: courses });
   };
 
   return (
     <SectionContainer
-      /*waitlisted={
-        wishlist.filter(
-          (course) => course.registrationNumber === section.registrationNumber
-        ).length > 0
-      }*/
       lastSection={lastSection}
     >
       {courseData.name !== section.name && (
@@ -284,4 +279,5 @@ const mapStateToProps = (state, props) => ({
   scheduled: state.scheduled[props.semester + props.year] || [],
 });
 
-export default connect(mapStateToProps, actions)(Section);
+//export default connect(mapStateToProps, actions)(Section);
+export default Section;

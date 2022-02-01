@@ -206,4 +206,5 @@ const mapStateToProps = (state, props) => ({
   scheduled: state.scheduled[props.semester + props.year] || [],
 });
 
-export default connect(mapStateToProps, actions)(CoursePage);
+//export default connect(mapStateToProps, actions)(CoursePage);
+export default CoursePage;

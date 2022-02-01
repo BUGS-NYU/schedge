@@ -42,9 +42,9 @@ const StyledImage = styled(Image)`
 
 
 function App({ Component, pageProps }) {
-  const initialState = loadState();
-  const store = createStore(initialState);
-  store.subscribe(() => saveState(store.getState()));
+  //const initialState = loadState();
+  //const store = createStore(initialState);
+  //store.subscribe(() => saveState(store.getState()));
 
   const queryClient = new QueryClient();
 
@@ -89,7 +89,7 @@ function App({ Component, pageProps }) {
 
 
   return(
-  <Provider store={store}>
+  //<Provider>
     <QueryClientProvider client={queryClient}>
       <nav>
           <ul>
@@ -141,9 +141,9 @@ function App({ Component, pageProps }) {
 
           </ul>
       </nav>
-      <Component {...pageProps} />
+      <Component year={year} semester={semester} {...pageProps} />
     </QueryClientProvider>
-  </Provider>
+ // </Provider>
   )
 }
 

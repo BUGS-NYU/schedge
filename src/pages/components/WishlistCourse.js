@@ -126,4 +126,5 @@ const allActions = {
   ...courseActions,
 };
 
-export default connect(mapStateToProps, allActions)(WishlistCourse);
+//export default connect(mapStateToProps, allActions)(WishlistCourse);
+export default WishlistCourse;

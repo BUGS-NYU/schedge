@@ -14,12 +14,12 @@ import { dayToStr } from "./constants";
 
 import * as wishlistActions from "./redux/modules/wishlist";
 import * as courseActions from "./redux/modules/courseSelect";
+import localStorageContainer from "./localstorage";
+import { LocalSeeOutlined } from "@material-ui/icons";
 
 function SchedulePage({
   year,
   semester,
-  wishlist,
-  wishlistCourse,
   scheduled,
   toggleCourseSelect,
   clearSchedule,
@@ -29,6 +29,7 @@ function SchedulePage({
     //JSON.parse(window.localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}
     {}
   );
+  const [wishlist, setWishlist] = useState([]);
   const [Toast, setToast] = useState({
     open: false,
     message: "",
@@ -40,6 +41,9 @@ function SchedulePage({
   useEffect(() => {
     (async () => {
       try {
+        const localStorage = new localStorageContainer();
+        const wishlist = localStorage.getState("wishlist");
+        setWishlist(wishlist);
         //Empty wishlist and schedule so clear schedule state
         if (wishlist.length === 0) {
           setSchedule({});
@@ -303,4 +307,5 @@ const allActions = {
   ...courseActions,
 };
 
-export default connect(mapStateToProps, allActions)(SchedulePage);
+//export default connect(mapStateToProps, allActions)(SchedulePage);
+export default SchedulePage;

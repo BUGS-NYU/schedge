@@ -274,10 +274,4 @@ const WishlistButton = styled.div`
   }
 `;
 
-const mapStateToProps = (state, props) => ({
-  wishlist: state.wishlist[props.semester + props.year] || [],
-  scheduled: state.scheduled[props.semester + props.year] || [],
-});
-
-//export default connect(mapStateToProps, actions)(Section);
 export default Section;

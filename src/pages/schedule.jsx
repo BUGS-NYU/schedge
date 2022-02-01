@@ -30,6 +30,7 @@ function SchedulePage({
     {}
   );
   const [wishlist, setWishlist] = useState([]);
+  const [localStorage, setLocalStorage] = useState(null);
   const [Toast, setToast] = useState({
     open: false,
     message: "",
@@ -44,6 +45,7 @@ function SchedulePage({
         const localStorage = new localStorageContainer();
         const wishlist = localStorage.getState("wishlist");
         setWishlist(wishlist);
+        setLocalStorage(localStorage);
         //Empty wishlist and schedule so clear schedule state
         if (wishlist.length === 0) {
           setSchedule({});
@@ -108,7 +110,6 @@ function SchedulePage({
   ]);
 
   const handleClearSchedule = () => {
-    clearSchedule({ year, semester });
     setCheckboxes({});
     localStorage.setItem(
       `${year}-${semester}-checkbox-state`,
@@ -126,12 +127,13 @@ function SchedulePage({
   };
 
   const removeCourse = (course) => {
-    wishlistCourse({
-      year,
-      semester,
-      course,
+    const courses = localStorage.getState("wishlist").filter((wishlistCourse) => {
+      return wishlistCourse.registrationNumber !== course.registrationNumber;
     });
-    if (
+    localStorage.saveState({ wishlist: courses});
+    setWishlist(courses);
+
+    /*if (
       checkboxes[course.registrationNumber] !== undefined &&
       checkboxes[course.registrationNumber]
     ) {
@@ -147,7 +149,7 @@ function SchedulePage({
     localStorage.setItem(
       `${year}-${semester}-checkbox-state`,
       JSON.stringify(newCheckboxes)
-    );
+    );*/
   };
 
   const handleOnChange = (event, course, checkbox) => {

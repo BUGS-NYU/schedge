@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import Link from 'next/link';
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import SnackBar from "@material-ui/core/Snackbar";
-import { grey } from "@material-ui/core/colors";
 
 import WishlistCourse from "./components/WishlistCourse";
 import Calendar from "./components/Calendar";
 import ScheduleCourse from "./components/ScheduleCourse";
 
-import { dayToStr } from "./constants";
+import { dayToStr } from "./utils/constants";
 
-import * as wishlistActions from "./redux/modules/wishlist";
-import * as courseActions from "./redux/modules/courseSelect";
-import localStorageContainer from "./localstorage";
-import { LocalSeeOutlined } from "@material-ui/icons";
+import localStorageContainer from "./utils/localstorage";
 
 function SchedulePage({
   year,
@@ -233,33 +226,14 @@ function SchedulePage({
           Clear Schedule
         </ClearScheduleButton>
       </div>
-      <SnackBar
-        anchorOrigin={{ vertical, horizontal }}
-        open={open}
-        message={message}
-        autoHideDuration={2000}
-        onClose={handleOnClose}
-        key={"top center"}
-      />
     </Container>
   );
 }
-
-SchedulePage.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-  wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  wishlistCourse: PropTypes.func.isRequired,
-  scheduled: PropTypes.arrayOf(PropTypes.object).isRequired,
-  toggleCourseSelect: PropTypes.func.isRequired,
-  clearSchedule: PropTypes.func.isRequired,
-};
 
 const Container = styled.div`
   padding: 2rem 5vw;
   display: flex;
   justify-content: center;
-  background-color: ${grey[200]};
 `;
 
 const Header = styled.div`
@@ -299,15 +273,4 @@ const EmptyWishlistContainer = styled.div`
   padding: 10px;
 `;
 
-const mapStateToProps = (state, props) => ({
-  wishlist: state.wishlist[props.semester + props.year] || [],
-  scheduled: state.scheduled[props.semester + props.year] || [],
-});
-
-const allActions = {
-  ...wishlistActions,
-  ...courseActions,
-};
-
-//export default connect(mapStateToProps, allActions)(SchedulePage);
 export default SchedulePage;

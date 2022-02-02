@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import Link from 'next/link';
+import React from "react";
 import SearchPage from "./_search";
 
 
@@ -11,9 +10,7 @@ function Home({
   return (
     <div>
       <div className="App">
-        <Link href="/">
             <SearchPage year={year} semester={semester} />
-        </Link>
       </div>
     </div>
   );

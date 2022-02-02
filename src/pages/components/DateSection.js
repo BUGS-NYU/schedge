@@ -1,14 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { grey } from "@material-ui/core/colors";
 import {
   parseDate,
   addMinutes,
   isEqualTime,
   convertToLocaleTimeStr,
-} from "../utils";
-import { days } from "../constants";
+} from "../utils/utils";
+import { days } from "../utils/constants";
 
 export default function DateSection({ sortedSectionMeetings }) {
   const parsedMeetings = sortedSectionMeetings.map((meeting) => {
@@ -119,12 +117,8 @@ export default function DateSection({ sortedSectionMeetings }) {
   );
 }
 
-DateSection.propTypes = {
-  sortedSectionMeetings: PropTypes.array.isRequired,
-};
 
 const DateContainer = styled.div`
-  color: ${grey[800]};
   margin: -0.2rem 0 1rem 1rem;
   font-size: 1.25rem;
 `;

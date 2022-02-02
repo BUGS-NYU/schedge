@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import PropTypes from "prop-types";
-import styled from "styled-components";
-import { grey } from "@material-ui/core/colors";
 
-import { findSchool } from "./utils";
+import styled from "styled-components";
+
+import { findSchool } from "./utils/utils";
 
 export default function SubjectPage({ location }) {
   const router = useRouter();
@@ -129,16 +128,7 @@ export default function SubjectPage({ location }) {
   );
 }
 
-SubjectPage.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-  }),
-};
-
 const PageContainer = styled.div`
-  background-color: ${grey[200]};
   width: 100vw;
   min-height: 100vh;
 `;
@@ -146,7 +136,6 @@ const PageContainer = styled.div`
 const HeaderBackground = styled.div`
   width: 100vw;
   height: 2rem;
-  background-color: ${grey[200]};
 `;
 
 const DepartmentHeader = styled.div`
@@ -154,12 +143,10 @@ const DepartmentHeader = styled.div`
 `;
 
 const SchoolName = styled.div`
-  color: ${grey[800]};
   font-size: 1.4rem;
 `;
 
 const DepartmentName = styled.div`
-  color: ${grey[900]};
   font-weight: bold;
   font-size: 2.6rem;
   margin-top: -0.1rem;
@@ -179,22 +166,17 @@ const Course = styled.div`
   word-break: break-word;
   width: 60vmin;
   min-height: 5vmax;
-  background-color: ${grey[100]};
   margin: 1vmax;
   border-radius: 0.3rem;
-  border-bottom: 0.2rem solid ${grey[300]};
   @media (max-width: 1000px) {
     width: 38vmin;
   }
 
   &:hover {
-    border-color: ${grey[400]};
   }
 
   & > h4 {
-    color: ${grey[600]};
   }
   & > p {
-    color: ${grey[700]};
   }
 `;

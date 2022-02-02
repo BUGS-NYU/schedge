@@ -1,19 +1,15 @@
-import "./App.css";
+import "./app.css";
 import "./variables.css";
 
 import React, {useState} from "react";
 import Link from 'next/link';
 import Image from 'next/image'
 import { Select, MenuItem } from "@material-ui/core";
-import { Provider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "react-query";
-import createStore from "./redux/createStore";
-import { loadState, saveState } from "./localstorage";
 import styled from "styled-components";
-import InputBase from "@material-ui/core/InputBase";
 
 
-const BootstrapInput = styled(InputBase)`
+const BootstrapInput = styled.div`
   border-radius: 4px;
   border: 1px solid #9e9e9e;
   font-size: 1rem;
@@ -89,7 +85,6 @@ function App({ Component, pageProps }) {
 
 
   return(
-  //<Provider>
     <QueryClientProvider client={queryClient}>
       <nav>
           <ul>
@@ -123,7 +118,6 @@ function App({ Component, pageProps }) {
                     alt="Edit Calendar"
                     width={2.8}
                     height={1}
-                    isActive={true}
                   />
                 </Link>
               ) : (
@@ -133,7 +127,6 @@ function App({ Component, pageProps }) {
                     width={2.8}
                     height={1}
                     alt="Edit Calendar"
-                    isActive={false}
                   />
                 </Link>
               )}
@@ -143,7 +136,6 @@ function App({ Component, pageProps }) {
       </nav>
       <Component year={year} semester={semester} {...pageProps} />
     </QueryClientProvider>
- // </Provider>
   )
 }
 

@@ -1,8 +1,5 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import grey from "@material-ui/core/colors/grey";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 export default function ReviewTable({
   ratings,
@@ -54,7 +51,6 @@ export default function ReviewTable({
           >
             <ExpandMoreIcon
               style={{
-                color: grey[700],
                 transform: "rotate(90deg)",
               }}
             />
@@ -73,7 +69,6 @@ export default function ReviewTable({
             <span>Next</span>
             <ExpandMoreIcon
               style={{
-                color: grey[700],
                 transform: "rotate(-90deg)",
               }}
             />
@@ -83,14 +78,6 @@ export default function ReviewTable({
     </React.Fragment>
   );
 }
-
-ReviewTable.propTypes = {
-  ratings: PropTypes.array.isRequired,
-  remaining: PropTypes.bool.isRequired,
-  page: PropTypes.number.isRequired,
-  setPage: PropTypes.func.isRequired,
-  isPreviousData: PropTypes.bool.isRequired,
-};
 
 const RatingTable = styled.table`
   width: 40vw;
@@ -157,7 +144,6 @@ const ExpandButton = styled.div`
   float: ${(props) => (props.next ? "right" : "left")};
 
   :hover {
-    background-color: ${grey[300]};
   }
 `;
 

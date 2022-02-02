@@ -1,10 +1,6 @@
 import React from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 
 import styled from "styled-components";
-import { CalendarTodayTwoTone, AddBoxTwoTone } from "@material-ui/icons";
-import { grey } from "@material-ui/core/colors";
 
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
@@ -13,9 +9,7 @@ import {
   splitLocation,
   changeStatus,
   styleStatus,
-} from "../utils"; // eslint-disable-line no-unused-vars
-
-import * as actions from "../redux/modules/wishlist";
+} from "../utils/utils"; // eslint-disable-line no-unused-vars
 
 function Recitation({
   year,
@@ -26,7 +20,6 @@ function Recitation({
   courseName,
   lastRecitation,
 }) {
-  console.log(lastRecitation);
   return (
     <RecitationContainer lastRecitation={lastRecitation}>
       {courseName !== recitation.name && (
@@ -70,14 +63,12 @@ function Recitation({
             })
           }
         >
-          <AddBoxTwoTone
+          <div
             style={{
-              color: grey[700],
             }}
           />
           <span
             style={{
-              color: grey[700],
             }}
           >
             Add to Wishlist
@@ -87,16 +78,6 @@ function Recitation({
     </RecitationContainer>
   );
 }
-
-Recitation.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-  wishlistCourse: PropTypes.func.isRequired,
-  recitation: PropTypes.object.isRequired,
-  sortedRecitationsMeetings: PropTypes.array.isRequired,
-  courseName: PropTypes.string.isRequired,
-  lastRecitation: PropTypes.bool.isRequired,
-};
 
 const RecitationContainer = styled.div`
   padding: 1.8vmin 2.8vmin;
@@ -149,7 +130,6 @@ const StatusContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${grey[200]};
   margin-right: 2rem;
 
   & > svg {
@@ -167,12 +147,10 @@ const WishlistButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: ${grey[200]};
   margin-right: 2rem;
   transition: 0.1s;
 
   :hover {
-    background-color: ${grey[300]};
   }
 
   & > svg {
@@ -180,9 +158,5 @@ const WishlistButton = styled.div`
   }
 `;
 
-const mapStateToProps = (state, props) => ({
-  wishlist: state.wishlist[props.semester + props.year] || [],
-  scheduled: state.scheduled[props.semester + props.year] || [],
-});
 
-export default connect(mapStateToProps, actions)(Recitation);
+export default Recitation;

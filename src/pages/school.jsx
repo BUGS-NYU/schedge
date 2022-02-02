@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import Link from "next/link";
-import styled, { keyframes } from "styled-components";
-import { grey } from "@material-ui/core/colors";
 import { useRouter } from "next/router";
 
-export default function SchoolPage({ location }) {
+import styled, { keyframes } from "styled-components";
+
+export default function SchoolPage() {
   const router = useRouter();
   const { school, year, semester } = router.query;
   const { schoolName } = school ?? { schoolName: school };
@@ -70,13 +69,6 @@ export default function SchoolPage({ location }) {
   );
 }
 
-SchoolPage.propTypes = {
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-    state: PropTypes.object,
-  }),
-};
-
 const deptFadeIn = keyframes`
   from {
     opacity: 0;
@@ -90,7 +82,6 @@ const deptFadeIn = keyframes`
 `;
 
 const PageContainer = styled.div`
-  background-color: ${grey[200]};
   width: 100vw;
   min-height: 100vh;
 `;
@@ -99,7 +90,6 @@ const DepartmentHeader = styled.div`
   width: 100vw;
   padding: 2vmin 2vmin 0vmin 4vmin;
   font-size: 2rem;
-  color: ${grey[900]};
 `;
 
 const Departments = styled.div`
@@ -124,6 +114,5 @@ const Department = styled.div`
   }
 
   &:hover {
-    background-color: ${grey[300]};
   }
 `;

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useQuery } from "react-query";
 import ReviewTableHeaders from "./ReviewTableHeaders";
 import ReviewTable from "./ReviewTable";
@@ -51,6 +50,3 @@ export default function ReviewsBuilder({ currentInstructor }) {
   );
 }
 
-ReviewsBuilder.propTypes = {
-  currentInstructor: PropTypes.object.isRequired,
-};

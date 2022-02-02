@@ -1,13 +1,6 @@
 import React from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { FormControlLabel } from "@material-ui/core";
-import Checkbox from "@material-ui/core/Checkbox";
-import { generateScheduleTime } from "../utils";
-
-import * as wishlistActions from "../redux/modules/wishlist";
-import * as courseActions from "../redux/modules/courseSelect";
+import { generateScheduleTime } from "../utils/utils";
 
 function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
   return (
@@ -68,12 +61,6 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
   );
 }
 
-WishlistCourse.propTypes = {
-  course: PropTypes.object.isRequired,
-  checkboxes: PropTypes.object.isRequired,
-  removeCourse: PropTypes.func.isRequired,
-  handleOnChange: PropTypes.func.isRequired,
-};
 
 const WishlistCourseContainer = styled.div`
   min-height: 15rem;
@@ -100,7 +87,7 @@ const WishlistUtilBox = styled.div`
   }
 `;
 
-const CustomFormControlLabel = styled(FormControlLabel)`
+const CustomFormControlLabel = styled.div`
   margin: 0;
   color: black;
   background-color: var(--grey400);
@@ -109,22 +96,11 @@ const CustomFormControlLabel = styled(FormControlLabel)`
   font-weight: bold;
 `;
 
-const CustomCheckbox = styled(Checkbox)`
+const CustomCheckbox = styled.div`
   color: var(--purpleMain);
   &.Mui-checked {
     color: var(--purpleMain);
   }
 `;
 
-const mapStateToProps = (state, props) => ({
-  wishlist: state.wishlist[props.semester + props.year] || [],
-  scheduled: state.scheduled[props.semester + props.year] || [],
-});
-
-const allActions = {
-  ...wishlistActions,
-  ...courseActions,
-};
-
-//export default connect(mapStateToProps, allActions)(WishlistCourse);
 export default WishlistCourse;

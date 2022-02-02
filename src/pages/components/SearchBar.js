@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-import PropTypes from "prop-types";
 import styled from "styled-components";
 
 export default function SearchBar({ year, semester }) {
@@ -78,11 +77,6 @@ export default function SearchBar({ year, semester }) {
     </>
   );
 }
-
-SearchBar.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-};
 
 const Loader = styled.img`
   opacity: ${(props) => (props.loading ? 0.3 : 0)};

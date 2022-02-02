@@ -1,7 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { parseDate, addMinutes } from "../utils";
+import { parseDate, addMinutes } from "../utils/utils";
 
 export default function ScheduleCourse({ course }) {
   const computeMargin = (startTime) => {
@@ -43,10 +42,6 @@ export default function ScheduleCourse({ course }) {
     </CourseBlock>
   );
 }
-
-ScheduleCourse.propTypes = {
-  course: PropTypes.object.isRequired,
-};
 
 const CourseBlock = styled.div`
   background-color: var(--grey400);

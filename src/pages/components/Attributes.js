@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import styled from "styled-components";
 import Instructor from "./Instructor";
@@ -48,16 +47,6 @@ export default function Attributes({
     </div>
   );
 }
-
-Attributes.propTypes = {
-  instructors: PropTypes.array.isRequired,
-  building: PropTypes.string.isRequired,
-  room: PropTypes.string,
-  units: PropTypes.number.isRequired,
-  status: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  registrationNumber: PropTypes.number.isRequired,
-};
 
 const AttributeContainer = styled.div`
   padding: calc(0.8vmin + 0.8rem);

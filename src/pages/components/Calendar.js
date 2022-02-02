@@ -1,7 +1,8 @@
 import React, { Fragment } from "react";
-import PropTypes from "prop-types";
+
 import styled from "styled-components";
-import { times, days } from "../constants";
+
+import { times, days } from "../utils/constants";
 
 export default function Calendar({ renderCourses }) {
   return (
@@ -37,9 +38,6 @@ export default function Calendar({ renderCourses }) {
   );
 }
 
-Calendar.propTypes = {
-  renderCourses: PropTypes.func.isRequired,
-};
 
 const CalendarContainer = styled.div`
   min-height: 100vh;

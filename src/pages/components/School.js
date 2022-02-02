@@ -1,9 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import { grey } from "@material-ui/core/colors";
-import { findSchool } from "../utils";
+import { findSchool } from "../utils/utils";
 
 export default function School({ schoolCode, schoolName, year, semester }) {
   return (
@@ -13,9 +11,6 @@ export default function School({ schoolCode, schoolName, year, semester }) {
         href={{
           pathname: "/school",
           query: `school=${schoolCode}&year=${year}&semester=${semester}`,
-          /*state: {
-            schoolName: schoolName !== "" ? schoolName : findSchool(schoolCode),
-          },*/
         }}
         style={{ textDecoration: "none" }}
       >
@@ -30,10 +25,6 @@ export default function School({ schoolCode, schoolName, year, semester }) {
   );
 }
 
-School.propTypes = {
-  schoolCode: PropTypes.string.isRequired,
-  schoolName: PropTypes.string.isRequired,
-};
 
 const SchoolContainer = styled.div`
   padding: 0.25rem 0;
@@ -58,6 +49,5 @@ const SchoolContainer = styled.div`
   }
 
   &:hover {
-    background-color: ${grey[400]};
   }
 `;

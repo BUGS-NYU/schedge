@@ -1,4 +1,3 @@
-import { green, red, yellow } from "@material-ui/core/colors";
 import { missingPrograms, dayToStr } from "./constants";
 
 export function convertUnits(minUnit, maxUnit) {
@@ -32,11 +31,8 @@ export function changeStatus(section) {
 
 export function styleStatus(status) {
   if (status === "Open") {
-    return green[500];
   } else if (status === "Closed") {
-    return red[500];
   } else {
-    return yellow[800];
   }
 }
 

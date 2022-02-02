@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Link from 'next/link';
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 import Section from "./components/Section";
-import { parseDate } from "./utils";
+import { parseDate } from "./utils/utils";
 
-import * as actions from "./redux/modules/wishlist";
 import { useRouter } from "next/router";
 
-function CoursePage({ location }) {
+function CoursePage() {
   const router = useRouter();
   const { school, subject, courseid, year, semester } = router.query;
   const [loading, setLoading] = useState(true);
@@ -113,15 +110,6 @@ function CoursePage({ location }) {
   );
 }
 
-CoursePage.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-  location: PropTypes.shape({
-    search: PropTypes.string.isRequired,
-  }),
-  wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  wishlistCourse: PropTypes.func.isRequired,
-};
 
 const ColorHeader = styled.div`
   width: 100vw;

@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import styled from "styled-components";
-import {
-  CalendarTodayTwoTone,
-  AddBoxTwoTone,
-  ExpandMoreOutlined,
-} from "@material-ui/icons";
-import { grey } from "@material-ui/core/colors";
-import { Collapse } from "@material-ui/core";
 
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
@@ -19,9 +10,9 @@ import {
   changeStatus,
   styleStatus,
   parseDate,
-} from "../utils";
+} from "../utils/utils";
 
-import localStorageContainer from "../localstorage";
+import localStorageContainer from "../utils/localstorage";
 
 function Section({
   year,
@@ -103,7 +94,7 @@ function Section({
           </ExpandButton>
         )}
         <StatusContainer>
-          <CalendarTodayTwoTone
+          <div
             style={{
               color: styleStatus(section.status),
             }}
@@ -113,25 +104,19 @@ function Section({
           </span>
         </StatusContainer>
         <WishlistButton onClick={() => handleOnClick(section)}>
-          <AddBoxTwoTone
+          <div
             style={{
-              color: grey[700],
             }}
           />
           <span
             style={{
-              color: grey[700],
             }}
           >
             Add to Wishlist
           </span>
         </WishlistButton>
       </UtilBar>
-      <Collapse
-        in={expandedList[section.registrationNumber] ?? false}
-        timeout="auto"
-        unmountOnExit
-      >
+      <div>
         {section.recitations &&
           section.recitations.map((recitation, i) => {
             const sortedRecitationsMeetings = recitation.meetings
@@ -153,21 +138,11 @@ function Section({
               />
             );
           })}
-      </Collapse>
+      </div>
     </SectionContainer>
   );
 }
 
-Section.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-  wishlist: PropTypes.arrayOf(PropTypes.object).isRequired,
-  wishlistCourse: PropTypes.func.isRequired,
-  section: PropTypes.object.isRequired,
-  sortedSectionMeetings: PropTypes.array.isRequired,
-  courseData: PropTypes.object.isRequired,
-  lastSection: PropTypes.bool.isRequired,
-};
 
 const SectionContainer = styled.div`
   padding: 1.8vmin 2.8vmin;
@@ -207,12 +182,10 @@ const ExpandButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: ${grey[200]};
   margin-right: 2rem;
   transition: 0.1s;
 
   :hover {
-    background-color: ${grey[300]};
   }
 
   & > svg {
@@ -243,7 +216,6 @@ const StatusContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${grey[200]};
   margin-right: 2rem;
 
   & > svg {
@@ -261,12 +233,10 @@ const WishlistButton = styled.div`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  background-color: ${grey[200]};
   margin-right: 2rem;
   transition: 0.1s;
 
   :hover {
-    background-color: ${grey[300]};
   }
 
   & > svg {

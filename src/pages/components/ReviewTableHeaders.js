@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import styled from "styled-components";
 
 export default function ReviewTableHeaders({
@@ -18,11 +17,6 @@ export default function ReviewTableHeaders({
   );
 }
 
-ReviewTableHeaders.propTypes = {
-  name: PropTypes.string.isRequired,
-  totalRatings: PropTypes.number.isRequired,
-  overallRating: PropTypes.number.isRequired,
-};
 
 const MetaContainer = styled.div`
   display: flex;

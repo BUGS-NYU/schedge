@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+
 import styled, { keyframes } from "styled-components";
-import Link from "next/link";
+
 import SearchBar from "./components/SearchBar";
 import School from "./components/School";
-import SchoolPage from "./school";
 
 export default function SearchPage({ year, semester }) {
   const [departments, setDepartments] = useState({ loading: true, data: {} });
@@ -115,11 +114,6 @@ export default function SearchPage({ year, semester }) {
     </div>
   );
 }
-
-SearchPage.propTypes = {
-  year: PropTypes.number.isRequired,
-  semester: PropTypes.string.isRequired,
-};
 
 const fadeIn = keyframes`
   from { opacity: 0; }

@@ -1,9 +1,6 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { useQuery } from "react-query";
 
-import Drawer from "@material-ui/core/Drawer";
-import grey from "@material-ui/core/colors/grey";
 import styled from "styled-components";
 
 import ReviewsBuilder from "./ReviewsBuilder";
@@ -60,11 +57,7 @@ export default function Instructor({ instructor }) {
       <InstructorName clickable={true} onClick={() => setDrawer(true)}>
         {instructor}
       </InstructorName>
-      <Drawer
-        anchor={"right"}
-        open={drawer}
-        onClose={() => setDrawer(false)}
-        transitionDuration={{ enter: 500, exit: 550 }}
+      <div
       >
         {data.rmpId !== "" ? (
           <ReviewsBuilder currentInstructor={data} />
@@ -84,20 +77,16 @@ export default function Instructor({ instructor }) {
             />
           </React.Fragment>
         )}
-      </Drawer>
+      </div>
     </React.Fragment>
   );
 }
 
-Instructor.propTypes = {
-  instructor: PropTypes.object.isRequired,
-};
 
 const InstructorName = styled.div`
   cursor: pointer;
   transition: 0.1s;
 
   :hover {
-    color: ${grey[600]};
   }
 `;

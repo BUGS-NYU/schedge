@@ -41,11 +41,6 @@ function Recitation({
       )}
       <UtilBar>
         <StatusContainer>
-          <CalendarTodayTwoTone
-            style={{
-              color: styleStatus(recitation.status),
-            }}
-          />
           <span
             style={{
               color: styleStatus(recitation.status),

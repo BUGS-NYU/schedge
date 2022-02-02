@@ -76,17 +76,8 @@ function Section({
             role="button"
             tabIndex={0}
           >
-            <ExpandMoreOutlined
-              style={{
-                transform: expandedList[section.registrationNumber]
-                  ? "rotate(180deg)"
-                  : "rotate(0deg)",
-                transition: "0.5s",
-              }}
-            />
             <span
               style={{
-                color: grey[700],
               }}
             >
               Show Recitations

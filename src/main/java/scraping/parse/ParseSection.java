@@ -1,6 +1,5 @@
 package scraping.parse;
 
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
@@ -15,8 +14,6 @@ import utils.Utils;
 public class ParseSection {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.parse.ParseSection");
-  private static DateTimeFormatter timeParser =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma");
   private static Pattern pattern = Pattern.compile("[0-9]");
 
   private static Map<String, String> buildings;

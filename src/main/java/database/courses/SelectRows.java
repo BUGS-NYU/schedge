@@ -13,8 +13,8 @@ public class SelectRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectRows");
 
-  public static Stream<Row> selectRows(Connection conn, int epoch,
-                                       Subject code) throws SQLException {
+  public static Stream<Row> selectRows(Connection conn, int epoch, Subject code)
+      throws SQLException {
     return selectRows(conn, "courses.epoch = ? AND courses.subject_code = ?",
                       epoch, code.ordinal);
   }

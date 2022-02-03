@@ -19,9 +19,8 @@ public class ScrapeTerm {
     scrapeTerm(term, batchSize, batchSizeSections, i -> i);
   }
 
-  public static void
-  scrapeTerm(Term term, int batchSize, int batchSizeSections,
-             Function<List<Subject>, Iterable<Subject>> f) {
+  public static void scrapeTerm(Term term, int batchSize, int batchSizeSections,
+                                Function<List<Subject>, Iterable<Subject>> f) {
     List<Subject> allSubjects = Subject.allSubjects();
     List<Course> courses =
         ScrapeCatalog.scrapeCatalog(term, f.apply(allSubjects), batchSize);

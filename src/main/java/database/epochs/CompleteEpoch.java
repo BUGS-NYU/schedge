@@ -2,8 +2,8 @@ package database.epochs;
 
 import java.sql.*;
 import java.time.Instant;
-import types.Term;
 import org.slf4j.*;
+import types.Term;
 import utils.Utils;
 
 public final class CompleteEpoch {

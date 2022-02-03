@@ -1,9 +1,7 @@
 package types;
 
 import com.fasterxml.jackson.annotation.*;
-
 import java.util.*;
-
 import utils.Utils;
 
 public final class Subject {

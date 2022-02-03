@@ -75,8 +75,7 @@ public class Database implements Runnable {
            description = "Query section based on term and registration number, "
                          + "OR school and subject from db.\n")
   public void
-  query(@Mixin Mixins.Term termMixin,
-        @Mixin Mixins.Subject subjectCodeMixin,
+  query(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectCodeMixin,
         @Mixin Mixins.OutputFile outputFile) {
     long start = System.nanoTime();
 

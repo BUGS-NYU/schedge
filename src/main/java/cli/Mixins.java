@@ -3,7 +3,6 @@ package cli;
 import static picocli.CommandLine.*;
 
 import java.util.*;
-
 import picocli.CommandLine;
 import types.User;
 import utils.*;

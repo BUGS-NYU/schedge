@@ -8,13 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.helpers.MessageFormatter;
 
 public interface TryCatch {
-  public interface Call<E> {
-    E get() throws Exception;
-  }
+  public interface Call<E> { E get() throws Exception; }
 
-  public interface CallVoid {
-    void get() throws Exception;
-  }
+  public interface CallVoid { void get() throws Exception; }
 
   void onError(Exception e);
 

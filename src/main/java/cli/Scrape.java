@@ -35,8 +35,7 @@ public class Scrape implements Runnable {
            description = "Scrape catalog based on term, subject codes, "
                          + "or school for one or multiple subjects/schools")
   public void
-  catalog(@Mixin Mixins.Term termMixin,
-          @Mixin Mixins.Subject subjectMixin,
+  catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectMixin,
           @Option(names = "--batch-size", defaultValue = "20",
                   description = "batch size if query more than one catalog")
           int batchSize,

@@ -47,6 +47,7 @@ public class InsertCourses {
       rs.close();
       insertSections(conn, courseId, c.sections, null, states);
     }
+
     return states;
   }
 
@@ -63,6 +64,7 @@ public class InsertCourses {
               + "section_status, waitlist_total, associated_with) "
               + "VALUES (?, ?, ?, ?, ?, ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
+
       stmt.setInt(7, associatedWith);
     } else {
       stmt = conn.prepareStatement(

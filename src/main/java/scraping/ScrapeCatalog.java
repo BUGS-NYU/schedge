@@ -372,7 +372,7 @@ public class ScrapeCatalog {
       }
 
       LocalDateTime beginDateTime;
-      long duration;
+      int duration;
       {
         String beginDateString = dateTokens.next();
 
@@ -380,7 +380,7 @@ public class ScrapeCatalog {
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
         LocalDateTime stopDateTime = LocalDateTime.from(timeParser.parse(
             beginDateString + ' ' + timeTokens.next().toUpperCase()));
-        duration = ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
+        duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
       }
 
       LocalDateTime endDate =

@@ -75,63 +75,11 @@ public final class Mixins {
 
     @Option(names = "--output-file",
             description =
-                "output file to read from. If none provided, read from stdout")
+                "output file to write to. If none provided, write to stdout")
     private String outputFile;
 
     public void writeOutput(Object output) {
       Utils.writeToFileOrStdout(outputFile, JsonMapper.toJson(output, pretty));
-    }
-  }
-
-  public static final class RegistrationNumber {
-    @Option(names = "--school", description = "school code: UA, UT, UY, etc")
-    private String school;
-
-    @Option(names = "--subject",
-            description = "subject code: CSCI-UA, MATH-UA, etc")
-    private String subject;
-
-    @Option(
-        names = "--registration-number",
-        description =
-            "A registration number, such as 9667. This can be either a number for Lecture, section, etc..")
-    private Integer registrationNumber;
-
-    @Option(names = "--registration-numbers", split = ",",
-            description = "Multiple registration numbers: 1134,441,134,...")
-    private List<Integer> registrationNumbers;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public List<types.Subject> getSubjectCodes() {
-      if (school == null && subject == null && registrationNumber == null &&
-          registrationNumbers == null) {
-        throw new CommandLine.ParameterException(
-            spec.commandLine(),
-            "Must provide at least one of --school, --subject, or --registration-number");
-      }
-      if (school == null) {
-        if (subject != null) {
-          throw new CommandLine.ParameterException(
-              spec.commandLine(),
-              "--subject doesn't make sense if school is null");
-        }
-        return types.Subject.allSubjects();
-      } else if (subject == null) {
-        if (registrationNumber == null)
-          return types.Subject.allSchools().get(school).subjects;
-        else
-          return null;
-      } else {
-        types.Subject s = types.Subject.fromCode(subject);
-        return Arrays.asList(s);
-      }
-    }
-
-    public Integer getRegistrationNumber() { return registrationNumber; }
-
-    public List<Integer> getRegistrationNumbers() {
-      return registrationNumbers;
     }
   }
 

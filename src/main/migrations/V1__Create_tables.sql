@@ -38,8 +38,6 @@ CREATE TABLE instructors (
   id                  SERIAL                      NOT NULL UNIQUE,
   name                varchar                     NOT NULL,
   subject_code        int                         NOT NULL,
-  rmp_rating          real,
-  rmp_tid             int,
   PRIMARY KEY (id)
 );
 

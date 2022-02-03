@@ -1,9 +1,6 @@
 package cli;
 
-import static picocli.CommandLine.Command;
-import static picocli.CommandLine.Mixin;
-import static picocli.CommandLine.Option;
-import static picocli.CommandLine.Spec;
+import static picocli.CommandLine.*;
 import static utils.TryCatch.*;
 
 import actions.*;
@@ -12,7 +9,6 @@ import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import database.epochs.*;
-import database.instructors.UpdateInstructors;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import me.tongfei.progressbar.*;
@@ -71,28 +67,6 @@ public class Database implements Runnable {
         subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
     GetConnection.close();
     Client.close();
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000000 + " seconds");
-  }
-
-  @Command(name = "rmp", description = "Scrape Rate My Professor for ratings, "
-                                       +
-                                       "parsed and updated in the database.\n")
-  public void
-  rmp(@Option(names = "--batch-size",
-              description = "batch size for querying Rate My Professor")
-      Integer batchSize) {
-    long start = System.nanoTime();
-    GetConnection.withConnection(conn -> {
-      UpdateInstructors.updateInstructors(
-          conn,
-          ProgressBar.wrap(UpdateInstructors.instructorUpdateList(conn),
-                           barBuilder),
-          batchSize);
-    });
-    GetConnection.close();
-    Client.close();
-
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }

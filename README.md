@@ -21,7 +21,7 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
-- [ ] Add full RMP support
+- [ ] Delete server-side RMP stuff
 
 #### Delayed for now
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
@@ -33,18 +33,10 @@ The API documentation is available at https://schedge.a1liu.com .
 The following commands are valid in Schedge:
 
 ```sh
-./schedge query catalog     # Query the catalog
-./schedge query sections    # Query a section
-./schedge query rmp         # Query all rate my prof reviews
-./schedge query school      # Query a school/subject
-./schedge parse catalog     # Parse the catalog
-./schedge parse section     # Parse the section
-./schedge parse school      # Parse the school/subject
 ./schedge scrape catalog    # scrape the catalog
 ./schedge scrape sections   # scrape the sections
 ./schedge scrape school     # scrape the school/subject
 ./schedge db scrape         # scrape the catalog for information
-./schedge db rmp            # scrape all rate my prof reviews
 ./schedge db query          # query the database for information
 ./schedge db serve          # Serve the database data through an API
 ```

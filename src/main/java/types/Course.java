@@ -7,7 +7,7 @@ public class Course {
   public String name;
   public String deptCourseId;
   @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
-  public SubjectCode subjectCode;
+  public Subject subjectCode;
   public List<Section> sections;
 
   public String toString() {

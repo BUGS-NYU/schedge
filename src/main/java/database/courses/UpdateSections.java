@@ -21,11 +21,11 @@ public class UpdateSections {
       LoggerFactory.getLogger("database.courses.UpdateSections");
 
   private static class SaveState {
-    SubjectCode code;
+    Subject code;
     int id;
     int registrationNumber;
     String data;
-    SaveState(SubjectCode c, int i, int r, String d) {
+    SaveState(Subject c, int i, int r, String d) {
       code = c;
       id = i;
       registrationNumber = r;

@@ -1,16 +1,16 @@
 package scraping.models;
 
 import java.util.List;
-import types.SubjectCode;
+import types.Subject;
 
 public final class Course {
 
   public final String name;
   public final String deptCourseId;
-  public final SubjectCode subjectCode;
+  public final Subject subjectCode;
   public final List<Section> sections;
 
-  public Course(String name, String deptCourseId, SubjectCode subjectCode,
+  public Course(String name, String deptCourseId, Subject subjectCode,
                 List<Section> sections) {
     this.name = name;
     this.deptCourseId = deptCourseId;

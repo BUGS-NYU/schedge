@@ -3,7 +3,7 @@ package api.v1;
 import api.Endpoint;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import types.SubjectCode;
+import types.Subject;
 
 public final class SchoolsEndpoint extends Endpoint {
 
@@ -23,6 +23,6 @@ public final class SchoolsEndpoint extends Endpoint {
 
   @Override
   public Handler getHandler() {
-    return ctx -> { ctx.json(SubjectCode.allSchools()); };
+    return ctx -> { ctx.json(Subject.allSchools()); };
   }
 }

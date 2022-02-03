@@ -36,7 +36,7 @@ public class Scrape implements Runnable {
                          + "or school for one or multiple subjects/schools")
   public void
   catalog(@Mixin Mixins.Term termMixin,
-          @Mixin Mixins.SubjectCode subjectCodeMixin,
+          @Mixin Mixins.Subject subjectMixin,
           @Option(names = "--batch-size", defaultValue = "20",
                   description = "batch size if query more than one catalog")
           int batchSize,
@@ -44,7 +44,7 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
-        termMixin.getTerm(), subjectCodeMixin.getSubjectCodes(), batchSize);
+        termMixin.getTerm(), subjectMixin.getSubjects(), batchSize);
 
     outputFileMixin.writeOutput(courses);
 

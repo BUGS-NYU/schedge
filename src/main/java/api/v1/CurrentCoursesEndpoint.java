@@ -56,9 +56,9 @@ public final class CurrentCoursesEndpoint extends Endpoint {
         ctx.json(new ApiError(e.getMessage()));
       });
 
-      SubjectCode subject = tc.log(() -> {
+      Subject subject = tc.log(() -> {
         String subjectString = ctx.pathParam("subject").toUpperCase();
-        return SubjectCode.fromCode(subjectString);
+        return Subject.fromCode(subjectString);
       });
 
       if (subject == null)

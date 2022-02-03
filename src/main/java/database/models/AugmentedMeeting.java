@@ -10,7 +10,7 @@ import types.*;
 // A meeting plus section information
 public class AugmentedMeeting {
   public final String sectionName;
-  public final SubjectCode subject;
+  public final Subject subject;
   public final String deptCourseId;
 
   public final String sectionCode;
@@ -27,7 +27,7 @@ public class AugmentedMeeting {
       DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
 
   public AugmentedMeeting(ResultSet rs) throws SQLException {
-    subject = SubjectCode.fromOrdinal(rs.getInt("subject_code"));
+    subject = Subject.fromOrdinal(rs.getInt("subject_code"));
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");

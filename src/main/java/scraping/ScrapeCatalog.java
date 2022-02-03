@@ -35,9 +35,9 @@ public class ScrapeCatalog {
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
 
   public static List<Course>
-  scrapeCatalog(Term term, Iterable<SubjectCode> subjects_, int batchSize) {
-    ArrayList<SubjectCode> subjects = new ArrayList<>();
-    for (SubjectCode subject : subjects_)
+  scrapeCatalog(Term term, Iterable<Subject> subjects_, int batchSize) {
+    ArrayList<Subject> subjects = new ArrayList<>();
+    for (Subject subject : subjects_)
       subjects.add(subject);
 
     ArrayList<Course> courses = new ArrayList<>();
@@ -53,7 +53,7 @@ public class ScrapeCatalog {
       if (query == null)
         continue;
 
-      SubjectCode subject = query.subject;
+      Subject subject = query.subject;
       String data = query.data;
 
       if (!subjects.isEmpty()) {
@@ -89,7 +89,7 @@ public class ScrapeCatalog {
   }
 
   private static class Query extends Ctx {
-    SubjectCode subject;
+    Subject subject;
     String data;
   }
 
@@ -130,7 +130,7 @@ public class ScrapeCatalog {
   }
 
   private static Future<Query> queryCatalog(Term term, Query query) {
-    SubjectCode subject = query.subject;
+    Subject subject = query.subject;
 
     logger.debug("querying catalog for term=" + term +
                  " and subject=" + subject + "...");
@@ -196,7 +196,7 @@ public class ScrapeCatalog {
   }
 
   public static void parseCatalog(ArrayList<Course> courses, String data,
-                                  SubjectCode subject) {
+                                  Subject subject) {
     logger.trace("parsing raw catalog data...");
     Document doc = Jsoup.parse(data);
     Elements elements = doc.select("div.primary-head ~ *");
@@ -266,7 +266,7 @@ public class ScrapeCatalog {
           "Couldn't find substring \" - \" in divTag.text");
     }
 
-    SubjectCode subject = SubjectCode.fromCode(text.substring(0, textIndex1));
+    Subject subject = Subject.fromCode(text.substring(0, textIndex1));
     String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 
@@ -284,7 +284,7 @@ public class ScrapeCatalog {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  private static Section parseSectionNode(SubjectCode subject, Element aTag) {
+  private static Section parseSectionNode(Subject subject, Element aTag) {
     Elements children = aTag.select("div.section-content > div.section-body");
 
     HashMap<String, String> sectionData = new HashMap<>();

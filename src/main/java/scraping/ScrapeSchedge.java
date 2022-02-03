@@ -18,7 +18,7 @@ public final class ScrapeSchedge {
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
   public static Stream<Course> scrapeFromSchedge(Term term) {
-    BiFunction<SubjectCode, Integer, Future<String>> func = (subject, idx) -> {
+    BiFunction<Subject, Integer, Future<String>> func = (subject, idx) -> {
       String school = subject.schoolCode;
       String major = subject.code.split("-")[0];
 
@@ -48,8 +48,8 @@ public final class ScrapeSchedge {
     };
 
     return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<SubjectCode, String>(
-                    SubjectCode.allSubjects().listIterator(), 20, func)
+        .stream(new SimpleBatchedFutureEngine<Subject, String>(
+                    Subject.allSubjects().listIterator(), 20, func)
                     .spliterator(),
                 false)
         .flatMap(text -> {

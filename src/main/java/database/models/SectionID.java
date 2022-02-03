@@ -1,14 +1,14 @@
 package database.models;
 
-import types.SubjectCode;
+import types.Subject;
 
 public class SectionID {
-  public final SubjectCode subjectCode;
+  public final Subject subjectCode;
   public final int id;
   public final int registrationNumber;
 
-  public SectionID(SubjectCode subjectCode, int i, int r) {
-    this.subjectCode = subjectCode;
+  public SectionID(Subject subject, int i, int r) {
+    this.subjectCode = subject;
     id = i;
     registrationNumber = r;
   }

@@ -4,7 +4,7 @@ import java.util.List;
 import types.Meeting;
 import types.SectionStatus;
 import types.SectionType;
-import types.SubjectCode;
+import types.Subject;
 
 public class Section {
   public final int registrationNumber;
@@ -14,9 +14,9 @@ public class Section {
   public final List<Meeting> meetings;
   public final List<Section> recitations;
   public final Integer waitlistTotal;
-  public final SubjectCode subjectCode;
+  public final Subject subjectCode;
 
-  public Section(SubjectCode code, int registrationNumber, String sectionCode,
+  public Section(Subject code, int registrationNumber, String sectionCode,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
     if (type != SectionType.LEC && !recitations.isEmpty()) {

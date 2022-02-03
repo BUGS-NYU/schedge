@@ -14,7 +14,7 @@ public class SelectRows {
       LoggerFactory.getLogger("database.courses.SelectRows");
 
   public static Stream<Row> selectRows(Connection conn, int epoch,
-                                       SubjectCode code) throws SQLException {
+                                       Subject code) throws SQLException {
     return selectRows(conn, "courses.epoch = ? AND courses.subject_code = ?",
                       epoch, code.ordinal);
   }
@@ -85,7 +85,7 @@ public class SelectRows {
   }
 
   public static Stream<FullRow> selectFullRows(Connection conn, int epoch,
-                                               SubjectCode code)
+                                               Subject code)
       throws SQLException {
     return selectFullRows(conn,
                           "courses.epoch = ? AND courses.subject_code = ?",

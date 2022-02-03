@@ -1,12 +1,12 @@
 package database.instructors;
 
 import java.sql.*;
-import types.SubjectCode;
+import types.Subject;
 import utils.Utils;
 
 public final class UpsertInstructor {
 
-  public static void upsertInstructor(Connection conn, SubjectCode subject,
+  public static void upsertInstructor(Connection conn, Subject subject,
                                       int sectionId, String instructor)
       throws SQLException {
 

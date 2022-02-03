@@ -17,14 +17,14 @@ public class SelectCourses {
       LoggerFactory.getLogger("api.v1.SelectCourses");
 
   public static List<Course> selectCourses(Connection conn, int epoch,
-                                           List<SubjectCode> codes) {
+                                           List<Subject> codes) {
     return codes.stream()
         .flatMap(code -> selectCourses(conn, epoch, code))
         .collect(Collectors.toList());
   }
 
   public static Stream<Course> selectCourses(Connection conn, int epoch,
-                                             SubjectCode code) {
+                                             Subject code) {
     try {
       return rowsToCourses(SelectRows.selectRows(conn, epoch, code));
     } catch (SQLException e) {
@@ -33,14 +33,14 @@ public class SelectCourses {
   }
 
   public static List<Course> selectFullCourses(Connection conn, int epoch,
-                                               List<SubjectCode> codes) {
+                                               List<Subject> codes) {
     return codes.stream()
         .flatMap(code -> selectFullCourses(conn, epoch, code))
         .collect(Collectors.toList());
   }
 
   public static Stream<Course> selectFullCourses(Connection conn, int epoch,
-                                                 SubjectCode code) {
+                                                 Subject code) {
     try {
       return RowsToCourses.fullRowsToCourses(
           SelectRows.selectFullRows(conn, epoch, code));

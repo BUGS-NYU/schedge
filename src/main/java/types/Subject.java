@@ -1,12 +1,12 @@
 package types;
 
 import com.fasterxml.jackson.annotation.*;
-import java.time.*;
+
 import java.util.*;
-import java.util.stream.Collectors;
+
 import utils.Utils;
 
-public final class SubjectCode {
+public final class Subject {
 
   // TODO It seems time zone stuff in Java SQL is a bit borked. Let's just set
   // all DB timestamps to UTC, and then manually convert to whatever on the
@@ -19,7 +19,7 @@ public final class SubjectCode {
   public static final class School {
     public String name;
     public TimeZone timezone;
-    public ArrayList<SubjectCode> subjects;
+    public ArrayList<Subject> subjects;
   }
 
   @JsonIgnore public String schoolCode;
@@ -27,8 +27,8 @@ public final class SubjectCode {
   @JsonIgnore public String name;
   @JsonIgnore public final int ordinal;
 
-  private static ArrayList<SubjectCode> subjects = new ArrayList<>();
-  private static Map<String, SubjectCode> subjectsByCode = new HashMap<>();
+  private static ArrayList<Subject> subjects = new ArrayList<>();
+  private static Map<String, Subject> subjectsByCode = new HashMap<>();
   private static Map<String, School> schools = new HashMap<>();
 
   // Init stuffs
@@ -53,12 +53,12 @@ public final class SubjectCode {
       schools.put(abbreviation, school);
     }
 
-    for (SubjectCode code : subjects) {
+    for (Subject code : subjects) {
       schools.get(code.schoolCode).subjects.add(code);
     }
   }
 
-  private SubjectCode(String schoolCode, String code, String name) {
+  private Subject(String schoolCode, String code, String name) {
     this.schoolCode = schoolCode;
     this.code = code;
     this.name = name;
@@ -71,12 +71,12 @@ public final class SubjectCode {
     }
   }
 
-  public static SubjectCode addSubject(String schoolCode, String code,
-                                       String name) {
-    return new SubjectCode(schoolCode, code, name);
+  public static Subject addSubject(String schoolCode, String code,
+                                   String name) {
+    return new Subject(schoolCode, code, name);
   }
 
-  public static SubjectCode fromCode(String code) {
+  public static Subject fromCode(String code) {
     synchronized (subjects) { return subjectsByCode.get(code.toUpperCase()); }
   }
 
@@ -85,12 +85,12 @@ public final class SubjectCode {
   // from Schedge V1.
   //                                  - Albert Liu, Feb 03, 2022 Thu 01:02 EST
   @JsonCreator
-  public static SubjectCode fromCode(@JsonProperty("code") String code,
-                                     @JsonProperty("school") String school) {
+  public static Subject fromCode(@JsonProperty("code") String code,
+                                 @JsonProperty("school") String school) {
     synchronized (subjects) { return subjectsByCode.get(code + "-" + school); }
   }
 
-  public static SubjectCode fromOrdinal(int ordinal) {
+  public static Subject fromOrdinal(int ordinal) {
     synchronized (subjects) { return subjects.get(ordinal); }
   }
 
@@ -98,11 +98,11 @@ public final class SubjectCode {
     return schools;
   }
 
-  public static synchronized List<SubjectCode> allSubjects() {
-    ArrayList<SubjectCode> localSubjects = new ArrayList<>();
+  public static synchronized List<Subject> allSubjects() {
+    ArrayList<Subject> localSubjects = new ArrayList<>();
 
     synchronized (subjects) {
-      for (SubjectCode code : subjects) {
+      for (Subject code : subjects) {
         localSubjects.add(code);
       }
     }

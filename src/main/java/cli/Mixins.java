@@ -1,10 +1,9 @@
 package cli;
 
 import static picocli.CommandLine.*;
-import static utils.PolyFill.*;
 
 import java.util.*;
-import java.util.stream.*;
+
 import picocli.CommandLine;
 import types.User;
 import utils.*;
@@ -105,7 +104,7 @@ public final class Mixins {
 
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    public List<types.SubjectCode> getSubjectCodes() {
+    public List<types.Subject> getSubjectCodes() {
       if (school == null && subject == null && registrationNumber == null &&
           registrationNumbers == null) {
         throw new CommandLine.ParameterException(
@@ -118,14 +117,14 @@ public final class Mixins {
               spec.commandLine(),
               "--subject doesn't make sense if school is null");
         }
-        return types.SubjectCode.allSubjects();
+        return types.Subject.allSubjects();
       } else if (subject == null) {
         if (registrationNumber == null)
-          return types.SubjectCode.allSchools().get(school).subjects;
+          return types.Subject.allSchools().get(school).subjects;
         else
           return null;
       } else {
-        types.SubjectCode s = types.SubjectCode.fromCode(subject);
+        types.Subject s = types.Subject.fromCode(subject);
         return Arrays.asList(s);
       }
     }
@@ -137,7 +136,7 @@ public final class Mixins {
     }
   }
 
-  public static final class SubjectCode {
+  public static final class Subject {
     @Option(names = "--school", description = "school code: UA, UT, UY, etc")
     private String school;
 
@@ -147,18 +146,18 @@ public final class Mixins {
 
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    public List<types.SubjectCode> getSubjectCodes() {
+    public List<types.Subject> getSubjects() {
       if (school == null) {
         if (subject != null) {
           throw new CommandLine.ParameterException(
               spec.commandLine(),
               "--subject doesn't make sense if school is null");
         }
-        return types.SubjectCode.allSubjects();
+        return types.Subject.allSubjects();
       } else if (subject == null) {
-        return types.SubjectCode.allSchools().get(school).subjects;
+        return types.Subject.allSchools().get(school).subjects;
       } else {
-        types.SubjectCode s = types.SubjectCode.fromCode(subject);
+        types.Subject s = types.Subject.fromCode(subject);
         return Arrays.asList(s);
       }
     }

@@ -65,12 +65,12 @@ public final class CoursesEndpoint extends Endpoint {
       }
 
       Term term;
-      SubjectCode subject;
+      Subject subject;
       try {
         term = new Term(ctx.pathParam("semester"), year);
 
         String subjectString = ctx.pathParam("subject").toUpperCase();
-        subject = SubjectCode.fromCode(subjectString);
+        subject = Subject.fromCode(subjectString);
 
       } catch (IllegalArgumentException e) {
         ctx.status(400);

@@ -25,7 +25,7 @@ The API documentation is available at https://schedge.a1liu.com .
 
 #### Delayed for now
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
-- [ ] Remove all the different `types` folders, simplify database edits and whatnot
+- [ ] Remove all the different `models` folders, simplify database edits and whatnot
 - [ ] Make an admin portal
 - [ ] Fuzzer? Some kind of tester I guess
 

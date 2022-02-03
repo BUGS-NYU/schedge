@@ -76,12 +76,12 @@ public class Database implements Runnable {
                          + "OR school and subject from db.\n")
   public void
   query(@Mixin Mixins.Term termMixin,
-        @Mixin Mixins.SubjectCode subjectCodeMixin,
+        @Mixin Mixins.Subject subjectCodeMixin,
         @Mixin Mixins.OutputFile outputFile) {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
-    List<SubjectCode> codes = subjectCodeMixin.getSubjectCodes();
+    List<Subject> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
       Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
       if (epoch == null) {

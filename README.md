@@ -21,7 +21,7 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
-- [ ] Delete server-side RMP stuff
+- [x] Delete server-side RMP stuff
 
 #### Delayed for now
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime

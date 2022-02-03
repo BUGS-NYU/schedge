@@ -1,7 +1,7 @@
 CREATE TABLE schedge_meta (
   id                  SERIAL                        NOT NULL UNIQUE,
-  created_at          timestamp WITH TIME ZONE      NOT NULL,
-  updated_at          timestamp WITH TIME ZONE      NOT NULL,
+  created_at          timestamp WITHOUT TIME ZONE   NOT NULL,
+  updated_at          timestamp WITHOUT TIME ZONE   NOT NULL,
   name                varchar                       NOT NULL UNIQUE,
   value               varchar                       NOT NULL,
   PRIMARY KEY (id)
@@ -12,8 +12,8 @@ INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
 
 CREATE TABLE epochs (
   id                  SERIAL                        NOT NULL UNIQUE,
-  started_at          timestamp WITH TIME ZONE      NOT NULL UNIQUE,
-  completed_at        timestamp WITH TIME ZONE      UNIQUE,
+  started_at          timestamp WITHOUT TIME ZONE   NOT NULL UNIQUE,
+  completed_at        timestamp WITHOUT TIME ZONE   UNIQUE,
   term_id             int                           NOT NULL,
   PRIMARY KEY (id)
 );
@@ -81,8 +81,8 @@ CREATE TABLE meetings (
   id                  SERIAL                          NOT NULL UNIQUE,
   section_id          int REFERENCES sections(id)
                       ON DELETE CASCADE               NOT NULL,
-  begin_date          timestamp with time zone        NOT NULL,
-  end_date            timestamp with time zone        NOT NULL,
+  begin_date          timestamp WITHOUT TIME ZONE     NOT NULL,
+  end_date            timestamp WITHOUT TIME ZONE     NOT NULL,
   duration            int                             NOT NULL,
   PRIMARY KEY (id)
 );

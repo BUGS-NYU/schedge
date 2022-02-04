@@ -21,12 +21,14 @@ The API documentation is available at https://schedge.a1liu.com .
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
+- [ ] Schools/Subjects/whatever should be in one single endpoint
 - [x] Delete server-side RMP stuff
 
 #### Delayed for now
+- [ ] Profile stuffs, perf seems to be regressing randomly
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
-- [ ] Make an admin portal
+- [ ] Make an admin portal, including stuff like memory usage stats and whatnot
 - [ ] Fuzzer? Some kind of tester I guess
 
 ## Commands

@@ -42,11 +42,11 @@ public class App {
                       .lines()
                       .collect(Collectors.joining("\n"));
 
-    app.get("/", OpenApiBuilder.documented(OpenApiBuilder.document().ignore(),
-                                           ctx -> {
-                                             ctx.contentType("text/html");
-                                             ctx.result(docs);
-                                           }));
+    app.get("/api", OpenApiBuilder.documented(
+                        OpenApiBuilder.document().ignore(), ctx -> {
+                          ctx.contentType("text/html");
+                          ctx.result(docs);
+                        }));
 
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();

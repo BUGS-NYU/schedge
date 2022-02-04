@@ -39,25 +39,29 @@ repositories {
 
 dependencies {
     implementation(
-            "org.slf4j:slf4j-api:1.7.25", // Logging
-            "org.slf4j:slf4j-simple:1.7.30", // Logging
+            // Logging
+            "org.slf4j:slf4j-api:1.7.25",
+            "org.slf4j:slf4j-simple:1.7.30",
 
-            "org.postgresql:postgresql:42.2.12", // Database driver
-            "com.zaxxer:HikariCP:3.4.1", // Database connection pool
+            // Database driver and connection pool
+            "org.postgresql:postgresql:42.2.12",
+            "com.zaxxer:HikariCP:3.4.1",
 
-            "org.jsoup:jsoup:1.12.1", // HTML Parsing
-
-            "me.tongfei:progressbar:0.8.1", // Progress bar
-
+            // HTTP requests and HTML Parsing
             "org.asynchttpclient:async-http-client-bom:2.10.5",
-            "org.asynchttpclient:async-http-client:2.10.5", // Async Http Client
+            "org.asynchttpclient:async-http-client:2.10.5",
+            "org.jsoup:jsoup:1.12.1",
 
-            "info.picocli:picocli:4.1.4", // Command line args
+            // Command line arg parsing and progress bar
+            "info.picocli:picocli:4.1.4",
+            "me.tongfei:progressbar:0.8.1",
 
-            "com.fasterxml.jackson.core:jackson-annotations:2.7.4", // JSON
+            // JSON
+            "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 
-            "io.javalin:javalin:4.3.0", // Web server framework
-            "io.javalin:javalin-openapi:4.3.0", // Web server api
+            // Web server framework and documentation
+            "io.javalin:javalin:4.3.0",
+            "io.javalin:javalin-openapi:4.3.0",
     )
 }
 

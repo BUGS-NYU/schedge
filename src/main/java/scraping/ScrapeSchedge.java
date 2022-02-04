@@ -59,7 +59,7 @@ public final class ScrapeSchedge {
 
     Iterator<Subject> subjects = Subject.allSubjects().listIterator();
     SimpleBatchedFutureEngine<Subject, String> engine =
-        new SimpleBatchedFutureEngine<>(subjects, 50, func);
+        new SimpleBatchedFutureEngine<>(subjects, 20, func);
 
     ArrayList<List<Course>> output = new ArrayList<>();
     for (String text : engine) {

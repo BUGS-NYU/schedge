@@ -20,7 +20,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/:year/:semester/generateSchedule"; }
+  public String getPath() { return "/{year}/{semester}/generateSchedule"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -39,7 +39,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
                    openApiParam -> {
                      openApiParam.description("Must be a valid semester code.");
                    })
-        .queryParam("registrationNumbers", String.class,
+        .queryParam("registrationNumbers", String.class, false,
                     openApiParam
                     -> openApiParam.description("CSV of registration numbers"))
         .json("400", ApiError.class,

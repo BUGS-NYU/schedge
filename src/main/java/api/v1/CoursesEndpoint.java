@@ -17,7 +17,7 @@ public final class CoursesEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/:year/:semester/:subject"; }
+  public String getPath() { return "/{year}/{semester}/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

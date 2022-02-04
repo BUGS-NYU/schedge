@@ -21,7 +21,7 @@ public final class SearchEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/:year/:semester/search"; }
+  public String getPath() { return "/{year}/{semester}/search"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -39,52 +39,52 @@ public final class SearchEndpoint extends Endpoint {
                      openApiParam.description("Must be a valid semester code.");
                    })
         .queryParam(
-            "full", Boolean.class,
+            "full", Boolean.class, false,
             openApiParam -> {
               openApiParam.description(
                   "if present and equal to 'true', then you'll get full output");
             })
-        .queryParam("query", String.class,
+        .queryParam("query", String.class, false,
                     openApiParam -> {
                       openApiParam.description(
                           "A query string to pass to the search engine.");
                     })
         .queryParam(
-            "limit", Integer.class,
+            "limit", Integer.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The maximum number of top-level sections to return. Capped at 50.");
             })
-        .queryParam("school", String.class,
+        .queryParam("school", String.class, false,
                     openApiParam -> {
                       openApiParam.description("The school to search within.");
                     })
         .queryParam(
-            "subject", String.class,
+            "subject", String.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The subject to search within. Can work cross school.");
             })
         .queryParam(
-            "titleWeight", Integer.class,
+            "titleWeight", Integer.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The weight given to course titles in search. Default is 2.");
             })
         .queryParam(
-            "descriptionWeight", Integer.class,
+            "descriptionWeight", Integer.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The weight given to course descriptions in search. Default is 1.");
             })
         .queryParam(
-            "notesWeight", Integer.class,
+            "notesWeight", Integer.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The weight given to course notes in search. Default is 0.");
             })
         .queryParam(
-            "prereqsWeight", Integer.class,
+            "prereqsWeight", Integer.class, false,
             openApiParam -> {
               openApiParam.description(
                   "The weight given to course prerequisites in search. Default is 0.");

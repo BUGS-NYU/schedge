@@ -5,6 +5,7 @@ import io.javalin.Javalin;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
+import io.javalin.plugin.openapi.ui.ReDocOptions;
 import io.swagger.v3.oas.models.info.Info;
 import java.io.*;
 import java.util.stream.Collectors;
@@ -26,27 +27,31 @@ public class App {
                   + "<br/><br/>If you'd like to contribute, "
                   + "<a href=\"https://github.com/A1Liu/schedge\">"
                   + "check out the repository</a>.";
+
               Info info =
                   new Info().version("0.1").title("Schedge").description(
                       description);
-              OpenApiOptions options =
-                  new OpenApiOptions(info).path("/swagger.json");
+
               config.enableWebjars();
+
+              OpenApiOptions options = new OpenApiOptions(info)
+                                           .path("/swagger.json")
+                                           .reDoc(new ReDocOptions("/api"));
+
               config.registerPlugin(new OpenApiPlugin(options));
             })
             .start(4358);
 
-    String docs = new BufferedReader(
-                      new InputStreamReader(
-                          Javalin.class.getResourceAsStream("/index.html")))
-                      .lines()
-                      .collect(Collectors.joining("\n"));
+    // String docs = new BufferedReader(
+    //                   new InputStreamReader(
+    //                       Javalin.class.getResourceAsStream("/index.html")))
+    //                   .lines()
+    //                   .collect(Collectors.joining("\n"));
 
-    app.get("/api", OpenApiBuilder.documented(
-                        OpenApiBuilder.document().ignore(), ctx -> {
-                          ctx.contentType("text/html");
-                          ctx.result(docs);
-                        }));
+    // app.get("/api", ctx -> {
+    //   ctx.contentType("text/html");
+    //   ctx.result(docs);
+    // });
 
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();

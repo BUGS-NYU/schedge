@@ -18,7 +18,7 @@ public final class SectionEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/:year/:semester/:registrationNumber"; }
+  public String getPath() { return "/{year}/{semester}/{registrationNumber}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

@@ -56,9 +56,8 @@ dependencies {
 
             "com.fasterxml.jackson.core:jackson-annotations:2.7.4", // JSON
 
-            "io.javalin:javalin:3.5.0", // Web server framework
-            "io.swagger.core.v3:swagger-core:2.0.9", // Web server docs framework
-            "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.1", // JSON
+            "io.javalin:javalin:4.3.0", // Web server framework
+            "io.javalin:javalin-openapi:4.3.0", // Web server api
     )
 }
 

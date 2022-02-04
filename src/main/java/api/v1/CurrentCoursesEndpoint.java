@@ -20,7 +20,7 @@ public final class CurrentCoursesEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/current/:subject"; }
+  public String getPath() { return "/current/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

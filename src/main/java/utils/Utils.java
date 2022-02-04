@@ -14,6 +14,10 @@ public final class Utils {
   public static void profileWait() {
     System.err.print("Press Enter to start the profile.");
 
+    // The profile doesn't actually start automatically, you have to attach
+    // a different program to this. The goal is simply to prevent the program
+    // from making progress until the profiler is attached correctly.
+    //                              - Albert Liu, Feb 04, 2022 Fri 00:58 EST
     Scanner scanner = new Scanner(inReader);
     scanner.nextLine();
   }

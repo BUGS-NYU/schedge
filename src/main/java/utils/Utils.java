@@ -8,9 +8,15 @@ import java.util.*;
 import java.util.function.Function;
 
 public final class Utils {
-
   private static BufferedReader inReader =
       new BufferedReader(new InputStreamReader(System.in));
+
+  public static void profileWait() {
+    System.err.print("Press Enter to start the profile.");
+
+    Scanner scanner = new Scanner(inReader);
+    scanner.nextLine();
+  }
 
   public static List<String> asResourceLines(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);

@@ -4,10 +4,12 @@ import java.io.*;
 import java.lang.Void;
 import java.util.Arrays;
 import java.util.function.Consumer;
-import org.slf4j.Logger;
+import org.slf4j.*;
 import org.slf4j.helpers.MessageFormatter;
 
 public interface TryCatch {
+  public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
+
   public interface Call<E> { E get() throws Exception; }
 
   public interface CallVoid { void get() throws Exception; }

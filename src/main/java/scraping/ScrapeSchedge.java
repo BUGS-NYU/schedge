@@ -15,9 +15,12 @@ public final class ScrapeSchedge {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge");
 
+  // @TODO this will eventually scrape directly from the new API instead of
+  // the old one
+  //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
-  public static Stream<Course> scrapeFromSchedge(Term term) {
+  public static List<List<Course>> scrapeFromSchedge(Term term) {
     BiFunction<Subject, Integer, Future<String>> func = (subject, idx) -> {
       String school = subject.schoolCode;
       String major = subject.code.split("-")[0];
@@ -34,7 +37,14 @@ public final class ScrapeSchedge {
           Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
       Request request = new RequestBuilder().setUri(uri).build();
+
+      long start = System.nanoTime();
+
       return Client.send(request, (resp, throwable) -> {
+        long end = System.nanoTime();
+        double duration = (end - start) / 1000000000.0;
+        logger.info("Fetching took {} seconds: subject={}", duration, subject);
+
         if (resp == null) {
           logger.error("Error (subject={}): {}", subject,
                        throwable.getMessage());
@@ -47,18 +57,20 @@ public final class ScrapeSchedge {
       });
     };
 
-    return StreamSupport
-        .stream(new SimpleBatchedFutureEngine<Subject, String>(
-                    Subject.allSubjects().listIterator(), 20, func)
-                    .spliterator(),
-                false)
-        .flatMap(text -> {
-          if (text == null) {
-            return new ArrayList<Course>().stream();
-          }
+    Iterator<Subject> subjects = Subject.allSubjects().listIterator();
+    SimpleBatchedFutureEngine<Subject, String> engine =
+        new SimpleBatchedFutureEngine<>(subjects, 50, func);
 
-          List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
-          return courses.stream();
-        });
+    ArrayList<List<Course>> output = new ArrayList<>();
+    for (String text : engine) {
+      if (text == null) {
+        continue;
+      }
+
+      List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
+      output.add(courses);
+    }
+
+    return output;
   }
 }

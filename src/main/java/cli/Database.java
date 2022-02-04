@@ -163,16 +163,16 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       int epoch = GetNewEpoch.getNewEpoch(conn, term);
 
-      // @TODO this will eventually scrape directly from the new API instead of
-      // the old one
-      //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
-      ScrapeSchedge.scrapeFromSchedge(term).forEach(course -> {
-        ArrayList<Course> courses = new ArrayList<>();
-        courses.add(course);
+      List<List<Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
 
+      long end = System.nanoTime();
+      double duration = (end - start) / 1000000000.0;
+      logger.info("Fetching took {} seconds", duration);
+
+      for (List<Course> courses : data) {
         tcFatal(
             () -> InsertFullCourses.insertCourses(conn, term, epoch, courses));
-      });
+      }
 
       CompleteEpoch.completeEpoch(conn, term, epoch);
     });
@@ -182,6 +182,6 @@ public class Database implements Runnable {
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
-    logger.info(duration + "seconds");
+    logger.info("{} seconds", duration);
   }
 }

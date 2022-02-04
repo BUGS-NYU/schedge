@@ -1,8 +1,10 @@
 package types;
 
+import static utils.TryCatch.*;
+
 import com.fasterxml.jackson.annotation.*;
 import java.util.*;
-import utils.Utils;
+import utils.*;
 
 public final class Subject {
 
@@ -38,7 +40,6 @@ public final class Subject {
       addSubject(school, subject, name);
     }
 
-    schools = new HashMap<>();
     for (String line : Utils.asResourceLines("/schools.txt")) {
       String[] s = line.split(",", 3);
       String abbreviation = s[0], timezone = s[1], name = s[2];
@@ -52,26 +53,43 @@ public final class Subject {
     }
 
     for (Subject code : subjects) {
-      schools.get(code.schoolCode).subjects.add(code);
+      String abbreviation = code.code.split("-")[1];
+      School school = schools.get(abbreviation);
+
+      if (school == null) {
+        DEFAULT_LOGGER.warn(
+            "Missing school for a subject, using default: school={},subject={}",
+            abbreviation, code);
+
+        school = new School();
+        school.name = "";
+        school.timezone = TimeZone.getTimeZone("EST");
+        school.subjects = new ArrayList<>();
+
+        schools.put(abbreviation, school);
+      }
+
+      school.subjects.add(code);
     }
   }
 
-  private Subject(String schoolCode, String code, String name) {
+  private Subject(String schoolCode, String code, String name, int ordinal) {
     this.schoolCode = schoolCode;
     this.code = code;
     this.name = name;
-
-    synchronized (subjects) {
-      this.ordinal = subjects.size();
-
-      subjects.add(this);
-      subjectsByCode.put(this.code, this);
-    }
+    this.ordinal = ordinal;
   }
 
   public static Subject addSubject(String schoolCode, String code,
                                    String name) {
-    return new Subject(schoolCode, code, name);
+    synchronized (subjects) {
+      Subject subject = new Subject(schoolCode, code, name, subjects.size());
+
+      subjects.add(subject);
+      subjectsByCode.put(code, subject);
+
+      return subject;
+    }
   }
 
   public static Subject fromCode(String code) {

@@ -1,5 +1,7 @@
 package api.v1;
 
+import static utils.TryCatch.*;
+
 import api.*;
 import database.GetConnection;
 import database.epochs.LatestCompleteEpoch;
@@ -7,77 +9,79 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
+import utils.*;
 
 public final class CoursesEndpoint extends Endpoint {
 
-  enum SemesterCode {
-    su,
-    sp,
-    fa,
-    ja;
-  }
-
-  public String getPath() { return "/{year}/{semester}/{subject}"; }
+  public String getPath() { return "/{term}/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
         .operation(openApiOperation -> {
           openApiOperation.description(
-              "This endpoint returns a list of courses for a specific year, semester, school, and subject.");
+              "This endpoint returns a list of courses for a specific semester and subject.");
           openApiOperation.summary("Courses Endpoint");
         })
-        .pathParam("year", Integer.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid year.");
-                   })
-        .pathParam("semester", SemesterCode.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid semester code.");
-                   })
+        .pathParam(
+            "term", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "Must be a valid term code, either 'current', 'next', or something "
+                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
+                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
+            })
         .pathParam(
             "subject", String.class,
             openApiParam -> {
               openApiParam.description(
                   "Must be a valid subject code. Take a look at the docs for the schools endpoint for more information.");
             })
-        .json("400", ApiError.class,
-              openApiParam -> {
-                openApiParam.description(
-                    "One of the values in the path parameter was not valid.");
-              })
-        .jsonArray("200", Course.class, openApiParam -> {
-          openApiParam.description("OK.");
-
-          ArrayList<Section> sections = new ArrayList<>();
+        .queryParam(
+            "full", Boolean.class, false,
+            openApiParam -> {
+              openApiParam.description(
+                  "Whether to return campus, description, grading, nodes, "
+                  + "and prerequisites.");
+            })
+        .jsonArray("200", Course.class,
+                   openApiParam -> { openApiParam.description("OK."); })
+        .json("400", ApiError.class, openApiParam -> {
+          openApiParam.description(
+              "One of the values in the path parameter was not valid.");
         });
   }
 
   public Handler getHandler() {
     return ctx -> {
-      int year;
-      try {
-        year = Integer.parseInt(ctx.pathParam("year"));
-      } catch (NumberFormatException e) {
+      TryCatch tc = tcNew(e -> {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
+      });
 
+      Term term = tc.log(() -> {
+        String termString = ctx.pathParam("term");
+        if (termString.contentEquals("current")) {
+          return Term.getCurrentTerm();
+        }
+
+        if (termString.contentEquals("next")) {
+          return Term.getCurrentTerm().nextTerm();
+        }
+
+        int year = Integer.parseInt(termString.substring(2));
+        return new Term(termString.substring(0, 2), year);
+      });
+
+      if (term == null)
         return;
-      }
 
-      Term term;
-      Subject subject;
-      try {
-        term = new Term(ctx.pathParam("semester"), year);
-
+      Subject subject = tc.log(() -> {
         String subjectString = ctx.pathParam("subject").toUpperCase();
-        subject = Subject.fromCode(subjectString);
+        return Subject.fromCode(subjectString);
+      });
 
-      } catch (IllegalArgumentException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
-
+      if (subject == null)
         return;
-      }
 
       String fullData = ctx.queryParam("full");
 
@@ -86,7 +90,7 @@ public final class CoursesEndpoint extends Endpoint {
         if (epoch == null)
           return Collections.emptyList();
 
-        if (fullData != null && fullData.toLowerCase().equals("true"))
+        if (fullData != null && fullData.toLowerCase().contentEquals("true"))
           return SelectCourses.selectFullCourses(
               conn, epoch, Collections.singletonList(subject));
 

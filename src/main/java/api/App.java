@@ -54,10 +54,11 @@ public class App {
       logger.warn(message);
     });
 
+    new InfoEndpoint().addTo(app);
+
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
-    new InfoEndpoint().addTo(app);
   }
 }

@@ -6,14 +6,11 @@ NYU Albert is really annoying to use, and so is the rest of NYU's course catalog
 infrastructure. Our goal with this API is to make it easier for students to plan
 out their schedules, and eventually to also do some of that for them.
 
-API Docs: https://schedge.a1liu.com
+**API DOCS:** https://schedge.a1liu.com
 
 ## Contributing
 Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provide
 you a general overview of the project and how to contribute.
-
-## API Documentation
-The API documentation is available at https://schedge.a1liu.com .
 
 ## TODO
 - [x] Deploy with CI/CD (`nyu.a1liu.com`)

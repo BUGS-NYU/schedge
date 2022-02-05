@@ -22,7 +22,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/{year}/{semester}/generateSchedule"; }
+  public String getPath() { return "/{term}/generateSchedule"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

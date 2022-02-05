@@ -49,7 +49,7 @@ public class Database implements Runnable {
     while (service) {
       CleanData.cleanData();
       UpdateData.updateData(batchSize.getCatalog(20),
-                            batchSize.getSections(50));
+                            batchSize.getSections(30));
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }

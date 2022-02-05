@@ -2,13 +2,16 @@ package actions;
 
 import static database.courses.InsertCourses.*;
 import static database.courses.UpdateSections.*;
+import static scraping.ScrapeCatalog.*;
+import static utils.Utils.*;
 
+import cli.ConsoleProgressBarConsumer;
 import database.GetConnection;
 import database.epochs.*;
 import database.models.SectionID;
 import java.util.List;
 import java.util.function.Function;
-import scraping.ScrapeCatalog;
+import me.tongfei.progressbar.*;
 import scraping.models.Course;
 import types.*;
 
@@ -16,21 +19,30 @@ public class ScrapeTerm {
 
   public static void scrapeTerm(Term term, int batchSize,
                                 int batchSizeSections) {
-    scrapeTerm(term, batchSize, batchSizeSections, i -> i);
+    scrapeTerm(term, batchSize, batchSizeSections, false);
   }
 
   public static void scrapeTerm(Term term, int batchSize, int batchSizeSections,
-                                Function<List<Subject>, Iterable<Subject>> f) {
-    List<Subject> allSubjects = Subject.allSubjects();
-    List<Course> courses =
-        ScrapeCatalog.scrapeCatalog(term, f.apply(allSubjects), batchSize);
+                                boolean display) {
+    ProgressBarBuilder bar =
+        new ProgressBarBuilder()
+            .setStyle(ProgressBarStyle.ASCII)
+            .setConsumer(new ConsoleProgressBarConsumer(System.err));
+
+    List<Subject> subjectData = Subject.allSubjects();
+    Iterable<Subject> subjects =
+        display ? ProgressBar.wrap(subjectData, bar) : subjectData;
+
+    List<Course> courses = scrapeCatalog(term, subjects, batchSize);
 
     GetConnection.withConnection(conn -> {
       int epoch = GetNewEpoch.getNewEpoch(conn, term);
 
-      List<SectionID> s = insertCourses(conn, term, epoch, courses);
+      List<SectionID> idData = insertCourses(conn, term, epoch, courses);
+      Iterable<SectionID> ids =
+          display ? ProgressBar.wrap(idData, bar) : idData;
 
-      updateSections(conn, term, s.iterator(), batchSizeSections);
+      updateSections(conn, term, ids.iterator(), batchSizeSections);
 
       CompleteEpoch.completeEpoch(conn, term, epoch);
     });

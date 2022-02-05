@@ -36,18 +36,17 @@ public class ScrapeCatalog {
 
   public static List<Course>
   scrapeCatalog(Term term, Iterable<Subject> subjects_, int batchSize) {
-    ArrayList<Subject> subjects = new ArrayList<>();
-    for (Subject subject : subjects_)
-      subjects.add(subject);
+    Iterator<Subject> subjects = subjects_.iterator();
+    ArrayList<Subject> failed = new ArrayList<>();
 
     ArrayList<Course> courses = new ArrayList<>();
-    if (subjects.isEmpty())
+    if (!subjects.hasNext())
       return courses;
 
     FutureEngine<Query> engine = new FutureEngine<>();
 
-    engine.add(makeQuery());
-    batchSize -= 1;
+    for (int i = 0; i < batchSize; i++)
+      engine.add(makeQuery());
 
     for (Query query : engine) {
       if (query == null)
@@ -56,8 +55,13 @@ public class ScrapeCatalog {
       Subject subject = query.subject;
       String data = query.data;
 
-      if (!subjects.isEmpty()) {
-        query.subject = subjects.remove(subjects.size() - 1);
+      if (subjects.hasNext()) {
+        query.subject = subjects.next();
+        query.data = null;
+
+        engine.add(queryCatalog(term, query));
+      } else if (failed.isEmpty()) {
+        query.subject = failed.remove(failed.size() - 1);
         query.data = null;
 
         engine.add(queryCatalog(term, query));
@@ -70,19 +74,14 @@ public class ScrapeCatalog {
         logger.info("Retrying subject={}, csrfToken={}", subject,
                     query.csrfToken);
 
-        subjects.add(subject);
+        failed.add(subject);
 
         continue;
       }
 
       parseCatalog(courses, data, subject);
 
-      if (batchSize > 0) {
-        engine.add(makeQuery());
-        batchSize -= 1;
-      }
-
-      logger.info("Processed subject={}", subject);
+      logger.trace("Processed subject={}", subject);
     }
 
     return courses;
@@ -151,7 +150,7 @@ public class ScrapeCatalog {
     Request request =
         new RequestBuilder()
             .setUri(DATA_URI)
-            .setRequestTimeout(10000)
+            .setRequestTimeout(20000)
             .setHeader("Referer", ROOT_URL + "/" + term.getId())
             .setHeader("Host", "m.albert.nyu.edu")
             .setHeader("Accept-Language", "en-US,en;q=0.5")

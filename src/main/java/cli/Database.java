@@ -30,11 +30,6 @@ public class Database implements Runnable {
 
   private static Logger logger = LoggerFactory.getLogger("cli.Database");
 
-  private static ProgressBarBuilder barBuilder =
-      new ProgressBarBuilder()
-          .setStyle(ProgressBarStyle.ASCII)
-          .setConsumer(new ConsoleProgressBarConsumer(System.out));
-
   @Override
   public void run() {
     throw new CommandLine.ParameterException(spec.commandLine(),
@@ -59,13 +54,14 @@ public class Database implements Runnable {
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
 
+    long start = System.nanoTime();
+
     int catalogBatch = batchSize.getCatalog(20);
     int sectionsBatch = batchSize.getSections(50);
+    Term term = termMixin.getTerm();
 
-    long start = System.nanoTime();
-    ScrapeTerm.scrapeTerm(
-        termMixin.getTerm(), catalogBatch, sectionsBatch,
-        subjectCodes -> ProgressBar.wrap(subjectCodes, barBuilder));
+    ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
+
     GetConnection.close();
     Client.close();
     long end = System.nanoTime();

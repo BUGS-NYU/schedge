@@ -36,7 +36,7 @@ CREATE TABLE courses (
 CREATE TABLE instructors (
   id                  SERIAL                      NOT NULL UNIQUE,
   name                varchar                     NOT NULL,
-  subject_code        int                         NOT NULL,
+  subject_code        varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
 

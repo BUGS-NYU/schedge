@@ -27,7 +27,7 @@ public class ScrapeTerm {
     ProgressBarBuilder bar =
         new ProgressBarBuilder()
             .setStyle(ProgressBarStyle.ASCII)
-            .setConsumer(new ConsoleProgressBarConsumer(System.err));
+            .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
     List<Subject> subjectData = Subject.allSubjects();
     Iterable<Subject> subjects =

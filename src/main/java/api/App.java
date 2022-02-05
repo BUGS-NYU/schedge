@@ -42,17 +42,6 @@ public class App {
             })
             .start(4358);
 
-    // String docs = new BufferedReader(
-    //                   new InputStreamReader(
-    //                       Javalin.class.getResourceAsStream("/index.html")))
-    //                   .lines()
-    //                   .collect(Collectors.joining("\n"));
-
-    // app.get("/api", ctx -> {
-    //   ctx.contentType("text/html");
-    //   ctx.result(docs);
-    // });
-
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
@@ -65,7 +54,6 @@ public class App {
       logger.warn(message);
     });
 
-    // new CurrentCoursesEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new SearchEndpoint().addTo(app);

@@ -66,7 +66,7 @@ public class GetConnection {
     }
   }
 
-  public static Connection getConnection() throws SQLException {
+  private static Connection getConnection() throws SQLException {
     initIfNecessary();
     return dataSource.getConnection();
   }

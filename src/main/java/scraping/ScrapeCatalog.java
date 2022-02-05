@@ -40,7 +40,9 @@ public class ScrapeCatalog {
     ArrayList<Subject> failed = new ArrayList<>();
 
     ArrayList<Course> courses = new ArrayList<>();
-    if (!subjects.hasNext())
+
+    boolean hasNext = subjects.hasNext();
+    if (!hasNext)
       return courses;
 
     FutureEngine<Query> engine = new FutureEngine<>();
@@ -53,16 +55,17 @@ public class ScrapeCatalog {
         continue;
 
       Subject subject = query.subject;
-      String data = query.data;
 
-      if (subjects.hasNext()) {
+      String data = query.data;
+      query.data = null;
+
+      hasNext = hasNext && subjects.hasNext();
+      if (hasNext) {
         query.subject = subjects.next();
-        query.data = null;
 
         engine.add(queryCatalog(term, query));
-      } else if (failed.isEmpty()) {
+      } else if (!failed.isEmpty()) {
         query.subject = failed.remove(failed.size() - 1);
-        query.data = null;
 
         engine.add(queryCatalog(term, query));
       }

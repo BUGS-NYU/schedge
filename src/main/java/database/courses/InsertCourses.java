@@ -25,13 +25,13 @@ public class InsertCourses {
     PreparedStatement stmt =
         conn.prepareStatement("INSERT INTO courses "
                                   + "(epoch, name, name_vec, subject_code, "
-                                  + "dept_course_id, term_id) "
-                                  + "VALUES (?, ?, to_tsvector(?), ?, ?, ?)",
+                                  + "dept_course_id) "
+                                  + "VALUES (?, ?, to_tsvector(?), ?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
 
     for (Course c : courses) {
-      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.ordinal,
-                     c.deptCourseId, term.getId());
+      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.code,
+                     c.deptCourseId);
 
       if (stmt.executeUpdate() == 0) {
         throw new RuntimeException("inserting course=" + c.toString() +
@@ -76,7 +76,7 @@ public class InsertCourses {
     for (Section s : sections) {
       try {
         Utils.setArray(stmt, s.registrationNumber, courseId, s.sectionCode,
-                       s.type.ordinal(), s.status.ordinal(),
+                       s.type.name(), s.status.name(),
                        Utils.nullable(Types.INTEGER, s.waitlistTotal));
 
         if (stmt.executeUpdate() == 0)

@@ -12,7 +12,7 @@ public final class UpsertInstructor {
 
     PreparedStatement stmt = conn.prepareStatement(
         "SELECT id from instructors WHERE subject_code = ? AND name = ?");
-    Utils.setArray(stmt, subject.ordinal, instructor);
+    Utils.setArray(stmt, subject.code, instructor);
     ResultSet rs = stmt.executeQuery();
     int instructorId;
     if (!rs.next()) {
@@ -22,7 +22,7 @@ public final class UpsertInstructor {
           "INSERT INTO instructors (name, subject_code) VALUES (?, ?)",
           Statement.RETURN_GENERATED_KEYS);
 
-      Utils.setArray(createInstructor, instructor, subject.ordinal);
+      Utils.setArray(createInstructor, instructor, subject.code);
       if (createInstructor.executeUpdate() == 0)
         throw new RuntimeException("Why bro");
 

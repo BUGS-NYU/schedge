@@ -14,7 +14,7 @@ CREATE TABLE epochs (
   id                  SERIAL                        NOT NULL UNIQUE,
   started_at          timestamp WITHOUT TIME ZONE   NOT NULL UNIQUE,
   completed_at        timestamp WITHOUT TIME ZONE   UNIQUE,
-  term_id             int                           NOT NULL,
+  term                varchar                       NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -26,9 +26,8 @@ CREATE TABLE courses (
   name                varchar                     NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
 
-  subject_code        int                         NOT NULL,
+  subject_code        varchar                     NOT NULL,
   dept_course_id      varchar                     NOT NULL,
-  term_id             int                         NOT NULL,
   description         varchar,
   description_vec     TSVECTOR,
   PRIMARY KEY (id)
@@ -47,8 +46,8 @@ CREATE TABLE sections (
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE       NOT NULL,
   section_code        varchar                     NOT NULL,
-  section_type        int                         NOT NULL,
-  section_status      int                         NOT NULL,
+  section_type        varchar                     NOT NULL,
+  section_status      varchar                     NOT NULL,
   associated_with     int REFERENCES sections(id),
 
   waitlist_total      int,
@@ -87,7 +86,7 @@ CREATE TABLE meetings (
   PRIMARY KEY (id)
 );
 
-CREATE INDEX epochs_term_idx ON epochs (term_id);
+CREATE INDEX epochs_term_idx ON epochs (term);
 CREATE INDEX courses_epoch_idx ON courses (epoch);
 CREATE INDEX sections_course_id_idx ON sections (course_id);
 CREATE INDEX meetings_section_id_idx ON meetings (section_id);

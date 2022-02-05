@@ -27,12 +27,12 @@ public class AugmentedMeeting {
       DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
 
   public AugmentedMeeting(ResultSet rs) throws SQLException {
-    subject = Subject.fromOrdinal(rs.getInt("subject_code"));
+    subject = Subject.fromCode(rs.getString("subject_code"));
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
-    sectionType = SectionType.values()[rs.getInt("section_type")];
-    sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+    sectionType = SectionType.valueOf(rs.getString("section_type"));
+    sectionStatus = SectionStatus.valueOf(rs.getString("section_status"));
     sectionName = rs.getString("section_name");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");

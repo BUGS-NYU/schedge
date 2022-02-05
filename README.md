@@ -21,6 +21,8 @@ you a general overview of the project and how to contribute.
 - [ ] Make a first-party frontend
 - [x] Schools/Subjects/whatever should be in one single endpoint
 - [x] Delete server-side RMP stuff
+- [x] Change DB to not use ordinals, because they make it harder to do stuff like
+      search the DB directly for stuff.
 
 #### Delayed for now
 - [ ] Profile stuffs, perf seems to be regressing randomly

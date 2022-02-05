@@ -29,7 +29,7 @@ public class Row {
   public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
-    this.subject = Subject.fromOrdinal(rs.getInt("subject_code"));
+    this.subject = Subject.fromCode(rs.getString("subject_code"));
     this.deptCourseId = rs.getString("dept_course_id");
     this.sectionId = rs.getInt("section_id");
     this.registrationNumber = rs.getInt("registration_number");
@@ -40,8 +40,8 @@ public class Row {
                            ? new String[] {"Staff"}
                            : instructorString.split(";");
 
-    this.sectionType = SectionType.values()[rs.getInt("section_type")];
-    this.sectionStatus = SectionStatus.values()[rs.getInt("section_status")];
+    this.sectionType = SectionType.valueOf(rs.getString("section_type"));
+    this.sectionStatus = SectionStatus.valueOf(rs.getString("section_status"));
 
     int associatedWith = rs.getInt("associated_with");
     this.associatedWith = rs.wasNull() ? null : associatedWith;

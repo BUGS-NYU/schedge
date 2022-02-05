@@ -15,8 +15,8 @@ public final class CompleteEpoch {
       throws SQLException {
     PreparedStatement stmt =
         conn.prepareStatement("UPDATE epochs SET completed_at = ? "
-                              + "WHERE epochs.id = ? AND epochs.term_id = ?");
-    Utils.setArray(stmt, Timestamp.from(Instant.now()), id, term.getId());
+                              + "WHERE epochs.id = ? AND epochs.term = ?");
+    Utils.setArray(stmt, Timestamp.from(Instant.now()), id, term.json());
     if (stmt.executeUpdate() == 0)
       throw new RuntimeException("why did this fail?");
     logger.info("completed epoch {}", id);

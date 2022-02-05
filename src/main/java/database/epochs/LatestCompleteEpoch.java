@@ -14,9 +14,9 @@ public final class LatestCompleteEpoch {
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(
         "SELECT max(id) from epochs WHERE completed_at IS NOT NULL "
-        + "AND term_id = ? LIMIT 1");
+        + "AND term = ? LIMIT 1");
 
-    try (ResultSet rs = Utils.setArray(stmt, term.getId()).executeQuery()) {
+    try (ResultSet rs = Utils.setArray(stmt, term.json()).executeQuery()) {
       if (!rs.next()) {
         logger.info("Couldn't find epoch for term=" + term);
         return null;

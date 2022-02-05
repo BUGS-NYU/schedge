@@ -14,10 +14,10 @@ public final class GetNewEpoch {
   public static int getNewEpoch(Connection conn, Term term)
       throws SQLException {
     PreparedStatement stmt =
-        conn.prepareStatement("INSERT INTO epochs (started_at, term_id) "
+        conn.prepareStatement("INSERT INTO epochs (started_at, term) "
                                   + "VALUES (?, ?)",
                               Statement.RETURN_GENERATED_KEYS);
-    Utils.setArray(stmt, Timestamp.from(Instant.now()), term.getId());
+    Utils.setArray(stmt, Timestamp.from(Instant.now()), term.json());
     if (stmt.executeUpdate() != 1)
       throw new RuntimeException("why did this fail?");
 

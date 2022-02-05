@@ -16,7 +16,7 @@ public class SelectRows {
   public static Stream<Row> selectRows(Connection conn, int epoch, Subject code)
       throws SQLException {
     return selectRows(conn, "courses.epoch = ? AND courses.subject_code = ?",
-                      epoch, code.ordinal);
+                      epoch, code.code);
   }
 
   public static Stream<Row> selectRow(Connection conn, int epoch,
@@ -89,7 +89,7 @@ public class SelectRows {
       throws SQLException {
     return selectFullRows(conn,
                           "courses.epoch = ? AND courses.subject_code = ?",
-                          epoch, code.ordinal);
+                          epoch, code.code);
   }
 
   public static Stream<FullRow> selectFullRow(Connection conn, int epoch,

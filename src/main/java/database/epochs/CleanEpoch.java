@@ -21,8 +21,8 @@ public final class CleanEpoch {
   public static void cleanEpochs(Connection conn, Term term)
       throws SQLException {
     PreparedStatement stmt =
-        conn.prepareStatement("DELETE FROM epochs WHERE epochs.term_id = ?");
-    stmt.setInt(1, term.getId());
+        conn.prepareStatement("DELETE FROM epochs WHERE epochs.term = ?");
+    stmt.setString(1, term.json());
     if (stmt.executeUpdate() == 0)
       throw new SQLException("couldn't find term=" + term);
   }
@@ -34,8 +34,8 @@ public final class CleanEpoch {
       return;
 
     PreparedStatement stmt = conn.prepareStatement(
-        "DELETE FROM epochs WHERE epochs.term_id = ? AND epochs.id < ?");
-    Utils.setArray(stmt, term.getId(), epoch).executeUpdate();
+        "DELETE FROM epochs WHERE epochs.term = ? AND epochs.id < ?");
+    Utils.setArray(stmt, term.json(), epoch).executeUpdate();
   }
 
   public static void cleanEpoch(Connection conn, int epoch)

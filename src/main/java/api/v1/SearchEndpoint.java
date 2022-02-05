@@ -1,6 +1,7 @@
 package api.v1;
 
 import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
+import static utils.TryCatch.*;
 
 import api.*;
 import database.GetConnection;
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import types.*;
 import types.Term;
+import utils.*;
 
 public final class SearchEndpoint extends Endpoint {
 
@@ -21,7 +23,7 @@ public final class SearchEndpoint extends Endpoint {
     ja;
   }
 
-  public String getPath() { return "/{year}/{semester}/search"; }
+  public String getPath() { return "/{term}/search"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -30,14 +32,14 @@ public final class SearchEndpoint extends Endpoint {
               "This endpoint returns a list of courses for a year and semester, given search terms.");
           openApiOperation.summary("Search Endpoint");
         })
-        .pathParam("year", Integer.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid year.");
-                   })
-        .pathParam("semester", SemesterCode.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid semester code.");
-                   })
+        .pathParam(
+            "term", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "Must be a valid term code, either 'current', 'next', or something "
+                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
+                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
+            })
         .queryParam(
             "full", Boolean.class, false,
             openApiParam -> {
@@ -100,25 +102,27 @@ public final class SearchEndpoint extends Endpoint {
 
   public Handler getHandler() {
     return ctx -> {
-      ctx.contentType("application/json");
-
-      int year;
-      try {
-        year = Integer.parseInt(ctx.pathParam("year"));
-      } catch (NumberFormatException e) {
+      TryCatch tc = tcNew(e -> {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
-        return;
-      }
+      });
 
-      Term term;
-      try {
-        term = new Term(ctx.pathParam("semester"), year);
-      } catch (IllegalArgumentException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
+      Term term = tc.log(() -> {
+        String termString = ctx.pathParam("term");
+        if (termString.contentEquals("current")) {
+          return Term.getCurrentTerm();
+        }
+
+        if (termString.contentEquals("next")) {
+          return Term.getCurrentTerm().nextTerm();
+        }
+
+        int year = Integer.parseInt(termString.substring(2));
+        return new Term(termString.substring(0, 2), year);
+      });
+
+      if (term == null)
         return;
-      }
 
       String args = ctx.queryParam("query");
       if (args == null) {
@@ -139,16 +143,20 @@ public final class SearchEndpoint extends Endpoint {
         resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                          .map(Integer::parseInt)
                          .orElse(50);
+
         titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
                           .map(Integer::parseInt)
                           .orElse(2);
+
         descriptionWeight =
             Optional.ofNullable(ctx.queryParam("descriptionWeight"))
                 .map(Integer::parseInt)
                 .orElse(1);
+
         notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
                           .map(Integer::parseInt)
                           .orElse(0);
+
         prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
                             .map(Integer::parseInt)
                             .orElse(0);
@@ -181,9 +189,9 @@ public final class SearchEndpoint extends Endpoint {
                            descriptionWeight, notesWeight, prereqsWeight))
                        .limit(resultSize)
                        .collect(Collectors.toList()));
-
-          ctx.status(200);
         }
+
+        ctx.status(200);
       });
     };
   }

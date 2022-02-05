@@ -97,11 +97,11 @@ public final class SectionEndpoint extends Endpoint {
             .map(c -> c.sections.get(0))
             .orElse(null);
       });
+
       if (output == null) {
         ctx.status(404);
         ctx.result("not found");
       } else {
-        ctx.contentType("application/json");
         ctx.status(200);
         ctx.json(output);
       }

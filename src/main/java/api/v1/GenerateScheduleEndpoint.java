@@ -56,8 +56,6 @@ public final class GenerateScheduleEndpoint extends Endpoint {
 
   public Handler getHandler() {
     return ctx -> {
-      ctx.contentType("application/json");
-
       int year;
       ArrayList<Integer> registrationNumbers = new ArrayList<>();
       try {

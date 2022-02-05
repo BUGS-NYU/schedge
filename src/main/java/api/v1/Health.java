@@ -32,7 +32,6 @@ public final class Health extends Endpoint {
 
       // https://stackoverflow.com/questions/17374743/how-can-i-get-the-memory-that-my-java-program-uses-via-javas-runtime-api
 
-      ctx.contentType("application/json");
       ctx.json(1);
     };
   }

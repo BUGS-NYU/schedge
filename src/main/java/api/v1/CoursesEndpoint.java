@@ -95,7 +95,6 @@ public final class CoursesEndpoint extends Endpoint {
       });
 
       ctx.status(200);
-      ctx.contentType("application/json");
       ctx.json(output);
     };
   }

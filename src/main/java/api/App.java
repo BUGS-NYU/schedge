@@ -65,12 +65,11 @@ public class App {
       logger.warn(message);
     });
 
-    new SubjectsEndpoint().addTo(app);
-    new SchoolsEndpoint().addTo(app);
     new CurrentCoursesEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new SearchEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
+    new InfoEndpoint().addTo(app);
   }
 }

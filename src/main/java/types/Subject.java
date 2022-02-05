@@ -20,11 +20,13 @@ public final class Subject {
     public String name;
     public TimeZone timezone;
     public ArrayList<Subject> subjects;
+
+    public String getTimezone() { return timezone.getID(); }
   }
 
-  @JsonIgnore public String schoolCode;
-  @JsonValue public String code;
-  @JsonIgnore public String name;
+  @JsonIgnore public volatile String schoolCode;
+  @JsonValue public volatile String code;
+  @JsonIgnore public volatile String name;
   @JsonIgnore public final int ordinal;
 
   private static ArrayList<Subject> subjects = new ArrayList<>();
@@ -63,7 +65,7 @@ public final class Subject {
 
         school = new School();
         school.name = "";
-        school.timezone = TimeZone.getTimeZone("EST");
+        school.timezone = TimeZone.getTimeZone("America/New_York");
         school.subjects = new ArrayList<>();
 
         schools.put(abbreviation, school);
@@ -111,7 +113,22 @@ public final class Subject {
   }
 
   public static synchronized Map<String, School> allSchools() {
-    return schools;
+    Map<String, School> schoolsCopy = new HashMap<>();
+
+    synchronized (schools) {
+      for (Map.Entry<String, School> entry : schools.entrySet()) {
+        School value = entry.getValue();
+
+        School school = new School();
+        school.name = value.name;
+        school.timezone = value.timezone;
+        school.subjects = value.subjects;
+
+        schoolsCopy.put(entry.getKey(), school);
+      }
+    }
+
+    return schoolsCopy;
   }
 
   public static synchronized List<Subject> allSubjects() {

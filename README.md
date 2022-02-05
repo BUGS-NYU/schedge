@@ -16,9 +16,10 @@ you a general overview of the project and how to contribute.
 - [x] Deploy with CI/CD (`nyu.a1liu.com`)
 - [x] Make the schools/subjects list more dynamic
 - [ ] Fix bugs reported in issues
+- [ ] Term should use an enum instead of hard-coded integers
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
-- [ ] Schools/Subjects/whatever should be in one single endpoint
+- [x] Schools/Subjects/whatever should be in one single endpoint
 - [x] Delete server-side RMP stuff
 
 #### Delayed for now

@@ -1,37 +1,37 @@
-GS,EST,Silver School of Social Work
-UN,UTC,Rory Meyers College of Nursing
-UT,UTC,Tisch School of the Arts
-UA,UTC,College of Arts and Science
-GE,UTC,Steinhardt School of Culture, Education, and Human Development - Graduate
-GT,UTC,Tisch School of the Arts - Graduate
-SHU,UTC,NYU Shanghai
-UE,UTC,Steinhardt School of Culture, Education, and Human Development
-GA,UTC,Graduate School of Arts and Science
-UF,UTC,Liberal Studies
-GC,UTC,School of Professional Studies - Graduate
-GU,UTC,College of Global Public Health - Graduate
-GX,UTC,Center for Urban Science and Progress - Graduate
-GY,UTC,Tandon School of Engineering - Graduate
-UC,UTC,School of Professional Studies
-UY,UTC,Tandon School of Engineering
-UB,UTC,Leonard N. Stern School of Business
-GB,UTC,Leonard N. Stern School of Business - Graduate
-UG,UTC,Gallatin School of Individualized Study
-GG,UTC,Gallatin School of Individualized Study - Graduate
-GN,UTC,Rory Meyers College of Nursing - Graduate
-GP,UTC,Robert F. Wagner Graduate School of Public Service - Graduate
-DC,UTC,School of Professional Studies
-UD,UTC,College of Dentistry
-US,UTC,Silver School of Social Work
-UU,UTC,College of Global Public Health
-UH,UTC,NYU Abu Dhabi
-DN,UTC,
-CD,UTC,
-GH,UTC,
-NI,UTC,
-NH,UTC,
-NE,UTC,
-NY,UTC,
-NB,UTC,
-NT,UTC,
-ND,UTC,
+GS,America/New_York,Silver School of Social Work
+UN,America/New_York,Rory Meyers College of Nursing
+UT,America/New_York,Tisch School of the Arts
+UA,America/New_York,College of Arts and Science
+GE,America/New_York,Steinhardt School of Culture, Education, and Human Development - Graduate
+GT,America/New_York,Tisch School of the Arts - Graduate
+SHU,America/New_York,NYU Shanghai
+UE,America/New_York,Steinhardt School of Culture, Education, and Human Development
+GA,America/New_York,Graduate School of Arts and Science
+UF,America/New_York,Liberal Studies
+GC,America/New_York,School of Professional Studies - Graduate
+GU,America/New_York,College of Global Public Health - Graduate
+GX,America/New_York,Center for Urban Science and Progress - Graduate
+GY,America/New_York,Tandon School of Engineering - Graduate
+UC,America/New_York,School of Professional Studies
+UY,America/New_York,Tandon School of Engineering
+UB,America/New_York,Leonard N. Stern School of Business
+GB,America/New_York,Leonard N. Stern School of Business - Graduate
+UG,America/New_York,Gallatin School of Individualized Study
+GG,America/New_York,Gallatin School of Individualized Study - Graduate
+GN,America/New_York,Rory Meyers College of Nursing - Graduate
+GP,America/New_York,Robert F. Wagner Graduate School of Public Service - Graduate
+DC,America/New_York,School of Professional Studies
+UD,America/New_York,College of Dentistry
+US,America/New_York,Silver School of Social Work
+UU,America/New_York,College of Global Public Health
+UH,America/New_York,NYU Abu Dhabi
+DN,America/New_York,
+CD,America/New_York,
+GH,America/New_York,
+NI,America/New_York,
+NH,America/New_York,
+NE,America/New_York,
+NY,America/New_York,
+NB,America/New_York,
+NT,America/New_York,
+ND,America/New_York,

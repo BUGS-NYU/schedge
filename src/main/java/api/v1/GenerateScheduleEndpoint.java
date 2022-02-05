@@ -1,6 +1,7 @@
 package api.v1;
 
 import static actions.ScheduleSections.*;
+import static utils.TryCatch.*;
 
 import api.*;
 import database.*;
@@ -10,6 +11,7 @@ import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.ArrayList;
 import types.*;
+import utils.*;
 
 public final class GenerateScheduleEndpoint extends Endpoint {
 
@@ -31,14 +33,14 @@ public final class GenerateScheduleEndpoint extends Endpoint {
               + "to check whether the schedule is valid.");
           openApiOperation.summary("Schedule Checking Endpoint");
         })
-        .pathParam("year", Integer.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid year.");
-                   })
-        .pathParam("semester", SemesterCode.class,
-                   openApiParam -> {
-                     openApiParam.description("Must be a valid semester code.");
-                   })
+        .pathParam(
+            "term", String.class,
+            openApiParam -> {
+              openApiParam.description(
+                  "Must be a valid term code, either 'current', 'next', or something "
+                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
+                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
+            })
         .queryParam("registrationNumbers", String.class, false,
                     openApiParam
                     -> openApiParam.description("CSV of registration numbers"))
@@ -56,47 +58,55 @@ public final class GenerateScheduleEndpoint extends Endpoint {
 
   public Handler getHandler() {
     return ctx -> {
-      int year;
-      ArrayList<Integer> registrationNumbers = new ArrayList<>();
-      try {
-        year = Integer.parseInt(ctx.pathParam("year"));
+      TryCatch tc = tcNew(e -> {
+        ctx.status(400);
+        ctx.json(new ApiError(e.getMessage()));
+      });
 
-        String regNumsString = ctx.queryParam("registrationNumbers");
-        if (regNumsString == null) {
-          ctx.status(400);
-          ctx.json(new ApiError("missing required query parameters"));
-          return;
+      Term term = tc.log(() -> {
+        String termString = ctx.pathParam("term");
+        if (termString.contentEquals("current")) {
+          return Term.getCurrentTerm();
         }
 
-        String[] regNumsStrArray = regNumsString.split(",");
-        if (regNumsStrArray.length == 0) {
-          ctx.status(400);
-          ctx.json(new ApiError("didn't provide any regstration numbers"));
-          return;
+        if (termString.contentEquals("next")) {
+          return Term.getCurrentTerm().nextTerm();
         }
+
+        int year = Integer.parseInt(termString.substring(2));
+        return new Term(termString.substring(0, 2), year);
+      });
+
+      if (term == null)
+        return;
+
+      String regNumsString = ctx.queryParam("registrationNumbers");
+      if (regNumsString == null) {
+        ctx.status(400);
+        ctx.json(new ApiError("missing required query parameters"));
+        return;
+      }
+
+      String[] regNumsStrArray = regNumsString.split(",");
+      if (regNumsStrArray.length == 0) {
+        ctx.status(400);
+        ctx.json(new ApiError("didn't provide any regstration numbers"));
+        return;
+      }
+
+      ArrayList<Integer> registrationNumbers = tc.log(() -> {
+        ArrayList<Integer> numbers = new ArrayList<>();
 
         for (String regNumString : regNumsStrArray) {
-          registrationNumbers.add(Integer.parseInt(regNumString));
+          numbers.add(Integer.parseInt(regNumString));
         }
 
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
+        return numbers;
+      });
+
+      if (registrationNumbers == null)
         return;
-      }
 
-      Term term;
-      try {
-        term = new Term(ctx.pathParam("semester"), year);
-      } catch (IllegalArgumentException e) {
-        ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
-        return;
-      }
-
-      String fullData = ctx.queryParam("full");
-
-      ctx.status(200);
       Object output = GetConnection.withConnectionReturning(conn -> {
         Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
         if (epoch == null) {
@@ -109,6 +119,8 @@ public final class GenerateScheduleEndpoint extends Endpoint {
 
         return generateSchedule(meetings);
       });
+
+      ctx.status(200);
       ctx.json(output);
     };
   }

@@ -13,7 +13,7 @@ import utils.*;
 
 public final class CoursesEndpoint extends Endpoint {
 
-  public String getPath() { return "/{term}/{subject}"; }
+  public String getPath() { return "/{term}/courses/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

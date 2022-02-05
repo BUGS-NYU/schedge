@@ -55,8 +55,8 @@ public class App {
     });
 
     new SearchEndpoint().addTo(app);
-    new CoursesEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
+    new CoursesEndpoint().addTo(app);
     new SectionEndpoint().addTo(app);
     new InfoEndpoint().addTo(app);
   }

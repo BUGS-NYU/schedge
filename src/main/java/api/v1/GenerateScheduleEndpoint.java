@@ -5,7 +5,6 @@ import static utils.TryCatch.*;
 
 import api.*;
 import database.*;
-import database.epochs.LatestCompleteEpoch;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
@@ -108,7 +107,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
         return;
 
       Object output = GetConnection.withConnectionReturning(conn -> {
-        Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+        Integer epoch = Epoch.getLatestEpoch(conn, term);
         if (epoch == null) {
           return new Schedule(new ArrayList<>());
         }

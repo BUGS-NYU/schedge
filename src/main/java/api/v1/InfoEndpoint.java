@@ -1,15 +1,10 @@
 package api.v1;
 
-import static utils.TryCatch.*;
-
 import api.*;
-import database.GetConnection;
-import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
-import utils.TryCatch;
 
 public final class InfoEndpoint extends Endpoint {
   public String getPath() { return "/info"; }

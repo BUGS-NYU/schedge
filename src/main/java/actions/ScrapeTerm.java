@@ -6,8 +6,8 @@ import static scraping.ScrapeCatalog.*;
 import static utils.Utils.*;
 
 import cli.ConsoleProgressBarConsumer;
+import database.Epoch;
 import database.GetConnection;
-import database.epochs.*;
 import database.models.SectionID;
 import java.util.List;
 import java.util.function.Function;
@@ -36,7 +36,7 @@ public class ScrapeTerm {
     List<Course> courses = scrapeCatalog(term, subjects, batchSize);
 
     GetConnection.withConnection(conn -> {
-      int epoch = GetNewEpoch.getNewEpoch(conn, term);
+      int epoch = Epoch.getNewEpoch(conn, term);
 
       List<SectionID> idData = insertCourses(conn, term, epoch, courses);
       Iterable<SectionID> ids =
@@ -44,7 +44,7 @@ public class ScrapeTerm {
 
       updateSections(conn, term, ids.iterator(), batchSizeSections);
 
-      CompleteEpoch.completeEpoch(conn, term, epoch);
+      Epoch.completeEpoch(conn, term, epoch);
     });
   }
 }

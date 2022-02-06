@@ -3,8 +3,8 @@ package api.v1;
 import static utils.TryCatch.*;
 
 import api.*;
+import database.Epoch;
 import database.GetConnection;
-import database.epochs.LatestCompleteEpoch;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
@@ -86,7 +86,7 @@ public final class CoursesEndpoint extends Endpoint {
       String fullData = ctx.queryParam("full");
 
       Object output = GetConnection.withConnectionReturning(conn -> {
-        Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+        Integer epoch = Epoch.getLatestEpoch(conn, term);
         if (epoch == null)
           return Collections.emptyList();
 

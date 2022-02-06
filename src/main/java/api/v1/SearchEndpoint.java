@@ -1,9 +1,9 @@
 package api.v1;
 
-import static database.epochs.LatestCompleteEpoch.getLatestEpoch;
 import static utils.TryCatch.*;
 
 import api.*;
+import database.Epoch;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Handler;
@@ -15,13 +15,6 @@ import types.Term;
 import utils.*;
 
 public final class SearchEndpoint extends Endpoint {
-
-  enum SemesterCode {
-    su,
-    sp,
-    fa,
-    ja;
-  }
 
   public String getPath() { return "/{term}/search"; }
 
@@ -167,7 +160,7 @@ public final class SearchEndpoint extends Endpoint {
       }
 
       GetConnection.withConnection(conn -> {
-        Integer epoch = getLatestEpoch(conn, term);
+        Integer epoch = Epoch.getLatestEpoch(conn, term);
         if (epoch == null) {
           ctx.status(200);
           ctx.json(new ArrayList<>());

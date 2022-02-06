@@ -28,8 +28,7 @@ public final class Utils {
     if (resource == null)
       throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    // Using the "stupid scanner trick"
-    // https://community.oracle.com/blogs/pat/2004/10/23/stupid-scanner-tricks
+    // Read entire file and then get it as a list of lines
     return Arrays.asList(
         new Scanner(resource, "UTF-8").useDelimiter("\\A").next().split("\\n"));
   }

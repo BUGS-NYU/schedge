@@ -7,12 +7,11 @@ import static utils.Utils.*;
 import actions.*;
 import api.App;
 import api.SelectCourses;
+import database.Epoch;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
-import database.epochs.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import me.tongfei.progressbar.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
@@ -79,7 +78,7 @@ public class Database implements Runnable {
     Term term = termMixin.getTerm();
     List<Subject> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
-      Integer epoch = LatestCompleteEpoch.getLatestEpoch(conn, term);
+      Integer epoch = Epoch.getLatestEpoch(conn, term);
       if (epoch == null) {
         logger.warn("No completed epoch for term=" + term);
         return;
@@ -113,10 +112,10 @@ public class Database implements Runnable {
           CleanData.cleanData();
         } else if (epoch != null && term == null) {
           logger.info("Cleaning epoch={}...", epoch);
-          CleanEpoch.cleanEpoch(conn, epoch);
+          Epoch.cleanEpoch(conn, epoch);
         } else if (term != null && epoch == null) {
           logger.info("Cleaning epochs for term={}...", term);
-          CleanEpoch.cleanEpochs(conn, term);
+          Epoch.cleanEpochs(conn, term);
         } else {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Term and --epoch are mutually exclusive!");
@@ -158,7 +157,7 @@ public class Database implements Runnable {
     Term term = termMixin.getTerm();
 
     GetConnection.withConnection(conn -> {
-      int epoch = GetNewEpoch.getNewEpoch(conn, term);
+      int epoch = Epoch.getNewEpoch(conn, term);
 
       List<List<Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
 
@@ -171,7 +170,7 @@ public class Database implements Runnable {
             () -> InsertFullCourses.insertCourses(conn, term, epoch, courses));
       }
 
-      CompleteEpoch.completeEpoch(conn, term, epoch);
+      Epoch.completeEpoch(conn, term, epoch);
     });
 
     GetConnection.close();

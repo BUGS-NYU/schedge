@@ -1,7 +1,8 @@
 package actions;
 
+import database.Epoch;
 import database.GetConnection;
-import database.epochs.CleanEpoch;
+
 import java.sql.SQLException;
 import org.slf4j.*;
 import types.Term;
@@ -20,10 +21,10 @@ public class CleanData {
       Term current = Term.getCurrentTerm();
       Term next = current.nextTerm();
 
-      CleanEpoch.cleanEpochsUpTo(conn, current);
-      CleanEpoch.cleanEpochsUpTo(conn, current.prevTerm());
-      CleanEpoch.cleanEpochsUpTo(conn, next);
-      CleanEpoch.cleanEpochsUpTo(conn, next.nextTerm());
+      Epoch.cleanEpochsUpTo(conn, current);
+      Epoch.cleanEpochsUpTo(conn, current.prevTerm());
+      Epoch.cleanEpochsUpTo(conn, next);
+      Epoch.cleanEpochsUpTo(conn, next.nextTerm());
     });
   }
 }

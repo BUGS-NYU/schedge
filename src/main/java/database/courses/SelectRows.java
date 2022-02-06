@@ -27,6 +27,7 @@ public class SelectRows {
         + "WHERE sections.registration_number = ? AND courses.epoch = ?");
 
     Utils.setArray(sectionIdStmt, registrationNumber, epoch);
+
     ResultSet rs = sectionIdStmt.executeQuery();
     if (!rs.next())
       return Stream.empty();
@@ -34,7 +35,10 @@ public class SelectRows {
     int sectionId = rs.getInt(1);
     Integer[] intSectionIds = new Integer[] {sectionId};
     Array sectionIds = conn.createArrayOf("integer", intSectionIds);
+
     rs.close();
+    sectionIdStmt.close();
+
     return selectRows(
         conn, "sections.id = ANY (?) OR sections.associated_with = ANY (?)",
         sectionIds, sectionIds);
@@ -44,6 +48,7 @@ public class SelectRows {
                                                   List<Integer> sectionIds)
       throws SQLException {
     Array idArray = conn.createArrayOf("INTEGER", sectionIds.toArray());
+
     return SelectRows.selectRows(
         conn,
         "courses.epoch = ? AND (sections.id = ANY (?) OR sections.associated_with = ANY (?))",
@@ -79,7 +84,9 @@ public class SelectRows {
 
       rows.add(new Row(rs, meetings));
     }
+
     rs.close();
+    stmt.close();
 
     return rows.stream();
   }
@@ -108,7 +115,10 @@ public class SelectRows {
     }
 
     int sectionId = rs.getInt(1);
+
     rs.close();
+    sectionIdStmt.close();
+
     return selectFullRows(conn,
                           "sections.associated_with = ? OR sections.id = ?",
                           sectionId, sectionId);
@@ -140,7 +150,10 @@ public class SelectRows {
     while (rs.next()) {
       rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
     }
+
     rs.close();
+    stmt.close();
+
     return rows.stream();
   }
 
@@ -175,7 +188,9 @@ public class SelectRows {
 
       meetings.add(meeting);
     }
+
     rs.close();
+    stmt.close();
 
     return meetingsBySection;
   }

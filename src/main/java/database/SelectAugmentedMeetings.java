@@ -25,11 +25,15 @@ public final class SelectAugmentedMeetings {
     Utils.setArray(stmt, epoch, regNumberArray);
 
     ResultSet rs = stmt.executeQuery();
+
     ArrayList<AugmentedMeeting> meetings = new ArrayList<>();
     while (rs.next()) {
       meetings.add(new AugmentedMeeting(rs));
     }
+
     rs.close();
+    stmt.close();
+
     return meetings;
   }
 }

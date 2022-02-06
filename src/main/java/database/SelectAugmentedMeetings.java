@@ -10,7 +10,6 @@ public final class SelectAugmentedMeetings {
   selectAugmentedMeetings(Connection conn, int epoch,
                           List<Integer> registrationNumbers)
       throws SQLException {
-
     PreparedStatement stmt = conn.prepareStatement(
         "SELECT courses.school, courses.subject, courses.dept_course_id,"
         + "sections.registration_number,sections.instruction_mode, "
@@ -20,6 +19,7 @@ public final class SelectAugmentedMeetings {
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
         + "JOIN meetings ON meetings.section_id = sections.id "
         + "WHERE epoch = ? AND sections.registration_number = ANY (?)");
+
     Array regNumberArray =
         conn.createArrayOf("INTEGER", registrationNumbers.toArray());
     Utils.setArray(stmt, epoch, regNumberArray);

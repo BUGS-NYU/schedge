@@ -13,12 +13,12 @@ Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provid
 you a general overview of the project and how to contribute.
 
 ## TODO
-- [x] Deploy with CI/CD (`nyu.a1liu.com`)
-- [x] Make the schools/subjects list more dynamic
 - [ ] Fix bugs reported in issues
-- [x] Term should use an enum instead of hard-coded integers
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
+- [x] Deploy with CI/CD (`nyu.a1liu.com`)
+- [x] Make the schools/subjects list more dynamic
+- [x] Term should use an enum instead of hard-coded integers
 - [x] Schools/Subjects/whatever should be in one single endpoint
 - [x] Delete server-side RMP stuff
 - [x] Change DB to not use ordinals, because they make it harder to do stuff like

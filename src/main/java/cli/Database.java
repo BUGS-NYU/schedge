@@ -18,8 +18,7 @@ import scraping.ScrapeSchedge;
 import types.*;
 import utils.Client;
 
-@Command(name = "db", description = "Operate on data in the database.\n",
-         subcommands = {Database.Clean.class})
+@Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
 
@@ -46,7 +45,6 @@ public class Database implements Runnable {
                                + "--year, --semester, and --term are ignored.")
          boolean service) {
     while (service) {
-      CleanData.cleanData();
       UpdateData.updateData(batchSize.getCatalog(20),
                             batchSize.getSections(30));
 
@@ -95,36 +93,6 @@ public class Database implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @Command(name = "clean", description = "Clean unused epoch data.\n")
-  public static class Clean implements Runnable {
-    @Mixin Mixins.Term termMixin;
-
-    @Option(names = "--epoch", description = "The epoch to clean")
-    Integer epoch;
-
-    @Spec CommandLine.Model.CommandSpec spec;
-
-    public void run() {
-      Term term = termMixin.getTermAllowNull();
-      GetConnection.withConnection(conn -> {
-        if (epoch == null && term == null) {
-          logger.info("Cleaning all old epochs...");
-          CleanData.cleanData();
-        } else if (epoch != null && term == null) {
-          logger.info("Cleaning epoch={}...", epoch);
-          Epoch.cleanEpoch(conn, epoch);
-        } else if (term != null && epoch == null) {
-          logger.info("Cleaning epochs for term={}...", term);
-          Epoch.cleanEpochs(conn, term);
-        } else {
-          throw new CommandLine.ParameterException(
-              spec.commandLine(), "Term and --epoch are mutually exclusive!");
-        }
-      });
-      GetConnection.close();
-    }
-  }
-
   @Command(name = "serve", description = "Serve data through the API.\n")
   public void
   serve(@Mixin Mixins.BatchSize batchSizeMixin,
@@ -134,7 +102,6 @@ public class Database implements Runnable {
     App.run();
 
     while (scrape) {
-      CleanData.cleanData();
       UpdateData.updateData(batchSizeMixin.getCatalog(20),
                             batchSizeMixin.getSections(20));
 

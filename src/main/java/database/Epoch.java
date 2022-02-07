@@ -66,38 +66,4 @@ public class Epoch {
       logger.info("completed epoch {}", id);
     }
   }
-
-  public static void cleanEpochs(Connection conn, Term term)
-      throws SQLException {
-    try (PreparedStatement stmt = conn.prepareStatement(
-             "DELETE FROM epochs WHERE epochs.term = ?")) {
-      stmt.setString(1, term.json());
-
-      if (stmt.executeUpdate() == 0)
-        throw new SQLException("couldn't find term=" + term);
-    }
-  }
-
-  public static void cleanEpochsUpTo(Connection conn, Term term)
-      throws SQLException {
-    Integer epoch = Epoch.getLatestEpoch(conn, term);
-    if (epoch == null)
-      return;
-
-    try (PreparedStatement stmt = conn.prepareStatement(
-             "DELETE FROM epochs WHERE epochs.term = ? AND epochs.id < ?")) {
-      Utils.setArray(stmt, term.json(), epoch).executeUpdate();
-    }
-  }
-
-  public static void cleanEpoch(Connection conn, int epoch)
-      throws SQLException {
-    try (PreparedStatement stmt =
-             conn.prepareStatement("DELETE FROM epochs WHERE epochs.id = ?")) {
-      stmt.setInt(1, epoch);
-
-      if (stmt.executeUpdate() == 0)
-        throw new SQLException("couldn't find epoch=" + epoch);
-    }
-  }
 }

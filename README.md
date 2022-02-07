@@ -16,6 +16,7 @@ you a general overview of the project and how to contribute.
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
+- [ ] Remove epochs? Turns out there's no need for them, we can just use transactions
 - [x] Deploy with CI/CD (`nyu.a1liu.com`)
 - [x] Make the schools/subjects list more dynamic
 - [x] Term should use an enum instead of hard-coded integers

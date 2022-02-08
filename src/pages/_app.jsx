@@ -21,9 +21,9 @@ const BootstrapInput = styled.div`
   }
 `;
 
-const StyledImage = styled(Image)`
+const StyledImage = styled.img`
   height: 2.8rem;
-  width: 0rem;
+  width: 2.8rem;
   margin: 1.2vmin;
   float: right;
   padding: 0.5rem;

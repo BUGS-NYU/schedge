@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
 import Section from "components/Section";
-import { useAsync } from "components/hooks";
+import { useQuery } from "react-query";
 import { parseDate } from "components/util";
 import { useRouter } from "next/router";
 
@@ -10,22 +10,22 @@ function CoursePage() {
   const router = useRouter();
   const { school, subject, courseid, year, semester } = router.query;
 
-  const { isLoading: loading, data: courseData } =
-    useAsync(async () => {
-      if (!year || !semester || !school || !subject) {
-        return null;
-      }
+  const coursesKey = ["course", year, semester, school, subject, courseid];
+  const { isLoading, data: courseData } = useQuery(coursesKey, async () => {
+    if (!year || !semester || !school || !subject) {
+      return null;
+    }
 
-      const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`;
-      const response = await fetch(url);
-      const data = await response.json();
+    const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`;
+    const response = await fetch(url);
+    const data = await response.json();
 
-      return data.find((course) => course.deptCourseId === courseid);
-    }, [year, semester, school, subject]);
+    return data.find((course) => course.deptCourseId === courseid);
+  });
 
   return (
     <div>
-      {loading && (
+      {isLoading && (
         <>
           <span>Loading...</span>
           <ColorHeader>
@@ -38,7 +38,7 @@ function CoursePage() {
         </>
       )}
 
-      {!loading && (
+      {!isLoading && (
         <>
           <ColorHeader>
             <CourseHeader>

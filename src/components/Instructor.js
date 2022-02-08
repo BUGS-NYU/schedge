@@ -1,5 +1,5 @@
 import React from "react";
-import { useAsync } from "components/hooks";
+import { useQuery } from "react-query";
 import styled from "styled-components";
 import ReviewsBuilder from "./ReviewsBuilder";
 import ReviewTableHeaders from "./ReviewTableHeaders";
@@ -12,7 +12,7 @@ export default function Instructor({ instructor }) {
   const query =
     names.length >= 2 ? `${names[0]} ${names[names.length - 1]}` : instructor;
 
-  const { isLoading, isLoaded, error, data } = useAsync(async () => {
+  const ratingsList = useQuery(["rmp-instructors", query], async () => {
     const url = `https://www.ratemyprofessors.com/filter/professor/?&page=1&queryBy=schoolsid&sid=675&queryoption=TEACHER&queryBy=teacher&query=${query}`;
 
     const res = await fetch(url);
@@ -20,7 +20,6 @@ export default function Instructor({ instructor }) {
 
     if (data === undefined || data.searchResultsTotal === 0) {
       return {
-        name: instructor,
         rmpId: "",
         page: 1,
         overallRating: -1,
@@ -31,7 +30,6 @@ export default function Instructor({ instructor }) {
     const professorInfo = data.professors[0];
     if (professorInfo.overall_rating === "N/A") {
       return {
-        name: instructor,
         rmpId: "",
         page: 1,
         overallRating: -1,
@@ -40,15 +38,16 @@ export default function Instructor({ instructor }) {
     }
 
     return {
-      name: instructor,
       rmpId: professorInfo.tid,
       page: 1,
       overallRating: parseFloat(professorInfo.overall_rating),
       totalRatings: professorInfo.tNumRatings,
     };
-  }, [query]);
+  });
 
-  if (!isLoaded) return <div>Loading</div>;
+  const { data, isLoading, error } = ratingsList;
+
+  if (!isLoading || !data) return <div>Loading</div>;
   if (error) return <div>Error</div>;
 
   return (
@@ -62,10 +61,11 @@ export default function Instructor({ instructor }) {
         ) : (
           <React.Fragment>
             <ReviewTableHeaders
-              name={data.name}
+              name={instructor}
               totalRatings={data.totalRatings}
               overallRating={data.overallRating}
             />
+
             <ReviewTable
               ratings={[]}
               remaining={false}

@@ -2,44 +2,38 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import { useAsync } from "components/hooks";
+import { useQuery } from "react-query";
 import { findSchool } from "components/util";
 
 export default function SubjectPage({ location }) {
   const router = useRouter();
   const { school, subject, year, semester } = router.query;
 
-  const courseList = useAsync(async () => {
-    if (!year || !semester || !school || !subject) {
-      return null;
+  const courseList = useQuery(
+    ["courses", year, semester, school, subject],
+    async () => {
+      if (!year || !semester || !school || !subject) {
+        return null;
+      }
+
+      const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+      return sortedData;
     }
+  );
 
-    const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-    return sortedData;
-  }, [year, semester, school, subject]);
-
-  const departmentList = useAsync(async () => {
+  const departmentList = useQuery("subjects", async () => {
     const response = await fetch("https://schedge.a1liu.com/subjects");
     return response.json();
-  }, []);
+  });
 
-  const schoolList = useAsync(async () => {
+  const schoolList = useQuery("schools", async () => {
     const response = await fetch("https://schedge.a1liu.com/schools");
     return response.json();
-  }, []);
-
-  React.useEffect(() => {
-    (async () => {
-      try {
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [year, semester, school, subject]);
+  });
 
   return (
     <PageContainer>

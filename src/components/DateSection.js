@@ -5,8 +5,8 @@ import {
   addMinutes,
   isEqualTime,
   convertToLocaleTimeStr,
-} from "../utils/utils";
-import { days } from "../utils/constants";
+} from "components/util";
+import { days } from "components/constants";
 
 export default function DateSection({ sortedSectionMeetings }) {
   const parsedMeetings = sortedSectionMeetings.map((meeting) => {

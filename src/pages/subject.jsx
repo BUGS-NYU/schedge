@@ -1,62 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
 import styled from "styled-components";
-
-import { findSchool } from "./utils/utils";
+import { useAsync } from "components/hooks";
+import { findSchool } from "components/util";
 
 export default function SubjectPage({ location }) {
   const router = useRouter();
   const { school, subject, year, semester } = router.query;
 
-  const [courseList, setCourseList] = useState({ loading: true, data: [] });
-  const [departmentList, setDepartmentList] = useState({
-    loading: true,
-    data: {},
-  });
-  const [schoolList, setSchoolList] = useState({ loading: true, data: {} });
+  const courseList = useAsync(async () => {
+    if (!year || !semester || !school || !subject) {
+      return null;
+    }
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch(
-          `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`
-        );
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-        const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-        setCourseList(() => ({ loading: false, data: sortedData }));
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-    (async () => {
-      try {
-        const response = await fetch("https://schedge.a1liu.com/subjects");
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-        setDepartmentList(() => ({ loading: false, data }));
-      } catch (error) {
-        console.error(error);
-      }
-    })();
+    const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`;
+    const response = await fetch(url);
+    const data = await response.json();
 
+    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+    return sortedData;
+  }, [year, semester, school, subject]);
+
+  const departmentList = useAsync(async () => {
+    const response = await fetch("https://schedge.a1liu.com/subjects");
+    return response.json();
+  }, []);
+
+  const schoolList = useAsync(async () => {
+    const response = await fetch("https://schedge.a1liu.com/schools");
+    return response.json();
+  }, []);
+
+  React.useEffect(() => {
     (async () => {
       try {
-        const response = await fetch("https://schedge.a1liu.com/schools");
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-        setSchoolList(() => ({ loading: false, data }));
       } catch (error) {
         console.error(error);
       }
@@ -66,64 +44,50 @@ export default function SubjectPage({ location }) {
   return (
     <PageContainer>
       <HeaderBackground></HeaderBackground>
-      {courseList.loading && schoolList.loading && departmentList.loading && (
-        <span></span>
-      )}
-      {!(
-        courseList.loading ||
-        schoolList.loading ||
-        departmentList.loading
-      ) && (
-        <div>
-          <DepartmentHeader>
+
+      <div>
+        <DepartmentHeader>
+          <Link
+            href={{
+              pathname: "/school",
+              query: `school=${school}&year=${year}&semester=${semester}`,
+              state: {
+                schoolName:
+                  schoolList.data?.[school]?.name ?? findSchool(school),
+              },
+            }}
+            style={{ textDecoration: "none" }}
+          >
+            <SchoolName>{schoolList.data?.[school]?.name ?? school}</SchoolName>
+          </Link>
+
+          <DepartmentName>
+            {departmentList.data?.[school]?.[subject]?.name}
+          </DepartmentName>
+        </DepartmentHeader>
+
+        <CourseContainer>
+          {courseList.data?.map((course, i) => (
             <Link
               href={{
-                pathname: "/school",
-                query: `school=${school}&year=${year}&semester=${semester}`,
-                state: {
-                  schoolName: schoolList.data[school]
-                    ? schoolList.data[school].name
-                    : findSchool(school),
-                },
+                pathname: "/course",
+                query: `school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}&year=${year}&semester=${semester}`,
               }}
-              style={{ textDecoration: "none" }}
+              key={i}
+              style={{ textDecoration: "none", color: "inherit" }}
             >
-              <SchoolName>
-                {schoolList.data[school]
-                  ? schoolList.data[school].name
-                  : school}
-              </SchoolName>
+              <Course>
+                <h4>
+                  {course.subjectCode.code}-{course.subjectCode.school}{" "}
+                  {course.deptCourseId}
+                </h4>
+                <h3>{course.name}</h3>
+                <p>{course.sections.length} Sections</p>
+              </Course>
             </Link>
-
-            <DepartmentName>
-              {departmentList.data[school][subject].name
-                ? departmentList.data[school][subject].name
-                : ""}
-            </DepartmentName>
-          </DepartmentHeader>
-          <CourseContainer>
-            {courseList.data.map((course, i) => (
-              <Link
-                href={{
-                  pathname: "/course",
-                  query: `&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}&year=${year}&semester=${semester}`,
-                }}
-                key={i}
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                <Course>
-                  <h4>
-                    {course.subjectCode.code}-{course.subjectCode.school}{" "}
-                    {course.deptCourseId}
-                  </h4>
-                  <h3>{course.name}</h3>
-                  <p>{course.sections.length} Sections</p>
-                </Course>
-              </Link>
-            ))}
-          </CourseContainer>
-        </div>
-      )}
+          ))}
+        </CourseContainer>
+      </div>
     </PageContainer>
   );
 }

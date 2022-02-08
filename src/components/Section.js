@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
-import Recitation from "../components/Recitation";
+import Recitation from "components/Recitation";
 import {
   convertUnits,
   splitLocation,
   changeStatus,
   styleStatus,
   parseDate,
-} from "../utils/utils";
-
-import localStorageContainer from "../utils/localstorage";
+} from "components/util";
+import localStorageContainer from "components/localStorage";
 
 function Section({
   year,

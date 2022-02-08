@@ -20,6 +20,7 @@ export function useCounter(n) {
   return [counter, increment];
 }
 
+// isLoaded needs to be correct my guy
 function useAsyncHelper(fn, _deps) {
   const [fetches, setFetches] = React.useState(0);
 
@@ -56,6 +57,7 @@ function useAsyncHelper(fn, _deps) {
 
       if (mounted && doneRef.current <= started) {
         doneRef.current = started + 1;
+
         setData(newValue);
         setError(newError);
       }

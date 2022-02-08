@@ -1,8 +1,6 @@
 import React, { Fragment } from "react";
-
 import styled from "styled-components";
-
-import { times, days } from "../utils/constants";
+import { times, days } from "components/constants";
 
 export default function Calendar({ renderCourses }) {
   return (
@@ -37,7 +35,6 @@ export default function Calendar({ renderCourses }) {
     </CalendarContainer>
   );
 }
-
 
 const CalendarContainer = styled.div`
   min-height: 100vh;

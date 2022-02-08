@@ -9,7 +9,7 @@ import {
   splitLocation,
   changeStatus,
   styleStatus,
-} from "../utils/utils"; // eslint-disable-line no-unused-vars
+} from "components/util";
 
 function Recitation({
   year,
@@ -58,16 +58,8 @@ function Recitation({
             })
           }
         >
-          <div
-            style={{
-            }}
-          />
-          <span
-            style={{
-            }}
-          >
-            Add to Wishlist
-          </span>
+          <div style={{}} />
+          <span style={{}}>Add to Wishlist</span>
         </WishlistButton>
       </UtilBar>
     </RecitationContainer>
@@ -152,6 +144,5 @@ const WishlistButton = styled.div`
     margin-right: 0.65rem;
   }
 `;
-
 
 export default Recitation;

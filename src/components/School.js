@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { findSchool } from "../utils/utils";
+import { findSchool } from "components/util";
 
 export default function School({ schoolCode, schoolName, year, semester }) {
   return (

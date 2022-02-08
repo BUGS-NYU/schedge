@@ -1,14 +1,12 @@
-import "./app.css";
+import "./App.css";
 import "./variables.css";
 
 import React, {useState} from "react";
 import Link from 'next/link';
 import Image from 'next/image'
-import { Select, MenuItem } from "@material-ui/core";
-import { QueryClient, QueryClientProvider } from "react-query";
-import styled from "styled-components";
 
 
+/*
 const BootstrapInput = styled.div`
   border-radius: 4px;
   border: 1px solid #9e9e9e;
@@ -33,6 +31,7 @@ const StyledImage = styled(Image)`
   border-radius: 100%;
   background-color: ${(props) => (props.isActive ? "var(--grey300)" : "")};
 `;
+ */
 
 
 
@@ -41,9 +40,6 @@ function App({ Component, pageProps }) {
   //const initialState = loadState();
   //const store = createStore(initialState);
   //store.subscribe(() => saveState(store.getState()));
-
-  const queryClient = new QueryClient();
-
 
   const getPath = () => "" //window.location.pathname + window.location.search;
 
@@ -81,61 +77,51 @@ function App({ Component, pageProps }) {
     const [sem, currYear] = code.split("-");
     setSemester(sem);
     setYear(parseInt(currYear));
-  };      
+  };
 
 
   return(
-    <QueryClientProvider client={queryClient}>
+    <>
       <nav>
+        <ul>
           <ul>
-            <ul>
-              <li id="title">
-                <Link href="/">
-                  Bobcat Search
-                </Link>
-              </li>
-              <Select
-                displayEmpty
-                onChange={handleOnChange}
-                defaultValue={`${semester}-${year}`}
-                value={`${semester}-${year}`}
-                input={<BootstrapInput />}
-              >
-                {options.map((item) => {
-                  return (
-                    <MenuItem key={item.name} value={item.code}>
-                      {item.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </ul>
-            <li className="icon">
-              {toggle !== "/schedule" ? (
-                <Link href={toggle} onClick={() => setToggle("/schedule")}>
-                  <StyledImage
-                    src="/edit-calendar.svg"
-                    alt="Edit Calendar"
-                    width={2.8}
-                    height={1}
-                  />
-                </Link>
-              ) : (
-                <Link href="/schedule" onClick={() => setToggle(getPath)}>
-                  <StyledImage
-                    src="/edit-calendar.svg"
-                    width={2.8}
-                    height={1}
-                    alt="Edit Calendar"
-                  />
-                </Link>
-              )}
+            <li id="title">
+              <Link href="/">
+                Bobcat Search
+              </Link>
             </li>
 
+            <div>
+              Select here
+            </div>
           </ul>
+          <li className="icon">
+            {toggle !== "/schedule" ? (
+              <Link href={toggle} onClick={() => setToggle("/schedule")}>
+                <img
+                  src="/edit-calendar.svg"
+                  alt="Edit Calendar"
+                  width={2.8}
+                  height={1}
+                />
+              </Link>
+            ) : (
+              <Link href="/schedule" onClick={() => setToggle(getPath)}>
+                <img
+                  src="/edit-calendar.svg"
+                  width={2.8}
+                  height={1}
+                  alt="Edit Calendar"
+                />
+              </Link>
+            )}
+          </li>
+
+        </ul>
       </nav>
+
       <Component year={year} semester={semester} {...pageProps} />
-    </QueryClientProvider>
+    </>
   )
 }
 

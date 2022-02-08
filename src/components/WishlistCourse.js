@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { generateScheduleTime } from "../utils/utils";
+import { generateScheduleTime } from "components/util";
 
 function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
   return (

@@ -59,7 +59,7 @@ export default function SearchBar({ year, semester }) {
             <Link
               href={{
                 pathname: "/course",
-                query: `?&school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}&year=${year}&semester=${semester}`,
+                query: `school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}&year=${year}&semester=${semester}`,
               }}
               key={i}
               style={{ textDecoration: "none" }}

@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Link from 'next/link';
 import styled from "styled-components";
-
-import WishlistCourse from "./components/WishlistCourse";
-import Calendar from "./components/Calendar";
-import ScheduleCourse from "./components/ScheduleCourse";
-
-import { dayToStr } from "./utils/constants";
-
-import localStorageContainer from "./utils/localstorage";
+import WishlistCourse from "components/WishlistCourse";
+import Calendar from "components/Calendar";
+import ScheduleCourse from "components/ScheduleCourse";
+import { dayToStr } from "components/constants";
+import localStorageContainer from "components/localStorage";
 
 function SchedulePage({
   year,
@@ -17,14 +14,14 @@ function SchedulePage({
   toggleCourseSelect,
   clearSchedule,
 }) {
-  const [schedule, setSchedule] = useState({});
-  const [checkboxes, setCheckboxes] = useState(
+  const [schedule, setSchedule] = React.useState({});
+  const [checkboxes, setCheckboxes] = React.useState(
     //JSON.parse(window.localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}
     {}
   );
-  const [wishlist, setWishlist] = useState([]);
-  const [localStorage, setLocalStorage] = useState(null);
-  const [Toast, setToast] = useState({
+  const [wishlist, setWishlist] = React.useState([]);
+  const [localStorage, setLocalStorage] = React.useState(null);
+  const [Toast, setToast] = React.useState({
     open: false,
     message: "",
     horizontal: "center",
@@ -32,7 +29,7 @@ function SchedulePage({
   });
   const { open, message, horizontal, vertical } = Toast;
 
-  useEffect(() => {
+  React.useEffect(() => {
     (async () => {
       try {
         const localStorage = new localStorageContainer();

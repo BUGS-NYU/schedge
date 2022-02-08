@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { parseDate, addMinutes } from "../utils/utils";
+import { parseDate, addMinutes } from "components/util";
 
 export default function ScheduleCourse({ course }) {
   const computeMargin = (startTime) => {

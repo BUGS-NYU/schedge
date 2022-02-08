@@ -1,13 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-export default function ReviewTable({
-  ratings,
-  remaining,
-  page,
-  setPage,
-  isPreviousData,
-}) {
+export default function ReviewTable({ ratings, remaining, page, setPage }) {
   return (
     <React.Fragment>
       <RatingTable>
@@ -60,9 +54,10 @@ export default function ReviewTable({
         {remaining > 0 && (
           <ExpandButton
             onClick={() => {
-              if (!isPreviousData && remaining > 0) {
-                setPage((old) => old + 1);
-              }
+              console.log("expand");
+              // if (!isPreviousData && remaining > 0) {
+              //   setPage((old) => old + 1);
+              // }
             }}
             next={true}
           >

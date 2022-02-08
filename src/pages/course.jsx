@@ -1,38 +1,27 @@
-import React, { useState, useEffect } from "react";
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 import styled from "styled-components";
-import Section from "./components/Section";
-import { parseDate } from "./utils/utils";
-
+import Section from "components/Section";
+import { useAsync } from "components/hooks";
+import { parseDate } from "components/util";
 import { useRouter } from "next/router";
 
 function CoursePage() {
   const router = useRouter();
   const { school, subject, courseid, year, semester } = router.query;
-  const [loading, setLoading] = useState(true);
-  const [courseData, setCourseData] = useState({});
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch(
-          `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`
-        );
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-
-        setCourseData(
-          () => data.filter((course) => course.deptCourseId === courseid)[0]
-        );
-        setLoading(() => false);
-      } catch (error) {
-        console.error(error);
+  const { isLoading: loading, data: courseData } =
+    useAsync(async () => {
+      if (!year || !semester || !school || !subject) {
+        return null;
       }
-    })();
-  }, [year, semester, courseid, school, subject]);
+
+      const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}?full=true`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      return data.find((course) => course.deptCourseId === courseid);
+    }, [year, semester, school, subject]);
 
   return (
     <div>
@@ -48,6 +37,7 @@ function CoursePage() {
           </ColorHeader>
         </>
       )}
+
       {!loading && (
         <>
           <ColorHeader>
@@ -62,14 +52,15 @@ function CoursePage() {
                 <div id="titleDepartment">
                   {subject}-{school}
                 </div>
-                <div id="titleName">{courseData.name}</div>
+                <div id="titleName">{courseData?.name}</div>
               </div>
             </CourseHeader>
           </ColorHeader>
+
           {/* Handle course description here if all sections have the same one */}
           <SectionsDescription>
-            {courseData.description}
-            {courseData.sections.every(
+            {courseData?.description}
+            {courseData?.sections?.every(
               (section) => section.notes === courseData.sections[0].notes
             ) && (
               <>
@@ -79,11 +70,13 @@ function CoursePage() {
               </>
             )}
           </SectionsDescription>
-          {courseData.sections.length > 1 && (
+
+          {courseData?.sections?.length > 1 && (
             <SectionsHeader>Sections</SectionsHeader>
           )}
+
           <div>
-            {courseData.sections.map((section, i) => {
+            {courseData?.sections?.map((section, i) => {
               const sortedSectionMeetings = section.meetings
                 ? section.meetings.sort(
                     (a, b) =>
@@ -91,6 +84,7 @@ function CoursePage() {
                       parseDate(b.beginDate).getDay()
                   )
                 : [];
+
               return (
                 <Section
                   key={i}
@@ -109,7 +103,6 @@ function CoursePage() {
     </div>
   );
 }
-
 
 const ColorHeader = styled.div`
   width: 100vw;

@@ -48,7 +48,7 @@ export default function SchoolPage() {
               <Link
                 href={{
                   pathname: "/subject",
-                  query: `&school=${school}&subject=${subjectid}&year=${year}&semester=${semester}`,
+                  query: `school=${school}&subject=${subjectid}&year=${year}&semester=${semester}`,
                 }}
                 key={i}
                 style={{ textDecoration: "none", color: "inherit" }}

@@ -1,13 +1,19 @@
-import Head from "next/head";
-import Image from "next/image";
-import { DebugRender } from "components/debug";
+import React from "react";
+import SearchPage from "./_search";
 
-const Home = () => {
+
+function Home({
+  year,
+  semester
+}) {
+
   return (
     <div>
-      <DebugRender title={"Hello World"} deps={[]}></DebugRender>
+      <div className="App">
+            <SearchPage year={year} semester={semester} />
+      </div>
     </div>
   );
-};
+}
 
 export default Home;

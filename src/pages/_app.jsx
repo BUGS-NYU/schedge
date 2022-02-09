@@ -57,6 +57,10 @@ function App({ Component, pageProps }) {
     setYear(parseInt(currYear));
   };
 
+  // Copy from this for now; we can decide on MUI or whatever later, but it's
+  // basically just used for this one component.
+  //
+  // https://github.com/A1Liu/a1liu/blob/94d576634459ce9b954307b4fc7fad37c624c5bb/pages/dev/card-cutter.tsx#L78
   return (
     <QueryClientProvider client={queryClient}>
       <div className={headerStyles.headerBox}>

@@ -1,0 +1,36 @@
+.headerBox {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.titleBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.title {
+  text-decoration: none;
+  color: var(--grey800);
+  font-weight: 700;
+  font-size: 2rem;
+  list-style: none;
+}
+
+.scheduleButton {
+  border: none;
+  background: none;
+}
+
+.scheduleIcon {
+  height: 100px;
+  width: 100px;
+  margin: 1.2vmin;
+  float: right;
+  padding: 0.5rem;
+  border-radius: 100%;
+}

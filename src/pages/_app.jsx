@@ -1,11 +1,14 @@
 import "./App.css";
-import "./variables.css";
 import React from "react";
+import headerStyles from "./header.module.css";
+import css from "components/util.module.css";
 import Link from "next/link";
-import styled from "styled-components";
 import { QueryClient, QueryClientProvider } from "react-query";
+import cx from "classnames";
 import Image from "next/image";
+import Head from "next/head";
 
+/*
 const BootstrapInput = styled.div`
   border-radius: 4px;
   border: 1px solid #9e9e9e;
@@ -28,8 +31,8 @@ const StyledImage = styled.img`
   float: right;
   padding: 0.5rem;
   border-radius: 100%;
-  background-color: ${(props) => (props.isActive ? "var(--grey300)" : "")};
 `;
+*/
 
 const queryClient = new QueryClient();
 
@@ -71,6 +74,8 @@ function App({ Component, pageProps }) {
     getPath() === "/schedule" ? "/" : "/schedule"
   );
 
+  const [showSchedule, setShowSchedule] = React.useState(false);
+
   const handleOnChange = (event) => {
     const code = event.target.value;
     const [sem, currYear] = code.split("-");
@@ -81,17 +86,16 @@ function App({ Component, pageProps }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <nav>
-        <ul>
-          <ul>
-            <li id="title">
-              <Link href="/">Bobcat Search</Link>
-            </li>
+      <div className={headerStyles.headerBox}>
+        <div className={headerStyles.titleBox}>
+          <Link href="/">
+            <a className={headerStyles.title}>Bobcat Search</a>
+          </Link>
 
-            <div>
-              Select
-            </div>
-            {/*
+          <div>Select</div>
+        </div>
+
+        {/*
             <Select
               displayEmpty
               onChange={handleOnChange}
@@ -108,31 +112,18 @@ function App({ Component, pageProps }) {
               })}
             </Select>
             */}
-          </ul>
 
-          <li className="icon">
-            {toggle !== "/schedule" ? (
-              <Link href={toggle} onClick={() => setToggle("/schedule")}>
-                <StyledImage
-                  src="/edit-calendar.svg"
-                  alt="Edit Calendar"
-                  width={2.8}
-                  height={1}
-                />
-              </Link>
-            ) : (
-              <Link href="/schedule" onClick={() => setToggle(getPath)}>
-                <StyledImage
-                  src="/edit-calendar.svg"
-                  width={2.8}
-                  height={1}
-                  alt="Edit Calendar"
-                />
-              </Link>
-            )}
-          </li>
-        </ul>
-      </nav>
+        <button
+          className={headerStyles.scheduleButton}
+          onClick={() => setShowSchedule(!showSchedule)}
+        >
+          <img
+            className={headerStyles.scheduleIcon}
+            src="/edit-calendar.svg"
+            alt="Edit Calendar"
+          />
+        </button>
+      </div>
 
       <Component year={year} semester={semester} {...pageProps} />
     </QueryClientProvider>

@@ -10,14 +10,6 @@
 @value max-lg: (max-width: 992px);
 @value max-xl: (max-width: 1200px);
 
-.bgWhite {
-  background-color: var(--white);
-}
-
-.bgLightGray {
-  background-color: var(--light-gray);
-}
-
 .col {
   display: flex;
   flex-direction: column;

@@ -1,55 +1,86 @@
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnZKvuQQ.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnLK3uQQ.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWQXOiMM.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Condensed';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWVHLiMM.ttf) format('truetype');
+}
+
+@font-face {
+  font-family: 'Fira Sans Extra Condensed';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/firasansextracondensed/v8/NaPPcYDaAO5dirw6IaFn7lPJFqXmS-M9Atn3wgda3QyNn38.ttf) format('truetype');
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
+:root {
+  /* Colors */
+  /* Greys */
+  --grey100: #f5f5f5;
+  --grey200: #eeeeee;
+  --grey300: #e0e0e0;
+  --grey400: #bdbdbd;
+  --grey500: #9e9e9e;
+  --grey600: #757575;
+  --grey700: #616161;
+  --grey800: #424242;
+  --grey900: #212121;
+  /* Alerts */
+  --alertRed: #cb0200;
+  --alertOrange: #e86c00;
+  --alertGreen: #489141;
+  /* Purple */
+  --purpleLight: #8900e1;
+  --purpleMain: #57068c;
+  --purpleDark: #330662;
+  --purpleBlack: #220337;
+  /* Accents */
+  --accentYellow: #ffc107;
+
+  /* Fonts */
+  --primaryFont: "Fira Sans", sans-serif;
+  --condensedFont: "Fira Sans Condensed", sans-serif;
+  --extraCondensedFont: "Fira Sans Extra Condensed", sans-serif;
+}
+
 body {
-  background-color: var(--grey100);
+  margin: 0;
   font-family: var(--primaryFont);
+  background-color: var(--grey100);
 }
 
-nav {
-  position: relative;
-  width: 100%;
-  height: 6rem;
-  background: #00000000;
-}
-
-nav ul {
-  height: 100%;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
-}
-
-nav li {
-  padding: 1vmin;
-}
-
-#title {
-  font-size: 2rem;
-  padding: 1rem;
-}
-
-#title a {
-  text-decoration: none;
-  color: var(--grey800);
-  font-weight: bold;
-}
-
-.icon {
-  width: 100px;
-}
-
-.icon a {
-  transition: 0.2s;
-}
-
-@media (max-width: 1000px) {
-  nav ul {
-    padding: 0 0.5rem;
-  }
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }

@@ -30,14 +30,6 @@ public class Section {
   // Values that are sometimes necessary
   @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
 
-  public void addRecitation(Section s) {
-    if (recitations == null) {
-      recitations = new ArrayList<>();
-    }
-
-    recitations.add(s);
-  }
-
   public static Section fromRow(Row row) {
     Section s = new Section();
     s.waitlistTotal = row.waitlistTotal;

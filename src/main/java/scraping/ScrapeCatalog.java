@@ -401,14 +401,23 @@ public class ScrapeCatalog {
       //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
       ZoneOffset tz = ZoneOffset.UTC;
       int dayOfWeek = beginDateTime.getDayOfWeek().getValue();
+
+      beginDateTime = beginDateTime.atZone(tz)
+                          .withZoneSameInstant(ZoneOffset.UTC)
+                          .toLocalDateTime();
+
+      endDate = endDate.atZone(tz)
+                    .withZoneSameInstant(ZoneOffset.UTC)
+                    .toLocalDateTime();
+
       for (int i = 0; i < 7; i++, dayOfWeek++) {
         if (!daysList[dayOfWeek % 7])
           continue;
 
         Meeting meeting = new Meeting();
-        meeting.beginDate = Timestamp.from(beginDateTime.toInstant(tz));
+        meeting.beginDate = beginDateTime;
         meeting.minutesDuration = duration;
-        meeting.endDate = Timestamp.from(beginDateTime.toInstant(tz));
+        meeting.endDate = beginDateTime;
 
         meetings.add(meeting);
       }

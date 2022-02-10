@@ -2,6 +2,7 @@ package database.courses;
 
 import database.models.*;
 import java.sql.*;
+import java.time.*;
 import java.util.*;
 import java.util.stream.Stream;
 import org.slf4j.*;
@@ -182,9 +183,9 @@ public class SelectRows {
       }
 
       Meeting meeting = new Meeting();
-      meeting.beginDate = rs.getTimestamp(2);
+      meeting.beginDate = rs.getObject(2, LocalDateTime.class);
       meeting.minutesDuration = rs.getInt(3);
-      meeting.endDate = rs.getTimestamp(4);
+      meeting.endDate = rs.getObject(4, LocalDateTime.class);
 
       meetings.add(meeting);
     }

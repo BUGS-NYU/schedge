@@ -28,6 +28,7 @@ public class RowsToCourses {
                 sections.put(row.sectionId, s);
                 courses.get(row.courseId).sections.add(s);
               }
+
               return row;
             })
             .filter(i -> i.associatedWith != null)
@@ -35,10 +36,18 @@ public class RowsToCourses {
 
     recitationRecords.stream().forEach(row -> {
       Section s = sections.get(row.associatedWith);
-      if (s != null)
-        s.addRecitation(Section.fromFullRow(row));
-      else // Orphans get added to course regardless
-        courses.get(row.courseId).sections.add(Section.fromFullRow(row));
+
+      if (s != null) {
+        if (s.recitations == null) {
+          s.recitations = new ArrayList<>();
+        }
+
+        s.recitations.add(Section.fromRow(row));
+        return;
+      }
+
+      // Orphans get added to course regardless
+      courses.get(row.courseId).sections.add(Section.fromFullRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());
@@ -67,6 +76,7 @@ public class RowsToCourses {
                 sections.put(row.sectionId, s);
                 courses.get(row.courseId).sections.add(s);
               }
+
               return row;
             })
             .filter(i -> i.associatedWith != null)
@@ -75,10 +85,17 @@ public class RowsToCourses {
     recitationRecords.stream().forEach(row -> {
       Section s = sections.get(row.associatedWith);
 
-      if (s != null)
-        s.addRecitation(Section.fromRow(row));
-      else // Orphans get added to course regardless
-        courses.get(row.courseId).sections.add(Section.fromRow(row));
+      if (s != null) {
+        if (s.recitations == null) {
+          s.recitations = new ArrayList<>();
+        }
+
+        s.recitations.add(Section.fromRow(row));
+        return;
+      }
+
+      // Orphans get added to course regardless
+      courses.get(row.courseId).sections.add(Section.fromRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());

@@ -18,25 +18,6 @@ function App({ Component, pageProps }) {
   // window.location.pathname + window.location.search;
   const getPath = () => "";
 
-  const options = [
-    {
-      name: "January 2021",
-      code: "ja2021",
-    },
-    {
-      name: "Spring 2021",
-      code: "sp2021",
-    },
-    {
-      name: "Summer 2021",
-      code: "su2021",
-    },
-    {
-      name: "Fall 2021",
-      code: "fa2021",
-    },
-  ];
-
   /* eslint-disable no-unused-vars */
   const [year, setYear] = React.useState(2021);
   const [semester, setSemester] = React.useState("sp");

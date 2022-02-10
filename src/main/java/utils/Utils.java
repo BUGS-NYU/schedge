@@ -3,6 +3,7 @@ package utils;
 import java.io.*;
 import java.lang.Runnable;
 import java.sql.*;
+import java.time.*;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
@@ -106,6 +107,8 @@ public final class Utils {
       stmt.setInt(index, (Integer)obj);
     } else if (obj instanceof Timestamp) {
       stmt.setTimestamp(index, (Timestamp)obj);
+    } else if (obj instanceof LocalDateTime) {
+      stmt.setObject(index, obj);
     } else if (obj instanceof Long) {
       stmt.setLong(index, (Long)obj);
     } else if (obj instanceof Array) {

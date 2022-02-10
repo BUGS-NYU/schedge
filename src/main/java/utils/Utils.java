@@ -94,35 +94,21 @@ public final class Utils {
 
   public static void setObject(PreparedStatement stmt, int index, Object obj)
       throws SQLException {
+    if (obj == null) {
+      throw new IllegalArgumentException("object is null");
+    }
+
     if (obj instanceof NullWrapper) {
       NullWrapper nullable = (NullWrapper)obj;
       if (nullable.value == null) {
         stmt.setNull(index, nullable.type);
-      } else {
-        setObject(stmt, index, nullable.value);
+        return;
       }
-    } else if (obj instanceof String) {
-      stmt.setString(index, (String)obj);
-    } else if (obj instanceof Integer) {
-      stmt.setInt(index, (Integer)obj);
-    } else if (obj instanceof Timestamp) {
-      stmt.setTimestamp(index, (Timestamp)obj);
-    } else if (obj instanceof LocalDateTime) {
-      stmt.setObject(index, obj);
-    } else if (obj instanceof Long) {
-      stmt.setLong(index, (Long)obj);
-    } else if (obj instanceof Array) {
-      stmt.setArray(index, (Array)obj);
-    } else if (obj instanceof Float) {
-      stmt.setFloat(index, (Float)obj);
-    } else if (obj instanceof Double) {
-      stmt.setDouble(index, (Double)obj);
-    } else if (obj == null) {
-      throw new IllegalArgumentException("object is null");
-    } else {
-      throw new IllegalArgumentException(
-          "type of object is incompatible for object=" + obj.toString());
+
+      obj = nullable.value;
     }
+
+    stmt.setObject(index, obj);
   }
 
   static class NullWrapper {

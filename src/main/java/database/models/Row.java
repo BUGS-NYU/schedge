@@ -36,10 +36,15 @@ public class Row {
     this.sectionCode = rs.getString("section_code");
 
     Array instructorArray = rs.getArray("instructors");
-    String[] instructors = (String[])instructorArray.getArray();
+    String[] instructors = null;
+    if (instructorArray != null) {
+      instructors = (String[])instructorArray.getArray();
+    }
+
     if (instructors == null || instructors.length == 0) {
       instructors = new String[] {"Staff"};
     }
+
     this.instructors = instructors;
 
     this.sectionType = SectionType.valueOf(rs.getString("section_type"));

@@ -295,7 +295,7 @@ public class ScrapeCatalog {
       String field = child.text();
       int splitIndex = field.indexOf(": ");
       if (splitIndex < 0) {
-        logger.info("Failed to parse '{}' as a section field.", field);
+        logger.debug("Failed to parse '{}' as a section field.", field);
         continue;
       }
 

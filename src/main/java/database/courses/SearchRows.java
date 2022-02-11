@@ -89,14 +89,10 @@ public final class SearchRows {
         + "sections.associated_with, sections.waitlist_total, "
         + "sections.name AS section_name, sections.instruction_mode,"
         + "sections.min_units, sections.max_units, sections.location, "
-        + "array_to_string(array_agg(is_teaching_section.instructor_name),';') "
-        + "AS section_instructors "
+        + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section "
-        + "ON sections.id = is_teaching_section.section_id "
         + "WHERE courses.id = ANY (?) "
-        + "GROUP BY q.query, courses.id, sections.id "
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
@@ -188,14 +184,10 @@ public final class SearchRows {
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.campus, sections.instruction_mode, "
         + "sections.grading, sections.notes, sections.prerequisites, "
-        + "array_to_string(array_agg(is_teaching_section.instructor_name),';') "
-        + "AS section_instructors "
+        + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section "
-        + "ON sections.id = is_teaching_section.section_id "
         + "WHERE courses.id = ANY (?) "
-        + "GROUP BY q.query, courses.id, sections.id "
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));

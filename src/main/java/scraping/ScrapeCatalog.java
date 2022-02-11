@@ -204,9 +204,7 @@ public class ScrapeCatalog {
     Elements elements = doc.select("div.primary-head ~ *");
 
     if (elements.isEmpty()) {
-      logger.warn(
-          "CSS query `div.primary-head ~ *` returned no values (subject={}).",
-          subject);
+      logger.warn("Didn't find data to parse (subject={}).", subject);
 
       return;
     }

@@ -82,8 +82,8 @@ public class UpdateSections {
     }
 
     // Variables are used to implement exponential backoff over HTTP/1.1
-    int inFlight = batchSize;
-    int capacity = batchSize;
+    int inFlight = 5;
+    double capacity = 5.0;
 
     ArrayList<SectionID> failures = new ArrayList<>();
 
@@ -91,33 +91,41 @@ public class UpdateSections {
     for (SaveState save : engine) {
       inFlight -= 1;
 
+      int max = (int)capacity;
+
       if (save == null) {
         continue;
       }
 
       if (save.data == null) {
-        // If we're timing out, let's hold off on adding more requests
         failures.add(save.sectionId);
 
         // And also do some exponential backoff
-        if (inFlight <= capacity) {
-          capacity /= 2;
+        if (inFlight <= max) {
+          capacity /= 1.5;
 
           logger.info("Capacity slashed to {} because of timeout", capacity);
         }
 
+        // If we're timing out, let's hold off on adding more requests
         continue;
       }
 
-      // Steadily increase if we're still succeeding on these requests
-      capacity += 1;
+      if (inFlight < max) {
+        // Steadily increase if we're still succeeding on these requests
+        capacity += 0.125;
+      }
 
-      while (inFlight < capacity) {
-        if (sectionIds.hasNext()) {
-          engine.add(query(term, sectionIds.next()));
-          inFlight += 1;
-        } else if (!failures.isEmpty()) {
-          engine.add(query(term, failures.remove(failures.size() - 1)));
+      while (inFlight < max) {
+        Future<SaveState> task = null;
+        if (!failures.isEmpty()) {
+          task = query(term, failures.remove(failures.size() - 1));
+        } else if (sectionIds.hasNext()) {
+          task = query(term, sectionIds.next());
+        }
+
+        if (task != null) {
+          engine.add(task);
           inFlight += 1;
         }
       }
@@ -202,10 +210,10 @@ public class UpdateSections {
       state.sectionId = sectionId;
 
       if (throwable instanceof io.netty.channel.ConnectTimeoutException) {
-        logger.warn(
-            "Querying section timed out: term={}, registrationNumber={}", term,
-            registrationNumber);
+        return state;
+      }
 
+      if (throwable instanceof java.util.concurrent.TimeoutException) {
         return state;
       }
 
@@ -270,6 +278,12 @@ public class UpdateSections {
     Element outerDataSection = doc.selectFirst("body > section.main");
     Element innerDataSection = outerDataSection.selectFirst("> section");
     Element courseNameDiv = innerDataSection.selectFirst("> div.primary-head");
+
+    if (courseNameDiv == null) {
+      logger.info("Crashing with data={}", rawData);
+
+      throw new RuntimeException("What happened here?");
+    }
 
     String courseName = courseNameDiv.text();
 

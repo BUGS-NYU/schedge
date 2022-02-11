@@ -16,7 +16,7 @@ you a general overview of the project and how to contribute.
 - [ ] Fix bugs reported in issues
 - [ ] Fix time formatting/time zone stuffs
 - [ ] Make a first-party frontend
-- [ ] Remove epochs? Turns out there's no need for them, we can just use transactions
+- [x] Remove epochs? Turns out there's no need for them, we can just use transactions
 - [x] Deploy with CI/CD (`nyu.a1liu.com`)
 - [x] Make the schools/subjects list more dynamic
 - [x] Term should use an enum instead of hard-coded integers
@@ -32,6 +32,8 @@ you a general overview of the project and how to contribute.
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot
 - [ ] Make an admin portal, including stuff like memory usage stats and whatnot
 - [ ] Fuzzer? Some kind of tester I guess
+- [ ] Upgrade to Java 17, use Java HttpClient (from JDK 11) to get rid of dependency
+      on async-http-client
 
 ## Commands
 The following commands are valid in Schedge:

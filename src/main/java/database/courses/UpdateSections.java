@@ -58,23 +58,13 @@ public class UpdateSections {
   }
 
   private static class SaveState {
-    Subject code;
-    int id;
-    int registrationNumber;
+    SectionID sectionId;
     String data;
-
-    SaveState(Subject c, int i, int r, String d) {
-      code = c;
-      id = i;
-      registrationNumber = r;
-      data = d;
-    }
   }
 
   public static void updateSections(Connection conn, Term term,
                                     Iterator<SectionID> sectionIds,
                                     int batchSize) throws SQLException {
-
     try (Prepared p = new Prepared(conn)) {
       updateSections(p, term, sectionIds, batchSize);
     }
@@ -91,32 +81,65 @@ public class UpdateSections {
       }
     }
 
+    // Variables are used to implement exponential backoff over HTTP/1.1
+    int inFlight = batchSize;
+    int capacity = batchSize;
+
+    ArrayList<SectionID> failures = new ArrayList<>();
+
     HashMap<Integer, String> courseDescriptions = new HashMap<>();
     for (SaveState save : engine) {
-      if (sectionIds.hasNext()) {
-        engine.add(query(term, sectionIds.next()));
+      inFlight -= 1;
+
+      if (save == null) {
+        continue;
       }
 
-      if (save == null)
+      if (save.data == null) {
+        // If we're timing out, let's hold off on adding more requests
+        failures.add(save.sectionId);
+
+        // And also do some exponential backoff
+        if (inFlight <= capacity) {
+          capacity /= 2;
+
+          logger.info("Capacity slashed to {} because of timeout", capacity);
+        }
+
         continue;
+      }
+
+      // Steadily increase if we're still succeeding on these requests
+      capacity += 1;
+
+      while (inFlight < capacity) {
+        if (sectionIds.hasNext()) {
+          engine.add(query(term, sectionIds.next()));
+          inFlight += 1;
+        } else if (!failures.isEmpty()) {
+          engine.add(query(term, failures.remove(failures.size() - 1)));
+          inFlight += 1;
+        }
+      }
 
       TryCatch tc =
           tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
-                save.registrationNumber);
+                save.sectionId.registrationNumber);
 
       Section s = tc.pass(() -> parse(save.data));
 
       logger.debug("Adding section information...");
 
       PreparedStatement stmt = p.sections;
-      Utils.setArray(stmt, s.name, save.code.toString() + ' ' + s.name,
+      Utils.setArray(stmt, s.name,
+                     save.sectionId.subjectCode.toString() + ' ' + s.name,
                      s.campus, Utils.nullable(Types.VARCHAR, s.instructionMode),
                      s.minUnits, s.maxUnits, s.location, s.grading,
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
-                     s.instructors, save.id);
+                     s.instructors, save.sectionId.id);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();
@@ -126,7 +149,7 @@ public class UpdateSections {
       int courseId = rs.getInt(1);
       rs.close();
 
-      if (!courseDescriptions.containsKey(courseId) && s.description != null) {
+      if (s.description != null && !courseDescriptions.containsKey(courseId)) {
         courseDescriptions.put(courseId, s.description);
       }
     }
@@ -145,14 +168,14 @@ public class UpdateSections {
   private static String DATA_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/";
 
-  private static Future<SaveState> query(Term term, SectionID sectionID) {
-    int registrationNumber = sectionID.registrationNumber;
-    if (registrationNumber < 0)
-      throw new IllegalArgumentException(
-          "Registration numbers aren't negative!");
+  private static Future<SaveState> query(Term term, SectionID sectionId) {
+    int registrationNumber = sectionId.registrationNumber;
+    if (registrationNumber < 0) {
+      throw new IllegalArgumentException("Registration numbers are positive");
+    }
 
-    logger.debug("Querying section in term=" + term +
-                 " with registrationNumber=" + registrationNumber);
+    logger.debug("Querying section in term={} with registrationNumber={}", term,
+                 registrationNumber);
 
     Request request =
         new RequestBuilder()
@@ -175,6 +198,17 @@ public class UpdateSections {
             .build();
 
     return Client.send(request, (resp, throwable) -> {
+      SaveState state = new SaveState();
+      state.sectionId = sectionId;
+
+      if (throwable instanceof io.netty.channel.ConnectTimeoutException) {
+        logger.warn(
+            "Querying section timed out: term={}, registrationNumber={}", term,
+            registrationNumber);
+
+        return state;
+      }
+
       if (resp == null) {
         logger.error("Querying section failed: term={}, registrationNumber={}",
                      term, registrationNumber, throwable);
@@ -182,9 +216,9 @@ public class UpdateSections {
         return null;
       }
 
-      String body = resp.getResponseBody();
-      return new SaveState(sectionID.subjectCode, sectionID.id,
-                           sectionID.registrationNumber, body);
+      state.data = resp.getResponseBody();
+
+      return state;
     });
   }
 

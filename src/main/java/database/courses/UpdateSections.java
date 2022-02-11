@@ -111,7 +111,7 @@ public class UpdateSections {
         continue;
       }
 
-      if (inFlight < max) {
+      if (inFlight < max && failed.isEmpty()) {
         // Steadily increase if we're still succeeding on these requests
         capacity += 0.125;
       }
@@ -214,6 +214,10 @@ public class UpdateSections {
       }
 
       if (throwable instanceof java.util.concurrent.TimeoutException) {
+        return state;
+      }
+
+      if (throwable instanceof java.net.ConnectException) {
         return state;
       }
 

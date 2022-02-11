@@ -3,6 +3,7 @@ package types;
 import static utils.TryCatch.*;
 
 import com.fasterxml.jackson.annotation.*;
+import java.time.*;
 import java.util.*;
 import utils.*;
 
@@ -18,10 +19,8 @@ public final class Subject {
   //                            - Albert Liu, Feb 03, 2022 Thu 01:12 EST
   public static final class School {
     public String name;
-    public TimeZone timezone;
+    public ZoneId timezone;
     public ArrayList<Subject> subjects;
-
-    public String getTimezone() { return timezone.getID(); }
   }
 
   @JsonIgnore public volatile String schoolCode;
@@ -48,7 +47,7 @@ public final class Subject {
 
       School school = new School();
       school.name = name;
-      school.timezone = TimeZone.getTimeZone(timezone);
+      school.timezone = ZoneId.of(timezone);
       school.subjects = new ArrayList<>();
 
       schools.put(abbreviation, school);
@@ -65,7 +64,7 @@ public final class Subject {
 
         school = new School();
         school.name = "";
-        school.timezone = TimeZone.getTimeZone("America/New_York");
+        school.timezone = ZoneId.of("America/New_York");
         school.subjects = new ArrayList<>();
 
         schools.put(abbreviation, school);
@@ -119,6 +118,7 @@ public final class Subject {
       for (Map.Entry<String, School> entry : schools.entrySet()) {
         School value = entry.getValue();
 
+        // @Note copy is happening here for thread-safety.
         School school = new School();
         school.name = value.name;
         school.timezone = value.timezone;
@@ -141,6 +141,20 @@ public final class Subject {
     }
 
     return localSubjects;
+  }
+
+  public School school() {
+    synchronized (schools) {
+      School value = schools.get(this.code.split("-")[1]);
+
+      // @Note copy is happening here for thread-safety.
+      School school = new School();
+      school.name = value.name;
+      school.timezone = value.timezone;
+      school.subjects = value.subjects;
+
+      return school;
+    }
   }
 
   public String toString() { return this.code; }

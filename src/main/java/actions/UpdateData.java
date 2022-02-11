@@ -10,7 +10,7 @@ public final class UpdateData {
 
   private static Logger logger = LoggerFactory.getLogger("actions.UpdateData");
 
-  public static void updateData(Integer batchSize, Integer batchSizeSections) {
+  public static void updateData(int batchSize, int batchSizeSections) {
     logger.info("Updating data...");
     Term current = Term.getCurrentTerm();
     Term next = current.nextTerm();

@@ -7,7 +7,6 @@ import static utils.Utils.*;
 import actions.*;
 import api.App;
 import api.SelectCourses;
-import database.Epoch;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import java.util.*;
@@ -45,16 +44,15 @@ public class Database implements Runnable {
                                + "--year, --semester, and --term are ignored.")
          boolean service) {
     while (service) {
-      UpdateData.updateData(batchSize.getCatalog(20),
-                            batchSize.getSections(30));
+      UpdateData.updateData(batchSize.catalog, batchSize.sections);
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
 
     long start = System.nanoTime();
 
-    int catalogBatch = batchSize.getCatalog(20);
-    int sectionsBatch = batchSize.getSections(50);
+    int catalogBatch = batchSize.catalog;
+    int sectionsBatch = batchSize.sections;
     Term term = termMixin.getTerm();
 
     ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
@@ -76,13 +74,7 @@ public class Database implements Runnable {
     Term term = termMixin.getTerm();
     List<Subject> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
-      Integer epoch = Epoch.getLatestEpoch(conn, term);
-      if (epoch == null) {
-        logger.warn("No completed epoch for term=" + term);
-        return;
-      }
-
-      Object o = SelectCourses.selectCourses(conn, epoch, codes);
+      Object o = SelectCourses.selectCourses(conn, term, codes);
       outputFile.writeOutput(o);
     });
 
@@ -95,15 +87,14 @@ public class Database implements Runnable {
 
   @Command(name = "serve", description = "Serve data through the API.\n")
   public void
-  serve(@Mixin Mixins.BatchSize batchSizeMixin,
+  serve(@Mixin Mixins.BatchSize batchSize,
         @Option(names = "--scrape",
                 description = "whether or not to scrape while serving")
         boolean scrape) {
     App.run();
 
     while (scrape) {
-      UpdateData.updateData(batchSizeMixin.getCatalog(20),
-                            batchSizeMixin.getSections(20));
+      UpdateData.updateData(batchSize.catalog, batchSize.sections);
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
@@ -124,20 +115,17 @@ public class Database implements Runnable {
     Term term = termMixin.getTerm();
 
     GetConnection.withConnection(conn -> {
-      int epoch = Epoch.getNewEpoch(conn, term);
-
       List<List<Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching took {} seconds", duration);
 
-      for (List<Course> courses : data) {
-        tcFatal(
-            () -> InsertFullCourses.insertCourses(conn, term, epoch, courses));
-      }
+      InsertFullCourses.clearPrevious(conn, term);
 
-      Epoch.completeEpoch(conn, term, epoch);
+      for (List<Course> courses : data) {
+        tcFatal(() -> InsertFullCourses.insertCourses(conn, term, courses));
+      }
     });
 
     GetConnection.close();

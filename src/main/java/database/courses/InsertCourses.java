@@ -23,24 +23,10 @@ public class InsertCourses {
     final PreparedStatement sections;
     final PreparedStatement meetings;
 
-    private static final String placeholders = String.join(
-        ",", new String[] {"?", "to_tsvector(?)", "?", "?", "?", "?", "?", "?",
-                           "?", "?", "to_tsvector(?)", "?", "to_tsvector(?)",
-                           "?", "?", "?", "?", "?", "?"});
-
-    // @TODO add instructors
-    private static final String fieldNames = String.join(
-        ",", new String[] {"name", "name_vec", "registration_number", "campus",
-                           "min_units", "max_units", "instruction_mode",
-                           "location", "grading", "notes", "notes_vec",
-                           "prerequisites", "prereqs_vec", "course_id",
-                           "section_code", "section_type", "section_status",
-                           "waitlist_total", "associated_with"});
-
     Prepared(Connection conn) throws SQLException {
       this.courses = conn.prepareStatement(
           "INSERT INTO courses "
-              + "(epoch, name, name_vec, subject_code, dept_course_id) "
+              + "(term, name, name_vec, subject_code, dept_course_id) "
               + "VALUES (?, ?, to_tsvector(?), ?, ?)",
           Statement.RETURN_GENERATED_KEYS);
 
@@ -64,34 +50,33 @@ public class InsertCourses {
     }
   }
 
-  public static ArrayList<SectionID>
-  insertCourses(Connection conn, Term term, int epoch, List<Course> courses)
+  public static void clearPrevious(Connection conn, Term term)
       throws SQLException {
-    conn.setAutoCommit(false);
-
-    try (Prepared p = new Prepared(conn)) {
-      ArrayList<SectionID> ids = insertCourses(p, term, epoch, courses);
-
-      conn.commit();
-      conn.setAutoCommit(true);
-
-      return ids;
-    } catch (SQLException | RuntimeException e) {
-      conn.rollback();
-      conn.setAutoCommit(true);
-
-      throw e;
+    String sql = "DELETE FROM courses WHERE term = ?";
+    try (PreparedStatement deletePrevious = conn.prepareStatement(sql)) {
+      deletePrevious.setObject(1, term.json());
+      deletePrevious.executeUpdate();
     }
   }
 
-  private static ArrayList<SectionID>
-  insertCourses(Prepared p, Term term, int epoch, List<Course> courses)
+  public static ArrayList<SectionID> insertCourses(Connection conn, Term term,
+                                                   List<Course> courses)
+      throws SQLException {
+    try (Prepared p = new Prepared(conn)) {
+      ArrayList<SectionID> ids = insertCourses(p, term, courses);
+
+      return ids;
+    }
+  }
+
+  private static ArrayList<SectionID> insertCourses(Prepared p, Term term,
+                                                    List<Course> courses)
       throws SQLException {
     ArrayList<SectionID> states = new ArrayList<>();
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
-      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.code,
+      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode.code,
                      c.deptCourseId);
 
       if (stmt.executeUpdate() == 0) {

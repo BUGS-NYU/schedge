@@ -19,32 +19,85 @@ public final class InsertFullCourses {
     final PreparedStatement sections;
     final PreparedStatement meetings;
 
-    private static final String placeholders = String.join(
-        ",", new String[] {"?", "to_tsvector(?)", "?", "?", "?", "?", "?", "?",
-                           "?", "?", "to_tsvector(?)", "?", "to_tsvector(?)",
-                           "?", "?", "?", "?", "?", "?"});
+    private static final String sectionSql;
 
-    // @TODO add instructors
-    private static final String fieldNames = String.join(
-        ",", new String[] {"name", "name_vec", "registration_number", "campus",
-                           "min_units", "max_units", "instruction_mode",
-                           "location", "grading", "notes", "notes_vec",
-                           "prerequisites", "prereqs_vec", "course_id",
-                           "section_code", "section_type", "section_status",
-                           "waitlist_total", "associated_with"});
+    static {
+      String[] sectionFields = new String[] {"name", "?",
+                                             /* */
+                                             "name_vec", "to_tsvector(?)",
+                                             /* */
+                                             "registration_number", "?",
+                                             /* */
+                                             "campus", "?",
+                                             /* */
+                                             "min_units", "?",
+                                             /* */
+                                             "max_units", "?",
+                                             /* */
+                                             "instruction_mode", "?",
+                                             /* */
+                                             "location", "?",
+                                             /* */
+                                             "grading", "?",
+                                             /* */
+                                             "notes", "?",
+                                             /* */
+                                             "notes_vec", "to_tsvector(?)",
+                                             /* */
+                                             "prerequisites", "?",
+                                             /* */
+                                             "prereqs_vec", "to_tsvector(?)",
+                                             /* */
+                                             "course_id", "?",
+                                             /* */
+                                             "section_code", "?",
+                                             /* */
+                                             "section_type", "?",
+                                             /* */
+                                             "section_status", "?",
+                                             /* */
+                                             "waitlist_total", "?",
+                                             /* */
+                                             "associated_with", "?",
+                                             /* */
+                                             "instructors", "?"};
+
+      StringBuilder builder = new StringBuilder();
+      builder.append("INSERT INTO sections (");
+
+      for (int i = 0; i < sectionFields.length; i += 2) {
+        if (i != 0) {
+          builder.append(", ");
+        }
+
+        builder.append(sectionFields[i]);
+      }
+
+      builder.append(") VALUES (");
+
+      for (int i = 1; i < sectionFields.length; i += 2) {
+        if (i != 1) {
+          builder.append(", ");
+        }
+
+        builder.append(sectionFields[i]);
+      }
+
+      builder.append(")");
+
+      sectionSql = builder.toString();
+    }
 
     Prepared(Connection conn) throws SQLException {
       this.courses =
           conn.prepareStatement("INSERT INTO courses "
-                                    + "(epoch, name, name_vec, subject_code, "
+                                    + "(term, name, name_vec, subject_code, "
                                     + "dept_course_id) "
                                     + "VALUES (?, ?, to_tsvector(?), ?, ?)",
                                 Statement.RETURN_GENERATED_KEYS);
 
       this.sections =
-          conn.prepareStatement("INSERT INTO sections (" + fieldNames +
-                                    ") VALUES (" + placeholders + ")",
-                                Statement.RETURN_GENERATED_KEYS);
+          conn.prepareStatement(sectionSql, Statement.RETURN_GENERATED_KEYS);
 
       this.meetings = conn.prepareStatement(
           "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
@@ -57,31 +110,28 @@ public final class InsertFullCourses {
     }
   }
 
-  public static void insertCourses(Connection conn, Term term, int epoch,
-                                   List<Course> courses) throws SQLException {
-    conn.setAutoCommit(false);
-
-    try {
-      Prepared p = new Prepared(conn);
-
-      insertCourses(p, term, epoch, courses);
-
-      conn.commit();
-      conn.setAutoCommit(true);
-    } catch (SQLException | RuntimeException e) {
-      conn.rollback();
-      conn.setAutoCommit(true);
-
-      throw e;
+  public static void clearPrevious(Connection conn, Term term)
+      throws SQLException {
+    String sql = "DELETE FROM courses WHERE term = ?";
+    try (PreparedStatement deletePrevious = conn.prepareStatement(sql)) {
+      deletePrevious.setObject(1, term.json());
+      deletePrevious.executeUpdate();
     }
   }
 
-  private static void insertCourses(Prepared p, Term term, int epoch,
-                                    List<Course> courses) throws SQLException {
+  public static void insertCourses(Connection conn, Term term,
+                                   List<Course> courses) throws SQLException {
+    try (Prepared p = new Prepared(conn)) {
+      insertCourses(p, term, courses);
+    }
+  }
+
+  private static void insertCourses(Prepared p, Term term, List<Course> courses)
+      throws SQLException {
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
-      Utils.setArray(stmt, epoch, c.name, c.name, c.subjectCode.code,
+      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode.code,
                      c.deptCourseId);
 
       if (stmt.executeUpdate() == 0) {
@@ -108,27 +158,27 @@ public final class InsertFullCourses {
     PreparedStatement stmt = p.sections;
 
     for (Section s : sections) {
-      Object[] fieldValues = new Object[] {
-          s.name,
-          s.name,
-          s.registrationNumber,
-          s.campus,
-          s.minUnits,
-          s.maxUnits,
-          Utils.nullable(Types.VARCHAR, s.instructionMode),
-          s.location,
-          s.grading,
-          Utils.nullable(Types.VARCHAR, s.notes),
-          Utils.nullable(Types.VARCHAR, s.notes),
-          Utils.nullable(Types.VARCHAR, s.prerequisites),
-          Utils.nullable(Types.VARCHAR, s.prerequisites),
-          courseId,
-          s.code,
-          s.type.name(),
-          s.status.name(),
-          Utils.nullable(Types.INTEGER, s.waitlistTotal),
-          Utils.nullable(Types.INTEGER, associatedWith),
-      };
+      Object[] fieldValues =
+          new Object[] {s.name,
+                        s.name,
+                        s.registrationNumber,
+                        s.campus,
+                        s.minUnits,
+                        s.maxUnits,
+                        Utils.nullable(Types.VARCHAR, s.instructionMode),
+                        s.location,
+                        s.grading,
+                        Utils.nullable(Types.VARCHAR, s.notes),
+                        Utils.nullable(Types.VARCHAR, s.notes),
+                        Utils.nullable(Types.VARCHAR, s.prerequisites),
+                        Utils.nullable(Types.VARCHAR, s.prerequisites),
+                        courseId,
+                        s.code,
+                        s.type.name(),
+                        s.status.name(),
+                        Utils.nullable(Types.INTEGER, s.waitlistTotal),
+                        Utils.nullable(Types.INTEGER, associatedWith),
+                        Utils.nullable(Types.ARRAY, s.instructors)};
 
       try {
         Utils.setArray(stmt, fieldValues);

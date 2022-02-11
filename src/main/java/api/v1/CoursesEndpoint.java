@@ -3,7 +3,6 @@ package api.v1;
 import static utils.TryCatch.*;
 
 import api.*;
-import database.Epoch;
 import database.GetConnection;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
@@ -86,16 +85,13 @@ public final class CoursesEndpoint extends Endpoint {
       String fullData = ctx.queryParam("full");
 
       Object output = GetConnection.withConnectionReturning(conn -> {
-        Integer epoch = Epoch.getLatestEpoch(conn, term);
-        if (epoch == null)
-          return Collections.emptyList();
+        List<Subject> subjects = Collections.singletonList(subject);
 
-        if (fullData != null && fullData.toLowerCase().contentEquals("true"))
-          return SelectCourses.selectFullCourses(
-              conn, epoch, Collections.singletonList(subject));
+        if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
+          return SelectCourses.selectFullCourses(conn, term, subjects);
+        }
 
-        return SelectCourses.selectCourses(conn, epoch,
-                                           Collections.singletonList(subject));
+        return SelectCourses.selectCourses(conn, term, subjects);
       });
 
       ctx.status(200);

@@ -3,11 +3,12 @@ package database;
 import database.models.AugmentedMeeting;
 import java.sql.*;
 import java.util.*;
+import types.*;
 import utils.Utils;
 
 public final class SelectAugmentedMeetings {
   public static ArrayList<AugmentedMeeting>
-  selectAugmentedMeetings(Connection conn, int epoch,
+  selectAugmentedMeetings(Connection conn, Term term,
                           List<Integer> registrationNumbers)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(
@@ -18,11 +19,11 @@ public final class SelectAugmentedMeetings {
         + "meetings.end_date,meetings.duration "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
         + "JOIN meetings ON meetings.section_id = sections.id "
-        + "WHERE epoch = ? AND sections.registration_number = ANY (?)");
+        + "WHERE term = ? AND sections.registration_number = ANY (?)");
 
     Array regNumberArray =
         conn.createArrayOf("INTEGER", registrationNumbers.toArray());
-    Utils.setArray(stmt, epoch, regNumberArray);
+    Utils.setArray(stmt, term.json(), regNumberArray);
 
     ResultSet rs = stmt.executeQuery();
 

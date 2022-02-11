@@ -14,7 +14,7 @@ public interface TryCatch {
 
   public interface CallVoid { void get() throws Exception; }
 
-  void onError(Exception e);
+  void onError(Throwable e);
 
   default void fatal(CallVoid supplier) {
     try {
@@ -79,6 +79,14 @@ public interface TryCatch {
 
   public static TryCatch tcNew(Logger logger, String message,
                                Object... params) {
+    if (params.length == 0) {
+      return e -> { logger.warn(message, e); };
+    }
+
+    if (params.length == 1) {
+      return e -> { logger.warn(message, params[0], e); };
+    }
+
     Object[] errorParams = new Object[params.length + 1];
 
     for (int i = 0; i < params.length; i++)

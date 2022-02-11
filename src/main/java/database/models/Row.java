@@ -35,10 +35,17 @@ public class Row {
     this.registrationNumber = rs.getInt("registration_number");
     this.sectionCode = rs.getString("section_code");
 
-    String instructorString = rs.getString("section_instructors");
-    this.instructors = instructorString.equals("")
-                           ? new String[] {"Staff"}
-                           : instructorString.split(";");
+    Array instructorArray = rs.getArray("instructors");
+    String[] instructors = null;
+    if (instructorArray != null) {
+      instructors = (String[])instructorArray.getArray();
+    }
+
+    if (instructors == null || instructors.length == 0) {
+      instructors = new String[] {"Staff"};
+    }
+
+    this.instructors = instructors;
 
     this.sectionType = SectionType.valueOf(rs.getString("section_type"));
     this.sectionStatus = SectionStatus.valueOf(rs.getString("section_status"));

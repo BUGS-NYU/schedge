@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 import org.slf4j.*;
-import types.Meeting;
+import types.*;
 import utils.Utils;
 
 public final class SearchRows {
@@ -13,7 +13,7 @@ public final class SearchRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SearchCourses");
 
-  public static Stream<Row> searchRows(Connection conn, int epoch,
+  public static Stream<Row> searchRows(Connection conn, Term term,
                                        String subject, String school,
                                        String query, int titleWeight,
                                        int descriptionWeight, int notesWeight,
@@ -60,19 +60,18 @@ public final class SearchRows {
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
-          begin + "epoch = ? AND courses.subject = ? AND courses.school = ?");
-      Utils.setArray(idStmt, query, epoch, subject, school);
+          begin + "term = ? AND courses.subject = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, term.json(), subject, school);
     } else if (subject != null) {
       idStmt =
-          conn.prepareStatement(begin + "epoch = ? AND courses.subject = ?");
-      Utils.setArray(idStmt, query, epoch, subject);
+          conn.prepareStatement(begin + "term = ? AND courses.subject = ?");
+      Utils.setArray(idStmt, query, term.json(), subject);
     } else if (school != null) {
-      idStmt =
-          conn.prepareStatement(begin + "epoch = ? AND courses.school = ?");
-      Utils.setArray(idStmt, query, epoch, school);
+      idStmt = conn.prepareStatement(begin + "term = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, term.json(), school);
     } else {
-      idStmt = conn.prepareStatement(begin + "epoch = ?");
-      Utils.setArray(idStmt, query, epoch);
+      idStmt = conn.prepareStatement(begin + "term = ?");
+      Utils.setArray(idStmt, query, term.json());
     }
 
     ArrayList<Integer> result = new ArrayList<>();
@@ -90,14 +89,10 @@ public final class SearchRows {
         + "sections.associated_with, sections.waitlist_total, "
         + "sections.name AS section_name, sections.instruction_mode,"
         + "sections.min_units, sections.max_units, sections.location, "
-        + "array_to_string(array_agg(is_teaching_section.instructor_name),';') "
-        + "AS section_instructors "
+        + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section "
-        + "ON sections.id = is_teaching_section.section_id "
         + "WHERE courses.id = ANY (?) "
-        + "GROUP BY q.query, courses.id, sections.id "
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
@@ -116,7 +111,7 @@ public final class SearchRows {
   }
 
   public static Stream<FullRow>
-  searchFullRows(Connection conn, int epoch, String subject, String school,
+  searchFullRows(Connection conn, Term term, String subject, String school,
                  String query, int titleWeight, int descriptionWeight,
                  int notesWeight, int prereqsWeight) throws SQLException {
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
@@ -158,19 +153,18 @@ public final class SearchRows {
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
-          begin + "epoch = ? AND courses.subject = ? AND courses.school = ?");
-      Utils.setArray(idStmt, query, epoch, subject, school);
+          begin + "term = ? AND courses.subject = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, term.json(), subject, school);
     } else if (subject != null) {
       idStmt =
-          conn.prepareStatement(begin + "epoch = ? AND courses.subject = ?");
-      Utils.setArray(idStmt, query, epoch, subject);
+          conn.prepareStatement(begin + "term = ? AND courses.subject = ?");
+      Utils.setArray(idStmt, query, term.json(), subject);
     } else if (school != null) {
-      idStmt =
-          conn.prepareStatement(begin + "epoch = ? AND courses.school = ?");
-      Utils.setArray(idStmt, query, epoch, school);
+      idStmt = conn.prepareStatement(begin + "term = ? AND courses.school = ?");
+      Utils.setArray(idStmt, query, term.json(), school);
     } else {
-      idStmt = conn.prepareStatement(begin + "epoch = ?");
-      Utils.setArray(idStmt, query, epoch);
+      idStmt = conn.prepareStatement(begin + "term = ?");
+      Utils.setArray(idStmt, query, term.json());
     }
 
     ArrayList<Integer> result = new ArrayList<>();
@@ -190,14 +184,10 @@ public final class SearchRows {
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.campus, sections.instruction_mode, "
         + "sections.grading, sections.notes, sections.prerequisites, "
-        + "array_to_string(array_agg(is_teaching_section.instructor_name),';') "
-        + "AS section_instructors "
+        + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section "
-        + "ON sections.id = is_teaching_section.section_id "
         + "WHERE courses.id = ANY (?) "
-        + "GROUP BY q.query, courses.id, sections.id "
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));

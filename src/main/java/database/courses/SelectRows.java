@@ -14,20 +14,20 @@ public class SelectRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectRows");
 
-  public static Stream<Row> selectRows(Connection conn, int epoch, Subject code)
+  public static Stream<Row> selectRows(Connection conn, Term term, Subject code)
       throws SQLException {
-    return selectRows(conn, "courses.epoch = ? AND courses.subject_code = ?",
-                      epoch, code.code);
+    return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
+                      term.json(), code.code);
   }
 
-  public static Stream<Row> selectRow(Connection conn, int epoch,
+  public static Stream<Row> selectRow(Connection conn, Term term,
                                       int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
         "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "WHERE sections.registration_number = ? AND courses.epoch = ?");
+        + "WHERE sections.registration_number = ? AND courses.term = ?");
 
-    Utils.setArray(sectionIdStmt, registrationNumber, epoch);
+    Utils.setArray(sectionIdStmt, registrationNumber, term.json());
 
     ResultSet rs = sectionIdStmt.executeQuery();
     if (!rs.next())
@@ -45,15 +45,15 @@ public class SelectRows {
         sectionIds, sectionIds);
   }
 
-  public static Stream<Row> selectRowsBySectionId(Connection conn, int epoch,
+  public static Stream<Row> selectRowsBySectionId(Connection conn, Term term,
                                                   List<Integer> sectionIds)
       throws SQLException {
     Array idArray = conn.createArrayOf("INTEGER", sectionIds.toArray());
 
     return SelectRows.selectRows(
         conn,
-        "courses.epoch = ? AND (sections.id = ANY (?) OR sections.associated_with = ANY (?))",
-        epoch, idArray, idArray);
+        "courses.term = ? AND (sections.id = ANY (?) OR sections.associated_with = ANY (?))",
+        term.json(), idArray, idArray);
   }
 
   public static Stream<Row> selectRows(Connection conn, String conditions,
@@ -65,25 +65,23 @@ public class SelectRows {
         "SELECT courses.*, sections.id AS section_id,"
         + "sections.registration_number, sections.section_code,"
         + "sections.section_type, sections.section_status, "
-        + "array_to_string(array_agg(its.instructor_name),';') "
-        + "AS section_instructors, sections.associated_with, "
+        + "sections.instructors, sections.associated_with, "
         + "sections.waitlist_total, sections.name as section_name, "
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.instruction_mode "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section its on sections.id = its.section_id "
-        + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
+        + "WHERE " + conditions);
     Utils.setArray(stmt, objects);
 
-    ArrayList<Meeting> empty = new ArrayList<>();
+    ResultSet rs = stmt.executeQuery();
+
+    List<Meeting> empty = new ArrayList<>();
     ArrayList<Row> rows = new ArrayList<>();
 
-    ResultSet rs = stmt.executeQuery();
     while (rs.next()) {
-      List<Meeting> meetings =
-          meetingsList.getOrDefault(rs.getInt("section_id"), empty);
-
-      rows.add(new Row(rs, meetings));
+      int id = rs.getInt("section_id");
+      Row row = new Row(rs, meetingsList.getOrDefault(id, empty));
+      rows.add(row);
     }
 
     rs.close();
@@ -92,22 +90,21 @@ public class SelectRows {
     return rows.stream();
   }
 
-  public static Stream<FullRow> selectFullRows(Connection conn, int epoch,
+  public static Stream<FullRow> selectFullRows(Connection conn, Term term,
                                                Subject code)
       throws SQLException {
-    return selectFullRows(conn,
-                          "courses.epoch = ? AND courses.subject_code = ?",
-                          epoch, code.code);
+    return selectFullRows(conn, "courses.term = ? AND courses.subject_code = ?",
+                          term.json(), code.code);
   }
 
-  public static Stream<FullRow> selectFullRow(Connection conn, int epoch,
+  public static Stream<FullRow> selectFullRow(Connection conn, Term term,
                                               int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
         "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "WHERE sections.registration_number = ? AND courses.epoch = ?");
+        + "WHERE sections.registration_number = ? AND courses.term = ?");
 
-    Utils.setArray(sectionIdStmt, registrationNumber, epoch);
+    Utils.setArray(sectionIdStmt, registrationNumber, term.json());
     ResultSet rs = sectionIdStmt.executeQuery();
     ArrayList<Integer> sectionIds = new ArrayList<>();
     if (!rs.next()) {
@@ -134,22 +131,24 @@ public class SelectRows {
     PreparedStatement stmt = conn.prepareStatement(
         "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "
-        + "array_to_string(array_agg(its.instructor_name),';') "
-        + "AS section_instructors, sections.associated_with, "
+        + "sections.instructors, sections.associated_with, "
         + "sections.waitlist_total, sections.name AS section_name, "
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.campus, sections.instruction_mode, "
         + "sections.grading, sections.notes, sections.prerequisites "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
-        + "LEFT JOIN is_teaching_section its on sections.id = its.section_id "
-        + "WHERE " + conditions + " GROUP BY courses.id, sections.id");
+        + "WHERE " + conditions);
 
     Utils.setArray(stmt, objects);
 
     ResultSet rs = stmt.executeQuery();
+
+    List<Meeting> empty = new ArrayList<>();
     ArrayList<FullRow> rows = new ArrayList<>();
     while (rs.next()) {
-      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
+      int id = rs.getInt("section_id");
+      FullRow row = new FullRow(rs, meetingsList.getOrDefault(id, empty));
+      rows.add(row);
     }
 
     rs.close();

@@ -6,7 +6,6 @@ import static scraping.ScrapeCatalog.*;
 import static utils.Utils.*;
 
 import cli.ConsoleProgressBarConsumer;
-import database.Epoch;
 import database.GetConnection;
 import database.models.SectionID;
 import java.util.List;
@@ -36,15 +35,14 @@ public class ScrapeTerm {
     List<Course> courses = scrapeCatalog(term, subjects, batchSize);
 
     GetConnection.withConnection(conn -> {
-      int epoch = Epoch.getNewEpoch(conn, term);
+      clearPrevious(conn, term);
 
-      List<SectionID> idData = insertCourses(conn, term, epoch, courses);
+      List<SectionID> idData = insertCourses(conn, term, courses);
+
       Iterable<SectionID> ids =
           display ? ProgressBar.wrap(idData, bar) : idData;
 
       updateSections(conn, term, ids.iterator(), batchSizeSections);
-
-      Epoch.completeEpoch(conn, term, epoch);
     });
   }
 }

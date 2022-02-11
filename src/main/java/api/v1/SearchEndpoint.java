@@ -3,7 +3,6 @@ package api.v1;
 import static utils.TryCatch.*;
 
 import api.*;
-import database.Epoch;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Handler;
@@ -160,25 +159,18 @@ public final class SearchEndpoint extends Endpoint {
       }
 
       GetConnection.withConnection(conn -> {
-        Integer epoch = Epoch.getLatestEpoch(conn, term);
-        if (epoch == null) {
-          ctx.status(200);
-          ctx.json(new ArrayList<>());
-          return;
-        }
-
         String fullData = ctx.queryParam("full");
         if (fullData != null && fullData.toLowerCase().equals("true")) {
           ctx.json(RowsToCourses
                        .fullRowsToCourses(SearchRows.searchFullRows(
-                           conn, epoch, subject, school, args, titleWeight,
+                           conn, term, subject, school, args, titleWeight,
                            descriptionWeight, notesWeight, prereqsWeight))
                        .limit(resultSize)
                        .collect(Collectors.toList()));
         } else {
           ctx.json(RowsToCourses
                        .rowsToCourses(SearchRows.searchRows(
-                           conn, epoch, subject, school, args, titleWeight,
+                           conn, term, subject, school, args, titleWeight,
                            descriptionWeight, notesWeight, prereqsWeight))
                        .limit(resultSize)
                        .collect(Collectors.toList()));

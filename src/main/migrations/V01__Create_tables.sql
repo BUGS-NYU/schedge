@@ -10,18 +10,9 @@ CREATE TABLE schedge_meta (
 INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
         VALUES            (NOW(),       NOW(),      'version',  '1');
 
-CREATE TABLE epochs (
-  id                  SERIAL                        NOT NULL UNIQUE,
-  started_at          timestamp WITHOUT TIME ZONE   NOT NULL UNIQUE,
-  completed_at        timestamp WITHOUT TIME ZONE   UNIQUE,
-  term                varchar                       NOT NULL,
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE courses (
   id                  SERIAL                      NOT NULL UNIQUE,
-  epoch               int REFERENCES epochs(id)
-                          ON DELETE CASCADE       NOT NULL,
+  term                varchar                     NOT NULL,
 
   name                varchar                     NOT NULL,
   name_vec            TSVECTOR                    NOT NULL,
@@ -33,21 +24,14 @@ CREATE TABLE courses (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE instructors (
-  id                  SERIAL                      NOT NULL UNIQUE,
-  name                varchar                     NOT NULL,
-  subject_code        varchar                     NOT NULL,
-  PRIMARY KEY (id)
-);
-
 CREATE TABLE sections (
-  id                  SERIAL                      NOT NULL UNIQUE,
-  registration_number int                         NOT NULL,
+  id                  SERIAL                          NOT NULL UNIQUE,
+  registration_number int                             NOT NULL,
   course_id           int REFERENCES courses(id)
-                          ON DELETE CASCADE       NOT NULL,
-  section_code        varchar                     NOT NULL,
-  section_type        varchar                     NOT NULL,
-  section_status      varchar                     NOT NULL,
+                          ON DELETE CASCADE           NOT NULL,
+  section_code        varchar                         NOT NULL,
+  section_type        varchar                         NOT NULL,
+  section_status      varchar                         NOT NULL,
   associated_with     int REFERENCES sections(id),
 
   waitlist_total      int,
@@ -63,16 +47,8 @@ CREATE TABLE sections (
   location            varchar,
   prerequisites       varchar,
   prereqs_vec         TSVECTOR,
+  instructors         varchar[],
 
-  PRIMARY KEY (id)
-);
-
-CREATE TABLE is_teaching_section (
-  id                  SERIAL                      NOT NULL UNIQUE,
-  instructor_id       int                         NOT NULL,
-  section_id          int REFERENCES sections(id)
-                      ON DELETE CASCADE           NOT NULL,
-  instructor_name     varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -86,12 +62,9 @@ CREATE TABLE meetings (
   PRIMARY KEY (id)
 );
 
-CREATE INDEX epochs_term_idx ON epochs (term);
-CREATE INDEX courses_epoch_idx ON courses (epoch);
+CREATE INDEX courses_term_idx ON courses (term);
 CREATE INDEX sections_course_id_idx ON sections (course_id);
 CREATE INDEX meetings_section_id_idx ON meetings (section_id);
 
 CREATE INDEX sections_registration_number_idx ON sections (registration_number);
 CREATE INDEX sections_associated_with_idx ON sections (associated_with);
-CREATE INDEX instructors_teaching_idx ON is_teaching_section (instructor_id);
-CREATE INDEX sections_taught_idx ON is_teaching_section (section_id);

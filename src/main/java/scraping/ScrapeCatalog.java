@@ -204,9 +204,7 @@ public class ScrapeCatalog {
     Elements elements = doc.select("div.primary-head ~ *");
 
     if (elements.isEmpty()) {
-      logger.warn(
-          "CSS query `div.primary-head ~ *` returned no values (subject={}).",
-          subject);
+      logger.warn("Didn't find data to parse (subject={}).", subject);
 
       return;
     }
@@ -287,6 +285,7 @@ public class ScrapeCatalog {
     </div> </a>
   */
   private static Section parseSectionNode(Subject subject, Element aTag) {
+
     Elements children = aTag.select("div.section-content > div.section-body");
 
     HashMap<String, String> sectionData = new HashMap<>();
@@ -295,47 +294,66 @@ public class ScrapeCatalog {
       int splitIndex = field.indexOf(": ");
       if (splitIndex < 0) {
         logger.debug("Failed to parse '{}' as a section field.", field);
-      } else {
-        String key = field.substring(0, splitIndex);
-        String value = field.substring(splitIndex + 2);
-
-        sectionData.put(key, value);
+        continue;
       }
+
+      String key = field.substring(0, splitIndex);
+      String value = field.substring(splitIndex + 2);
+
+      sectionData.put(key, value);
     }
 
     logger.trace("Section field strings are: {}", sectionData);
 
-    int registrationNumber;
-    String sectionCode;
-    SectionType type;
-    List<Meeting> meetings;
+    TryCatch tc = tcNew(
+        logger, "parseSectionNode throwing with section data: {}", sectionData);
 
-    try {
-      String header = sectionData.get("Section");
-      int headerDashIdx = header.indexOf('-');
-      registrationNumber = Integer.parseInt(
-          header.substring(header.indexOf('(') + 1, header.length() - 1));
-      sectionCode = header.substring(0, headerDashIdx);
-      type = SectionType.valueOf(header.substring(
-          headerDashIdx + 1, header.indexOf(' ', headerDashIdx)));
-      meetings = parseSectionTimesData(sectionData.get("Days/Times"),
-                                       sectionData.get("Dates"));
-    } catch (RuntimeException e) {
-      logger.error("parseSectionNode throwing with section data: {}",
-                   sectionData);
+    String header = sectionData.get("Section");
+    int headerDashIdx = header.indexOf('-');
 
-      throw e;
-    }
-    return new Section(
-        subject, registrationNumber, sectionCode, type,
-        SectionStatus.parseStatus(sectionData.get("Status")), meetings,
-        new ArrayList<>(),
-        sectionData.containsKey("Wait List Total")
-            ? Integer.parseInt(sectionData.get("Wait List Total"))
-            : null);
+    int registrationNumber = tc.pass(() -> {
+      int begin = header.indexOf('(') + 1;
+      int end = header.length() - 1;
+
+      String raw = header.substring(begin, end);
+
+      return Integer.parseInt(raw);
+    });
+
+    String sectionCode = tc.pass(() -> header.substring(0, headerDashIdx));
+
+    SectionType type = tc.pass(() -> {
+      int begin = headerDashIdx + 1;
+      int end = header.indexOf(' ', headerDashIdx);
+
+      String raw = header.substring(begin, end);
+
+      return SectionType.valueOf(raw);
+    });
+
+    // @TODO Add support for time zone of the campus
+    //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
+    List<Meeting> meetings = tc.pass(() -> {
+      String times = sectionData.get("Days/Times");
+      String dates = sectionData.get("Dates");
+
+      Subject.School school = subject.school();
+
+      return parseSectionTimesData(school.timezone, times, dates);
+    });
+
+    Integer waitlistTotal =
+        tcIgnore(() -> Integer.parseInt(sectionData.get("Wait List Total")));
+
+    SectionStatus status = SectionStatus.parseStatus(sectionData.get("Status"));
+
+    return new Section(subject, registrationNumber, sectionCode, type, status,
+                       meetings, new ArrayList<>(), waitlistTotal
+
+    );
   }
 
-  private static List<Meeting> parseSectionTimesData(String times,
+  private static List<Meeting> parseSectionTimesData(ZoneId tz, String times,
                                                      String dates) {
     logger.trace("Parsing section times data...");
 
@@ -397,9 +415,6 @@ public class ScrapeCatalog {
         daysList[dayValue % 7] = true;
       }
 
-      // @TODO Add support for time zone of the campus
-      //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
-      ZoneOffset tz = ZoneOffset.UTC;
       int dayOfWeek = beginDateTime.getDayOfWeek().getValue();
 
       beginDateTime = beginDateTime.atZone(tz)

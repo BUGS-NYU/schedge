@@ -107,14 +107,9 @@ public final class GenerateScheduleEndpoint extends Endpoint {
         return;
 
       Object output = GetConnection.withConnectionReturning(conn -> {
-        Integer epoch = Epoch.getLatestEpoch(conn, term);
-        if (epoch == null) {
-          return new Schedule(new ArrayList<>());
-        }
-
         ArrayList<AugmentedMeeting> meetings =
             SelectAugmentedMeetings.selectAugmentedMeetings(
-                conn, epoch, registrationNumbers);
+                conn, term, registrationNumbers);
 
         return generateSchedule(meetings);
       });

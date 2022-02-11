@@ -30,9 +30,6 @@ public class UpdateSections {
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement sections;
     final PreparedStatement descriptions;
-    final PreparedStatement getInstructors;
-    final PreparedStatement createInstructor;
-    final PreparedStatement addTeachingRelation;
 
     Prepared(Connection conn) throws SQLException {
       this.sections = conn.prepareStatement(
@@ -45,73 +42,37 @@ public class UpdateSections {
           + "location = ?, "
           + "grading = ?, "
           + "notes = ?, notes_vec = to_tsvector(?), "
-          + "prerequisites = ?, prereqs_vec = to_tsvector(?) "
+          + "prerequisites = ?, prereqs_vec = to_tsvector(?), "
+          + "instructors = ? "
           + "WHERE sections.id = ?"
           + "RETURNING sections.course_id");
 
       this.descriptions = conn.prepareStatement(
           "UPDATE courses SET description = ? WHERE id = ?");
-
-      this.getInstructors = conn.prepareStatement(
-          "SELECT id from instructors WHERE subject_code = ? AND name = ?");
-
-      this.createInstructor = conn.prepareStatement(
-          "INSERT INTO instructors (name, subject_code) VALUES (?, ?)",
-          Statement.RETURN_GENERATED_KEYS);
-
-      this.addTeachingRelation = conn.prepareStatement(
-          "INSERT INTO is_teaching_section "
-          + "(instructor_id, section_id, instructor_name) "
-          + "VALUES (?, ?, ?)");
     }
 
     public void close() throws SQLException {
       this.sections.close();
       this.descriptions.close();
-      this.getInstructors.close();
-      this.createInstructor.close();
-      this.addTeachingRelation.close();
     }
   }
 
   private static class SaveState {
-    Subject code;
-    int id;
-    int registrationNumber;
+    SectionID sectionId;
     String data;
-
-    SaveState(Subject c, int i, int r, String d) {
-      code = c;
-      id = i;
-      registrationNumber = r;
-      data = d;
-    }
   }
 
   public static void updateSections(Connection conn, Term term,
                                     Iterator<SectionID> sectionIds,
-                                    Integer batchSizeNullable)
-      throws SQLException {
-    conn.setAutoCommit(false);
-
+                                    int batchSize) throws SQLException {
     try (Prepared p = new Prepared(conn)) {
-      updateSections(p, term, sectionIds, batchSizeNullable);
-
-      conn.commit();
-      conn.setAutoCommit(true);
-    } catch (SQLException | RuntimeException e) {
-      conn.rollback();
-      conn.setAutoCommit(true);
-
-      throw e;
+      updateSections(p, term, sectionIds, batchSize);
     }
   }
 
   public static void updateSections(Prepared p, Term term,
                                     Iterator<SectionID> sectionIds,
-                                    Integer batchSizeNullable)
-      throws SQLException {
-    int batchSize = batchSizeNullable == null ? 40 : batchSizeNullable;
+                                    int batchSize) throws SQLException {
     FutureEngine<SaveState> engine = new FutureEngine<>();
 
     for (int i = 0; i < batchSize; i++) {
@@ -120,38 +81,73 @@ public class UpdateSections {
       }
     }
 
+    // Variables are used to implement exponential backoff over HTTP/1.1
+    int inFlight = 5;
+    double capacity = 5.0;
+
+    ArrayList<SectionID> failures = new ArrayList<>();
+
     HashMap<Integer, String> courseDescriptions = new HashMap<>();
     for (SaveState save : engine) {
-      if (sectionIds.hasNext()) {
-        engine.add(query(term, sectionIds.next()));
+      inFlight -= 1;
+
+      int max = (int)capacity;
+
+      if (save == null) {
+        continue;
       }
 
-      if (save == null)
+      if (save.data == null) {
+        failures.add(save.sectionId);
+
+        // And also do some exponential backoff
+        if (inFlight <= max) {
+          capacity /= 1.5;
+
+          logger.info("Capacity slashed to {} because of timeout", capacity);
+        }
+
+        // If we're timing out, let's hold off on adding more requests
         continue;
+      }
+
+      if (inFlight < max && failures.isEmpty()) {
+        // Steadily increase if we're still succeeding on these requests
+        capacity += 0.125;
+      }
+
+      while (inFlight < max) {
+        Future<SaveState> task = null;
+        if (!failures.isEmpty()) {
+          task = query(term, failures.remove(failures.size() - 1));
+        } else if (sectionIds.hasNext()) {
+          task = query(term, sectionIds.next());
+        }
+
+        if (task != null) {
+          engine.add(task);
+          inFlight += 1;
+        }
+      }
 
       TryCatch tc =
           tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
-                save.registrationNumber);
+                save.sectionId.registrationNumber);
 
       Section s = tc.pass(() -> parse(save.data));
 
       logger.debug("Adding section information...");
 
-      for (String i : s.instructors) {
-        if (i.equals("Staff"))
-          continue;
-
-        upsertInstructor(p, save.code, save.id, i);
-      }
-
       PreparedStatement stmt = p.sections;
-      Utils.setArray(stmt, s.name, save.code.toString() + ' ' + s.name,
+      Utils.setArray(stmt, s.name,
+                     save.sectionId.subjectCode.toString() + ' ' + s.name,
                      s.campus, Utils.nullable(Types.VARCHAR, s.instructionMode),
                      s.minUnits, s.maxUnits, s.location, s.grading,
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
-                     Utils.nullable(Types.VARCHAR, s.prerequisites), save.id);
+                     Utils.nullable(Types.VARCHAR, s.prerequisites),
+                     s.instructors, save.sectionId.id);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();
@@ -161,7 +157,7 @@ public class UpdateSections {
       int courseId = rs.getInt(1);
       rs.close();
 
-      if (!courseDescriptions.containsKey(courseId) && s.description != null) {
+      if (s.description != null && !courseDescriptions.containsKey(courseId)) {
         courseDescriptions.put(courseId, s.description);
       }
     }
@@ -175,51 +171,19 @@ public class UpdateSections {
     }
   }
 
-  private static void upsertInstructor(Prepared p, Subject subject,
-                                       int sectionId, String instructor)
-      throws SQLException {
-    PreparedStatement stmt = p.getInstructors;
-    Utils.setArray(stmt, subject.code, instructor);
-
-    ResultSet rs = stmt.executeQuery();
-    int instructorId;
-    if (!rs.next()) {
-      rs.close();
-
-      PreparedStatement createInstructor = p.createInstructor;
-      Utils.setArray(createInstructor, instructor, subject.code);
-
-      if (createInstructor.executeUpdate() == 0)
-        throw new RuntimeException("Why bro");
-
-      rs = createInstructor.getGeneratedKeys();
-      if (!rs.next())
-        throw new RuntimeException("man c'mon");
-    }
-
-    instructorId = rs.getInt("id");
-    rs.close();
-
-    PreparedStatement addTeachingRelation = p.addTeachingRelation;
-    Utils.setArray(addTeachingRelation, instructorId, sectionId, instructor);
-
-    if (addTeachingRelation.executeUpdate() != 1)
-      throw new RuntimeException("wtf dude");
-  }
-
   private static final String ROOT_URL =
       "https://m.albert.nyu.edu/app/catalog/classSearch";
   private static String DATA_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/";
 
-  private static Future<SaveState> query(Term term, SectionID sectionID) {
-    int registrationNumber = sectionID.registrationNumber;
-    if (registrationNumber < 0)
-      throw new IllegalArgumentException(
-          "Registration numbers aren't negative!");
+  private static Future<SaveState> query(Term term, SectionID sectionId) {
+    int registrationNumber = sectionId.registrationNumber;
+    if (registrationNumber < 0) {
+      throw new IllegalArgumentException("Registration numbers are positive");
+    }
 
-    logger.debug("Querying section in term=" + term +
-                 " with registrationNumber=" + registrationNumber);
+    logger.debug("Querying section in term={} with registrationNumber={}", term,
+                 registrationNumber);
 
     Request request =
         new RequestBuilder()
@@ -242,6 +206,21 @@ public class UpdateSections {
             .build();
 
     return Client.send(request, (resp, throwable) -> {
+      SaveState state = new SaveState();
+      state.sectionId = sectionId;
+
+      if (throwable instanceof io.netty.channel.ConnectTimeoutException) {
+        return state;
+      }
+
+      if (throwable instanceof java.util.concurrent.TimeoutException) {
+        return state;
+      }
+
+      if (throwable instanceof java.net.ConnectException) {
+        return state;
+      }
+
       if (resp == null) {
         logger.error("Querying section failed: term={}, registrationNumber={}",
                      term, registrationNumber, throwable);
@@ -249,9 +228,9 @@ public class UpdateSections {
         return null;
       }
 
-      String body = resp.getResponseBody();
-      return new SaveState(sectionID.subjectCode, sectionID.id,
-                           sectionID.registrationNumber, body);
+      state.data = resp.getResponseBody();
+
+      return state;
     });
   }
 
@@ -303,6 +282,12 @@ public class UpdateSections {
     Element outerDataSection = doc.selectFirst("body > section.main");
     Element innerDataSection = outerDataSection.selectFirst("> section");
     Element courseNameDiv = innerDataSection.selectFirst("> div.primary-head");
+
+    if (courseNameDiv == null) {
+      logger.info("Crashing with data={}", rawData);
+
+      throw new RuntimeException("What happened here?");
+    }
 
     String courseName = courseNameDiv.text();
 

@@ -84,21 +84,17 @@ public final class SectionEndpoint extends Endpoint {
       String fullData = ctx.queryParam("full");
 
       Object output = GetConnection.withConnectionReturning(conn -> {
-        Integer epoch = Epoch.getLatestEpoch(conn, term);
-        if (epoch == null) {
-          return Collections.emptyList();
-        }
-        if (fullData != null && fullData.toLowerCase().equals("true"))
+        if (fullData != null && fullData.toLowerCase().equals("true")) {
           return RowsToCourses
               .fullRowsToCourses(
-                  SelectRows.selectFullRow(conn, epoch, registrationNumber))
+                  SelectRows.selectFullRow(conn, term, registrationNumber))
               .findAny()
               .map(c -> c.sections.get(0))
               .orElse(null);
+        }
 
         return RowsToCourses
-            .rowsToCourses(
-                SelectRows.selectRow(conn, epoch, registrationNumber))
+            .rowsToCourses(SelectRows.selectRow(conn, term, registrationNumber))
             .findAny()
             .map(c -> c.sections.get(0))
             .orElse(null);

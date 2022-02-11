@@ -29,18 +29,44 @@ public class GetConnection {
   }
 
   public static void withConnection(SQLConsumer f) {
-    try (Connection conn = getConnection()) {
+    Connection conn = tcPass(() -> getConnection());
+
+    try {
+      conn.setAutoCommit(false);
+
       f.accept(conn);
+
+      conn.commit();
+      conn.setAutoCommit(true);
     } catch (SQLException e) {
+      tcIgnore(() -> conn.rollback());
+
       throw new RuntimeException(e);
+    } finally {
+      tcIgnore(() -> conn.setAutoCommit(true));
+      tcIgnore(() -> conn.close());
     }
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
-    try (Connection conn = getConnection()) {
-      return f.apply(conn);
+    Connection conn = tcPass(() -> getConnection());
+
+    try {
+      conn.setAutoCommit(false);
+
+      T value = f.apply(conn);
+
+      conn.commit();
+      conn.setAutoCommit(true);
+
+      return value;
     } catch (SQLException e) {
+      tcIgnore(() -> conn.rollback());
+
       throw new RuntimeException(e);
+    } finally {
+      tcIgnore(() -> conn.setAutoCommit(true));
+      tcIgnore(() -> conn.close());
     }
   }
 

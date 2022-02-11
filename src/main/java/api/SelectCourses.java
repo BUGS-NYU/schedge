@@ -16,43 +16,43 @@ public class SelectCourses {
   private static Logger logger =
       LoggerFactory.getLogger("api.v1.SelectCourses");
 
-  public static List<Course> selectCourses(Connection conn, int epoch,
+  public static List<Course> selectCourses(Connection conn, Term term,
                                            List<Subject> codes) {
     return codes.stream()
-        .flatMap(code -> selectCourses(conn, epoch, code))
+        .flatMap(code -> selectCourses(conn, term, code))
         .collect(Collectors.toList());
   }
 
-  public static Stream<Course> selectCourses(Connection conn, int epoch,
+  public static Stream<Course> selectCourses(Connection conn, Term term,
                                              Subject code) {
     try {
-      return rowsToCourses(SelectRows.selectRows(conn, epoch, code));
+      return rowsToCourses(SelectRows.selectRows(conn, term, code));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public static List<Course> selectFullCourses(Connection conn, int epoch,
+  public static List<Course> selectFullCourses(Connection conn, Term term,
                                                List<Subject> codes) {
     return codes.stream()
-        .flatMap(code -> selectFullCourses(conn, epoch, code))
+        .flatMap(code -> selectFullCourses(conn, term, code))
         .collect(Collectors.toList());
   }
 
-  public static Stream<Course> selectFullCourses(Connection conn, int epoch,
+  public static Stream<Course> selectFullCourses(Connection conn, Term term,
                                                  Subject code) {
     try {
       return RowsToCourses.fullRowsToCourses(
-          SelectRows.selectFullRows(conn, epoch, code));
+          SelectRows.selectFullRows(conn, term, code));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
   public static List<Course>
-  selectCoursesBySectionId(Connection conn, int epoch, List<Integer> sectionIds)
+  selectCoursesBySectionId(Connection conn, Term term, List<Integer> sectionIds)
       throws SQLException {
-    return rowsToCourses(selectRowsBySectionId(conn, epoch, sectionIds))
+    return rowsToCourses(selectRowsBySectionId(conn, term, sectionIds))
         .collect(Collectors.toList());
   }
 }

@@ -30,9 +30,6 @@ public class UpdateSections {
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement sections;
     final PreparedStatement descriptions;
-    final PreparedStatement getInstructors;
-    final PreparedStatement createInstructor;
-    final PreparedStatement addTeachingRelation;
 
     Prepared(Connection conn) throws SQLException {
       this.sections = conn.prepareStatement(
@@ -45,32 +42,18 @@ public class UpdateSections {
           + "location = ?, "
           + "grading = ?, "
           + "notes = ?, notes_vec = to_tsvector(?), "
-          + "prerequisites = ?, prereqs_vec = to_tsvector(?) "
+          + "prerequisites = ?, prereqs_vec = to_tsvector(?), "
+          + "instructors = ? "
           + "WHERE sections.id = ?"
           + "RETURNING sections.course_id");
 
       this.descriptions = conn.prepareStatement(
           "UPDATE courses SET description = ? WHERE id = ?");
-
-      this.getInstructors = conn.prepareStatement(
-          "SELECT id from instructors WHERE subject_code = ? AND name = ?");
-
-      this.createInstructor = conn.prepareStatement(
-          "INSERT INTO instructors (name, subject_code) VALUES (?, ?)",
-          Statement.RETURN_GENERATED_KEYS);
-
-      this.addTeachingRelation = conn.prepareStatement(
-          "INSERT INTO is_teaching_section "
-          + "(instructor_id, section_id, instructor_name) "
-          + "VALUES (?, ?, ?)");
     }
 
     public void close() throws SQLException {
       this.sections.close();
       this.descriptions.close();
-      this.getInstructors.close();
-      this.createInstructor.close();
-      this.addTeachingRelation.close();
     }
   }
 
@@ -137,13 +120,6 @@ public class UpdateSections {
 
       logger.debug("Adding section information...");
 
-      for (String i : s.instructors) {
-        if (i.equals("Staff"))
-          continue;
-
-        upsertInstructor(p, save.code, save.id, i);
-      }
-
       PreparedStatement stmt = p.sections;
       Utils.setArray(stmt, s.name, save.code.toString() + ' ' + s.name,
                      s.campus, Utils.nullable(Types.VARCHAR, s.instructionMode),
@@ -151,7 +127,8 @@ public class UpdateSections {
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.notes),
                      Utils.nullable(Types.VARCHAR, s.prerequisites),
-                     Utils.nullable(Types.VARCHAR, s.prerequisites), save.id);
+                     Utils.nullable(Types.VARCHAR, s.prerequisites),
+                     s.instructors, save.id);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();
@@ -173,38 +150,6 @@ public class UpdateSections {
       if (stmt.executeUpdate() == 0)
         throw new RuntimeException("why did this fail?");
     }
-  }
-
-  private static void upsertInstructor(Prepared p, Subject subject,
-                                       int sectionId, String instructor)
-      throws SQLException {
-    PreparedStatement stmt = p.getInstructors;
-    Utils.setArray(stmt, subject.code, instructor);
-
-    ResultSet rs = stmt.executeQuery();
-    int instructorId;
-    if (!rs.next()) {
-      rs.close();
-
-      PreparedStatement createInstructor = p.createInstructor;
-      Utils.setArray(createInstructor, instructor, subject.code);
-
-      if (createInstructor.executeUpdate() == 0)
-        throw new RuntimeException("Why bro");
-
-      rs = createInstructor.getGeneratedKeys();
-      if (!rs.next())
-        throw new RuntimeException("man c'mon");
-    }
-
-    instructorId = rs.getInt("id");
-    rs.close();
-
-    PreparedStatement addTeachingRelation = p.addTeachingRelation;
-    Utils.setArray(addTeachingRelation, instructorId, sectionId, instructor);
-
-    if (addTeachingRelation.executeUpdate() != 1)
-      throw new RuntimeException("wtf dude");
   }
 
   private static final String ROOT_URL =

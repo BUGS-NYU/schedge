@@ -26,6 +26,7 @@ you a general overview of the project and how to contribute.
       search the DB directly for stuff.
 
 #### Delayed for now
+- [ ] Optimize response times enough that `full` can be the default
 - [ ] Profile stuffs, perf seems to be regressing randomly
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
 - [ ] Remove all the different `models` folders, simplify database edits and whatnot

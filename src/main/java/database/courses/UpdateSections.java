@@ -111,7 +111,7 @@ public class UpdateSections {
         continue;
       }
 
-      if (inFlight < max && failed.isEmpty()) {
+      if (inFlight < max && failures.isEmpty()) {
         // Steadily increase if we're still succeeding on these requests
         capacity += 0.125;
       }

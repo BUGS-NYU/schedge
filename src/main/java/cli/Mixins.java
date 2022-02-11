@@ -12,27 +12,15 @@ public final class Mixins {
 
   public static final class BatchSize {
     @Option(names = "--batch-size-catalog",
-            description = "batch size for querying the catalog")
-    private Integer catalog;
+            description = "batch size for querying the catalog",
+            defaultValue = "20")
+    public int catalog;
     @Option(names = "--batch-size-sections",
-            description = "batch size for querying sections")
-    private Integer sections;
+            description = "batch size for querying sections",
+            defaultValue = "10")
+    public int sections;
 
     @Spec private CommandLine.Model.CommandSpec spec;
-
-    public int getCatalog(int defaultValue) {
-      if (catalog == null)
-        return defaultValue;
-      else
-        return catalog;
-    }
-
-    public int getSections(int defaultValue) {
-      if (sections == null)
-        return defaultValue;
-      else
-        return sections;
-    }
   }
 
   public static final class InputFile {

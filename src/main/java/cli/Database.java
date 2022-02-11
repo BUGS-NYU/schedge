@@ -44,16 +44,15 @@ public class Database implements Runnable {
                                + "--year, --semester, and --term are ignored.")
          boolean service) {
     while (service) {
-      UpdateData.updateData(batchSize.getCatalog(20),
-                            batchSize.getSections(30));
+      UpdateData.updateData(batchSize.catalog, batchSize.sections);
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }
 
     long start = System.nanoTime();
 
-    int catalogBatch = batchSize.getCatalog(20);
-    int sectionsBatch = batchSize.getSections(50);
+    int catalogBatch = batchSize.catalog;
+    int sectionsBatch = batchSize.sections;
     Term term = termMixin.getTerm();
 
     ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
@@ -88,15 +87,14 @@ public class Database implements Runnable {
 
   @Command(name = "serve", description = "Serve data through the API.\n")
   public void
-  serve(@Mixin Mixins.BatchSize batchSizeMixin,
+  serve(@Mixin Mixins.BatchSize batchSize,
         @Option(names = "--scrape",
                 description = "whether or not to scrape while serving")
         boolean scrape) {
     App.run();
 
     while (scrape) {
-      UpdateData.updateData(batchSizeMixin.getCatalog(20),
-                            batchSizeMixin.getSections(20));
+      UpdateData.updateData(batchSize.catalog, batchSize.sections);
 
       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
     }

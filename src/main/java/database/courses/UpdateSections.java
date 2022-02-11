@@ -73,28 +73,16 @@ public class UpdateSections {
 
   public static void updateSections(Connection conn, Term term,
                                     Iterator<SectionID> sectionIds,
-                                    Integer batchSizeNullable)
-      throws SQLException {
-    conn.setAutoCommit(false);
+                                    int batchSize) throws SQLException {
 
     try (Prepared p = new Prepared(conn)) {
-      updateSections(p, term, sectionIds, batchSizeNullable);
-
-      conn.commit();
-      conn.setAutoCommit(true);
-    } catch (SQLException | RuntimeException e) {
-      conn.rollback();
-      conn.setAutoCommit(true);
-
-      throw e;
+      updateSections(p, term, sectionIds, batchSize);
     }
   }
 
   public static void updateSections(Prepared p, Term term,
                                     Iterator<SectionID> sectionIds,
-                                    Integer batchSizeNullable)
-      throws SQLException {
-    int batchSize = batchSizeNullable == null ? 40 : batchSizeNullable;
+                                    int batchSize) throws SQLException {
     FutureEngine<SaveState> engine = new FutureEngine<>();
 
     for (int i = 0; i < batchSize; i++) {

@@ -3,7 +3,6 @@ package api.v1;
 import static utils.TryCatch.*;
 
 import api.*;
-import database.Epoch;
 import database.GetConnection;
 import database.courses.SelectRows;
 import io.javalin.http.Handler;

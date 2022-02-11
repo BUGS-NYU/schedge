@@ -73,15 +73,15 @@ public class SelectRows {
         + "WHERE " + conditions);
     Utils.setArray(stmt, objects);
 
-    ArrayList<Meeting> empty = new ArrayList<>();
+    ResultSet rs = stmt.executeQuery();
+
+    List<Meeting> empty = new ArrayList<>();
     ArrayList<Row> rows = new ArrayList<>();
 
-    ResultSet rs = stmt.executeQuery();
     while (rs.next()) {
-      List<Meeting> meetings =
-          meetingsList.getOrDefault(rs.getInt("section_id"), empty);
-
-      rows.add(new Row(rs, meetings));
+      int id = rs.getInt("section_id");
+      Row row = new Row(rs, meetingsList.getOrDefault(id, empty));
+      rows.add(row);
     }
 
     rs.close();
@@ -142,9 +142,13 @@ public class SelectRows {
     Utils.setArray(stmt, objects);
 
     ResultSet rs = stmt.executeQuery();
+
+    List<Meeting> empty = new ArrayList<>();
     ArrayList<FullRow> rows = new ArrayList<>();
     while (rs.next()) {
-      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
+      int id = rs.getInt("section_id");
+      FullRow row = new FullRow(rs, meetingsList.getOrDefault(id, empty));
+      rows.add(row);
     }
 
     rs.close();

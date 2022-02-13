@@ -25,9 +25,7 @@ jobs:
           distribution: 'adopt'
 
       - run: yarn install --frozen-lockfile
-      - run: |
-          yarn build
-          yarn run next export
+      - run: yarn export
 
       - name: Build with Gradle
         run: ./gradlew build

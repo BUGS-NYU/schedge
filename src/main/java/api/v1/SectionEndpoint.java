@@ -7,11 +7,10 @@ import database.GetConnection;
 import database.courses.SelectRows;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import java.util.*;
 import types.*;
 import utils.*;
 
-public final class SectionEndpoint extends Endpoint {
+public final class SectionEndpoint extends App.Endpoint {
 
   enum SemesterCode {
     su,
@@ -44,7 +43,7 @@ public final class SectionEndpoint extends Endpoint {
                    })
         .json("200", Section.class,
               openApiParam -> { openApiParam.description("OK."); })
-        .json("400", ApiError.class, openApiParam -> {
+        .json("400", App.ApiError.class, openApiParam -> {
           openApiParam.description(
               "One of the values in the path parameter was not valid.");
         });
@@ -54,7 +53,7 @@ public final class SectionEndpoint extends Endpoint {
     return ctx -> {
       TryCatch tc = tcNew(e -> {
         ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
+        ctx.json(new App.ApiError(e.getMessage()));
       });
 
       Term term = tc.log(() -> {

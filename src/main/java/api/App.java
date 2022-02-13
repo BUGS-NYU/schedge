@@ -2,19 +2,38 @@ package api;
 
 import api.v1.*;
 import io.javalin.Javalin;
+import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
+import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import io.javalin.plugin.openapi.ui.ReDocOptions;
 import io.swagger.v3.oas.models.info.Info;
 import java.io.*;
-import java.util.stream.Collectors;
 import org.slf4j.*;
 
 public class App {
 
   private static final Logger logger = LoggerFactory.getLogger("api.App");
+
+  public abstract static class Endpoint {
+    public abstract String getPath();
+    public abstract OpenApiDocumentation
+    configureDocs(OpenApiDocumentation docs);
+    public abstract Handler getHandler();
+    public final void addTo(Javalin app) {
+      app.get("/api" + getPath(),
+              OpenApiBuilder.documented(
+                  configureDocs(OpenApiBuilder.document()), getHandler()));
+    }
+  }
+
+  public static class ApiError {
+    private String message;
+    public ApiError(String message) { this.message = message; }
+    public String getMessage() { return message; }
+  }
 
   public static void run() {
     Javalin app =

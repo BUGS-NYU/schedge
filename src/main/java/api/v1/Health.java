@@ -4,7 +4,7 @@ import api.*;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 
-public final class Health extends Endpoint {
+public final class Health extends App.Endpoint {
   public String getPath() { return "/stat"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {

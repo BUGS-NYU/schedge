@@ -13,7 +13,7 @@ import types.*;
 import types.Term;
 import utils.*;
 
-public final class SearchEndpoint extends Endpoint {
+public final class SearchEndpoint extends App.Endpoint {
 
   public String getPath() { return "/{term}/search"; }
 
@@ -83,7 +83,7 @@ public final class SearchEndpoint extends Endpoint {
               openApiParam.description(
                   "The weight given to course prerequisites in search. Default is 0.");
             })
-        .json("400", ApiError.class,
+        .json("400", App.ApiError.class,
               openApiParam -> {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
@@ -96,7 +96,7 @@ public final class SearchEndpoint extends Endpoint {
     return ctx -> {
       TryCatch tc = tcNew(e -> {
         ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
+        ctx.json(new App.ApiError(e.getMessage()));
       });
 
       Term term = tc.log(() -> {
@@ -119,11 +119,11 @@ public final class SearchEndpoint extends Endpoint {
       String args = ctx.queryParam("query");
       if (args == null) {
         ctx.status(400);
-        ctx.json(new ApiError("Need to provide a query."));
+        ctx.json(new App.ApiError("Need to provide a query."));
         return;
       } else if (args.length() > 50) {
         ctx.status(400);
-        ctx.json(new ApiError("Query can be at most 50 characters long."));
+        ctx.json(new App.ApiError("Query can be at most 50 characters long."));
       }
 
       String school = ctx.queryParam("school"), subject =
@@ -154,7 +154,7 @@ public final class SearchEndpoint extends Endpoint {
                             .orElse(0);
       } catch (NumberFormatException e) {
         ctx.status(400);
-        ctx.json(new ApiError("Limit needs to be a positive integer."));
+        ctx.json(new App.ApiError("Limit needs to be a positive integer."));
         return;
       }
 

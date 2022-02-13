@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import types.*;
 import utils.*;
 
-public final class GenerateScheduleEndpoint extends Endpoint {
+public final class GenerateScheduleEndpoint extends App.Endpoint {
 
   enum SemesterCode {
     su,
@@ -43,7 +43,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
         .queryParam("registrationNumbers", String.class, false,
                     openApiParam
                     -> openApiParam.description("CSV of registration numbers"))
-        .json("400", ApiError.class,
+        .json("400", App.ApiError.class,
               openApiParam -> {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
@@ -59,7 +59,7 @@ public final class GenerateScheduleEndpoint extends Endpoint {
     return ctx -> {
       TryCatch tc = tcNew(e -> {
         ctx.status(400);
-        ctx.json(new ApiError(e.getMessage()));
+        ctx.json(new App.ApiError(e.getMessage()));
       });
 
       Term term = tc.log(() -> {
@@ -82,14 +82,14 @@ public final class GenerateScheduleEndpoint extends Endpoint {
       String regNumsString = ctx.queryParam("registrationNumbers");
       if (regNumsString == null) {
         ctx.status(400);
-        ctx.json(new ApiError("missing required query parameters"));
+        ctx.json(new App.ApiError("missing required query parameters"));
         return;
       }
 
       String[] regNumsStrArray = regNumsString.split(",");
       if (regNumsStrArray.length == 0) {
         ctx.status(400);
-        ctx.json(new ApiError("didn't provide any regstration numbers"));
+        ctx.json(new App.ApiError("didn't provide any regstration numbers"));
         return;
       }
 

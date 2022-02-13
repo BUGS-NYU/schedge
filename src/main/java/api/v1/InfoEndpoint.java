@@ -6,7 +6,7 @@ import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
 
-public final class InfoEndpoint extends Endpoint {
+public final class InfoEndpoint extends App.Endpoint {
   public String getPath() { return "/info"; }
 
   public final class Info {

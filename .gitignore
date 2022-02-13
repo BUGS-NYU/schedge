@@ -7,6 +7,7 @@
 # Schedge-specific
 /.letsencrypt
 /.build
+/src/main/resources/next
 *.log
 
 # JavaScript

@@ -5,7 +5,6 @@ import css from "components/util.module.css";
 import Link from "next/link";
 import { QueryClient, QueryClientProvider } from "react-query";
 import cx from "classnames";
-import Image from "next/image";
 import Head from "next/head";
 
 const queryClient = new QueryClient();

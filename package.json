@@ -2,10 +2,10 @@
   "name": "schedge",
   "scripts": {
     "dev": "next dev -p 9100",
-    "build": "next build",
+    "export": "next build && next export -o src/main/resources/next",
     "start": "next start",
     "lint": "next lint",
-    "deploy": "git push origin main:production"
+    "deploy": "git push -f origin main:production"
   },
   "dependencies": {
     "classnames": "2.3.1",

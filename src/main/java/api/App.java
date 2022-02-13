@@ -2,6 +2,7 @@ package api;
 
 import api.v1.*;
 import io.javalin.Javalin;
+import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
@@ -20,6 +21,7 @@ public class App {
         Javalin
             .create(config -> {
               config.enableCorsForAllOrigins();
+
               String description =
                   "Schedge is an API to NYU's course catalog. "
                   + "Please note that <b>this API is currently under "
@@ -35,10 +37,16 @@ public class App {
               config.enableWebjars();
 
               OpenApiOptions options = new OpenApiOptions(info)
-                                           .path("/swagger.json")
+                                           .path("/api/swagger.json")
                                            .reDoc(new ReDocOptions("/api"));
-
               config.registerPlugin(new OpenApiPlugin(options));
+
+              config.addStaticFiles(staticFiles -> {
+                staticFiles.hostedPath = "/";
+                staticFiles.directory = "/next/";
+                staticFiles.location = Location.CLASSPATH;
+                staticFiles.precompress = true;
+              });
             })
             .start(4358);
 

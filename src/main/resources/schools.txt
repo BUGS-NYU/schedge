@@ -4,7 +4,7 @@ UT,America/New_York,Tisch School of the Arts
 UA,America/New_York,College of Arts and Science
 GE,America/New_York,Steinhardt School of Culture, Education, and Human Development - Graduate
 GT,America/New_York,Tisch School of the Arts - Graduate
-SHU,America/New_York,NYU Shanghai
+SHU,Asia/Shanghai,NYU Shanghai
 UE,America/New_York,Steinhardt School of Culture, Education, and Human Development
 GA,America/New_York,Graduate School of Arts and Science
 UF,America/New_York,Liberal Studies
@@ -24,7 +24,7 @@ DC,America/New_York,School of Professional Studies
 UD,America/New_York,College of Dentistry
 US,America/New_York,Silver School of Social Work
 UU,America/New_York,College of Global Public Health
-UH,America/New_York,NYU Abu Dhabi
+UH,Asia/Dubai,NYU Abu Dhabi
 DN,America/New_York,
 CD,America/New_York,
 GH,America/New_York,

@@ -8,20 +8,6 @@ import java.util.*;
 import utils.*;
 
 public final class Subject {
-
-  // @TODO It seems time zone stuff in Java SQL is a bit borked. Let's just set
-  // all DB timestamps to UTC, and then manually convert to whatever on the
-  // fly. Seems easier than the alternative.
-  //
-  // https://stackoverflow.com/questions/14070572/is-java-sql-timestamp-timezone-specific/14070771
-  // https://stackoverflow.com/questions/42280454/changing-localdatetime-based-on-time-difference-in-current-time-zone-vs-eastern
-  //
-  //                            - Albert Liu, Feb 03, 2022 Thu 01:12 EST
-  //
-  // @Note: This is almost entirely done. The data models are now all fixed,
-  // the only thing missing is making sure all the timezones stored in
-  // resources/schools.txt are correct.
-  //                                  - Albert Liu, Feb 13, 2022 Sun 20:55 EST
   public static final class School {
     public String name;
     public ZoneId timezone;
@@ -51,6 +37,10 @@ public final class Subject {
       addSubject(school, subject, name);
     }
 
+    // @TODO: We need to make sure all the timezones stored in
+    // resources/schools.txt are correct.
+    //
+    //                                  - Albert Liu, Feb 13, 2022 Sun 20:55 EST
     for (String line : Utils.asResourceLines("/schools.txt")) {
       String[] s = line.split(",", 3);
       String abbreviation = s[0], timezone = s[1], name = s[2];

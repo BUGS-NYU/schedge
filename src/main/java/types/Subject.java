@@ -9,7 +9,7 @@ import utils.*;
 
 public final class Subject {
 
-  // TODO It seems time zone stuff in Java SQL is a bit borked. Let's just set
+  // @TODO It seems time zone stuff in Java SQL is a bit borked. Let's just set
   // all DB timestamps to UTC, and then manually convert to whatever on the
   // fly. Seems easier than the alternative.
   //
@@ -17,10 +17,20 @@ public final class Subject {
   // https://stackoverflow.com/questions/42280454/changing-localdatetime-based-on-time-difference-in-current-time-zone-vs-eastern
   //
   //                            - Albert Liu, Feb 03, 2022 Thu 01:12 EST
+  //
+  // @Note: This is almost entirely done. The data models are now all fixed,
+  // the only thing missing is making sure all the timezones stored in
+  // resources/schools.txt are correct.
+  //                                  - Albert Liu, Feb 13, 2022 Sun 20:55 EST
   public static final class School {
     public String name;
     public ZoneId timezone;
     public ArrayList<Subject> subjects;
+
+    // @Note: This is required so that the docs that the Javalin OpenAPI plugin
+    // generates provide correct types. Otherwise it's not necessary.
+    //                            - Albert Liu, Feb 13, 2022 Sun 20:55 EST
+    public String getTimezone() { return timezone.toString(); }
   }
 
   @JsonIgnore public volatile String schoolCode;

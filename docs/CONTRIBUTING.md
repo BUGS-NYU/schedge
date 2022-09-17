@@ -49,6 +49,9 @@ You'll need to install a few applications to contribute to this project:
 ## Useful Commands
 - `docker-compose exec schedge schedge db populate --semester=sp --year=2022` -
   Populate your database with data from production
+- `docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
+  Run `psql` on the local database
+
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

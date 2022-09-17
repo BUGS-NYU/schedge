@@ -85,21 +85,6 @@ public class Database implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @Command(name = "serve", description = "Serve data through the API.\n")
-  public void
-  serve(@Mixin Mixins.BatchSize batchSize,
-        @Option(names = "--scrape",
-                description = "whether or not to scrape while serving")
-        boolean scrape) {
-    App.run();
-
-    while (scrape) {
-      UpdateData.updateData(batchSize.catalog, batchSize.sections);
-
-      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    }
-  }
-
   @Command(
       name = "populate",
       description = "Populate the database by scraping the existing production "

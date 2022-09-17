@@ -9,4 +9,4 @@ RUN echo 'export PATH="/app:${PATH}"' >> /root/.bashrc
 COPY ./src/build/docker/entrypoint.sh /app/schedge
 COPY ./.build/libs/schedge.jar /app/schedge.jar
 
-ENTRYPOINT ["/app/schedge", "db", "serve"]
+ENTRYPOINT ["/app/schedge", "serve"]

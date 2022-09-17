@@ -1,7 +1,6 @@
 plugins {
     id "java"
     id "application"
-    // id "org.flywaydb.flyway" version "7.8.2"
     id 'com.avast.gradle.docker-compose' version '0.15.0'
 }
 
@@ -24,14 +23,6 @@ tasks.named('wrapper') {
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked"
 }
-
-// flyway {
-//   driver = 'org.postgresql.Driver'
-//   url = getenv("JDBC_URL", "jdbc:postgresql://localhost:5432/schedge")
-//   user = getenv("DB_USERNAME", "schedge")
-//   password = getenv("DB_PASSWORD", "")
-//   locations = ['filesystem:src/main/migrations']
-// }
 
 repositories {
     mavenCentral()

@@ -82,6 +82,7 @@ public class App {
     });
 
     new InfoEndpoint().addTo(app);
+    new SubjectsEndpoint().addTo(app);
 
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);

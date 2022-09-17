@@ -19,7 +19,7 @@ You'll need to install a few applications to contribute to this project:
   This is used to run the application in both production and development. Ideally
   it would not be necessary, but for now it is, to reduce the need to download
   an infinite number of dependencies all the time.
-- [Java 8 or later](https://www.java.com/en/download/manual.jsp) -
+- [Java Development Kit 8 or later](https://www.oracle.com/java/technologies/downloads/) -
   The project is written in Java, so you'll probably need to install a Java
   Development Kit (JDK) in order to build and run it.
 

@@ -46,6 +46,10 @@ You'll need to install a few applications to contribute to this project:
   new changes automatically)
 - `docker-compose down`: Close the servers when development is done
 
+## Useful Commands
+- `docker-compose exec schedge schedge db populate --semester=sp --year=2022` -
+  Populate your database with data from production
+
 ### Comment Annotations
 The codebase uses the following annotations in the comments:
 

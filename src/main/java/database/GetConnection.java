@@ -37,13 +37,11 @@ public class GetConnection {
       f.accept(conn);
 
       conn.commit();
-      conn.setAutoCommit(true);
     } catch (SQLException e) {
       tcIgnore(() -> conn.rollback());
 
       throw new RuntimeException(e);
     } finally {
-      tcIgnore(() -> conn.setAutoCommit(true));
       tcIgnore(() -> conn.close());
     }
   }
@@ -57,7 +55,6 @@ public class GetConnection {
       T value = f.apply(conn);
 
       conn.commit();
-      conn.setAutoCommit(true);
 
       return value;
     } catch (SQLException e) {
@@ -65,7 +62,6 @@ public class GetConnection {
 
       throw new RuntimeException(e);
     } finally {
-      tcIgnore(() -> conn.setAutoCommit(true));
       tcIgnore(() -> conn.close());
     }
   }

@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "eslint": "8.23.1",
-    "eslint-plugin-prettier": "4.2.1",
+    "eslint-config-next": "12.3.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
     "eslint-plugin-react": "7.31.8",
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-preset-env": "7.0.1",
@@ -61,7 +62,7 @@
     "extends": [
       "eslint:recommended",
       "plugin:react/recommended",
-      "plugin:prettier/recommended",
+      "next/core-web-vitals",
       "plugin:jsx-a11y/recommended"
     ],
     "parserOptions": {
@@ -72,8 +73,7 @@
       "sourceType": "module"
     },
     "plugins": [
-      "react",
-      "eslint-plugin-prettier"
+      "react"
     ],
     "rules": {
       "linebreak-style": [

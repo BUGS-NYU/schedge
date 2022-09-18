@@ -17,7 +17,13 @@ if (process.env.JAVA_HOME) {
 process.env.APP_HOME = path.dirname(__dirname);
 process.env.APP_NAME = "Gradle";
 process.env.APP_BASE_NAME = "gradlew";
-process.env.CLASSPATH = `${process.env.APP_HOME}/src/build/gradle/gradle-wrapper.jar`;
+process.env.CLASSPATH = path.join(
+  process.env.APP_HOME,
+  "src",
+  "build",
+  "gradle",
+  "gradle-wrapper.jar"
+);
 
 const jvmOpts = ["-Xmx64m", "-Xms64m"];
 const opts = [

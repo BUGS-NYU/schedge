@@ -1,6 +1,8 @@
 package api;
 
 import api.v1.*;
+import database.GetConnection;
+import database.Migrations;
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
@@ -36,6 +38,8 @@ public class App {
   }
 
   public static void run() {
+    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
+
     Javalin app =
         Javalin
             .create(config -> {

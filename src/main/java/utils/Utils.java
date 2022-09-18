@@ -2,11 +2,13 @@ package utils;
 
 import java.io.*;
 import java.lang.Runnable;
+import java.net.*;
+import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
-import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.*;
 
 public final class Utils {
   private static BufferedReader inReader =
@@ -32,6 +34,21 @@ public final class Utils {
     // Read entire file and then get it as a list of lines
     return Arrays.asList(
         new Scanner(resource, "UTF-8").useDelimiter("\\A").next().split("\\n"));
+  }
+
+  public static List<String> resourcePaths(String path)
+      throws IOException, URISyntaxException {
+    URI uri = Utils.class.getResource(path).toURI();
+
+    try (FileSystem fileSystem = FileSystems.newFileSystem(
+             uri, Collections.<String, Object>emptyMap())) {
+      Path myPath = fileSystem.getPath(path);
+
+      return Files.walk(myPath)
+          .filter(Files::isRegularFile)
+          .map(p -> p.toString())
+          .collect(Collectors.toList());
+    }
   }
 
   public static void writeToFileOrStdout(String file, Object value) {
@@ -134,7 +151,7 @@ public final class Utils {
       }
       return stmt;
     } catch (Exception e) {
-      System.err.println("at index " + i);
+      // System.err.println("at index " + i);
       throw new RuntimeException(e);
     }
   }

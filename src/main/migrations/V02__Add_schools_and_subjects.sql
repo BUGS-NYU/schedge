@@ -1,9 +1,5 @@
-UPDATE schedge_meta SET
-  updated_at = NOW(),
-  value = '2'
-WHERE name = 'version';
-
-CREATE INDEX courses_term_idx ON courses (term);
+-- This migration transitions Schedge off of hard-coded subject codes,
+-- so that new semesters no longer require more programming.
 
 CREATE TABLE schools (
   id                  SERIAL                      NOT NULL UNIQUE,
@@ -20,3 +16,6 @@ CREATE TABLE subjects (
   name                varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE INDEX schools_term_idx ON schools (term);
+CREATE INDEX subjects_term_idx ON subjects (term);

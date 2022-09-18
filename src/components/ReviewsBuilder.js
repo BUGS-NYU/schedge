@@ -10,7 +10,7 @@ export default function ReviewsBuilder({ currentInstructor }) {
   const { isLoading, error, data } = useQuery(rmpKey, async () => {
     const url = `https://www.ratemyprofessors.com/paginate/professors/ratings?tid=${currentInstructor.rmpId}&page=${page}`;
     const resp = await fetch(url);
-    const data = await res.json();
+    const data = await resp.json();
 
     return data;
   });

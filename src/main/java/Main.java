@@ -5,28 +5,40 @@ import static utils.Utils.*;
 import actions.*;
 import api.App;
 import cli.Mixins;
-import cli.Schedge;
 import java.util.concurrent.TimeUnit;
 import picocli.CommandLine;
 
-@Command(name = "serve", description = "runs the app\n")
+/*
+   @Help: Add annotations, comments to code
+*/
+@Command(name = "schedge")
 public class Main implements Runnable {
-  @Mixin Mixins.BatchSize batchSize;
 
-  @Option(names = "--scrape",
-          description = "whether or not to scrape while serving")
-  boolean scrape;
+  @Spec private Model.CommandSpec spec;
+  @Option(names = {"-h", "--help"}, usageHelp = true,
+          description = "display a help message")
+  boolean displayHelp;
 
   public static void main(String[] args) {
-    new CommandLine(new Schedge())
+    new CommandLine(new Main())
         .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
         .addSubcommand("db", new CommandLine(new cli.Database()))
-        .addSubcommand("serve", new CommandLine(new Main()))
         .execute(args);
   }
 
   @Override
   public void run() {
+    throw new ParameterException(
+        spec.commandLine(),
+        "Please provide command query, parse, scrape, or db");
+  }
+
+  @Command(name = "serve", description = "runs the app\n")
+  public void
+  serve(@Mixin Mixins.BatchSize batchSize,
+        @Option(names = "--scrape",
+                description = "whether or not to scrape while serving")
+        boolean scrape) {
     App.run();
 
     while (scrape) {

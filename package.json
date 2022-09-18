@@ -4,8 +4,11 @@
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
     "start": "next start",
+    "format": "prettier --no-color --write src/components src/pages src/gradlew.js",
     "lint": "next lint",
-    "deploy": "git push -f origin main:production"
+    "composeBuild": "node src/gradlew.js composeBuild",
+    "composeUp": "node src/gradlew.js composeUp",
+    "build": "node src/gradlew.js build"
   },
   "dependencies": {
     "classnames": "2.3.1",
@@ -16,8 +19,13 @@
     "styled-components": "5.3.3"
   },
   "devDependencies": {
+    "eslint": "8.23.1",
+    "eslint-config-next": "12.3.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-react": "7.31.8",
     "postcss-flexbugs-fixes": "5.0.2",
-    "postcss-preset-env": "7.0.1"
+    "postcss-preset-env": "7.0.1",
+    "prettier": "2.7.1"
   },
   "browserslist": [
     "last 2 versions",
@@ -26,6 +34,12 @@
     "not ie 11",
     "not op_mini all"
   ],
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false
+  },
   "postcss": {
     "plugins": {
       "postcss-flexbugs-fixes": {},
@@ -38,6 +52,72 @@
           "nesting-rules": true,
           "custom-properties": false
         }
+      }
+    }
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2020": true,
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "next/core-web-vitals",
+      "plugin:jsx-a11y/recommended"
+    ],
+    "parserOptions": {
+      "ecmaFeatures": {
+        "jsx": true
+      },
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "react"
+    ],
+    "rules": {
+      "jsx-a11y/anchor-is-valid": [
+        "error",
+        {
+          "components": [
+            "Link"
+          ],
+          "specialLink": [
+            "hrefLeft",
+            "hrefRight"
+          ],
+          "aspects": [
+            "invalidHref",
+            "preferButton"
+          ]
+        }
+      ],
+      "no-unused-vars": [
+        "error",
+        {
+          "argsIgnorePattern": "^_",
+          "destructuredArrayIgnorePattern": "^_",
+          "varsIgnorePattern": "^_"
+        }
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "quotes": [
+        "error",
+        "double"
+      ],
+      "semi": [
+        "error",
+        "always"
+      ]
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
       }
     }
   }

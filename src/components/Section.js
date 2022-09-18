@@ -41,9 +41,7 @@ function Section({
   };
 
   return (
-    <SectionContainer
-      lastSection={lastSection}
-    >
+    <SectionContainer lastSection={lastSection}>
       {courseData.name !== section.name && (
         <h3 className="sectionName">{section.name}</h3>
       )}
@@ -74,12 +72,7 @@ function Section({
             role="button"
             tabIndex={0}
           >
-            <span
-              style={{
-              }}
-            >
-              Show Recitations
-            </span>
+            <span style={{}}>Show Recitations</span>
           </ExpandButton>
         )}
         <StatusContainer>
@@ -93,16 +86,8 @@ function Section({
           </span>
         </StatusContainer>
         <WishlistButton onClick={() => handleOnClick(section)}>
-          <div
-            style={{
-            }}
-          />
-          <span
-            style={{
-            }}
-          >
-            Add to Wishlist
-          </span>
+          <div style={{}} />
+          <span style={{}}>Add to Wishlist</span>
         </WishlistButton>
       </UtilBar>
       <div>
@@ -131,7 +116,6 @@ function Section({
     </SectionContainer>
   );
 }
-
 
 const SectionContainer = styled.div`
   padding: 1.8vmin 2.8vmin;

@@ -117,7 +117,6 @@ export default function DateSection({ sortedSectionMeetings }) {
   );
 }
 
-
 const DateContainer = styled.div`
   margin: -0.2rem 0 1rem 1rem;
   font-size: 1.25rem;

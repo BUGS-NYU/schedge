@@ -25,7 +25,6 @@ export default function School({ schoolCode, schoolName, year, semester }) {
   );
 }
 
-
 const SchoolContainer = styled.div`
   padding: 0.25rem 0;
   cursor: pointer;

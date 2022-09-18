@@ -13,9 +13,10 @@ export function useStable(o) {
 
 export function useCounter(n) {
   const [counter, setCounter] = React.useState(n);
-  const increment = React.useCallback(() => setCounter((c) => ++c), [
-    setCounter,
-  ]);
+  const increment = React.useCallback(
+    () => setCounter((c) => ++c),
+    [setCounter]
+  );
 
   return [counter, increment];
 }

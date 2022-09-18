@@ -109,11 +109,11 @@ export function changeStatus(section) {
   }
 }
 
-export function styleStatus(status) {
-  if (status === "Open") {
-  } else if (status === "Closed") {
-  } else {
-  }
+export function styleStatus(_status) {
+  // if (status === "Open") {
+  // } else if (status === "Closed") {
+  // } else {
+  // }
 }
 
 export function parseDate(date) {

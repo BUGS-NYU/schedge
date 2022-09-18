@@ -182,7 +182,7 @@ const SectionsHeader = styled.div`
   margin-top: calc(2vmin + 1rem);
 `;
 
-const mapStateToProps = (state, props) => ({
+const _mapStateToProps = (state, props) => ({
   wishlist: state.wishlist[props.semester + props.year] || [],
   scheduled: state.scheduled[props.semester + props.year] || [],
 });

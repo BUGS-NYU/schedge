@@ -12,7 +12,7 @@ import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/{term}/courses/{subject}"; }
+  public String getPath() { return "/courses/{term}/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -21,14 +21,11 @@ public final class CoursesEndpoint extends App.Endpoint {
               "This endpoint returns a list of courses for a specific semester and subject.");
           openApiOperation.summary("Courses Endpoint");
         })
-        .pathParam(
-            "term", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid term code, either 'current', 'next', or something "
-                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
-            })
+        .pathParam("term", String.class,
+                   openApiParam -> {
+                     openApiParam.description(
+                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
+                   })
         .pathParam(
             "subject", String.class,
             openApiParam -> {
@@ -59,16 +56,7 @@ public final class CoursesEndpoint extends App.Endpoint {
 
       Term term = tc.log(() -> {
         String termString = ctx.pathParam("term");
-        if (termString.contentEquals("current")) {
-          return Term.getCurrentTerm();
-        }
-
-        if (termString.contentEquals("next")) {
-          return Term.getCurrentTerm().nextTerm();
-        }
-
-        int year = Integer.parseInt(termString.substring(2));
-        return new Term(termString.substring(0, 2), year);
+        return SchoolInfoEndpoint.parseTerm(termString);
       });
 
       if (term == null)

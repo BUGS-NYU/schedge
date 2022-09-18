@@ -41,12 +41,12 @@ you a general overview of the project and how to contribute.
 The following commands are valid in Schedge:
 
 ```sh
-./schedge scrape catalog    # scrape the catalog
-./schedge scrape sections   # scrape the sections
-./schedge scrape school     # scrape the school/subject
-./schedge db scrape         # scrape the catalog for information
-./schedge db query          # query the database for information
-./schedge db serve          # Serve the database data through an API
+./schedge scrape catalog  # scrape the catalog
+./schedge scrape sections # scrape the sections
+./schedge scrape school   # scrape the school/subject
+./schedge db scrape       # scrape the catalog for information
+./schedge db query        # query the database for information
+./schedge serve           # Run the server
 ```
 
 #### Example

@@ -10,9 +10,13 @@ import org.slf4j.helpers.MessageFormatter;
 public interface TryCatch {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
 
-  public interface Call<E> { E get() throws Exception; }
+  public interface Call<E> {
+    E get() throws Exception;
+  }
 
-  public interface CallVoid { void get() throws Exception; }
+  public interface CallVoid {
+    void get() throws Exception;
+  }
 
   void onError(Throwable e);
 
@@ -116,13 +120,6 @@ public interface TryCatch {
   }
 
   public static void tcIgnore(CallVoid callable) {
-    try {
-      callable.get();
-    } catch (Exception e) {
-    }
-  }
-
-  public static void tcLog(CallVoid callable, String format, Object... obj) {
     try {
       callable.get();
     } catch (Exception e) {

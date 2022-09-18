@@ -48,7 +48,6 @@ services:
     # terms of product improvement, but at least setup involves less steps.
     #                                   - Albert Liu, Jan 27, 2022 Thu 22:32 EST
     volumes:
-      - "/home/ubuntu/schedge/src/main/migrations:/docker-entrypoint-initdb.d"
       - "/home/ubuntu/schedge/.build/postgres:/var/lib/postgresql/data"
 
   schedge:

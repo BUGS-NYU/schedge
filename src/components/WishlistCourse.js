@@ -61,7 +61,6 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
   );
 }
 
-
 const WishlistCourseContainer = styled.div`
   min-height: 15rem;
   background-color: var(--grey300);

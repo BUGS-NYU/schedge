@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import cx from 'classnames';
-import styles from './SearchBar.module.css';
+import cx from "classnames";
+import styles from "./SearchBar.module.css";
 
 export default function SearchBar({ year, semester }) {
   const [searchText, setSearchText] = useState("");
@@ -43,7 +43,8 @@ export default function SearchBar({ year, semester }) {
 
   return (
     <>
-      <img Loader
+      <img
+        Loader
         className={cx(styles.loader, !!searchResults.loading && styles.loading)}
         src="./loading.svg"
         alt="loading symbol"

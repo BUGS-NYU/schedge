@@ -1,41 +1,46 @@
 @font-face {
-  font-family: 'Fira Sans';
+  font-family: "Fira Sans";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnZKvuQQ.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnZKvuQQ.ttf)
+    format("truetype");
 }
 
 @font-face {
-  font-family: 'Fira Sans';
+  font-family: "Fira Sans";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnLK3uQQ.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/firasans/v15/va9B4kDNxMZdWfMOD5VnLK3uQQ.ttf)
+    format("truetype");
 }
 
 @font-face {
-  font-family: 'Fira Sans Condensed';
+  font-family: "Fira Sans Condensed";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWQXOiMM.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWQXOiMM.ttf)
+    format("truetype");
 }
 
 @font-face {
-  font-family: 'Fira Sans Condensed';
+  font-family: "Fira Sans Condensed";
   font-style: normal;
   font-weight: 800;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWVHLiMM.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/firasanscondensed/v9/wEOsEADFm8hSaQTFG18FErVhsC9x-tarWVHLiMM.ttf)
+    format("truetype");
 }
 
 @font-face {
-  font-family: 'Fira Sans Extra Condensed';
+  font-family: "Fira Sans Extra Condensed";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/firasansextracondensed/v8/NaPPcYDaAO5dirw6IaFn7lPJFqXmS-M9Atn3wgda3QyNn38.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/firasansextracondensed/v8/NaPPcYDaAO5dirw6IaFn7lPJFqXmS-M9Atn3wgda3QyNn38.ttf)
+    format("truetype");
 }
 
 * {

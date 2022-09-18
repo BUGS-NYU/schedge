@@ -1,5 +1,5 @@
 import React from "react";
-import Link from 'next/link';
+import Link from "next/link";
 import styled from "styled-components";
 import WishlistCourse from "components/WishlistCourse";
 import Calendar from "components/Calendar";
@@ -117,10 +117,12 @@ function SchedulePage({
   };
 
   const removeCourse = (course) => {
-    const courses = localStorage.getState("wishlist").filter((wishlistCourse) => {
-      return wishlistCourse.registrationNumber !== course.registrationNumber;
-    });
-    localStorage.saveState({ wishlist: courses});
+    const courses = localStorage
+      .getState("wishlist")
+      .filter((wishlistCourse) => {
+        return wishlistCourse.registrationNumber !== course.registrationNumber;
+      });
+    localStorage.saveState({ wishlist: courses });
     setWishlist(courses);
 
     /*if (

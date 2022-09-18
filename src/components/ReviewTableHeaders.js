@@ -17,7 +17,6 @@ export default function ReviewTableHeaders({
   );
 }
 
-
 const MetaContainer = styled.div`
   display: flex;
   flex-direction: column;

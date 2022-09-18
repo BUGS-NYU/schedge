@@ -1,19 +1,9 @@
 import React from "react";
-import styled, { keyframes } from "styled-components";
+import css from "./index.module.css";
 import SearchBar from "components/SearchBar";
 import School from "components/School";
 
 function Home({ year, semester }) {
-  return (
-    <div>
-      <div className="App">
-        <SearchPage year={year} semester={semester} />
-      </div>
-    </div>
-  );
-}
-
-function SearchPage({ year, semester }) {
   const [departments, setDepartments] = React.useState({
     loading: true,
     data: {},
@@ -77,15 +67,15 @@ function SearchPage({ year, semester }) {
 
   return (
     <div id="pageContainer">
-      <SearchContainer>
+      <div className={css.searchContainer}>
         <SearchBar year={year} semester={semester} />
-      </SearchContainer>
-      <SchoolsContainer>
+      </div>
+      <div className={css.schoolsContainer}>
         <div id="departmentTitle">Schools</div>
         {!schools.loading && !departments.loading && (
-          <Schools>
+          <div className={css.schools}>
             <div>
-              <SchoolType>Undergraduate</SchoolType>
+              <div className={css.schoolType}>Undergraduate</div>
               {Object.keys(schools.data.undergraduate).map((schoolCode, i) => (
                 <School
                   key={i}
@@ -106,7 +96,7 @@ function SearchPage({ year, semester }) {
               ))}
             </div>
             <div>
-              <SchoolType>Graduate</SchoolType>
+              <div className={css.schoolType}>Graduate</div>
               {Object.keys(schools.data.graduate).map((schoolCode, i) => (
                 <School
                   key={i}
@@ -117,71 +107,11 @@ function SearchPage({ year, semester }) {
                 />
               ))}
             </div>
-          </Schools>
+          </div>
         )}
-      </SchoolsContainer>
+      </div>
     </div>
   );
 }
 
 export default Home;
-
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
-
-const deptFadeIn = keyframes`
-  from {
-    opacity: 0;
-    padding-top: 6rem;
-  }
-  to {
-    opacity: 1;
-    padding-top: 4rem;
-  }
-`;
-
-const SearchContainer = styled.div`
-  position: relative;
-  min-height: 60vh;
-`;
-
-const SchoolsContainer = styled.div`
-  width: 100%;
-  min-height: 50vh;
-  border-top: 1rem solid var(--grey200);
-  background-color: var(--grey300);
-  position: relative;
-  & > #departmentTitle {
-    font-size: 1.7rem;
-    padding: 1rem;
-    font-weight: bold;
-    color: var(--grey700);
-    position: absolute;
-    top: 0.3rem;
-    left: 0.3rem;
-    animation: ${fadeIn} 1.2s ease forwards;
-  }
-`;
-
-const Schools = styled.div`
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(22rem, 1fr));
-  grid-gap: 0.5rem;
-  padding: 6rem 2rem 2rem 2rem;
-  animation: ${deptFadeIn} 0.8s ease forwards;
-  @media (max-width: 1000px) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const SchoolType = styled.div`
-  font-size: 1.5rem;
-  padding: 1rem 0.5rem;
-  font-weight: bold;
-  color: var(--grey700);
-  top: 0.3rem;
-  animation: ${fadeIn} 1.2s ease forwards;
-`;

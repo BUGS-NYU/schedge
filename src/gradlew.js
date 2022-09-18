@@ -4,8 +4,8 @@ const { spawn } = require("child_process");
 
 if (process.env.JAVA_HOME) {
   const jreShJava = path.join(process.env.JAVA_HOME, "jre", "sh", "java");
-  const stats = fs.statSync(jreShJava);
-  if (stats.isFile()) {
+  const stats = fs.existsSync(jreShJava) && fs.statSync(jreShJava);
+  if (stats && stats.isFile()) {
     process.env.JAVACMD = jreShJava;
   } else {
     process.env.JAVACMD = path.join(process.env.JAVA_HOME, "bin", "java");

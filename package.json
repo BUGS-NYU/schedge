@@ -8,8 +8,7 @@
     "lint": "next lint",
     "composeBuild": "node src/gradlew.js composeBuild",
     "composeUp": "node src/gradlew.js composeUp",
-    "build": "node src/gradlew.js build",
-    "deploy": "git push -f origin main:production"
+    "build": "node src/gradlew.js build"
   },
   "dependencies": {
     "classnames": "2.3.1",

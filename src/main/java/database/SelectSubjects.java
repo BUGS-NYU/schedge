@@ -17,17 +17,17 @@ public class SelectSubjects {
       "SELECT code, name FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
-      "SELECT code, name FROM subjects WHERE term = ?";
+      "SELECT school, code, name FROM subjects WHERE term = ?";
 
   public static final class Subject {
-    String school;
-    String code;
-    String name;
+    public String school;
+    public String code;
+    public String name;
   }
 
   public static final class School {
-    String code;
-    String name;
+    public String code;
+    public String name;
   }
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn,

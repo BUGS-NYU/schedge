@@ -1,5 +1,8 @@
 package api.v1;
 
+import static database.GetConnection.withConnectionReturning;
+import static database.SelectSubjects.*;
+
 import api.*;
 import database.*;
 import io.javalin.http.Handler;
@@ -10,10 +13,15 @@ import types.Term;
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
 
+  public final class SubjectInfo {
+    public String code;
+    public String name;
+  }
+
   public final class SchoolInfo {
     public String code;
     public String name;
-    public ArrayList<SelectSubjects.Subject> subjects;
+    public ArrayList<SubjectInfo> subjects;
   }
 
   public final class Info {
@@ -58,13 +66,39 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
     return ctx -> {
       Term term = parseTerm(ctx.pathParam("term"));
 
-      ArrayList<SelectSubjects.Subject> subjects =
-          GetConnection.withConnectionReturning(conn -> {
-            return SelectSubjects.selectSubjectsForTerm(conn, term);
-          });
+      Info info = new Info();
+      info.term = term;
+      info.schools = withConnectionReturning(conn -> {
+        ArrayList<Subject> subjects = selectSubjectsForTerm(conn, term);
+        ArrayList<School> schools = selectSchoolsForTerm(conn, term);
+
+        HashMap<String, ArrayList<SubjectInfo>> subjectsInfo = new HashMap<>();
+        for (Subject subject : subjects) {
+          SubjectInfo subjectInfo = new SubjectInfo();
+          subjectInfo.name = subject.name;
+          subjectInfo.code = subject.code;
+
+          subjectsInfo.computeIfAbsent(subject.school, k -> new ArrayList<>())
+              .add(subjectInfo);
+        }
+
+        ArrayList<SubjectInfo> empty = new ArrayList<>();
+        HashMap<String, SchoolInfo> schoolsInfo = new HashMap<>();
+
+        for (School school : schools) {
+          SchoolInfo schoolInfo = new SchoolInfo();
+          schoolInfo.code = school.code;
+          schoolInfo.name = school.name;
+          schoolInfo.subjects = subjectsInfo.getOrDefault(school.code, empty);
+
+          schoolsInfo.put(schoolInfo.code, schoolInfo);
+        }
+
+        return schoolsInfo;
+      });
 
       ctx.status(200);
-      ctx.json(subjects);
+      ctx.json(info);
     };
   }
 }

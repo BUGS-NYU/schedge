@@ -1,11 +1,9 @@
 import "./App.css";
 import React from "react";
 import headerStyles from "./header.module.css";
-import css from "components/util.module.css";
 import Link from "next/link";
 import { QueryClient, QueryClientProvider } from "react-query";
-import cx from "classnames";
-import Head from "next/head";
+// import Head from "next/head";
 
 const queryClient = new QueryClient();
 
@@ -28,14 +26,14 @@ function App({ Component, pageProps }) {
     getPath() === "/schedule"
   );
 
-  const handleOnChange = (event) => {
-    const code = event.target.value;
-    const sem = code.substring(0, 2);
-    const currYear = code.substring(2);
+  // const handleOnChange = (event) => {
+  //   const code = event.target.value;
+  //   const sem = code.substring(0, 2);
+  //   const currYear = code.substring(2);
 
-    setSemester(sem);
-    setYear(parseInt(currYear));
-  };
+  //   setSemester(sem);
+  //   setYear(parseInt(currYear));
+  // };
 
   // Copy from this for now; we can decide on MUI or whatever later, but it's
   // basically just used for this one component.
@@ -50,7 +48,7 @@ function App({ Component, pageProps }) {
           </Link>
 
           <div>
-            <div className={headerStyles.selectBox} onClick={() => {}}>
+            <div className={headerStyles.selectBox}>
               <div>Spring 2021</div>
 
               <svg

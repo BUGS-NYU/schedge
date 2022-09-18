@@ -6,7 +6,7 @@ import ReviewTableHeaders from "./ReviewTableHeaders";
 import ReviewTable from "./ReviewTable";
 
 export default function Instructor({ instructor }) {
-  const [drawer, setDrawer] = React.useState(false);
+  const [_drawer, setDrawer] = React.useState(false);
   const names = instructor.split(" ");
 
   const query =

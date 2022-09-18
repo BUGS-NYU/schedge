@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { useQuery } from "react-query";
 import { findSchool } from "components/util";
 
-export default function SubjectPage({ location }) {
+export default function SubjectPage({ location: _location }) {
   const router = useRouter();
   const { school, subject, year, semester } = router.query;
 

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import cx from 'classnames';
 import styles from './SearchBar.module.css';
-import styled from "styled-components";
 
 export default function SearchBar({ year, semester }) {
   const [searchText, setSearchText] = useState("");

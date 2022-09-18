@@ -19,7 +19,7 @@ public final class SectionEndpoint extends App.Endpoint {
     ja;
   }
 
-  public String getPath() { return "/{term}/section/{registrationNumber}"; }
+  public String getPath() { return "/section/{term}/{registrationNumber}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

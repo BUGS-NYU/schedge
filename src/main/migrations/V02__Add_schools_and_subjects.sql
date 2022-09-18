@@ -12,6 +12,7 @@ CREATE TABLE schools (
 CREATE TABLE subjects (
   id                  SERIAL                      NOT NULL UNIQUE,
   term                varchar                     NOT NULL,
+  school              varchar                     NOT NULL,
   code                varchar                     NOT NULL,
   name                varchar                     NOT NULL,
   PRIMARY KEY (id)

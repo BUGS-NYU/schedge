@@ -3,7 +3,6 @@ package api.v1;
 import static utils.TryCatch.*;
 
 import api.*;
-import api.v1.SubjectsEndpoint;
 import database.GetConnection;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
@@ -13,7 +12,7 @@ import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/{term}/courses/{subject}"; }
+  public String getPath() { return "/courses/{term}/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs
@@ -25,7 +24,7 @@ public final class CoursesEndpoint extends App.Endpoint {
         .pathParam("term", String.class,
                    openApiParam -> {
                      openApiParam.description(
-                         SubjectsEndpoint.TERM_PARAM_DESCRIPTION);
+                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
                    })
         .pathParam(
             "subject", String.class,
@@ -57,7 +56,7 @@ public final class CoursesEndpoint extends App.Endpoint {
 
       Term term = tc.log(() -> {
         String termString = ctx.pathParam("term");
-        return SubjectsEndpoint.parseTerm(termString);
+        return SchoolInfoEndpoint.parseTerm(termString);
       });
 
       if (term == null)

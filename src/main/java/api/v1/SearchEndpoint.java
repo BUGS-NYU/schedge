@@ -15,7 +15,7 @@ import utils.*;
 
 public final class SearchEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/{term}/search"; }
+  public String getPath() { return "/search/{term}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

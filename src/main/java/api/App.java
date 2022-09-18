@@ -85,8 +85,7 @@ public class App {
       logger.warn(message);
     });
 
-    new InfoEndpoint().addTo(app);
-    new SubjectsEndpoint().addTo(app);
+    new SchoolInfoEndpoint().addTo(app);
 
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);

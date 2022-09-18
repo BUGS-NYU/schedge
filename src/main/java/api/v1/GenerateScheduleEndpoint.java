@@ -21,7 +21,7 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
     ja;
   }
 
-  public String getPath() { return "/{term}/generateSchedule"; }
+  public String getPath() { return "/generateSchedule/{term}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
     return docs

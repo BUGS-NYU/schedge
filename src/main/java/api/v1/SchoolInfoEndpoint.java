@@ -5,15 +5,20 @@ import database.*;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
-import types.*;
+import types.Term;
 
-public final class SubjectsEndpoint extends App.Endpoint {
-  public String getPath() { return "/subjects/{term}"; }
+public final class SchoolInfoEndpoint extends App.Endpoint {
+  public String getPath() { return "/schools/{term}"; }
+
+  public final class SchoolInfo {
+    public String code;
+    public String name;
+    public ArrayList<SelectSubjects.Subject> subjects;
+  }
 
   public final class Info {
-    public Term currentTerm;
-    public Map<String, Subject.School> schools;
-    public Map<String, String> subjectNames;
+    public Term term;
+    public HashMap<String, SchoolInfo> schools;
   }
 
   public static final String TERM_PARAM_DESCRIPTION =
@@ -39,7 +44,7 @@ public final class SubjectsEndpoint extends App.Endpoint {
         .operation(openApiOperation -> {
           openApiOperation.description(
               "This endpoint provides general information on the subjects in a term");
-          openApiOperation.summary("Subjects Endpoint");
+          openApiOperation.summary("Schools and Subjects");
         })
         .pathParam("term", String.class,
                    openApiParam -> {

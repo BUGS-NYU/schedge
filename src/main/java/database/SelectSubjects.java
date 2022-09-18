@@ -13,52 +13,63 @@ public class SelectSubjects {
   private static Logger logger =
       LoggerFactory.getLogger("database.SelectSubjects");
 
-  // https://wiki.postgresql.org/wiki/Loose_indexscan
-  private static final String selectAllSubjectsQuery =
-      "WITH RECURSIVE t AS ("
-      + "  (SELECT subject_code FROM courses ORDER BY subject_code LIMIT 1) "
-      + "  UNION ALL SELECT "
-      +
-      "  (SELECT subject_code FROM courses WHERE subject_code > t.subject_code ORDER BY subject_code LIMIT 1) "
-      + "  FROM t WHERE t.subject_code IS NOT NULL"
-      + ") SELECT subject_code FROM t WHERE subject_code IS NOT NULL";
+  private static final String SELECT_SCHOOLS =
+      "SELECT code, name FROM schools WHERE term = ?";
 
-  // private static final String selectAllSubjectsQuery =
-  //     "WITH RECURSIVE t AS ("
-  //     + "  (SELECT col FROM tbl ORDER BY col LIMIT 1) "
-  //     + "  UNION ALL SELECT "
-  //     + "  (SELECT col FROM tbl WHERE col > t.col ORDER BY col LIMIT 1) "
-  //     + "  FROM t WHERE t.col IS NOT NULL"
-  //     + ") SELECT col FROM t WHERE col IS NOT NULL";
-  //
-  private static final String selectSubjectsForTermQuery =
+  private static final String SELECT_SUBJECTS =
       "SELECT code, name FROM subjects WHERE term = ?";
 
   public static final class Subject {
+    String school;
     String code;
     String name;
+  }
+
+  public static final class School {
+    String code;
+    String name;
+  }
+
+  public static ArrayList<School> selectSchoolsForTerm(Connection conn,
+                                                       Term term)
+      throws SQLException {
+    try (PreparedStatement stmt = conn.prepareStatement(SELECT_SCHOOLS)) {
+      Utils.setArray(stmt, term.json());
+
+      ResultSet rs = stmt.executeQuery();
+      ArrayList<School> rows = new ArrayList<>();
+
+      while (rs.next()) {
+        School school = new School();
+        school.code = rs.getString("code");
+        school.name = rs.getString("name");
+
+        rows.add(school);
+      }
+
+      return rows;
+    }
   }
 
   public static ArrayList<Subject> selectSubjectsForTerm(Connection conn,
                                                          Term term)
       throws SQLException {
-    PreparedStatement stmt = conn.prepareStatement(selectSubjectsForTermQuery);
-    Utils.setArray(stmt, term.json());
+    try (PreparedStatement stmt = conn.prepareStatement(SELECT_SUBJECTS)) {
+      Utils.setArray(stmt, term.json());
 
-    ResultSet rs = stmt.executeQuery();
-    ArrayList<Subject> rows = new ArrayList<>();
+      ResultSet rs = stmt.executeQuery();
+      ArrayList<Subject> rows = new ArrayList<>();
 
-    while (rs.next()) {
-      Subject subject = new Subject();
-      subject.code = rs.getString("code");
-      subject.name = rs.getString("name");
+      while (rs.next()) {
+        Subject subject = new Subject();
+        subject.school = rs.getString("school");
+        subject.code = rs.getString("code");
+        subject.name = rs.getString("name");
 
-      rows.add(subject);
+        rows.add(subject);
+      }
+
+      return rows;
     }
-
-    rs.close();
-    stmt.close();
-
-    return rows;
   }
 }

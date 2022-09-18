@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
-
+import cx from 'classnames';
+import styles from './SearchBar.module.css';
 import styled from "styled-components";
 
 export default function SearchBar({ year, semester }) {
@@ -43,17 +44,20 @@ export default function SearchBar({ year, semester }) {
 
   return (
     <>
-      <Loader
+      <img Loader
+        className={cx(styles.loader, !!searchResults.loading && styles.loading)}
         src="./loading.svg"
         alt="loading symbol"
-        loading={+searchResults.loading}
       />
-      <SearchBox
+
+      <input
+        className={styles.searchBox}
         value={searchText}
         placeholder="Search Courses"
         onChange={_handleChange}
-      ></SearchBox>
-      <SearchResults>
+      />
+
+      <div className={styles.searchResults}>
         {searchText.replace(/\s/g, "").length !== 0 &&
           searchResults.results.map((course, i) => (
             <Link
@@ -64,84 +68,17 @@ export default function SearchBar({ year, semester }) {
               key={i}
               style={{ textDecoration: "none" }}
             >
-              <Course>
-                <span className="courseSchoolCode">
+              <div className={styles.course}>
+                <span className={styles.courseSchoolCode}>
                   {course.subjectCode.school}-{course.subjectCode.code}
                 </span>
-                <span className="courseId">{course.deptCourseId}</span>
-                <span className="courseName">{course.name}</span>
-              </Course>
+
+                <span className={styles.courseId}>{course.deptCourseId}</span>
+                <span className={styles.courseName}>{course.name}</span>
+              </div>
             </Link>
           ))}
-      </SearchResults>
+      </div>
     </>
   );
 }
-
-const Loader = styled.img`
-  opacity: ${(props) => (props.loading ? 0.3 : 0)};
-  position: absolute;
-  top: calc(7vmax + 1.6rem);
-  left: calc(87vmin - 3.2rem);
-  height: 0.8rem;
-  z-index: 2;
-`;
-
-const SearchBox = styled.input`
-  font-family: var(--primaryFont);
-  position: absolute;
-  top: 7vmax;
-  left: 10vmin;
-  width: 80vmin;
-  height: 4rem;
-  background-color: white;
-  padding: 1.2rem 2rem;
-  font-size: 1.3rem;
-  cursor: text;
-  outline: solid;
-  outline-color: var(--grey300);
-  border: none;
-  transition: outline-color 0.2s;
-
-  &:focus {
-    outline-color: var(--purpleMain);
-  }
-
-  &::placeholder {
-    color: rgb(136, 136, 136);
-    font-size: 1.2rem;
-  }
-`;
-
-const SearchResults = styled.div`
-  position: absolute;
-  top: calc(7vmax + 5rem);
-  left: 10vmin;
-  width: 80vmin;
-`;
-
-const Course = styled.div`
-  background-color: white;
-  padding: 1rem;
-  font-size: 1.15rem;
-  border: 1px solid var(--grey200);
-  color: var(--grey900);
-  transition: background-color 0.15s;
-  cursor: pointer;
-
-  & > .courseSchoolCode,
-  & > .courseId {
-    font-family: var(--extraCondensedFont);
-    font-weight: 500;
-    color: var(--grey700);
-  }
-
-  & > .courseName {
-    font-weight: bold;
-    margin-left: 1rem;
-  }
-
-  &:hover {
-    background-color: var(--grey200);
-  }
-`;

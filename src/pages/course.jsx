@@ -77,13 +77,10 @@ function CoursePage() {
 
       <div>
         {courseData?.sections?.map((section, i) => {
-          const sortedSectionMeetings = section.meetings
-            ? section.meetings.sort(
-                (a, b) =>
-                  parseDate(a.beginDate).getDay() -
-                  parseDate(b.beginDate).getDay()
-              )
-            : [];
+          const sortedSectionMeetings = (section.meetings ?? []).sort(
+            (a, b) =>
+              parseDate(a.beginDate).getDay() - parseDate(b.beginDate).getDay()
+          );
 
           return (
             <Section

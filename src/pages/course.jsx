@@ -23,93 +23,76 @@ function CoursePage() {
     return data.find((course) => course.deptCourseId === courseid);
   });
 
+  const header = (
+    <div className={styles.colorHeader}>
+      <div className={styles.courseHeader}>
+        <Link
+          href={{
+            pathname: "/subject",
+            query: { school, subject, year, semester },
+          }}
+        >
+          <a>
+            <img src="./img/go-back.svg" alt="Go back" id={styles.backButton} />
+          </a>
+        </Link>
+
+        <div>
+          <div id={styles.titleDepartment}>
+            {subject}-{school}
+          </div>
+          <div id={styles.titleName}>{courseData?.name ?? "Loading..."}</div>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return <div>{header}</div>;
+  }
+
   return (
     <div>
-      {isLoading && (
-        <>
-          <span>Loading...</span>
-          <div className={styles.colorHeader}>
-            <div className={styles.courseHeader}>
-              <Link href="/">
-                <a>
-                  <img
-                    src="./img/go-back.svg"
-                    alt="Go back"
-                    id={styles.backButton}
-                  />
-                </a>
-              </Link>
-            </div>
-          </div>
-        </>
+      {header}
+      {/* Handle course description here if all sections have the same one */}
+      <div className={styles.sectionsDescription}>
+        {courseData?.description}
+        {courseData?.sections?.every(
+          (section) => section.notes === courseData.sections[0].notes
+        ) && (
+          <>
+            <br />
+            <br />
+            {courseData.sections[0].notes}
+          </>
+        )}
+      </div>
+      {courseData?.sections?.length > 1 && (
+        <div className={styles.sectionsHeader}>Sections</div>
       )}
+      <div>
+        {courseData?.sections?.map((section, i) => {
+          const sortedSectionMeetings = section.meetings
+            ? section.meetings.sort(
+                (a, b) =>
+                  parseDate(a.beginDate).getDay() -
+                  parseDate(b.beginDate).getDay()
+              )
+            : [];
 
-      {!isLoading && (
-        <>
-          <div className={styles.colorHeader}>
-            <div className={styles.courseHeader}>
-              <Link
-                href={`/subject?school=${school}&subject=${subject}&year=${year}&semester=${semester}`}
-              >
-                <a>
-                  <img
-                    src="./img/go-back.svg"
-                    alt="Go back"
-                    id={styles.backButton}
-                  />
-                </a>
-              </Link>
-              <div>
-                <div id={styles.titleDepartment}>
-                  {subject}-{school}
-                </div>
-                <div id={styles.titleName}>{courseData?.name}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Handle course description here if all sections have the same one */}
-          <div className={styles.sectionsDescription}>
-            {courseData?.description}
-            {courseData?.sections?.every(
-              (section) => section.notes === courseData.sections[0].notes
-            ) && (
-              <>
-                <br />
-                <br />
-                {courseData.sections[0].notes}
-              </>
-            )}
-          </div>
-
-          {courseData?.sections?.length > 1 && (
-            <div className={styles.sectionsHeader}>Sections</div>
-          )}
-
-          <div>
-            {courseData?.sections?.map((section, i) => {
-              const sortedSectionMeetings = section.meetings
-                ? section.meetings.sort(
-                    (a, b) =>
-                      parseDate(a.beginDate).getDay() -
-                      parseDate(b.beginDate).getDay()
-                  )
-                : [];
-
-              return (
-                <Section
-                  key={i}
-                  section={section}
-                  sortedSectionMeetings={sortedSectionMeetings}
-                  courseData={courseData}
-                  year={year}
-                  semester={semester}
-                  lastSection={i === courseData.sections.length - 1}
-                />
-              );
-            })}
-          </div>
-        </>
+          return (
+            <Section
+              key={i}
+              section={section}
+              sortedSectionMeetings={sortedSectionMeetings}
+              courseData={courseData}
+              year={year}
+              semester={semester}
+              lastSection={i === courseData.sections.length - 1}
+            />
+          );
+        })}
+      </div>
       )}
     </div>
   );

@@ -7,6 +7,27 @@ import Calendar from "components/Calendar";
 import ScheduleCourse from "components/ScheduleCourse";
 import { dayToStr } from "components/constants";
 import localStorageContainer from "components/localStorage";
+import create from 'zustand';
+
+const useSchedule = create((set, get) => {
+  const addToScheduled = (course) => {
+    const { scheduled } = get();
+    set({ scheduled: [...scheduled, course.registrationNumber] });
+  };
+
+  const addToWishlist = (course) => {
+    const { wishlist } = get();
+    set({ wishlist: [...wishlist, course.registrationNumber] });
+  };
+
+  return {
+    scheduled: [],
+    wishlist: [],
+
+    addToScheduled,
+    addToWishlist,
+  };
+});
 
 function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
   const { year, semester } = usePageState();

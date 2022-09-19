@@ -51,25 +51,30 @@ function CoursePage() {
     return <div>{header}</div>;
   }
 
+  const pullNotesToTop = courseData?.sections?.every(
+    (section) => section.notes === courseData.sections[0].notes
+  );
+
   return (
     <div>
       {header}
-      {/* Handle course description here if all sections have the same one */}
       <div className={styles.sectionsDescription}>
         {courseData?.description}
-        {courseData?.sections?.every(
-          (section) => section.notes === courseData.sections[0].notes
-        ) && (
+
+        {pullNotesToTop && (
           <>
+            {/* Handle course description here if all sections have the same one */}
             <br />
             <br />
             {courseData.sections[0].notes}
           </>
         )}
       </div>
+
       {courseData?.sections?.length > 1 && (
         <div className={styles.sectionsHeader}>Sections</div>
       )}
+
       <div>
         {courseData?.sections?.map((section, i) => {
           const sortedSectionMeetings = section.meetings

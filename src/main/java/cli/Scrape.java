@@ -2,11 +2,14 @@ package cli;
 
 import static picocli.CommandLine.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeCatalog;
+import scraping.ScrapeSchools;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
 import utils.Client;
@@ -61,13 +64,15 @@ public class Scrape implements Runnable {
            description = "Scrape school/subject based on term")
   public void
   school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
-      throws ExecutionException, InterruptedException {
+      throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
-    outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
-        QuerySchool.querySchool(termMixin.getTerm())));
+    types.Term term = termMixin.getTerm();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
 
-    Client.close();
+      var schools = ScrapeSchools.scrapeSchools(client, term);
+      outputFileMixin.writeOutput(schools);
+    }
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

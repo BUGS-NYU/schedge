@@ -1,5 +1,7 @@
 package scraping;
 
+import static utils.TryCatch.*;
+
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.*;
@@ -10,6 +12,7 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
+import types.Term;
 
 /* User flow
 
@@ -39,5 +42,22 @@ public final class ScrapeSchools {
     public ArrayList<Subject> subjects;
   }
 
-  public static scrapeSchools(Term term) {}
+  private static Uri MAIN_URI = Uri.create(
+      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL");
+
+  public static HashMap<String, School> scrapeSchools(AsyncHttpClient client,
+                                                      Term term)
+      throws ExecutionException, InterruptedException {
+    Request request = new RequestBuilder()
+                          .setUri(MAIN_URI)
+                          .setRequestTimeout(10000)
+                          .setMethod("GET")
+                          .build();
+
+    Future<Response> fut = client.executeRequest(request);
+    Response resp = fut.get();
+    System.out.println(resp);
+
+    return null;
+  }
 }

@@ -1,6 +1,15 @@
 package scraping;
 
+import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.function.*;
+import java.util.stream.Collectors;
+import org.asynchttpclient.*;
+import org.asynchttpclient.cookie.CookieStore;
+import org.asynchttpclient.uri.Uri;
+import org.slf4j.*;
 
 /* User flow
 
@@ -15,6 +24,7 @@ import java.util.*;
 
 
 
+  src/main/java/utils/Client.java
  */
 
 public final class ScrapeSchools {
@@ -29,5 +39,5 @@ public final class ScrapeSchools {
     public ArrayList<Subject> subjects;
   }
 
-  public static scrapeSchools() {}
+  public static scrapeSchools(Term term) {}
 }

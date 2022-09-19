@@ -93,7 +93,6 @@ function CoursePage() {
           );
         })}
       </div>
-      )}
     </div>
   );
 }

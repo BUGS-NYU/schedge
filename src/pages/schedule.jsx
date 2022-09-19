@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import styled from "styled-components";
 import WishlistCourse from "components/WishlistCourse";
+import styles from "./schedule.module.css";
 import Calendar from "components/Calendar";
 import ScheduleCourse from "components/ScheduleCourse";
 import { dayToStr } from "components/constants";
@@ -177,30 +177,32 @@ function SchedulePage({
     });
 
   return (
-    <Container>
+    <div className={styles.container}>
       <Calendar renderCourses={_renderCourses} />
       <div
         style={{
           marginTop: "2rem",
         }}
       >
-        <Header>
-          <h2 className="wishlist">{`Wishlist (${wishlist.length})`}</h2>
-        </Header>
-        <WishlistCoursesList>
+        <div className={styles.header}>
+          <h2 className={styles.wishlist}>{`Wishlist (${wishlist.length})`}</h2>
+        </div>
+
+        <div className={styles.wishlistCoursesList}>
           {wishlist.length === 0 ? (
-            <EmptyWishlistContainer>
+            <div className={styles.emptyWishlistContainer}>
               Your wishlist appears empty!
               <Link
                 href={{
                   pathname: "/",
                 }}
-                style={{ textDecoration: "none", color: "purpleLight" }}
               >
-                Search
+                <a style={{ textDecoration: "none", color: "purpleLight" }}>
+                  Search
+                </a>
               </Link>
               for courses to add to your wishlist
-            </EmptyWishlistContainer>
+            </div>
           ) : (
             wishlist.map((course, i) => {
               return (
@@ -216,61 +218,19 @@ function SchedulePage({
               );
             })
           )}
-        </WishlistCoursesList>
-        <ClearScheduleButton
+        </div>
+
+        <button
           onClick={handleClearSchedule}
+          className={styles.clearScheduleButton}
           onKeyPress={() => clearSchedule({ year, semester })}
-          role="button"
           tabIndex={0}
         >
           Clear Schedule
-        </ClearScheduleButton>
+        </button>
       </div>
-    </Container>
+    </div>
   );
 }
-
-const Container = styled.div`
-  padding: 2rem 5vw;
-  display: flex;
-  justify-content: center;
-`;
-
-const Header = styled.div`
-  display: flex;
-  width: 100%;
-  height: 3rem;
-  background-color: var(--purpleMain);
-  align-items: center;
-  justify-content: center;
-
-  & > .wishlist {
-    font-size: 1rem;
-    color: var(--grey200);
-  }
-`;
-
-const WishlistCoursesList = styled.div`
-  height: 100vh;
-  width: 20rem;
-  background-color: var(--grey200);
-  overflow: scroll;
-`;
-
-const ClearScheduleButton = styled.div`
-  width: 50%;
-  cursor: pointer;
-  margin-top: 1rem;
-  color: #bd2f2f;
-  border-radius: 6px;
-  border: 3px solid #bd2f2f;
-  text-align: center;
-  padding: 8px 16px;
-`;
-
-const EmptyWishlistContainer = styled.div`
-  color: var(--grey800);
-  padding: 10px;
-`;
 
 export default SchedulePage;

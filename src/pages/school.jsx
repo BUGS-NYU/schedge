@@ -12,10 +12,6 @@ export default function SchoolPage() {
   const [subjects, setSubjects] = useState({});
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
-
     async function query() {
       try {
         const response = await fetch("https://schedge.a1liu.com/subjects");
@@ -38,7 +34,7 @@ export default function SchoolPage() {
     }
 
     query();
-  }, [school, router]);
+  }, [school]);
 
   const subjectNames = Object.keys(subjects).sort();
 
@@ -60,12 +56,7 @@ export default function SchoolPage() {
               <Link
                 href={{
                   pathname: "/subject",
-                  query: {
-                    school,
-                    subject: subjectid,
-                    year,
-                    semester,
-                  },
+                  query: { school, subject: subjectid, year, semester },
                 }}
                 key={i}
               >

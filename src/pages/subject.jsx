@@ -1,4 +1,5 @@
 import React from "react";
+import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -6,7 +7,8 @@ import { useQuery } from "react-query";
 
 export default function SubjectPage() {
   const router = useRouter();
-  const { school, subject, year, semester } = router.query;
+  const { year, semester } = usePageState();
+  const { school, subject } = router.query;
 
   const courseList = useQuery(
     ["courses", year, semester, school, subject],

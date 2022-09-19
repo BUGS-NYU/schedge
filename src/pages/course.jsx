@@ -5,10 +5,12 @@ import styles from "./course.module.css";
 import { useQuery } from "react-query";
 import { parseDate } from "components/util";
 import { useRouter } from "next/router";
+import { usePageState } from "components/state";
 
 function CoursePage() {
   const router = useRouter();
-  const { school, subject, courseid, year, semester } = router.query;
+  const { year, semester } = usePageState();
+  const { school, subject, courseid } = router.query;
 
   const coursesKey = ["course", year, semester, school, subject, courseid];
   const { isLoading, data: courseData } = useQuery(coursesKey, async () => {

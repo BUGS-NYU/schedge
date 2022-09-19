@@ -1,19 +1,16 @@
 import React from "react";
 import Link from "next/link";
 import WishlistCourse from "components/WishlistCourse";
+import { usePageState } from "components/state";
 import styles from "./schedule.module.css";
 import Calendar from "components/Calendar";
 import ScheduleCourse from "components/ScheduleCourse";
 import { dayToStr } from "components/constants";
 import localStorageContainer from "components/localStorage";
 
-function SchedulePage({
-  year,
-  semester,
-  scheduled,
-  toggleCourseSelect,
-  clearSchedule,
-}) {
+function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
+  const { year, semester } = usePageState();
+
   const [schedule, setSchedule] = React.useState({});
   const [checkboxes, setCheckboxes] = React.useState(
     //JSON.parse(window.localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { usePageState } from "components/state";
 import styles from "./school.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
 export default function SchoolPage() {
   const router = useRouter();
-  const { school, year, semester } = router.query;
+  const { school } = router.query;
+  const { year, semester } = usePageState();
   const [loading, setLoading] = useState(true);
   const [subjects, setSubjects] = useState({});
 
@@ -53,10 +55,20 @@ export default function SchoolPage() {
           {subjectNames.map((subjectid, i) => {
             const subject = subjects[subjectid];
             const subjectName = subject?.name ?? "";
-            const query = `school=${school}&subject=${subjectid}&year=${year}&semester=${semester}`;
 
             return (
-              <Link href={{ pathname: "/subject", query }} key={i}>
+              <Link
+                href={{
+                  pathname: "/subject",
+                  query: {
+                    school,
+                    subject: subjectid,
+                    year,
+                    semester,
+                  },
+                }}
+                key={i}
+              >
                 <a className={styles.department}>
                   <span className={styles.departmentCode}>{subjectid}</span>
 

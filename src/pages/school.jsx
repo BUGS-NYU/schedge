@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery } from "react-query";
 import { usePageState } from "components/state";
 import styles from "./school.module.css";
 import Link from "next/link";
@@ -8,33 +9,17 @@ export default function SchoolPage() {
   const router = useRouter();
   const { school } = router.query;
   const { year, semester } = usePageState();
-  const [loading, setLoading] = useState(true);
-  const [subjects, setSubjects] = useState({});
 
-  useEffect(() => {
-    async function query() {
-      try {
-        const response = await fetch("https://schedge.a1liu.com/subjects");
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
+  const { isLoading, data: subjects = {} } = useQuery(
+    ["subjects", year, semester, school],
+    async () => {
+      const response = await fetch("https://schedge.a1liu.com/subjects");
+      if (!response.ok) return;
 
-        const data = await response.json();
-
-        setLoading(false);
-
-        const subjects = data[school];
-        if (subjects) {
-          setSubjects(subjects);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      const data = await response.json();
+      return data[school];
     }
-
-    query();
-  }, [school]);
+  );
 
   const subjectNames = Object.keys(subjects).sort();
 
@@ -44,9 +29,9 @@ export default function SchoolPage() {
         <div id="departmentTitle">{school}</div>
       </div>
 
-      {loading && <span>Loading...</span>}
+      {isLoading && <span>Loading...</span>}
 
-      {!loading && (
+      {!isLoading && (
         <div className={styles.departments}>
           {subjectNames.map((subjectid, i) => {
             const subject = subjects[subjectid];

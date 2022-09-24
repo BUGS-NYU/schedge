@@ -4,11 +4,12 @@
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
     "start": "next start",
-    "format": "prettier --no-color --write src/components src/pages src/gradlew.js",
+    "format": "prettier --no-color --write 'src/{pages/**/,components/**/,}*.{js,jsx}'",
     "lint": "next lint",
     "composeBuild": "node src/gradlew.js composeBuild",
     "composeUp": "node src/gradlew.js composeUp",
-    "build": "node src/gradlew.js build"
+    "build": "node src/gradlew.js build",
+    "schedge": "yarn composeBuild && docker-compose exec schedge schedge"
   },
   "dependencies": {
     "classnames": "2.3.1",

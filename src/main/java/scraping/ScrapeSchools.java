@@ -45,19 +45,45 @@ public final class ScrapeSchools {
   private static Uri MAIN_URI = Uri.create(
       "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL");
 
+  private static Uri REDIRECT_URI = Uri.create(
+      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?&");
+
   public static HashMap<String, School> scrapeSchools(AsyncHttpClient client,
                                                       Term term)
       throws ExecutionException, InterruptedException {
-    Request request = new RequestBuilder()
-                          .setUri(MAIN_URI)
-                          .setRequestTimeout(10000)
-                          .setMethod("GET")
-                          .build();
+    Future<Response> fut;
+    Response resp;
 
-    Future<Response> fut = client.executeRequest(request);
-    Response resp = fut.get();
-    System.out.println(resp);
+    {
+      Request mainReq = new RequestBuilder()
+                            .setUri(MAIN_URI)
+                            .setRequestTimeout(10000)
+                            .setMethod("GET")
+                            .build();
 
-    return null;
+      fut = client.executeRequest(mainReq);
+      resp = fut.get();
+    }
+
+    {
+      Request redirectReq = new RequestBuilder()
+                                .setUri(REDIRECT_URI)
+                                .setRequestTimeout(10000)
+                                .setMethod("GET")
+                                .build();
+
+      fut = client.executeRequest(redirectReq);
+      resp = fut.get();
+
+      if (resp == null) {
+        System.out.println("resp was null");
+      } else {
+        System.out.println(resp);
+      }
+    }
+
+    HashMap<String, School> schoolMap = new HashMap<>();
+
+    return schoolMap;
   }
 }

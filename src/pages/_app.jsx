@@ -2,6 +2,8 @@ import "./App.css";
 import React from "react";
 import headerStyles from "./header.module.css";
 import Link from "next/link";
+import { usePageState } from "components/state";
+import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider } from "react-query";
 // import Head from "next/head";
 
@@ -16,8 +18,20 @@ function App({ Component, pageProps }) {
   const getPath = () => "";
 
   /* eslint-disable no-unused-vars */
-  const [year, setYear] = React.useState(2021);
-  const [semester, setSemester] = React.useState("sp");
+  const update = usePageState((s) => s.update);
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!router.isReady) return;
+
+    if (router.query.year) {
+      update({ year: router.query.year });
+    }
+
+    if (router.query.semester) {
+      update({ semester: router.query.semester });
+    }
+  }, [router, update]);
   /* eslint-enable no-unused-vars */
 
   // if we start on schedule page, the first toggle brings us to home
@@ -77,7 +91,7 @@ function App({ Component, pageProps }) {
         </button>
       </div>
 
-      <Component year={year} semester={semester} {...pageProps} />
+      <Component {...pageProps} />
     </QueryClientProvider>
   );
 }

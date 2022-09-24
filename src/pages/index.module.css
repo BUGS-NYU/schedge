@@ -49,6 +49,7 @@
   grid-gap: 0.5rem;
   padding: 6rem 2rem 2rem 2rem;
   animation: deptFadeIn 0.8s ease forwards;
+
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }

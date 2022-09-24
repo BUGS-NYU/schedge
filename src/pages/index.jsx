@@ -1,9 +1,11 @@
 import React from "react";
+import { usePageState } from "components/state";
 import css from "./index.module.css";
 import SearchBar from "components/SearchBar";
 import School from "components/School";
 
-function Home({ year, semester }) {
+function Home() {
+  const { year, semester } = usePageState();
   const [departments, setDepartments] = React.useState({
     loading: true,
     data: {},

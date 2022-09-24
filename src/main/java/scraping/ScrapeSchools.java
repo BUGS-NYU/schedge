@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 import org.asynchttpclient.*;
 import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.*;
 import types.Term;
 
@@ -42,15 +46,17 @@ public final class ScrapeSchools {
     public ArrayList<Subject> subjects;
   }
 
-  private static Uri MAIN_URI = Uri.create(
-      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL");
+  private static String MAIN_URL =
+      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
 
-  private static Uri REDIRECT_URI = Uri.create(
-      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?&");
+  private static Uri MAIN_URI = Uri.create(MAIN_URL);
+  private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
 
-  public static HashMap<String, School> scrapeSchools(AsyncHttpClient client,
-                                                      Term term)
-      throws ExecutionException, InterruptedException {
+  public static
+      //  HashMap<String, School>
+      Object
+      scrapeSchools(AsyncHttpClient client, Term term)
+          throws ExecutionException, InterruptedException {
     Future<Response> fut;
     Response resp;
 
@@ -74,16 +80,25 @@ public final class ScrapeSchools {
 
       fut = client.executeRequest(redirectReq);
       resp = fut.get();
-
-      if (resp == null) {
-        System.out.println("resp was null");
-      } else {
-        System.out.println(resp);
-      }
     }
 
-    HashMap<String, School> schoolMap = new HashMap<>();
+    String s = resp.getResponseBody();
+    Document doc = Jsoup.parse(s, MAIN_URL);
+    Element body = doc.body();
+    Elements yearHeaders = body.select("div#win0divACAD_YEAR");
 
-    return schoolMap;
+    if (yearHeaders.size() != 1) {
+      throw new RuntimeException(
+          "got unexpected number of matches for the year header");
+    }
+
+    Element yearHeader = yearHeaders.get(0);
+
+    // System.out.println(yearHeader);
+    return yearHeader;
+
+    // HashMap<String, School> schoolMap = new HashMap<>();
+
+    // return schoolMap;
   }
 }

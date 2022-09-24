@@ -41,7 +41,7 @@ dependencies {
             // HTTP requests and HTML Parsing
             "org.asynchttpclient:async-http-client-bom:2.10.5",
             "org.asynchttpclient:async-http-client:2.10.5",
-            "org.jsoup:jsoup:1.12.1",
+            "org.jsoup:jsoup:1.15.3",
 
             // Command line arg parsing and progress bar
             "info.picocli:picocli:4.1.4",

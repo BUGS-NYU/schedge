@@ -75,20 +75,12 @@ public final class ScrapeSchools {
         .collect(Collectors.joining("&"));
   }
 
-  public static
-      //  HashMap<String, School>
-      Object
-      scrapeSchools(AsyncHttpClient client, Term term)
-          throws ExecutionException, InterruptedException {
-
+  public static Object scrapeSchools(AsyncHttpClient client, Term term)
+      throws ExecutionException, InterruptedException {
     {
-      var mainReq = new RequestBuilder()
-                        .setUri(MAIN_URI)
-                        .setRequestTimeout(10000)
-                        .setMethod("GET")
-                        .build();
+      var mainReq = get(MAIN_URI);
 
-      Future<Response> fut = client.executeRequest(mainReq);
+      var fut = client.executeRequest(mainReq);
       fut.get();
 
       // ignore the response here because we just want the cookies
@@ -96,11 +88,7 @@ public final class ScrapeSchools {
 
     String responseBody;
     {
-      var redirectReq = new RequestBuilder()
-                            .setUri(REDIRECT_URI)
-                            .setRequestTimeout(10000)
-                            .setMethod("GET")
-                            .build();
+      var redirectReq = get(REDIRECT_URI);
 
       var fut = client.executeRequest(redirectReq);
       var resp = fut.get();
@@ -109,22 +97,14 @@ public final class ScrapeSchools {
 
     var doc = Jsoup.parse(responseBody, MAIN_URL);
     var body = doc.body();
-    var yearHeaders = body.select("div#win0divACAD_YEAR");
 
-    if (yearHeaders.size() != 1) {
-      throw new RuntimeException(
-          "got unexpected number of matches for the year header");
-    }
+    var formMap = parseFormFields(body);
 
-    var links = yearHeaders.get(0).select("a.ps-link");
+    var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
+    var links = yearHeader.select("a.ps-link");
 
     for (Element link : links) {
       var id = link.id();
-      var text = link.text();
-      System.out.println("ID: " + id);
-      System.out.println("Text: " + text);
-
-      var formMap = parseFormFields(body);
 
       formMap.put("ICAction", id);
       formMap.put("ICNAVTYPEDROPDOWN", "0");
@@ -140,6 +120,9 @@ public final class ScrapeSchools {
         if (resp != null)
           return resp;
       }
+
+      var text = link.text();
+      System.out.println("Text: " + text);
 
       var yearParts = text.split("-");
       var first = Integer.parseInt(yearParts[0]);
@@ -158,21 +141,11 @@ public final class ScrapeSchools {
       System.out.println(su);
     }
 
-    // System.out.println(yearHeader);
     return links;
-
-    // HashMap<String, School> schoolMap = new HashMap<>();
-
-    // return schoolMap;
   }
 
   static HashMap<String, String> parseFormFields(Element body) {
-    var optionsRoots = body.select("#win0divPSTOOLSHIDDENS");
-    if (optionsRoots.size() != 1) {
-      throw new RuntimeException("found wrong number of options roots");
-    }
-
-    var optionsRoot = optionsRoots.get(0);
+    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
     var inputs = optionsRoot.select("input");
     var map = new HashMap<String, String>();
     for (var input : inputs) {
@@ -188,12 +161,20 @@ public final class ScrapeSchools {
     return map;
   }
 
+  static Request get(Uri uri) {
+    return new RequestBuilder()
+        .setUri(uri)
+        .setRequestTimeout(10_000)
+        .setMethod("GET")
+        .build();
+  }
+
   static Request post(Uri uri, HashMap<String, String> body) {
     String s = formEncode(body);
 
     return new RequestBuilder()
         .setUri(uri)
-        .setRequestTimeout(10000)
+        .setRequestTimeout(10_000)
         .setMethod("POST")
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .setBody(s)

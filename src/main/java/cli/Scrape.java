@@ -8,8 +8,8 @@ import java.util.concurrent.ExecutionException;
 import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
+import scraping.PeopleSoftClassSearch;
 import scraping.ScrapeCatalog;
-import scraping.ScrapeSchools;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
 import utils.Client;
@@ -57,20 +57,21 @@ public class Scrape implements Runnable {
     logger.info("{} seconds for {} courses", duration, courses.size());
   }
 
-  @Command(name = "school", sortOptions = false,
+  @Command(name = "ps", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-           description = "Scrape school/subject based on term")
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
+  ps(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
       throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
     types.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
 
-      var schools = ScrapeSchools.scrapeSchools(client, term);
+      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
       outputFileMixin.writeOutput(schools);
     }
 

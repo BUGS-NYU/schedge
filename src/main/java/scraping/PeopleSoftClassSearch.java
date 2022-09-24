@@ -29,7 +29,7 @@ import types.Term;
   src/main/java/utils/Client.java
  */
 
-public final class ScrapeSchools {
+public final class PeopleSoftClassSearch {
   public static final class Subject {
     public String code;
     public String name;

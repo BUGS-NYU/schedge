@@ -1,13 +1,14 @@
 import React from "react";
+import { usePageState } from "components/state";
+import styles from "./subject.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import styled from "styled-components";
 import { useQuery } from "react-query";
-import { findSchool } from "components/util";
 
-export default function SubjectPage({ location: _location }) {
+export default function SubjectPage() {
   const router = useRouter();
-  const { school, subject, year, semester } = router.query;
+  const { year, semester } = usePageState();
+  const { school, subject } = router.query;
 
   const courseList = useQuery(
     ["courses", year, semester, school, subject],
@@ -36,105 +37,54 @@ export default function SubjectPage({ location: _location }) {
   });
 
   return (
-    <PageContainer>
-      <HeaderBackground></HeaderBackground>
+    <div className={styles.pageContainer}>
+      <div className={styles.headerBackground}></div>
 
       <div>
-        <DepartmentHeader>
+        <div className={styles.departmentHeader}>
           <Link
             href={{
               pathname: "/school",
-              query: `school=${school}&year=${year}&semester=${semester}`,
-              state: {
-                schoolName:
-                  schoolList.data?.[school]?.name ?? findSchool(school),
-              },
+              query: { school, year, semester },
             }}
-            style={{ textDecoration: "none" }}
           >
-            <SchoolName>{schoolList.data?.[school]?.name ?? school}</SchoolName>
+            <a className={styles.schoolName}>
+              {schoolList.data?.[school]?.name ?? school}
+            </a>
           </Link>
 
-          <DepartmentName>
+          <div className={styles.departmentName}>
             {departmentList.data?.[school]?.[subject]?.name}
-          </DepartmentName>
-        </DepartmentHeader>
+          </div>
+        </div>
 
-        <CourseContainer>
+        <div className={styles.courseContainer}>
           {courseList.data?.map((course, i) => (
             <Link
               href={{
                 pathname: "/course",
-                query: `school=${course.subjectCode.school}&subject=${course.subjectCode.code}&courseid=${course.deptCourseId}&year=${year}&semester=${semester}`,
+                query: {
+                  year,
+                  semester,
+                  courseid: course.deptCourseId,
+                  school: course.subjectCode.school,
+                  subject: course.subjectCode.code,
+                },
               }}
               key={i}
-              style={{ textDecoration: "none", color: "inherit" }}
             >
-              <Course>
+              <a className={styles.course}>
                 <h4>
                   {course.subjectCode.code}-{course.subjectCode.school}{" "}
                   {course.deptCourseId}
                 </h4>
                 <h3>{course.name}</h3>
                 <p>{course.sections.length} Sections</p>
-              </Course>
+              </a>
             </Link>
           ))}
-        </CourseContainer>
+        </div>
       </div>
-    </PageContainer>
+    </div>
   );
 }
-
-const PageContainer = styled.div`
-  width: 100vw;
-  min-height: 100vh;
-`;
-
-const HeaderBackground = styled.div`
-  width: 100vw;
-  height: 2rem;
-`;
-
-const DepartmentHeader = styled.div`
-  margin: 2vmin 2vmin 4vmin 4vmax;
-`;
-
-const SchoolName = styled.div`
-  font-size: 1.4rem;
-`;
-
-const DepartmentName = styled.div`
-  font-weight: bold;
-  font-size: 2.6rem;
-  margin-top: -0.1rem;
-`;
-
-const CourseContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  width: 85vw;
-  margin: 0 auto;
-`;
-
-const Course = styled.div`
-  padding: 0.75vmax 3vmin;
-  word-break: break-word;
-  width: 60vmin;
-  min-height: 5vmax;
-  margin: 1vmax;
-  border-radius: 0.3rem;
-  @media (max-width: 1000px) {
-    width: 38vmin;
-  }
-
-  &:hover {
-  }
-
-  & > h4 {
-  }
-  & > p {
-  }
-`;

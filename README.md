@@ -29,6 +29,7 @@ you a general overview of the project and how to contribute.
       search the DB directly for stuff.
 
 #### Delayed for now
+- [ ] Make sure docker isn't doing something idiot for the exposed ports
 - [ ] Optimize response times enough that `full` can be the default
 - [ ] Profile stuffs, perf seems to be regressing randomly
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime

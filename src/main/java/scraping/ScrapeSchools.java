@@ -73,6 +73,8 @@ public final class ScrapeSchools {
 
       fut = client.executeRequest(mainReq);
       resp = fut.get();
+
+      // ignore the response here because we just want the cookies
     }
 
     {
@@ -96,10 +98,13 @@ public final class ScrapeSchools {
           "got unexpected number of matches for the year header");
     }
 
-    Element yearHeader = yearHeaders.get(0);
+    var links = yearHeaders.get(0).select("a.ps-link");
+    for (Element link : links) {
+      System.out.println("ID: " + link.id());
+    }
 
     // System.out.println(yearHeader);
-    return yearHeader;
+    return links;
 
     // HashMap<String, School> schoolMap = new HashMap<>();
 

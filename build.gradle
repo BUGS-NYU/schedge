@@ -82,7 +82,9 @@ jar {
 }
 
 composeBuild.dependsOn build
+composeUp.dependsOn composeBuild
+
 dockerCompose {
-  buildBeforeUp = true
+  buildBeforeUp = false
   projectName = 'schedge'
 }

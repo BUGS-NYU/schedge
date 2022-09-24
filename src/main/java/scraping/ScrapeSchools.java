@@ -4,6 +4,8 @@ import static utils.TryCatch.*;
 
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -20,13 +22,6 @@ import types.Term;
 
 /* User flow
 
-  1.  Navigate to
-
-        https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL
-
-      and get cookies
-
-  2.  Navigate there again, and get more cookies
   3.  Navigate there again using POST, and set form params
 
 
@@ -51,6 +46,15 @@ public final class ScrapeSchools {
 
   private static Uri MAIN_URI = Uri.create(MAIN_URL);
   private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
+
+  public static String formEncode(HashMap<String, String> values) {
+    return values.entrySet()
+        .stream()
+        .map(e
+             -> e.getKey() + "=" +
+                    URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+        .collect(Collectors.joining("&"));
+  }
 
   public static
       //  HashMap<String, School>

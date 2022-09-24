@@ -78,25 +78,20 @@ public final class ScrapeSchools {
   public static Object scrapeSchools(AsyncHttpClient client, Term term)
       throws ExecutionException, InterruptedException {
     {
-      var mainReq = get(MAIN_URI);
-
-      var fut = client.executeRequest(mainReq);
+      var fut = client.executeRequest(get(MAIN_URI));
       fut.get();
 
       // ignore the response here because we just want the cookies
     }
 
-    String responseBody;
+    Element body;
     {
-      var redirectReq = get(REDIRECT_URI);
-
-      var fut = client.executeRequest(redirectReq);
+      var fut = client.executeRequest(get(REDIRECT_URI));
       var resp = fut.get();
-      responseBody = resp.getResponseBody();
+      var responseBody = resp.getResponseBody();
+      var doc = Jsoup.parse(responseBody, MAIN_URL);
+      body = doc.body();
     }
-
-    var doc = Jsoup.parse(responseBody, MAIN_URL);
-    var body = doc.body();
 
     var formMap = parseFormFields(body);
 
@@ -130,10 +125,10 @@ public final class ScrapeSchools {
 
       // 2019 - 2022
       // fa2019 ja2020 sp2020 su2020
-      Term fa = new Term(Term.Semester.fa, first);
-      Term ja = new Term(Term.Semester.ja, second);
-      Term sp = new Term(Term.Semester.sp, second);
-      Term su = new Term(Term.Semester.su, second);
+      var fa = new Term(Term.Semester.fa, first);
+      var ja = new Term(Term.Semester.ja, second);
+      var sp = new Term(Term.Semester.sp, second);
+      var su = new Term(Term.Semester.su, second);
 
       System.out.println(fa);
       System.out.println(ja);

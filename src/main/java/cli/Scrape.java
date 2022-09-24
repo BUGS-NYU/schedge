@@ -2,13 +2,10 @@ package cli;
 
 import static picocli.CommandLine.*;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.PeopleSoftClassSearch;
 import scraping.ScrapeCatalog;
 import scraping.parse.ParseSchoolSubjects;
 import scraping.query.QuerySchool;
@@ -57,23 +54,20 @@ public class Scrape implements Runnable {
     logger.info("{} seconds for {} courses", duration, courses.size());
   }
 
-  @Command(name = "ps", sortOptions = false,
+  @Command(name = "school", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Scrape the PeopleSoft Class Search",
-           description = "Scrape the PeopleSoft Class Search for a term")
+           optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
+           description = "Scrape school/subject based on term")
   public void
-  ps(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
-      throws IOException, ExecutionException, InterruptedException {
+  school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
+      throws ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
-    types.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+    outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
+        QuerySchool.querySchool(termMixin.getTerm())));
 
-      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
-      outputFileMixin.writeOutput(schools);
-    }
+    Client.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

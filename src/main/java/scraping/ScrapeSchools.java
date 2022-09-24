@@ -61,31 +61,31 @@ public final class ScrapeSchools {
     Response resp;
 
     {
-      Request mainReq = new RequestBuilder()
-                            .setUri(MAIN_URI)
-                            .setRequestTimeout(10000)
-                            .setMethod("GET")
-                            .build();
+      var mainReq = new RequestBuilder()
+                        .setUri(MAIN_URI)
+                        .setRequestTimeout(10000)
+                        .setMethod("GET")
+                        .build();
 
       fut = client.executeRequest(mainReq);
       resp = fut.get();
     }
 
     {
-      Request redirectReq = new RequestBuilder()
-                                .setUri(REDIRECT_URI)
-                                .setRequestTimeout(10000)
-                                .setMethod("GET")
-                                .build();
+      var redirectReq = new RequestBuilder()
+                            .setUri(REDIRECT_URI)
+                            .setRequestTimeout(10000)
+                            .setMethod("GET")
+                            .build();
 
       fut = client.executeRequest(redirectReq);
       resp = fut.get();
     }
 
-    String s = resp.getResponseBody();
-    Document doc = Jsoup.parse(s, MAIN_URL);
-    Element body = doc.body();
-    Elements yearHeaders = body.select("div#win0divACAD_YEAR");
+    var s = resp.getResponseBody();
+    var doc = Jsoup.parse(s, MAIN_URL);
+    var body = doc.body();
+    var yearHeaders = body.select("div#win0divACAD_YEAR");
 
     if (yearHeaders.size() != 1) {
       throw new RuntimeException(

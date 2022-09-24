@@ -1,14 +1,19 @@
 {
   "name": "schedge",
   "scripts": {
+    "format": "prettier --no-color --write 'src/{pages/**/,components/**/,}*.{js,jsx}'",
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
-    "start": "next start",
-    "format": "prettier --no-color --write 'src/{pages/**/,components/**/,}*.{js,jsx}'",
     "lint": "next lint",
-    "composeBuild": "node src/gradlew.js composeBuild",
-    "composeUp": "node src/gradlew.js composeUp",
-    "build": "node src/gradlew.js build",
+
+    "gradle": "node src/gradlew.js",
+    "exec": "docker-compose exec",
+
+    "build": "node src/gradlew.js composeBuild",
+    "start": "node src/gradlew.js composeUp",
+    "stop": "docker-compose down",
+    "compile": "node src/gradlew.js check",
+
     "schedge": "yarn composeBuild >&2 && sleep 1 && docker-compose exec schedge schedge"
   },
   "dependencies": {

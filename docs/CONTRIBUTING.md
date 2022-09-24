@@ -37,17 +37,14 @@ You'll need to install a few applications to contribute to this project:
   if you would like feedback on your changes.
 
 ### Build with Command Line/Terminal
-- `./gradlew check`: Check the application for compile-time errors
-- `./gradlew composeUp`: Start up the development servers; Schedge will start
+- `yarn compile`: Check the application for compile-time errors
+- `yarn start`: Start up the development servers; Schedge will start
   on port `4358`
-- `./gradlew composeBuild`: Build the application, and update the development server
-- `./gradlew build`: Just build the application
-- `docker-compose build`: Build the Docker image (the dev server will restart with
-  new changes automatically)
-- `docker-compose down`: Close the servers when development is done
+- `yarn build`: Build the application, and update the development server
+- `yarn stop`: Close the servers when development is done
 
 ## Useful Commands
-- `docker-compose exec schedge schedge db populate --semester=sp --year=2022` -
+- `yarn schedge db populate --semester=sp --year=2022` -
   Populate your database with data from production
 - `docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database

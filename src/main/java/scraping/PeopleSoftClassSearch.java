@@ -77,66 +77,56 @@ public final class PeopleSoftClassSearch {
 
   public static Object scrapeSchools(AsyncHttpClient client, Term term)
       throws ExecutionException, InterruptedException {
-    {
-      var fut = client.executeRequest(get(MAIN_URI));
-      fut.get();
+    String yearText;
+    switch (term.semester) {
+    case ja:
+    case sp:
+    case su:
+      yearText = (term.year - 1) + "-" + term.year;
+      break;
 
-      // ignore the response here because we just want the cookies
+    case fa:
+    default:
+      yearText = term.year + "-" + (term.year + 1);
+      break;
     }
 
-    Element body;
+    { // ignore the response here because we just want the cookies
+      var fut = client.executeRequest(get(MAIN_URI));
+      fut.get();
+    }
+
+    HashMap<String, String> formMap;
     {
       var fut = client.executeRequest(get(REDIRECT_URI));
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
       var doc = Jsoup.parse(responseBody, MAIN_URL);
-      body = doc.body();
-    }
+      Element body = doc.body();
 
-    var formMap = parseFormFields(body);
+      var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
+      var links = yearHeader.select("a.ps-link");
 
-    var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
-    var links = yearHeader.select("a.ps-link");
+      String id = null;
+      for (Element link : links) {
+        var text = link.text();
+        if (!text.contentEquals(yearText))
+          continue;
 
-    for (Element link : links) {
-      var id = link.id();
-
-      formMap.put("ICAction", id);
-      formMap.put("ICNAVTYPEDROPDOWN", "0");
-
-      // Future<Response> fut;
-      // Response resp;
-
-      {
-        var req = post(MAIN_URI, formMap);
-        var fut = client.executeRequest(req);
-        var resp = fut.get();
-
-        if (resp != null)
-          return resp;
+        id = link.id();
       }
 
-      var text = link.text();
-      System.out.println("Text: " + text);
-
-      var yearParts = text.split("-");
-      var first = Integer.parseInt(yearParts[0]);
-      var second = Integer.parseInt(yearParts[1]);
-
-      // 2019 - 2022
-      // fa2019 ja2020 sp2020 su2020
-      var fa = new Term(Term.Semester.fa, first);
-      var ja = new Term(Term.Semester.ja, second);
-      var sp = new Term(Term.Semester.sp, second);
-      var su = new Term(Term.Semester.su, second);
-
-      System.out.println(fa);
-      System.out.println(ja);
-      System.out.println(sp);
-      System.out.println(su);
+      formMap = parseFormFields(body);
+      formMap.put("ICAction", id);
+      formMap.put("ICNAVTYPEDROPDOWN", "0");
     }
 
-    return links;
+    {
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+
+      return resp;
+    }
   }
 
   static HashMap<String, String> parseFormFields(Element body) {

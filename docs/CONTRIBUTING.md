@@ -60,6 +60,6 @@ The codebase uses the following annotations in the comments:
 - `@Organize` - We should reorganize this code
 
 ### Before Creating a PR
-- Making sure that the code compiles and test your code.
+- Make sure that the code compiles and test your code.
 - Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).
 

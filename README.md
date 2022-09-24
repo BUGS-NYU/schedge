@@ -29,6 +29,7 @@ you a general overview of the project and how to contribute.
       search the DB directly for stuff.
 
 #### Delayed for now
+- [ ] Make sure docker isn't doing something idiot for the exposed ports
 - [ ] Optimize response times enough that `full` can be the default
 - [ ] Profile stuffs, perf seems to be regressing randomly
 - [ ] Use `schedge_meta` table to allow changing schools/subjects at runtime
@@ -37,26 +38,6 @@ you a general overview of the project and how to contribute.
 - [ ] Fuzzer? Some kind of tester I guess
 - [ ] Upgrade to Java 17, use Java HttpClient (from JDK 11) to get rid of dependency
       on async-http-client
-
-## Commands
-The following commands are valid in Schedge:
-
-```sh
-./schedge scrape catalog  # scrape the catalog
-./schedge scrape sections # scrape the sections
-./schedge scrape school   # scrape the school/subject
-./schedge db scrape       # scrape the catalog for information
-./schedge db query        # query the database for information
-./schedge serve           # Run the server
-```
-
-#### Example
-```sh
-./schedge scrape catalog --year 2020 --semester sp --school UA --subject CSCI
-```
-
-The above command will scrape catalog data from Albert website for Computer Science courses at the
-College of Arts and Sciences for the Spring, 2020.
 
 ## Front Ends
 If you'd like to write a front end to this API, you can list it below!

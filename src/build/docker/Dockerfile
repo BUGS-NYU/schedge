@@ -1,6 +1,8 @@
 # FROM openjdk:8u212-jre-alpine3.9
 FROM openjdk:17.0.2-jdk-slim-buster
 
+WORKDIR "/home/user"
+
 EXPOSE 4358
 
 ENV PATH "/app:$PATH"

@@ -67,7 +67,13 @@ public final class Mixins {
     private String outputFile;
 
     public void writeOutput(Object output) {
-      Utils.writeToFileOrStdout(outputFile, JsonMapper.toJson(output, pretty));
+      var jsonData = TryCatch.tcIgnore(() -> JsonMapper.toJson(output, pretty));
+
+      if (jsonData == null) {
+        jsonData = output.toString();
+      }
+
+      Utils.writeToFileOrStdout(outputFile, jsonData);
     }
   }
 

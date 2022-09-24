@@ -39,6 +39,10 @@ const opts = [
   ...process.argv.slice(2),
 ];
 
-spawn(process.env.JAVACMD, opts, {
+const compile = spawn(process.env.JAVACMD, opts, {
   stdio: "inherit",
+});
+
+compile.on("close", (code) => {
+  process.exit(code);
 });

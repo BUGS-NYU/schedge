@@ -29,6 +29,9 @@ services:
     ports:
       - "4358:4358"
 
+    volumes:
+      - "./:/home/user"
+
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
       - "com.centurylinklabs.watchtower.stop-signal=SIGKILL"

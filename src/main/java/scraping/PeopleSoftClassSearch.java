@@ -14,6 +14,7 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.CDataNode;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -91,6 +92,26 @@ public final class PeopleSoftClassSearch {
       break;
     }
 
+    String semesterId;
+    {
+      switch (term.semester) {
+      case fa:
+        semesterId = "win0divNYU_CLS_WRK_NYU_FALL$36$";
+        break;
+      case ja:
+        semesterId = "win0divNYU_CLS_WRK_NYU_WINTER$37$";
+        break;
+      case sp:
+        semesterId = "win0divNYU_CLS_WRK_NYU_SPRING$38$";
+        break;
+      case su:
+        semesterId = "win0divNYU_CLS_WRK_NYU_SUMMER$39$";
+        break;
+      default:
+        throw new RuntimeException("whatever");
+      }
+    }
+
     { // ignore the response here because we just want the cookies
       var fut = client.executeRequest(get(MAIN_URI));
       fut.get();
@@ -102,7 +123,7 @@ public final class PeopleSoftClassSearch {
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
       var doc = Jsoup.parse(responseBody, MAIN_URL);
-      Element body = doc.body();
+      var body = doc.body();
 
       var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
       var links = yearHeader.select("a.ps-link");
@@ -115,6 +136,8 @@ public final class PeopleSoftClassSearch {
 
         id = link.id();
       }
+      if (id == null)
+        throw new RuntimeException("yearText not found");
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
@@ -124,9 +147,13 @@ public final class PeopleSoftClassSearch {
     {
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       var resp = fut.get();
-
-      return resp;
     }
+
+    // formMap = parseFormFields(body);
+    // formMap.put("ICAction", );
+    // formMap.put("ICNAVTYPEDROPDOWN", "0");
+
+    return options;
   }
 
   static HashMap<String, String> parseFormFields(Element body) {

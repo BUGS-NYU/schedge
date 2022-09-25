@@ -140,18 +140,22 @@ public final class PeopleSoftClassSearch {
         throw new RuntimeException("yearText not found");
 
       formMap = parseFormFields(body);
-      formMap.put("ICAction", id);
       formMap.put("ICNAVTYPEDROPDOWN", "0");
     }
 
-    {
+    { // Get the correct state on the page
+      formMap.put("ICAction", id);
+
       var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
+      fut.get();
     }
 
-    // formMap = parseFormFields(body);
-    // formMap.put("ICAction", );
-    // formMap.put("ICNAVTYPEDROPDOWN", "0");
+    {
+      int action = Integer.parseInt(formMap.get("ICStateNum"));
+      action += 1;
+      formMap.put("ICStateNum", "" + action);
+      // formMap.put("ICAction", );
+    }
 
     return options;
   }

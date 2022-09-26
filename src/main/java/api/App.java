@@ -4,6 +4,7 @@ import api.v1.*;
 import database.GetConnection;
 import database.Migrations;
 import io.javalin.Javalin;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.openapi.OpenApiOptions;
@@ -19,21 +20,45 @@ public class App {
 
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
-  public abstract static class Endpoint {
+  public abstract static class Endpoint implements Handler {
     public abstract String getPath();
     public abstract OpenApiDocumentation
     configureDocs(OpenApiDocumentation docs);
-    public abstract Handler getHandler();
+
+    public abstract Object handleEndpoint(Context ctx);
+
+    @Override
+    public final void handle(Context ctx) {
+      try {
+        Object output = this.handleEndpoint(ctx);
+
+        ctx.status(200);
+        ctx.json(output);
+      } catch (ApiError e) {
+        ctx.status(e.status);
+        ctx.json(e);
+      } catch (Exception e) {
+        ctx.status(400);
+        ctx.json(new ApiError(e.getMessage()));
+      }
+    }
+
     public final void addTo(Javalin app) {
-      app.get("/api" + getPath(),
-              OpenApiBuilder.documented(
-                  configureDocs(OpenApiBuilder.document()), getHandler()));
+      var docs = this.configureDocs(OpenApiBuilder.document());
+      app.get("/api" + getPath(), OpenApiBuilder.documented(docs, this));
     }
   }
 
-  public static class ApiError {
-    private String message;
-    public ApiError(String message) { this.message = message; }
+  public static class ApiError extends RuntimeException {
+    private final int status;
+    private final String message;
+
+    public ApiError(String message) { this(400, message); }
+    public ApiError(int status, String message) {
+      this.message = message;
+      this.status = status;
+    }
+
     public String getMessage() { return message; }
   }
 

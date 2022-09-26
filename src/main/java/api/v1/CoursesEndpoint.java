@@ -4,6 +4,7 @@ import static utils.TryCatch.*;
 
 import api.*;
 import database.GetConnection;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
@@ -11,7 +12,6 @@ import types.*;
 import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
-
   public String getPath() { return "/courses/{term}/{subject}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
@@ -47,43 +47,25 @@ public final class CoursesEndpoint extends App.Endpoint {
         });
   }
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+  public Object handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = SchoolInfoEndpoint.parseTerm(termString);
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        return SchoolInfoEndpoint.parseTerm(termString);
-      });
+    String subjectString = ctx.pathParam("subject").toUpperCase();
+    var subject = Subject.fromCode(subjectString);
 
-      if (term == null)
-        return;
+    String fullData = ctx.queryParam("full");
 
-      Subject subject = tc.log(() -> {
-        String subjectString = ctx.pathParam("subject").toUpperCase();
-        return Subject.fromCode(subjectString);
-      });
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      List<Subject> subjects = Collections.singletonList(subject);
 
-      if (subject == null)
-        return;
+      if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
+        return SelectCourses.selectFullCourses(conn, term, subjects);
+      }
 
-      String fullData = ctx.queryParam("full");
+      return SelectCourses.selectCourses(conn, term, subjects);
+    });
 
-      Object output = GetConnection.withConnectionReturning(conn -> {
-        List<Subject> subjects = Collections.singletonList(subject);
-
-        if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
-          return SelectCourses.selectFullCourses(conn, term, subjects);
-        }
-
-        return SelectCourses.selectCourses(conn, term, subjects);
-      });
-
-      ctx.status(200);
-      ctx.json(output);
-    };
+    return output;
   }
 }

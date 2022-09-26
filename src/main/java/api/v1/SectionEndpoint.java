@@ -5,6 +5,7 @@ import static utils.TryCatch.*;
 import api.*;
 import database.GetConnection;
 import database.courses.SelectRows;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import types.*;
@@ -28,14 +29,11 @@ public final class SectionEndpoint extends App.Endpoint {
               "This endpoint returns a section for a specific year, semester, and registration number.");
           openApiOperation.summary("Section Endpoint");
         })
-        .pathParam(
-            "term", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid term code, either 'current', 'next', or something "
-                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
-            })
+        .pathParam("term", String.class,
+                   openApiParam -> {
+                     openApiParam.description(
+                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
+                   })
         .pathParam("registrationNumber", Integer.class,
                    openApiParam -> {
                      openApiParam.description(
@@ -49,62 +47,35 @@ public final class SectionEndpoint extends App.Endpoint {
         });
   }
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+  public Object handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = SchoolInfoEndpoint.parseTerm(termString);
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        if (termString.contentEquals("current")) {
-          return Term.getCurrentTerm();
-        }
+    int registrationNumber =
+        Integer.parseInt(ctx.pathParam("registrationNumber"));
 
-        if (termString.contentEquals("next")) {
-          return Term.getCurrentTerm().nextTerm();
-        }
+    String fullData = ctx.queryParam("full");
 
-        int year = Integer.parseInt(termString.substring(2));
-        return new Term(termString.substring(0, 2), year);
-      });
-
-      if (term == null)
-        return;
-
-      Integer registrationNumber =
-          tc.log(() -> Integer.parseInt(ctx.pathParam("registrationNumber")));
-
-      if (registrationNumber == null)
-        return;
-
-      String fullData = ctx.queryParam("full");
-
-      Object output = GetConnection.withConnectionReturning(conn -> {
-        if (fullData != null && fullData.toLowerCase().equals("true")) {
-          return RowsToCourses
-              .fullRowsToCourses(
-                  SelectRows.selectFullRow(conn, term, registrationNumber))
-              .findAny()
-              .map(c -> c.sections.get(0))
-              .orElse(null);
-        }
-
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      if (fullData != null && fullData.toLowerCase().equals("true")) {
         return RowsToCourses
-            .rowsToCourses(SelectRows.selectRow(conn, term, registrationNumber))
+            .fullRowsToCourses(
+                SelectRows.selectFullRow(conn, term, registrationNumber))
             .findAny()
             .map(c -> c.sections.get(0))
             .orElse(null);
-      });
-
-      if (output == null) {
-        ctx.status(404);
-        ctx.result("not found");
-      } else {
-        ctx.status(200);
-        ctx.json(output);
       }
-    };
+
+      return RowsToCourses
+          .rowsToCourses(SelectRows.selectRow(conn, term, registrationNumber))
+          .findAny()
+          .map(c -> c.sections.get(0))
+          .orElse(null);
+    });
+
+    if (output == null)
+      throw new App.ApiError(404, "section not found");
+
+    return output;
   }
 }

@@ -5,6 +5,7 @@ import static utils.TryCatch.*;
 import api.*;
 import database.GetConnection;
 import database.courses.SearchRows;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
@@ -24,14 +25,11 @@ public final class SearchEndpoint extends App.Endpoint {
               "This endpoint returns a list of courses for a year and semester, given search terms.");
           openApiOperation.summary("Search Endpoint");
         })
-        .pathParam(
-            "term", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid term code, either 'current', 'next', or something "
-                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
-            })
+        .pathParam("term", String.class,
+                   openApiParam -> {
+                     openApiParam.description(
+                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
+                   })
         .queryParam(
             "full", Boolean.class, false,
             openApiParam -> {
@@ -92,92 +90,65 @@ public final class SearchEndpoint extends App.Endpoint {
                    openApiParam -> { openApiParam.description("OK."); });
   }
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+  public Object handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = SchoolInfoEndpoint.parseTerm(termString);
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        if (termString.contentEquals("current")) {
-          return Term.getCurrentTerm();
-        }
+    String args = ctx.queryParam("query");
+    if (args == null) {
+      throw new RuntimeException("Need to provide a query.");
+    } else if (args.length() > 50) {
+      throw new RuntimeException("Query can be at most 50 characters long.");
+    }
 
-        if (termString.contentEquals("next")) {
-          return Term.getCurrentTerm().nextTerm();
-        }
+    String school = ctx.queryParam("school"), subject =
+                                                  ctx.queryParam("subject");
 
-        int year = Integer.parseInt(termString.substring(2));
-        return new Term(termString.substring(0, 2), year);
-      });
+    int resultSize, titleWeight, descriptionWeight, notesWeight, prereqsWeight;
+    try {
+      resultSize = Optional.ofNullable(ctx.queryParam("limit"))
+                       .map(Integer::parseInt)
+                       .orElse(50);
 
-      if (term == null)
-        return;
+      titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
+                        .map(Integer::parseInt)
+                        .orElse(2);
 
-      String args = ctx.queryParam("query");
-      if (args == null) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Need to provide a query."));
-        return;
-      } else if (args.length() > 50) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Query can be at most 50 characters long."));
-      }
+      descriptionWeight =
+          Optional.ofNullable(ctx.queryParam("descriptionWeight"))
+              .map(Integer::parseInt)
+              .orElse(1);
 
-      String school = ctx.queryParam("school"), subject =
-                                                    ctx.queryParam("subject");
+      notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
+                        .map(Integer::parseInt)
+                        .orElse(0);
 
-      int resultSize, titleWeight, descriptionWeight, notesWeight,
-          prereqsWeight;
-      try {
-        resultSize = Optional.ofNullable(ctx.queryParam("limit"))
-                         .map(Integer::parseInt)
-                         .orElse(50);
-
-        titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(2);
-
-        descriptionWeight =
-            Optional.ofNullable(ctx.queryParam("descriptionWeight"))
-                .map(Integer::parseInt)
-                .orElse(1);
-
-        notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
+      prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
                           .map(Integer::parseInt)
                           .orElse(0);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Limit needs to be a positive integer.");
+    }
 
-        prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
-                            .map(Integer::parseInt)
-                            .orElse(0);
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Limit needs to be a positive integer."));
-        return;
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      String fullData = ctx.queryParam("full");
+      if (fullData != null && fullData.toLowerCase().equals("true")) {
+        return RowsToCourses
+            .fullRowsToCourses(SearchRows.searchFullRows(
+                conn, term, subject, school, args, titleWeight,
+                descriptionWeight, notesWeight, prereqsWeight))
+            .limit(resultSize)
+            .collect(Collectors.toList());
+      } else {
+        return RowsToCourses
+            .rowsToCourses(SearchRows.searchRows(
+                conn, term, subject, school, args, titleWeight,
+                descriptionWeight, notesWeight, prereqsWeight))
+            .limit(resultSize)
+            .collect(Collectors.toList());
       }
+    });
 
-      GetConnection.withConnection(conn -> {
-        String fullData = ctx.queryParam("full");
-        if (fullData != null && fullData.toLowerCase().equals("true")) {
-          ctx.json(RowsToCourses
-                       .fullRowsToCourses(SearchRows.searchFullRows(
-                           conn, term, subject, school, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
-                       .limit(resultSize)
-                       .collect(Collectors.toList()));
-        } else {
-          ctx.json(RowsToCourses
-                       .rowsToCourses(SearchRows.searchRows(
-                           conn, term, subject, school, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
-                       .limit(resultSize)
-                       .collect(Collectors.toList()));
-        }
-
-        ctx.status(200);
-      });
-    };
+    return output;
   }
 }

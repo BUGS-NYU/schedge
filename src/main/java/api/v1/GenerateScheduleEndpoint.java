@@ -6,6 +6,7 @@ import static utils.TryCatch.*;
 import api.*;
 import database.*;
 import database.models.AugmentedMeeting;
+import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.ArrayList;
@@ -13,13 +14,6 @@ import types.*;
 import utils.*;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
-
-  enum SemesterCode {
-    su,
-    sp,
-    fa,
-    ja;
-  }
 
   public String getPath() { return "/generateSchedule/{term}"; }
 
@@ -32,14 +26,11 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
               + "to check whether the schedule is valid.");
           openApiOperation.summary("Schedule Checking Endpoint");
         })
-        .pathParam(
-            "term", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid term code, either 'current', 'next', or something "
-                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
-            })
+        .pathParam("term", String.class,
+                   openApiParam -> {
+                     openApiParam.description(
+                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
+                   })
         .queryParam("registrationNumbers", String.class, false,
                     openApiParam
                     -> openApiParam.description("CSV of registration numbers"))
@@ -55,67 +46,33 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
         });
   }
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+  public Object handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = SchoolInfoEndpoint.parseTerm(termString);
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        if (termString.contentEquals("current")) {
-          return Term.getCurrentTerm();
-        }
+    String regNumsString = ctx.queryParam("registrationNumbers");
+    if (regNumsString == null) {
+      throw new RuntimeException("missing required query parameters");
+    }
 
-        if (termString.contentEquals("next")) {
-          return Term.getCurrentTerm().nextTerm();
-        }
+    String[] regNumsStrArray = regNumsString.split(",");
+    if (regNumsStrArray.length == 0) {
+      throw new RuntimeException("didn't provide any regstration numbers");
+    }
 
-        int year = Integer.parseInt(termString.substring(2));
-        return new Term(termString.substring(0, 2), year);
-      });
+    var registrationNumbers = new ArrayList<Integer>();
+    for (String regNumString : regNumsStrArray) {
+      registrationNumbers.add(Integer.parseInt(regNumString));
+    }
 
-      if (term == null)
-        return;
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      ArrayList<AugmentedMeeting> meetings =
+          SelectAugmentedMeetings.selectAugmentedMeetings(conn, term,
+                                                          registrationNumbers);
 
-      String regNumsString = ctx.queryParam("registrationNumbers");
-      if (regNumsString == null) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("missing required query parameters"));
-        return;
-      }
+      return generateSchedule(meetings);
+    });
 
-      String[] regNumsStrArray = regNumsString.split(",");
-      if (regNumsStrArray.length == 0) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("didn't provide any regstration numbers"));
-        return;
-      }
-
-      ArrayList<Integer> registrationNumbers = tc.log(() -> {
-        ArrayList<Integer> numbers = new ArrayList<>();
-
-        for (String regNumString : regNumsStrArray) {
-          numbers.add(Integer.parseInt(regNumString));
-        }
-
-        return numbers;
-      });
-
-      if (registrationNumbers == null)
-        return;
-
-      Object output = GetConnection.withConnectionReturning(conn -> {
-        ArrayList<AugmentedMeeting> meetings =
-            SelectAugmentedMeetings.selectAugmentedMeetings(
-                conn, term, registrationNumbers);
-
-        return generateSchedule(meetings);
-      });
-
-      ctx.status(200);
-      ctx.json(output);
-    };
+    return output;
   }
 }

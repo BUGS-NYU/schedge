@@ -13,13 +13,6 @@ import utils.*;
 
 public final class SectionEndpoint extends App.Endpoint {
 
-  enum SemesterCode {
-    su,
-    sp,
-    fa,
-    ja;
-  }
-
   public String getPath() { return "/section/{term}/{registrationNumber}"; }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {

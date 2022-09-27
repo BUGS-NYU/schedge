@@ -40,7 +40,6 @@ public final class Migrations {
 
         if (fileVersion > version) {
           for (String sql : parseMigration(path)) {
-            System.err.println("Running SQL: " + sql);
             stmt.execute(sql);
           }
           Utils.setArray(updateVersionStmt, Integer.toString(fileVersion));

@@ -23,7 +23,6 @@ public final class Migrations {
 
   public static void runMigrations(Connection conn) throws SQLException {
     int version = schemaVersion(conn);
-    System.err.println("version: " + version);
 
     String directory = "/migrations";
     List<String> paths = tcPass(() -> Utils.resourcePaths(directory));
@@ -41,6 +40,7 @@ public final class Migrations {
 
         if (fileVersion > version) {
           for (String sql : parseMigration(path)) {
+            System.err.println("Running SQL: " + sql);
             stmt.execute(sql);
           }
           Utils.setArray(updateVersionStmt, Integer.toString(fileVersion));
@@ -140,6 +140,7 @@ public final class Migrations {
 
       if (shouldAdd) {
         builder.append(line.substring(begin));
+        builder.append(' ');
       }
     }
 

@@ -96,16 +96,16 @@ public final class PeopleSoftClassSearch {
     {
       switch (term.semester) {
       case fa:
-        semesterId = "win0divNYU_CLS_WRK_NYU_FALL$36$";
+        semesterId = "NYU_CLS_WRK_NYU_FALL$36$";
         break;
       case ja:
-        semesterId = "win0divNYU_CLS_WRK_NYU_WINTER$37$";
+        semesterId = "NYU_CLS_WRK_NYU_WINTER$37$";
         break;
       case sp:
-        semesterId = "win0divNYU_CLS_WRK_NYU_SPRING$38$";
+        semesterId = "NYU_CLS_WRK_NYU_SPRING$38$";
         break;
       case su:
-        semesterId = "win0divNYU_CLS_WRK_NYU_SUMMER$39$";
+        semesterId = "NYU_CLS_WRK_NYU_SUMMER$39$";
         break;
       default:
         throw new RuntimeException("whatever");
@@ -140,12 +140,11 @@ public final class PeopleSoftClassSearch {
         throw new RuntimeException("yearText not found");
 
       formMap = parseFormFields(body);
+      formMap.put("ICAction", id);
       formMap.put("ICNAVTYPEDROPDOWN", "0");
     }
 
     { // Get the correct state on the page
-      formMap.put("ICAction", id);
-
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       fut.get();
     }
@@ -154,10 +153,14 @@ public final class PeopleSoftClassSearch {
       int action = Integer.parseInt(formMap.get("ICStateNum"));
       action += 1;
       formMap.put("ICStateNum", "" + action);
-      // formMap.put("ICAction", );
-    }
+      formMap.put("ICAction", semesterId);
+      formMap.put(semesterId, "Y");
 
-    return options;
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+      return Jsoup.parse(responseBody, MAIN_URL);
+    }
   }
 
   static HashMap<String, String> parseFormFields(Element body) {

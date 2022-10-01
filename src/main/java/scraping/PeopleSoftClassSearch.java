@@ -67,9 +67,11 @@ public final class PeopleSoftClassSearch {
       break;
 
     case fa:
-    default:
       yearText = term.year + "-" + (term.year + 1);
       break;
+
+    default:
+      throw new RuntimeException("whatever");
     }
 
     String semesterId;
@@ -87,6 +89,7 @@ public final class PeopleSoftClassSearch {
       case su:
         semesterId = "NYU_CLS_WRK_NYU_SUMMER$39$";
         break;
+
       default:
         throw new RuntimeException("whatever");
       }

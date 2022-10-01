@@ -33,35 +33,37 @@ public class Database implements Runnable {
                                              "Missing required subcommand.\n");
   }
 
-  @Command(
-      name = "scrape",
-      description = "Scrape section based on term and registration number, "
-                    + "OR school and subject from db.\n")
-  public void
-  scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
-         @Option(names = "--service",
-                 description = "turns scraping into a service; if set, "
-                               + "--year, --semester, and --term are ignored.")
-         boolean service) {
-    while (service) {
-      UpdateData.updateData(batchSize.catalog, batchSize.sections);
-
-      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    }
-
-    long start = System.nanoTime();
-
-    int catalogBatch = batchSize.catalog;
-    int sectionsBatch = batchSize.sections;
-    Term term = termMixin.getTerm();
-
-    ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
-
-    GetConnection.close();
-    Client.close();
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000000 + " seconds");
-  }
+  //   @Command(
+  //       name = "scrape",
+  //       description = "Scrape section based on term and registration number,
+  //       "
+  //                     + "OR school and subject from db.\n")
+  //   public void
+  //   scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
+  //          @Option(names = "--service",
+  //                  description = "turns scraping into a service; if set, "
+  //                                + "--year, --semester, and --term are
+  //                                ignored.")
+  //          boolean service) {
+  //     while (service) {
+  //       UpdateData.updateData(batchSize.catalog, batchSize.sections);
+  //
+  //       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
+  //     }
+  //
+  //     long start = System.nanoTime();
+  //
+  //     int catalogBatch = batchSize.catalog;
+  //     int sectionsBatch = batchSize.sections;
+  //     Term term = termMixin.getTerm();
+  //
+  //     ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
+  //
+  //     GetConnection.close();
+  //     Client.close();
+  //     long end = System.nanoTime();
+  //     logger.info((end - start) / 1000000000 + " seconds");
+  //   }
 
   @Command(name = "query",
            description = "Query section based on term and registration number, "

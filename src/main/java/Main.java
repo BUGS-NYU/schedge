@@ -41,10 +41,10 @@ public class Main implements Runnable {
         boolean scrape) {
     App.run();
 
-    while (scrape) {
-      UpdateData.updateData(batchSize.catalog, batchSize.sections);
+    // while (scrape) {
+    //   UpdateData.updateData(batchSize.catalog, batchSize.sections);
 
-      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    }
+    //   tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
+    // }
   }
 }

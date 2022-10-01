@@ -3,8 +3,6 @@ package scraping;
 import static types.Nyu.*;
 import static utils.TryCatch.*;
 
-import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
-import io.netty.handler.codec.http.cookie.Cookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -12,12 +10,9 @@ import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import org.asynchttpclient.*;
-import org.asynchttpclient.cookie.CookieStore;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.CDataNode;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
 

@@ -1,5 +1,7 @@
 package database;
 
+import static types.Nyu.*;
+
 import database.models.AugmentedMeeting;
 import java.sql.*;
 import java.util.*;
@@ -8,7 +10,7 @@ import utils.Utils;
 
 public final class SelectAugmentedMeetings {
   public static ArrayList<AugmentedMeeting>
-  selectAugmentedMeetings(Connection conn, Nyu.Term term,
+  selectAugmentedMeetings(Connection conn, Term term,
                           List<Integer> registrationNumbers)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(

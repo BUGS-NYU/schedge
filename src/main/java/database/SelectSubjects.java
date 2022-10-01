@@ -1,9 +1,10 @@
 package database;
 
+import static types.Nyu.*;
+
 import java.sql.*;
 import java.util.*;
 import org.slf4j.*;
-import types.Nyu;
 import utils.Utils;
 
 public class SelectSubjects {
@@ -28,7 +29,7 @@ public class SelectSubjects {
   }
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn,
-                                                       Nyu.Term term)
+                                                       Term term)
       throws SQLException {
     try (PreparedStatement stmt = conn.prepareStatement(SELECT_SCHOOLS)) {
       Utils.setArray(stmt, term.json());
@@ -49,7 +50,7 @@ public class SelectSubjects {
   }
 
   public static ArrayList<Subject> selectSubjectsForTerm(Connection conn,
-                                                         Nyu.Term term)
+                                                         Term term)
       throws SQLException {
     try (PreparedStatement stmt = conn.prepareStatement(SELECT_SUBJECTS)) {
       Utils.setArray(stmt, term.json());

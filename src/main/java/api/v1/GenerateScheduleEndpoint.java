@@ -1,6 +1,7 @@
 package api.v1;
 
 import static actions.ScheduleSections.*;
+import static types.Nyu.*;
 
 import api.*;
 import database.*;
@@ -39,7 +40,7 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
         .json("200", Schedule.class, openApiParam -> {
           openApiParam.description("OK.");
 
-          ArrayList<Nyu.Section> sections = new ArrayList<>();
+          ArrayList<Section> sections = new ArrayList<>();
         });
   }
 

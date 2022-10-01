@@ -1,5 +1,7 @@
 package api.v1;
 
+import static types.Nyu.*;
+
 import api.*;
 import database.GetConnection;
 import io.javalin.http.Context;
@@ -35,7 +37,7 @@ public final class CoursesEndpoint extends App.Endpoint {
                   "Whether to return campus, description, grading, nodes, "
                   + "and prerequisites.");
             })
-        .jsonArray("200", Nyu.Course.class,
+        .jsonArray("200", Course.class,
                    openApiParam -> { openApiParam.description("OK."); })
         .json("400", App.ApiError.class, openApiParam -> {
           openApiParam.description(

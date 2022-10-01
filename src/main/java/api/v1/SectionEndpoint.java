@@ -1,15 +1,11 @@
 package api.v1;
 
-import static utils.TryCatch.*;
-
 import api.*;
 import database.GetConnection;
 import database.courses.SelectRows;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import types.*;
-import utils.*;
 
 public final class SectionEndpoint extends App.Endpoint {
 
@@ -32,7 +28,7 @@ public final class SectionEndpoint extends App.Endpoint {
                      openApiParam.description(
                          "Must be a valid registrationNumber.");
                    })
-        .json("200", Section.class,
+        .json("200", Nyu.Section.class,
               openApiParam -> { openApiParam.description("OK."); })
         .json("400", App.ApiError.class, openApiParam -> {
           openApiParam.description(

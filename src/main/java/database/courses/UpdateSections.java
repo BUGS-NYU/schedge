@@ -6,7 +6,6 @@ import database.models.SectionID;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
@@ -62,7 +61,7 @@ public class UpdateSections {
     String data;
   }
 
-  public static void updateSections(Connection conn, Term term,
+  public static void updateSections(Connection conn, Nyu.Term term,
                                     Iterator<SectionID> sectionIds,
                                     int batchSize) throws SQLException {
     try (Prepared p = new Prepared(conn)) {
@@ -70,7 +69,7 @@ public class UpdateSections {
     }
   }
 
-  public static void updateSections(Prepared p, Term term,
+  public static void updateSections(Prepared p, Nyu.Term term,
                                     Iterator<SectionID> sectionIds,
                                     int batchSize) throws SQLException {
     FutureEngine<SaveState> engine = new FutureEngine<>();
@@ -134,7 +133,7 @@ public class UpdateSections {
           tcNew(logger, "Parse error on term={}, registrationNumber={}", term,
                 save.sectionId.registrationNumber);
 
-      Section s = tc.pass(() -> parse(save.data));
+      Nyu.Section s = tc.pass(() -> parse(save.data));
 
       logger.debug("Adding section information...");
 
@@ -176,7 +175,7 @@ public class UpdateSections {
   private static String DATA_URL_STRING =
       "https://m.albert.nyu.edu/app/catalog/classsection/NYUNV/";
 
-  private static Future<SaveState> query(Term term, SectionID sectionId) {
+  private static Future<SaveState> query(Nyu.Term term, SectionID sectionId) {
     int registrationNumber = sectionId.registrationNumber;
     if (registrationNumber < 0) {
       throw new IllegalArgumentException("Registration numbers are positive");
@@ -247,7 +246,7 @@ public class UpdateSections {
     }
   }
 
-  public static Section parse(String rawData) {
+  public static Nyu.Section parse(String rawData) {
     logger.debug("parsing raw catalog section data into Section...");
 
     rawData = rawData.trim();
@@ -313,8 +312,8 @@ public class UpdateSections {
     return map;
   }
 
-  public static Section parsingElements(Map<String, String> secData,
-                                        String sectionName, String link) {
+  public static Nyu.Section parsingElements(Map<String, String> secData,
+                                            String sectionName, String link) {
     String units = secData.get("Units");
     double minUnits = 0, maxUnits;
     if (units.contains("-")) {
@@ -331,10 +330,10 @@ public class UpdateSections {
 
     String[] instructors = secData.get("Instructor(s)").split(", *\\n *\\n");
 
-    Section s = new Section();
+    Nyu.Section s = new Nyu.Section();
     s.name = sectionName.equals("") ? null : sectionName;
     s.registrationNumber = Integer.parseInt(secData.get("Class Number"));
-    s.status = SectionStatus.parseStatus(secData.get("Status"));
+    s.status = Nyu.SectionStatus.parseStatus(secData.get("Status"));
     s.campus = secData.get("Location");
     s.description = secData.get("Description");
     s.instructionMode = secData.get("Instruction Mode");

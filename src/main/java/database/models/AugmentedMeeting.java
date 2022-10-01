@@ -15,8 +15,8 @@ public class AugmentedMeeting {
 
   public final String sectionCode;
   public final int registrationNumber;
-  public final SectionType sectionType;
-  public final SectionStatus sectionStatus;
+  public final Nyu.SectionType sectionType;
+  public final Nyu.SectionStatus sectionStatus;
   public final String instructionMode;
   public final String location;
   public final LocalDateTime beginDate;
@@ -31,8 +31,8 @@ public class AugmentedMeeting {
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
-    sectionType = SectionType.valueOf(rs.getString("section_type"));
-    sectionStatus = SectionStatus.valueOf(rs.getString("section_status"));
+    sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
+    sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
     sectionName = rs.getString("section_name");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");

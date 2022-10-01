@@ -2,15 +2,12 @@ package cli;
 
 import static picocli.CommandLine.*;
 import static utils.TryCatch.*;
-import static utils.Utils.*;
 
-import actions.*;
-import api.App;
 import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
@@ -73,7 +70,7 @@ public class Database implements Runnable {
         @Mixin Mixins.OutputFile outputFile) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
+    Nyu.Term term = termMixin.getTerm();
     List<String> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
       Object o = SelectCourses.selectCourses(conn, term, codes);
@@ -99,10 +96,10 @@ public class Database implements Runnable {
            String domain) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
+    Nyu.Term term = termMixin.getTerm();
 
     GetConnection.withConnection(conn -> {
-      List<List<Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
+      List<List<Nyu.Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -110,7 +107,7 @@ public class Database implements Runnable {
 
       InsertFullCourses.clearPrevious(conn, term);
 
-      for (List<Course> courses : data) {
+      for (List<Nyu.Course> courses : data) {
         tcFatal(() -> InsertFullCourses.insertCourses(conn, term, courses));
       }
     });

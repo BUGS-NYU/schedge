@@ -1,15 +1,11 @@
 package api.v1;
 
-import static utils.TryCatch.*;
-
 import api.*;
 import database.GetConnection;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
-import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() { return "/courses/{term}/{subject}"; }
@@ -39,7 +35,7 @@ public final class CoursesEndpoint extends App.Endpoint {
                   "Whether to return campus, description, grading, nodes, "
                   + "and prerequisites.");
             })
-        .jsonArray("200", Course.class,
+        .jsonArray("200", Nyu.Course.class,
                    openApiParam -> { openApiParam.description("OK."); })
         .json("400", App.ApiError.class, openApiParam -> {
           openApiParam.description(

@@ -2,7 +2,8 @@ package database.models;
 
 import java.sql.*;
 import java.util.List;
-import types.Meeting;
+
+import types.Nyu;
 
 public class FullRow extends Row {
   public String campus;
@@ -11,7 +12,7 @@ public class FullRow extends Row {
   public String notes;
   public String prerequisites;
 
-  public FullRow(ResultSet rs, List<Meeting> meetings) throws SQLException {
+  public FullRow(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     super(rs, meetings);
 
     this.campus = rs.getString("campus");

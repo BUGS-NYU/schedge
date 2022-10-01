@@ -16,15 +16,15 @@ public class SelectCourses {
   private static Logger logger =
       LoggerFactory.getLogger("api.v1.SelectCourses");
 
-  public static List<Course> selectCourses(Connection conn, Term term,
-                                           List<String> codes) {
+  public static List<Nyu.Course> selectCourses(Connection conn, Nyu.Term term,
+                                               List<String> codes) {
     return codes.stream()
         .flatMap(code -> selectCourses(conn, term, code))
         .collect(Collectors.toList());
   }
 
-  public static Stream<Course> selectCourses(Connection conn, Term term,
-                                             String code) {
+  public static Stream<Nyu.Course> selectCourses(Connection conn, Nyu.Term term,
+                                                 String code) {
     try {
       return rowsToCourses(SelectRows.selectRows(conn, term, code));
     } catch (SQLException e) {
@@ -32,15 +32,15 @@ public class SelectCourses {
     }
   }
 
-  public static List<Course> selectFullCourses(Connection conn, Term term,
-                                               List<String> codes) {
+  public static List<Nyu.Course> selectFullCourses(Connection conn, Nyu.Term term,
+                                                   List<String> codes) {
     return codes.stream()
         .flatMap(code -> selectFullCourses(conn, term, code))
         .collect(Collectors.toList());
   }
 
-  public static Stream<Course> selectFullCourses(Connection conn, Term term,
-                                                 String code) {
+  public static Stream<Nyu.Course> selectFullCourses(Connection conn, Nyu.Term term,
+                                                     String code) {
     try {
       return RowsToCourses.fullRowsToCourses(
           SelectRows.selectFullRows(conn, term, code));
@@ -49,8 +49,8 @@ public class SelectCourses {
     }
   }
 
-  public static List<Course>
-  selectCoursesBySectionId(Connection conn, Term term, List<Integer> sectionIds)
+  public static List<Nyu.Course>
+  selectCoursesBySectionId(Connection conn, Nyu.Term term, List<Integer> sectionIds)
       throws SQLException {
     return rowsToCourses(selectRowsBySectionId(conn, term, sectionIds))
         .collect(Collectors.toList());

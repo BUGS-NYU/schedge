@@ -110,7 +110,7 @@ public final class InsertFullCourses {
     }
   }
 
-  public static void clearPrevious(Connection conn, Term term)
+  public static void clearPrevious(Connection conn, Nyu.Term term)
       throws SQLException {
     String sql = "DELETE FROM courses WHERE term = ?";
     try (PreparedStatement deletePrevious = conn.prepareStatement(sql)) {
@@ -119,18 +119,18 @@ public final class InsertFullCourses {
     }
   }
 
-  public static void insertCourses(Connection conn, Term term,
-                                   List<Course> courses) throws SQLException {
+  public static void insertCourses(Connection conn, Nyu.Term term,
+                                   List<Nyu.Course> courses) throws SQLException {
     try (Prepared p = new Prepared(conn)) {
       insertCourses(p, term, courses);
     }
   }
 
-  private static void insertCourses(Prepared p, Term term, List<Course> courses)
+  private static void insertCourses(Prepared p, Nyu.Term term, List<Nyu.Course> courses)
       throws SQLException {
     PreparedStatement stmt = p.courses;
 
-    for (Course c : courses) {
+    for (Nyu.Course c : courses) {
       Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode.code,
                      c.deptCourseId);
 
@@ -152,12 +152,12 @@ public final class InsertFullCourses {
   }
 
   private static void insertSections(Prepared p, int courseId,
-                                     List<Section> sections,
+                                     List<Nyu.Section> sections,
                                      Integer associatedWith)
       throws SQLException {
     PreparedStatement stmt = p.sections;
 
-    for (Section s : sections) {
+    for (Nyu.Section s : sections) {
       Object[] fieldValues =
           new Object[] {s.name,
                         s.name,
@@ -210,7 +210,7 @@ public final class InsertFullCourses {
   }
 
   private static void insertMeetings(Prepared p, int sectionId,
-                                     List<Meeting> meetings)
+                                     List<Nyu.Meeting> meetings)
       throws SQLException {
     // safety measure for now, because production code is a lil broken
     if (meetings == null)
@@ -218,7 +218,7 @@ public final class InsertFullCourses {
 
     PreparedStatement stmt = p.meetings;
 
-    for (Meeting m : meetings) {
+    for (Nyu.Meeting m : meetings) {
       Utils.setArray(stmt, sectionId, m.beginDate, m.minutesDuration,
                      m.endDate);
 

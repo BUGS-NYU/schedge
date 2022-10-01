@@ -4,6 +4,7 @@ import static picocli.CommandLine.*;
 
 import java.util.*;
 import picocli.CommandLine;
+import types.Nyu;
 import types.User;
 import utils.*;
 
@@ -120,7 +121,7 @@ public final class Mixins {
             description = "display a help message")
     boolean displayHelp;
 
-    public types.Term getTermAllowNull() {
+    public Nyu.Term getTermAllowNull() {
       if (termId != null && (semester != null || year != null)) {
         throw new CommandLine.MutuallyExclusiveArgsException(
             spec.commandLine(),
@@ -132,14 +133,14 @@ public final class Mixins {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Must provide both --semester AND --year");
         }
-        return new types.Term(semester, year);
+        return new Nyu.Term(semester, year);
       } else {
-        return types.Term.fromId(termId);
+        return Nyu.Term.fromId(termId);
       }
     }
 
-    public types.Term getTerm() {
-      types.Term t = getTermAllowNull();
+    public Nyu.Term getTerm() {
+      Nyu.Term t = getTermAllowNull();
       if (t == null) {
         throw new CommandLine.ParameterException(
             spec.commandLine(),

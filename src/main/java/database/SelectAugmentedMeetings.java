@@ -8,7 +8,7 @@ import utils.Utils;
 
 public final class SelectAugmentedMeetings {
   public static ArrayList<AugmentedMeeting>
-  selectAugmentedMeetings(Connection conn, Term term,
+  selectAugmentedMeetings(Connection conn, Nyu.Term term,
                           List<Integer> registrationNumbers)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(

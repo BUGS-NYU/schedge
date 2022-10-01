@@ -1,18 +1,13 @@
 package api.v1;
 
-import static utils.TryCatch.*;
-
 import api.*;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.Collectors;
 import types.*;
-import types.Term;
-import utils.*;
 
 public final class SearchEndpoint extends App.Endpoint {
 
@@ -86,7 +81,7 @@ public final class SearchEndpoint extends App.Endpoint {
                 openApiParam.description(
                     "One of the values in the path parameter was not valid.");
               })
-        .jsonArray("200", Course.class,
+        .jsonArray("200", Nyu.Course.class,
                    openApiParam -> { openApiParam.description("OK."); });
   }
 

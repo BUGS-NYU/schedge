@@ -4,12 +4,11 @@ import static database.GetConnection.withConnectionReturning;
 import static database.SelectSubjects.*;
 
 import api.*;
-import database.*;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
-import types.Term;
+
+import types.Nyu;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
@@ -26,7 +25,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
   }
 
   public final class Info {
-    public Term term;
+    public Nyu.Term term;
     public HashMap<String, SchoolInfo> schools;
   }
 
@@ -35,17 +34,17 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
       + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
 
-  public static Term parseTerm(String termString) {
+  public static Nyu.Term parseTerm(String termString) {
     if (termString.contentEquals("current")) {
-      return Term.getCurrentTerm();
+      return Nyu.Term.getCurrentTerm();
     }
 
     if (termString.contentEquals("next")) {
-      return Term.getCurrentTerm().nextTerm();
+      return Nyu.Term.getCurrentTerm().nextTerm();
     }
 
     int year = Integer.parseInt(termString.substring(2));
-    return new Term(termString.substring(0, 2), year);
+    return new Nyu.Term(termString.substring(0, 2), year);
   }
 
   public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
@@ -64,7 +63,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
   }
 
   public Object handleEndpoint(Context ctx) {
-    Term term = parseTerm(ctx.pathParam("term"));
+    Nyu.Term term = parseTerm(ctx.pathParam("term"));
 
     Info info = new Info();
     info.term = term;

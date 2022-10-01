@@ -14,13 +14,13 @@ public class SelectRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectRows");
 
-  public static Stream<Row> selectRows(Connection conn, Term term, String code)
+  public static Stream<Row> selectRows(Connection conn, Nyu.Term term, String code)
       throws SQLException {
     return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
                       term.json(), code);
   }
 
-  public static Stream<Row> selectRow(Connection conn, Term term,
+  public static Stream<Row> selectRow(Connection conn, Nyu.Term term,
                                       int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
@@ -45,7 +45,7 @@ public class SelectRows {
         sectionIds, sectionIds);
   }
 
-  public static Stream<Row> selectRowsBySectionId(Connection conn, Term term,
+  public static Stream<Row> selectRowsBySectionId(Connection conn, Nyu.Term term,
                                                   List<Integer> sectionIds)
       throws SQLException {
     Array idArray = conn.createArrayOf("INTEGER", sectionIds.toArray());
@@ -58,7 +58,7 @@ public class SelectRows {
 
   public static Stream<Row> selectRows(Connection conn, String conditions,
                                        Object... objects) throws SQLException {
-    Map<Integer, List<Meeting>> meetingsList =
+    Map<Integer, List<Nyu.Meeting>> meetingsList =
         selectMeetings(conn, conditions, objects);
 
     PreparedStatement stmt = conn.prepareStatement(
@@ -75,7 +75,7 @@ public class SelectRows {
 
     ResultSet rs = stmt.executeQuery();
 
-    List<Meeting> empty = new ArrayList<>();
+    List<Nyu.Meeting> empty = new ArrayList<>();
     ArrayList<Row> rows = new ArrayList<>();
 
     while (rs.next()) {
@@ -90,14 +90,14 @@ public class SelectRows {
     return rows.stream();
   }
 
-  public static Stream<FullRow> selectFullRows(Connection conn, Term term,
+  public static Stream<FullRow> selectFullRows(Connection conn, Nyu.Term term,
                                                String code)
       throws SQLException {
     return selectFullRows(conn, "courses.term = ? AND courses.subject_code = ?",
                           term.json(), code);
   }
 
-  public static Stream<FullRow> selectFullRow(Connection conn, Term term,
+  public static Stream<FullRow> selectFullRow(Connection conn, Nyu.Term term,
                                               int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
@@ -125,7 +125,7 @@ public class SelectRows {
   public static Stream<FullRow>
   selectFullRows(Connection conn, String conditions, Object... objects)
       throws SQLException {
-    Map<Integer, List<Meeting>> meetingsList =
+    Map<Integer, List<Nyu.Meeting>> meetingsList =
         selectMeetings(conn, conditions, objects);
 
     PreparedStatement stmt = conn.prepareStatement(
@@ -143,7 +143,7 @@ public class SelectRows {
 
     ResultSet rs = stmt.executeQuery();
 
-    List<Meeting> empty = new ArrayList<>();
+    List<Nyu.Meeting> empty = new ArrayList<>();
     ArrayList<FullRow> rows = new ArrayList<>();
     while (rs.next()) {
       int id = rs.getInt("section_id");
@@ -157,7 +157,7 @@ public class SelectRows {
     return rows.stream();
   }
 
-  public static Map<Integer, List<Meeting>>
+  public static Map<Integer, List<Nyu.Meeting>>
   selectMeetings(Connection conn, String conditions, Object... objects)
       throws SQLException {
     PreparedStatement stmt = conn.prepareStatement(
@@ -168,20 +168,20 @@ public class SelectRows {
         + "WHERE " + conditions);
     Utils.setArray(stmt, objects);
 
-    HashMap<Integer, List<Meeting>> meetingsBySection = new HashMap<>();
+    HashMap<Integer, List<Nyu.Meeting>> meetingsBySection = new HashMap<>();
 
     ResultSet rs = stmt.executeQuery();
     while (rs.next()) {
       Integer sectionId = rs.getInt("section_id");
 
-      List<Meeting> meetings = meetingsBySection.get(sectionId);
+      List<Nyu.Meeting> meetings = meetingsBySection.get(sectionId);
       if (meetings == null) {
         meetings = new ArrayList<>();
 
         meetingsBySection.put(sectionId, meetings);
       }
 
-      Meeting meeting = new Meeting();
+      Nyu.Meeting meeting = new Nyu.Meeting();
       meeting.beginDate = rs.getObject(2, LocalDateTime.class);
       meeting.minutesDuration = rs.getInt(3);
       meeting.endDate = rs.getObject(4, LocalDateTime.class);

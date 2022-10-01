@@ -1,12 +1,9 @@
 package database;
 
-import database.models.SectionID;
 import java.sql.*;
 import java.util.*;
 import org.slf4j.*;
-import scraping.models.*;
-import types.Meeting;
-import types.Term;
+import types.Nyu;
 import utils.Utils;
 
 public class SelectSubjects {
@@ -31,7 +28,7 @@ public class SelectSubjects {
   }
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn,
-                                                       Term term)
+                                                       Nyu.Term term)
       throws SQLException {
     try (PreparedStatement stmt = conn.prepareStatement(SELECT_SCHOOLS)) {
       Utils.setArray(stmt, term.json());
@@ -52,7 +49,7 @@ public class SelectSubjects {
   }
 
   public static ArrayList<Subject> selectSubjectsForTerm(Connection conn,
-                                                         Term term)
+                                                         Nyu.Term term)
       throws SQLException {
     try (PreparedStatement stmt = conn.prepareStatement(SELECT_SUBJECTS)) {
       Utils.setArray(stmt, term.json());

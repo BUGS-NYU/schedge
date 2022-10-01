@@ -1,17 +1,14 @@
 package api.v1;
 
 import static actions.ScheduleSections.*;
-import static utils.TryCatch.*;
 
 import api.*;
 import database.*;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.ArrayList;
 import types.*;
-import utils.*;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
 
@@ -42,7 +39,7 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
         .json("200", Schedule.class, openApiParam -> {
           openApiParam.description("OK.");
 
-          ArrayList<Section> sections = new ArrayList<>();
+          ArrayList<Nyu.Section> sections = new ArrayList<>();
         });
   }
 

@@ -9,7 +9,6 @@ import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
-import utils.Client;
 
 /*
    @Todo: Add annotation for parameter.
@@ -54,7 +53,6 @@ public class Scrape implements Runnable {
   //   logger.info("{} seconds for {} courses", duration, courses.size());
   // }
 
-
   @Command(name = "ps", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",
@@ -66,14 +64,12 @@ public class Scrape implements Runnable {
       throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
-    types.Term term = termMixin.getTerm();
+    types.Nyu.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
 
       var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
       outputFileMixin.writeOutput(schools);
     }
-
-    Client.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

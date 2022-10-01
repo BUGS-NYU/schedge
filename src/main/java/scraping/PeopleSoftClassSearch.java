@@ -1,5 +1,6 @@
 package scraping;
 
+import static types.Nyu.*;
 import static utils.TryCatch.*;
 
 import io.netty.handler.codec.http.cookie.ClientCookieDecoder;
@@ -19,38 +20,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
-import types.Term;
-
-/* User flow
-
-  3.  Navigate there again using POST, and set form params
-
-
-
-  src/main/java/utils/Client.java
- */
 
 public final class PeopleSoftClassSearch {
-  public static final class Subject {
-    public final String code;
-    public final String name;
-
-    public Subject(String code, String name) {
-      this.code = code;
-      this.name = name;
-    }
-  }
-
-  public static final class School {
-    public final String name;
-    public final ArrayList<Subject> subjects;
-
-    public School(String name) {
-      this.name = name;
-      this.subjects = new ArrayList<>();
-    }
-  }
-
   public static final class FormEntry {
     public final String key;
     public final String value;

@@ -23,7 +23,7 @@ public final class Nyu {
     su(6),
     fa(8);
 
-    public int nyuCode;
+    public final int nyuCode;
 
     Semester(int nyuCode) { this.nyuCode = nyuCode; }
   }
@@ -353,8 +353,6 @@ public final class Nyu {
 
       return semCode;
     }
-
-    public String semString() { return this.semester.toString(); }
 
     public Term prevTerm() {
       switch (semester) {

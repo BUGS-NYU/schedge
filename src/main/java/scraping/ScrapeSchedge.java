@@ -57,7 +57,7 @@ public final class ScrapeSchedge {
     }
 
     String[] components =
-        new String[] {"" + term.year, term.semString(), school, major};
+        new String[] {"" + term.year, term.semester.toString(), school, major};
 
     Uri uri =
         Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");

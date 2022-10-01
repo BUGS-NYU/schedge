@@ -26,14 +26,14 @@ public final class ScrapeSchedge {
     FutureEngine<String> engine = new FutureEngine<>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(term, subjects.next().code));
       }
     }
 
     ArrayList<List<Course>> output = new ArrayList<>();
     for (String text : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(term, subjects.next().code));
       }
 
       if (text == null) {
@@ -47,9 +47,10 @@ public final class ScrapeSchedge {
     return output;
   }
 
-  private static Future<String> getData(Term term, Subject subject) {
-    String school = subject.schoolCode;
-    String major = subject.code.split("-")[0];
+  private static Future<String> getData(Term term, String subject) {
+    var parts = subject.split("-");
+    String school = parts[1];
+    String major = parts[0];
 
     // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {

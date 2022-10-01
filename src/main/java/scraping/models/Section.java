@@ -4,7 +4,6 @@ import java.util.List;
 import types.Meeting;
 import types.SectionStatus;
 import types.SectionType;
-import types.Subject;
 
 public class Section {
   public final int registrationNumber;

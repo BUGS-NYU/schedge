@@ -1,5 +1,7 @@
 package database.courses;
 
+import static types.Nyu.*;
+
 import database.models.*;
 import java.sql.*;
 import java.time.*;

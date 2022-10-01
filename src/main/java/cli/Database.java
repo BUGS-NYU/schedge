@@ -1,16 +1,13 @@
 package cli;
 
 import static picocli.CommandLine.*;
+import static types.Nyu.*;
 import static utils.TryCatch.*;
-import static utils.Utils.*;
 
-import actions.*;
-import api.App;
 import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;

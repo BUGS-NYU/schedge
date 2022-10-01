@@ -1,12 +1,10 @@
 package database;
 
-import database.models.SectionID;
+import static types.Nyu.*;
+
 import java.sql.*;
 import java.util.*;
 import org.slf4j.*;
-import scraping.models.*;
-import types.Meeting;
-import types.Term;
 import utils.Utils;
 
 public class SelectSubjects {

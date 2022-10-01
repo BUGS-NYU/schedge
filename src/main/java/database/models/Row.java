@@ -14,11 +14,11 @@ public class Row {
   public final int registrationNumber;
   public final String sectionCode;
   public final String[] instructors;
-  public final SectionType sectionType;
-  public final SectionStatus sectionStatus;
+  public final Nyu.SectionType sectionType;
+  public final Nyu.SectionStatus sectionStatus;
   public final Integer associatedWith;
   public final Integer waitlistTotal;
-  public final List<Meeting> meetings;
+  public final List<Nyu.Meeting> meetings;
 
   public final String sectionName;
   public final Double minUnits;
@@ -26,7 +26,7 @@ public class Row {
   public final String location;
   public final String instructionMode;
 
-  public Row(ResultSet rs, List<Meeting> meetings) throws SQLException {
+  public Row(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
     this.subject = Subject.fromCode(rs.getString("subject_code"));
@@ -47,8 +47,8 @@ public class Row {
 
     this.instructors = instructors;
 
-    this.sectionType = SectionType.valueOf(rs.getString("section_type"));
-    this.sectionStatus = SectionStatus.valueOf(rs.getString("section_status"));
+    this.sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
+    this.sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
 
     int associatedWith = rs.getInt("associated_with");
     this.associatedWith = rs.wasNull() ? null : associatedWith;

@@ -1,12 +1,12 @@
 package database.courses;
 
+import static types.Nyu.*;
 import static utils.TryCatch.*;
 
 import database.models.SectionID;
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.Future;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
@@ -16,7 +16,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.*;
-import types.*;
 import utils.*;
 
 /**

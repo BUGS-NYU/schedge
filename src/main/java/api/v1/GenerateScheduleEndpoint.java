@@ -1,17 +1,15 @@
 package api.v1;
 
 import static actions.ScheduleSections.*;
-import static utils.TryCatch.*;
+import static types.Nyu.*;
 
 import api.*;
 import database.*;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.ArrayList;
 import types.*;
-import utils.*;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
 

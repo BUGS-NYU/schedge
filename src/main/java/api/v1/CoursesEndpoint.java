@@ -51,13 +51,11 @@ public final class CoursesEndpoint extends App.Endpoint {
     String termString = ctx.pathParam("term");
     var term = SchoolInfoEndpoint.parseTerm(termString);
 
-    String subjectString = ctx.pathParam("subject").toUpperCase();
-    var subject = Subject.fromCode(subjectString);
-
+    var subject = ctx.pathParam("subject").toUpperCase();
     String fullData = ctx.queryParam("full");
 
     Object output = GetConnection.withConnectionReturning(conn -> {
-      List<Subject> subjects = Collections.singletonList(subject);
+      List<String> subjects = Collections.singletonList(subject);
 
       if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
         return SelectCourses.selectFullCourses(conn, term, subjects);

@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: ./src/build/docker/Dockerfile
-    restart: always
+    restart: "no"
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres

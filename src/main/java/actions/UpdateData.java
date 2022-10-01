@@ -1,9 +1,9 @@
 package actions;
 
+import static types.Nyu.*;
 import static utils.TryCatch.*;
 
 import org.slf4j.*;
-import types.Term;
 import utils.*;
 
 public final class UpdateData {

@@ -2,7 +2,7 @@ package api;
 
 import static api.RowsToCourses.rowsToCourses;
 import static database.courses.SelectRows.selectRowsBySectionId;
-import static types.*;
+import static types.Nyu.*;
 
 import database.courses.SelectRows;
 import java.sql.Connection;

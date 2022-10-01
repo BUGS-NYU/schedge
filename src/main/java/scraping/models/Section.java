@@ -1,25 +1,23 @@
 package scraping.models;
 
 import java.util.List;
-import types.Meeting;
-import types.SectionStatus;
-import types.SectionType;
-import types.Subject;
+
+import types.Nyu;
 
 public class Section {
   public final int registrationNumber;
   public final String sectionCode;
-  public final SectionType type;
-  public final SectionStatus status;
-  public final List<Meeting> meetings;
+  public final Nyu.SectionType type;
+  public final Nyu.SectionStatus status;
+  public final List<Nyu.Meeting> meetings;
   public final List<Section> recitations;
   public final Integer waitlistTotal;
-  public final Subject subjectCode;
+  public final String subjectCode;
 
-  public Section(Subject code, int registrationNumber, String sectionCode,
-                 SectionType type, SectionStatus status, List<Meeting> meetings,
+  public Section(String code, int registrationNumber, String sectionCode,
+                 Nyu.SectionType type, Nyu.SectionStatus status, List<Nyu.Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
-    if (type != SectionType.LEC && !recitations.isEmpty()) {
+    if (type != Nyu.SectionType.LEC && !recitations.isEmpty()) {
       throw new IllegalArgumentException(
           "If the section type isn't a lecture, it can't have recitations!");
     }

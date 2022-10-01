@@ -4,6 +4,7 @@ import static picocli.CommandLine.*;
 
 import java.util.*;
 import picocli.CommandLine;
+import types.Nyu;
 import types.User;
 import utils.*;
 
@@ -87,20 +88,16 @@ public final class Mixins {
 
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    public List<types.Subject> getSubjects() {
-      if (school == null) {
-        if (subject != null) {
-          throw new CommandLine.ParameterException(
-              spec.commandLine(),
-              "--subject doesn't make sense if school is null");
-        }
-        return types.Subject.allSubjects();
-      } else if (subject == null) {
-        return types.Subject.allSchools().get(school).subjects;
-      } else {
-        types.Subject s = types.Subject.fromCode(subject);
-        return Arrays.asList(s);
+    public List<String> getSubjects() {
+      if (subject != null) {
+        var subjects = new ArrayList<String>();
+        subjects.add(subject);
+
+        return subjects;
       }
+
+      throw new CommandLine.ParameterException(spec.commandLine(),
+                                               "unimplemented");
     }
   }
 
@@ -124,7 +121,7 @@ public final class Mixins {
             description = "display a help message")
     boolean displayHelp;
 
-    public types.Term getTermAllowNull() {
+    public Nyu.Term getTermAllowNull() {
       if (termId != null && (semester != null || year != null)) {
         throw new CommandLine.MutuallyExclusiveArgsException(
             spec.commandLine(),
@@ -136,14 +133,14 @@ public final class Mixins {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Must provide both --semester AND --year");
         }
-        return new types.Term(semester, year);
+        return new Nyu.Term(semester, year);
       } else {
-        return types.Term.fromId(termId);
+        return Nyu.Term.fromId(termId);
       }
     }
 
-    public types.Term getTerm() {
-      types.Term t = getTermAllowNull();
+    public Nyu.Term getTerm() {
+      Nyu.Term t = getTermAllowNull();
       if (t == null) {
         throw new CommandLine.ParameterException(
             spec.commandLine(),

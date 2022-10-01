@@ -9,9 +9,6 @@ import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
-import scraping.ScrapeCatalog;
-import scraping.parse.ParseSchoolSubjects;
-import scraping.query.QuerySchool;
 import utils.Client;
 
 /*
@@ -34,28 +31,29 @@ public class Scrape implements Runnable {
                                              "\nMissing required subcommand.");
   }
 
-  @Command(name = "catalog",
-           description = "Scrape catalog based on term, subject codes, "
-                         + "or school for one or multiple subjects/schools")
-  public void
-  catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectMixin,
-          @Option(names = "--batch-size", defaultValue = "20",
-                  description = "batch size if query more than one catalog")
-          int batchSize,
-          @Mixin Mixins.OutputFile outputFileMixin) {
-    long start = System.nanoTime();
+  // @Command(name = "catalog",
+  //          description = "Scrape catalog based on term, subject codes, "
+  //                        + "or school for one or multiple subjects/schools")
+  // public void
+  // catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectMixin,
+  //         @Option(names = "--batch-size", defaultValue = "20",
+  //                 description = "batch size if query more than one catalog")
+  //         int batchSize,
+  //         @Mixin Mixins.OutputFile outputFileMixin) {
+  //   long start = System.nanoTime();
 
-    List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
-        termMixin.getTerm(), subjectMixin.getSubjects(), batchSize);
+  //   List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
+  //       termMixin.getTerm(), subjectMixin.getSubjects(), batchSize);
 
-    outputFileMixin.writeOutput(courses);
+  //   outputFileMixin.writeOutput(courses);
 
-    Client.close();
+  //   Client.close();
 
-    long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info("{} seconds for {} courses", duration, courses.size());
-  }
+  //   long end = System.nanoTime();
+  //   double duration = (end - start) / 1000000000.0;
+  //   logger.info("{} seconds for {} courses", duration, courses.size());
+  // }
+
 
   @Command(name = "ps", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
@@ -74,6 +72,8 @@ public class Scrape implements Runnable {
       var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
       outputFileMixin.writeOutput(schools);
     }
+
+    Client.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

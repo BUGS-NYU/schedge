@@ -1,16 +1,13 @@
 package cli;
 
 import static picocli.CommandLine.*;
+import static types.Nyu.*;
 import static utils.TryCatch.*;
-import static utils.Utils.*;
 
-import actions.*;
-import api.App;
 import api.SelectCourses;
 import database.GetConnection;
 import database.courses.InsertFullCourses;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.ScrapeSchedge;
@@ -33,35 +30,37 @@ public class Database implements Runnable {
                                              "Missing required subcommand.\n");
   }
 
-  @Command(
-      name = "scrape",
-      description = "Scrape section based on term and registration number, "
-                    + "OR school and subject from db.\n")
-  public void
-  scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
-         @Option(names = "--service",
-                 description = "turns scraping into a service; if set, "
-                               + "--year, --semester, and --term are ignored.")
-         boolean service) {
-    while (service) {
-      UpdateData.updateData(batchSize.catalog, batchSize.sections);
-
-      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    }
-
-    long start = System.nanoTime();
-
-    int catalogBatch = batchSize.catalog;
-    int sectionsBatch = batchSize.sections;
-    Term term = termMixin.getTerm();
-
-    ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
-
-    GetConnection.close();
-    Client.close();
-    long end = System.nanoTime();
-    logger.info((end - start) / 1000000000 + " seconds");
-  }
+  //   @Command(
+  //       name = "scrape",
+  //       description = "Scrape section based on term and registration number,
+  //       "
+  //                     + "OR school and subject from db.\n")
+  //   public void
+  //   scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
+  //          @Option(names = "--service",
+  //                  description = "turns scraping into a service; if set, "
+  //                                + "--year, --semester, and --term are
+  //                                ignored.")
+  //          boolean service) {
+  //     while (service) {
+  //       UpdateData.updateData(batchSize.catalog, batchSize.sections);
+  //
+  //       tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
+  //     }
+  //
+  //     long start = System.nanoTime();
+  //
+  //     int catalogBatch = batchSize.catalog;
+  //     int sectionsBatch = batchSize.sections;
+  //     Term term = termMixin.getTerm();
+  //
+  //     ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
+  //
+  //     GetConnection.close();
+  //     Client.close();
+  //     long end = System.nanoTime();
+  //     logger.info((end - start) / 1000000000 + " seconds");
+  //   }
 
   @Command(name = "query",
            description = "Query section based on term and registration number, "
@@ -72,7 +71,7 @@ public class Database implements Runnable {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
-    List<Subject> codes = subjectCodeMixin.getSubjects();
+    List<String> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
       Object o = SelectCourses.selectCourses(conn, term, codes);
       outputFile.writeOutput(o);

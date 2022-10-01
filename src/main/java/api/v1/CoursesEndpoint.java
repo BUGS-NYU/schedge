@@ -1,15 +1,13 @@
 package api.v1;
 
-import static utils.TryCatch.*;
+import static types.Nyu.*;
 
 import api.*;
 import database.GetConnection;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import types.*;
-import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() { return "/courses/{term}/{subject}"; }
@@ -51,13 +49,11 @@ public final class CoursesEndpoint extends App.Endpoint {
     String termString = ctx.pathParam("term");
     var term = SchoolInfoEndpoint.parseTerm(termString);
 
-    String subjectString = ctx.pathParam("subject").toUpperCase();
-    var subject = Subject.fromCode(subjectString);
-
+    var subject = ctx.pathParam("subject").toUpperCase();
     String fullData = ctx.queryParam("full");
 
     Object output = GetConnection.withConnectionReturning(conn -> {
-      List<Subject> subjects = Collections.singletonList(subject);
+      List<String> subjects = Collections.singletonList(subject);
 
       if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
         return SelectCourses.selectFullCourses(conn, term, subjects);

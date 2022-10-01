@@ -1,9 +1,10 @@
 package database.courses;
 
+import static types.Nyu.*;
+
 import java.sql.*;
 import java.util.List;
 import org.slf4j.*;
-import types.*;
 import utils.Utils;
 
 /**

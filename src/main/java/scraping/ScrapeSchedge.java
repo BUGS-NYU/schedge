@@ -2,8 +2,7 @@ package scraping;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
-import java.util.stream.*;
+
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
@@ -20,36 +19,37 @@ public final class ScrapeSchedge {
   //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
-  public static List<List<Course>> scrapeFromSchedge(Term term) {
+  public static List<List<Nyu.Course>> scrapeFromSchedge(Nyu.Term term) {
     Iterator<Subject> subjects = Subject.allSubjects().listIterator();
 
     FutureEngine<String> engine = new FutureEngine<>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(term, subjects.next().code));
       }
     }
 
-    ArrayList<List<Course>> output = new ArrayList<>();
+    ArrayList<List<Nyu.Course>> output = new ArrayList<>();
     for (String text : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(term, subjects.next().code));
       }
 
       if (text == null) {
         continue;
       }
 
-      List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
+      List<Nyu.Course> courses = JsonMapper.fromJsonArray(text, Nyu.Course.class);
       output.add(courses);
     }
 
     return output;
   }
 
-  private static Future<String> getData(Term term, Subject subject) {
-    String school = subject.schoolCode;
-    String major = subject.code.split("-")[0];
+  private static Future<String> getData(Nyu.Term term, String subject) {
+    var parts = subject.split("-");
+    String school = parts[1];
+    String major = parts[0];
 
     // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {
@@ -57,7 +57,7 @@ public final class ScrapeSchedge {
     }
 
     String[] components =
-        new String[] {"" + term.year, term.semString(), school, major};
+        new String[] {"" + term.year, term.semester.toString(), school, major};
 
     Uri uri =
         Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");

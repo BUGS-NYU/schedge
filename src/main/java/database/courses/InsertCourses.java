@@ -5,8 +5,7 @@ import java.sql.*;
 import java.util.*;
 import org.slf4j.*;
 import scraping.models.*;
-import types.Meeting;
-import types.Term;
+import types.Nyu;
 import utils.Utils;
 
 /**
@@ -50,7 +49,7 @@ public class InsertCourses {
     }
   }
 
-  public static void clearPrevious(Connection conn, Term term)
+  public static void clearPrevious(Connection conn, Nyu.Term term)
       throws SQLException {
     String sql = "DELETE FROM courses WHERE term = ?";
     try (PreparedStatement deletePrevious = conn.prepareStatement(sql)) {
@@ -59,7 +58,7 @@ public class InsertCourses {
     }
   }
 
-  public static ArrayList<SectionID> insertCourses(Connection conn, Term term,
+  public static ArrayList<SectionID> insertCourses(Connection conn, Nyu.Term term,
                                                    List<Course> courses)
       throws SQLException {
     try (Prepared p = new Prepared(conn)) {
@@ -69,14 +68,14 @@ public class InsertCourses {
     }
   }
 
-  private static ArrayList<SectionID> insertCourses(Prepared p, Term term,
+  private static ArrayList<SectionID> insertCourses(Prepared p, Nyu.Term term,
                                                     List<Course> courses)
       throws SQLException {
     ArrayList<SectionID> states = new ArrayList<>();
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
-      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode.code,
+      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode,
                      c.deptCourseId);
 
       if (stmt.executeUpdate() == 0) {
@@ -143,11 +142,11 @@ public class InsertCourses {
   }
 
   private static void insertMeetings(Prepared p, int sectionId,
-                                     List<Meeting> meetings)
+                                     List<Nyu.Meeting> meetings)
       throws SQLException {
     PreparedStatement stmt = p.meetings;
 
-    for (Meeting m : meetings) {
+    for (Nyu.Meeting m : meetings) {
       Utils.setArray(stmt, sectionId, m.beginDate, m.minutesDuration,
                      m.endDate);
 

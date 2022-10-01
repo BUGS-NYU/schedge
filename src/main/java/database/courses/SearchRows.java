@@ -13,7 +13,7 @@ public final class SearchRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SearchCourses");
 
-  public static Stream<Row> searchRows(Connection conn, Term term,
+  public static Stream<Row> searchRows(Connection conn, Nyu.Term term,
                                        String subject, String school,
                                        String query, int titleWeight,
                                        int descriptionWeight, int notesWeight,
@@ -96,7 +96,7 @@ public final class SearchRows {
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
-    Map<Integer, List<Meeting>> meetingsList = SelectRows.selectMeetings(
+    Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));
 
@@ -111,7 +111,7 @@ public final class SearchRows {
   }
 
   public static Stream<FullRow>
-  searchFullRows(Connection conn, Term term, String subject, String school,
+  searchFullRows(Connection conn, Nyu.Term term, String subject, String school,
                  String query, int titleWeight, int descriptionWeight,
                  int notesWeight, int prereqsWeight) throws SQLException {
     if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
@@ -191,7 +191,7 @@ public final class SearchRows {
         + "ORDER BY " + String.join(" + ", rankings) + " DESC");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
-    Map<Integer, List<Meeting>> meetingsList = SelectRows.selectMeetings(
+    Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));
 

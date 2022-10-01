@@ -69,7 +69,6 @@ public final class PeopleSoftClassSearch {
       new FormEntry(
           "ICBcDomData",
           "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue"),
-
   };
 
   private static Uri MAIN_URI = Uri.create(MAIN_URL);
@@ -219,17 +218,17 @@ public final class PeopleSoftClassSearch {
     return map;
   }
 
+  // I think I get like silently rate-limited during testing without this
+  // header.
+  private static String USER_AGENT =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
+
   static Request get(Uri uri) {
     return new RequestBuilder()
         .setUri(uri)
         .setRequestTimeout(10_000)
-
-        // I think I get like silently rate-limited during testing without this
-        // header.
-        .setHeader(
-            "User-Agent",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0")
         .setMethod("GET")
+        .setHeader("User-Agent", USER_AGENT)
         .build();
   }
 

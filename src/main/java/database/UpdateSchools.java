@@ -14,17 +14,41 @@ public final class UpdateSchools {
   private static final String DELETE_TERM =
       "DELETE FROM schools WHERE term = ?";
   private static final String INSERT_SCHOOL =
-      "INSERT INTO schools (term, name) VALUES (?, ?)";
+      "INSERT INTO schools (term, name) VALUES (?, ?) RETURNING id";
   private static final String INSERT_SUBJECT =
       "INSERT INTO subjects (code, name, school) VALUES (?, ?, ?)";
 
   public static void updateSchoolsForTerm(Connection conn, Term term,
                                           ArrayList<School> schools)
       throws SQLException {
-    try (var stmt = conn.prepareStatement(DELETE_TERM);
-         var school = conn.prepareStatement(INSERT_SCHOOL);
-         var subject = conn.prepareStatement(INSERT_SUBJECT)) {
-      stmt.execute();
+    try (var delete = conn.prepareStatement(DELETE_TERM);
+         var schoolInsert = conn.prepareStatement(INSERT_SCHOOL);
+         var subjectInsert = conn.prepareStatement(INSERT_SUBJECT)) {
+      var termString = term.json();
+      Utils.setArray(delete, termString);
+      delete.execute();
+
+      for (var school : schools) {
+        Utils.setArray(schoolInsert, termString, school.name);
+        schoolInsert.execute();
+
+        int id;
+        {
+          var rs = schoolInsert.getResultSet();
+          if (!rs.next()) {
+            throw new RuntimeException("no result from INSERT ... RETURNING");
+          }
+
+          id = rs.getInt(1);
+        }
+
+        for (var subject : school.subjects) {
+          Utils.setArray(subjectInsert, subject.code, subject.name, id);
+          subjectInsert.addBatch();
+        }
+
+        subjectInsert.executeBatch();
+      }
     }
   }
 }

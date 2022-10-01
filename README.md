@@ -2,7 +2,10 @@
 Schedge is an open source API to NYU's course catalog, geared at eventually helping
 NYU students plan their courses easier and faster.
 
-### NOTE: NYU has removed the service that Schedge v1 relies on. Its replacement uses an entirely different data model, so I'll be releasing a version 2 of Schedge with breaking changes, both to fix some weirdness from v1 and also to update Schedge to the new data model.
+## NOTE:
+
+## NYU removed the service that Schedge uses, so Schedge v1 has been deprecated, and will not have up-to-date data for semesters after Fall 2022.
+The service that NYU replaced it with uses an entirely different data model, so I'll be releasing a version 2 of Schedge with breaking changes, both to fix some weirdness from v1 and also to update Schedge to the new data model.
 
 NYU Albert is really annoying to use, and so is the rest of NYU's course catalog
 infrastructure. Our goal with this API is to make it easier for students to plan

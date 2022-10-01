@@ -1,6 +1,10 @@
 package actions;
 
+import static utils.TryCatch.*;
+
 import org.slf4j.*;
+import types.Term;
+import utils.*;
 
 public final class UpdateData {
 

@@ -5,8 +5,6 @@ import static database.SelectSubjects.*;
 import static types.Nyu.*;
 
 import api.*;
-import database.SelectSubjects.School;
-import database.SelectSubjects.Subject;
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
@@ -14,20 +12,9 @@ import java.util.*;
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
 
-  public final class SubjectInfo {
-    public String code;
-    public String name;
-  }
-
-  public final class SchoolInfo {
-    public String code;
-    public String name;
-    public ArrayList<SubjectInfo> subjects;
-  }
-
   public final class Info {
     public Term term;
-    public HashMap<String, SchoolInfo> schools;
+    public ArrayList<School> schools;
   }
 
   public static final String TERM_PARAM_DESCRIPTION =
@@ -69,32 +56,9 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
     Info info = new Info();
     info.term = term;
     info.schools = withConnectionReturning(conn -> {
-      ArrayList<Subject> subjects = selectSubjectsForTerm(conn, term);
       ArrayList<School> schools = selectSchoolsForTerm(conn, term);
 
-      HashMap<String, ArrayList<SubjectInfo>> subjectsInfo = new HashMap<>();
-      for (Subject subject : subjects) {
-        SubjectInfo subjectInfo = new SubjectInfo();
-        subjectInfo.name = subject.name;
-        subjectInfo.code = subject.code;
-
-        subjectsInfo.computeIfAbsent(subject.school, k -> new ArrayList<>())
-            .add(subjectInfo);
-      }
-
-      ArrayList<SubjectInfo> empty = new ArrayList<>();
-      HashMap<String, SchoolInfo> schoolsInfo = new HashMap<>();
-
-      for (School school : schools) {
-        SchoolInfo schoolInfo = new SchoolInfo();
-        schoolInfo.code = school.code;
-        schoolInfo.name = school.name;
-        schoolInfo.subjects = subjectsInfo.getOrDefault(school.code, empty);
-
-        schoolsInfo.put(schoolInfo.code, schoolInfo);
-      }
-
-      return schoolsInfo;
+      return schools;
     });
 
     return info;

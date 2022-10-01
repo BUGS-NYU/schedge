@@ -12,62 +12,47 @@ public class SelectSubjects {
       LoggerFactory.getLogger("database.SelectSubjects");
 
   private static final String SELECT_SCHOOLS =
-      "SELECT code, name FROM schools WHERE term = ?";
+      "SELECT id, name FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
-      "SELECT school, code, name FROM subjects WHERE term = ?";
-
-  public static final class Subject {
-    public String school;
-    public String code;
-    public String name;
-  }
-
-  public static final class School {
-    public String code;
-    public String name;
-  }
+      "SELECT school, code, name FROM subjects WHERE school = ANY (?)";
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn,
                                                        Term term)
       throws SQLException {
-    try (PreparedStatement stmt = conn.prepareStatement(SELECT_SCHOOLS)) {
-      Utils.setArray(stmt, term.json());
+    try (var schoolSel = conn.prepareStatement(SELECT_SCHOOLS);
+         var subjectSel = conn.prepareStatement(SELECT_SUBJECTS)) {
+      Utils.setArray(schoolSel, term.json());
 
-      ResultSet rs = stmt.executeQuery();
-      ArrayList<School> rows = new ArrayList<>();
+      var schools = new HashMap<Integer, School>();
+      try (ResultSet rs = schoolSel.executeQuery()) {
+        while (rs.next()) {
+          var id = rs.getInt("id");
+          var name = rs.getString("name");
 
-      while (rs.next()) {
-        School school = new School();
-        school.code = rs.getString("code");
-        school.name = rs.getString("name");
+          School school = new School(name);
 
-        rows.add(school);
+          schools.put(id, school);
+        }
       }
 
-      return rows;
-    }
-  }
+      var ids = schools.keySet().toArray(new Integer[schools.size()]);
+      var schoolIds = conn.createArrayOf("integer", ids);
+      Utils.setArray(subjectSel, schoolIds);
 
-  public static ArrayList<Subject> selectSubjectsForTerm(Connection conn,
-                                                         Term term)
-      throws SQLException {
-    try (PreparedStatement stmt = conn.prepareStatement(SELECT_SUBJECTS)) {
-      Utils.setArray(stmt, term.json());
+      try (ResultSet rs = subjectSel.executeQuery()) {
+        while (rs.next()) {
+          var school = rs.getInt("school");
+          var code = rs.getString("code");
+          var name = rs.getString("name");
 
-      ResultSet rs = stmt.executeQuery();
-      ArrayList<Subject> rows = new ArrayList<>();
+          Subject subject = new Subject(code, name);
 
-      while (rs.next()) {
-        Subject subject = new Subject();
-        subject.school = rs.getString("school");
-        subject.code = rs.getString("code");
-        subject.name = rs.getString("name");
-
-        rows.add(subject);
+          schools.get(school).subjects.add(subject);
+        }
       }
 
-      return rows;
+      return new ArrayList<School>(schools.values());
     }
   }
 }

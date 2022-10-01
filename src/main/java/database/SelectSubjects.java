@@ -15,7 +15,7 @@ public class SelectSubjects {
       "SELECT id, name FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
-      "SELECT school, code, name FROM subjects WHERE school = ANY (?)";
+      "SELECT school, code, name FROM subjects WHERE term = ?";
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn,
                                                        Term term)
@@ -36,9 +36,7 @@ public class SelectSubjects {
         }
       }
 
-      var ids = schools.keySet().toArray(new Integer[schools.size()]);
-      var schoolIds = conn.createArrayOf("integer", ids);
-      Utils.setArray(subjectSel, schoolIds);
+      Utils.setArray(subjectSel, term.json());
 
       try (ResultSet rs = subjectSel.executeQuery()) {
         while (rs.next()) {

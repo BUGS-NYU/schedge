@@ -16,7 +16,7 @@ public final class UpdateSchools {
   private static final String INSERT_SCHOOL =
       "INSERT INTO schools (term, name) VALUES (?, ?) RETURNING id";
   private static final String INSERT_SUBJECT =
-      "INSERT INTO subjects (code, name, school) VALUES (?, ?, ?)";
+      "INSERT INTO subjects (code, name, school, term) VALUES (?, ?, ?, ?)";
 
   public static void updateSchoolsForTerm(Connection conn, Term term,
                                           ArrayList<School> schools)
@@ -43,7 +43,8 @@ public final class UpdateSchools {
         }
 
         for (var subject : school.subjects) {
-          Utils.setArray(subjectInsert, subject.code, subject.name, id);
+          Utils.setArray(subjectInsert, subject.code, subject.name, id,
+                         termString);
           subjectInsert.addBatch();
         }
 

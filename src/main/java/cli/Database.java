@@ -6,10 +6,15 @@ import static utils.TryCatch.*;
 
 import api.SelectCourses;
 import database.GetConnection;
+import database.UpdateSchools;
 import database.courses.InsertFullCourses;
+import java.io.*;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
+import scraping.PeopleSoftClassSearch;
 import scraping.ScrapeSchedge;
 import types.*;
 import utils.Client;
@@ -62,26 +67,23 @@ public class Database implements Runnable {
   //     logger.info((end - start) / 1000000000 + " seconds");
   //   }
 
-  @Command(name = "query",
-           description = "Query section based on term and registration number, "
-                         + "OR school and subject from db.\n")
-  public void
-  query(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectCodeMixin,
-        @Mixin Mixins.OutputFile outputFile) {
+  @Command(name = "scrape-schools", description = "Scrape schools for a term")
+  public void scrapeSchools(@Mixin Mixins.Term termMixin)
+      throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
-    List<String> codes = subjectCodeMixin.getSubjects();
-    GetConnection.withConnection(conn -> {
-      Object o = SelectCourses.selectCourses(conn, term, codes);
-      outputFile.writeOutput(o);
-    });
+    var term = termMixin.getTerm();
 
-    GetConnection.close();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
+
+      GetConnection.withConnection(
+          conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
+      GetConnection.close();
+    }
 
     long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 
   @Command(

@@ -2,11 +2,13 @@ package cli;
 
 import static picocli.CommandLine.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
-import utils.Client;
+import scraping.PeopleSoftClassSearch;
 
 /*
    @Todo: Add annotation for parameter.
@@ -51,25 +53,26 @@ public class Scrape implements Runnable {
   //   logger.info("{} seconds for {} courses", duration, courses.size());
   // }
 
-  // @Command(name = "school", sortOptions = false,
-  //          headerHeading = "Command: ", descriptionHeading =
-  //          "%nDescription:%n", parameterListHeading = "%nParameters:%n",
-  //          optionListHeading = "%nOptions:%n", header = "Scrape
-  //          school/subject", description = "Scrape school/subject based on
-  //          term")
-  // public void
-  // school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile
-  // outputFileMixin)
-  //     throws ExecutionException, InterruptedException {
-  //   long start = System.nanoTime();
+  @Command(name = "ps", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
+  public void
+  ps(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
+      throws IOException, ExecutionException, InterruptedException {
+    long start = System.nanoTime();
 
-  //   outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
-  //       QuerySchool.querySchool(termMixin.getTerm())));
+    types.Nyu.Term term = termMixin.getTerm();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
 
-  //   Client.close();
+      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
+      outputFileMixin.writeOutput(schools);
+    }
 
-  //   long end = System.nanoTime();
-  //   double duration = (end - start) / 1000000000.0;
-  //   logger.info(duration + " seconds");
-  // }
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
 }

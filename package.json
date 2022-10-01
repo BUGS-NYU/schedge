@@ -14,7 +14,7 @@
     "stop": "docker-compose down",
     "compile": "node src/gradlew.js check",
 
-    "schedge": "node src/gradlew.js composeBuild >&2 && sleep 1 && docker-compose exec schedge schedge"
+    "schedge": "docker-compose exec schedge schedge"
   },
   "dependencies": {
     "classnames": "2.3.1",

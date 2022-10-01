@@ -53,7 +53,7 @@ You'll need to install a few applications to contribute to this project:
 ## Useful Commands
 - `yarn schedge db populate --semester=sp --year=2022` -
   Populate your database with data from production
-- `yarn exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
+- `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database
 
 

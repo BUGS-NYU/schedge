@@ -1,5 +1,4 @@
 package scraping;
-
 import static utils.Client.*;
 import static utils.TryCatch.*;
 
@@ -19,7 +18,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.*;
 import scraping.models.Course;
 import scraping.models.Section;
-import types.*;
+import types.Meeting;
+import types.Nyu;
+import types.SectionStatus;
+import types.SectionType;
+import types.Term;
 import utils.*;
 
 public class ScrapeCatalog {
@@ -35,9 +38,9 @@ public class ScrapeCatalog {
       DateTimeFormatter.ofPattern("MM/dd/yyyy h:mma", Locale.ENGLISH);
 
   public static List<Course>
-  scrapeCatalog(Term term, Iterable<Subject> subjects_, int batchSize) {
-    Iterator<Subject> subjects = subjects_.iterator();
-    ArrayList<Subject> failed = new ArrayList<>();
+  scrapeCatalog(Term term, Iterable<String> subjects_, int batchSize) {
+    Iterator<String> subjects = subjects_.iterator();
+    ArrayList<String> failed = new ArrayList<>();
 
     ArrayList<Course> courses = new ArrayList<>();
 
@@ -54,7 +57,7 @@ public class ScrapeCatalog {
       if (query == null)
         continue;
 
-      Subject subject = query.subject;
+      String subject = query.subject;
 
       String data = query.data;
       query.data = null;
@@ -91,7 +94,7 @@ public class ScrapeCatalog {
   }
 
   private static class Query extends Ctx {
-    Subject subject;
+    String subject;
     String data;
   }
 
@@ -132,18 +135,17 @@ public class ScrapeCatalog {
   }
 
   private static Future<Query> queryCatalog(Term term, Query query) {
-    Subject subject = query.subject;
+    String subject = query.subject;
 
     logger.debug("querying catalog for term=" + term +
                  " and subject=" + subject + "...");
 
     String csrf = query.csrfToken;
     int id = term.getId();
-    String code = subject.code;
-    String school = subject.schoolCode;
+    String school = subject.split("-")[1];
 
     String format = "CSRFToken=%s&term=%d&acad_group=%s&subject=%s";
-    String params = String.format(format, csrf, id, school, code);
+    String params = String.format(format, csrf, id, school, subject);
     logger.debug("Params are {}.", params);
 
     // @Note not sure why all these headers are necessary, but NYU's API will
@@ -183,8 +185,7 @@ public class ScrapeCatalog {
 
       String body = resp.getResponseBody();
       if (body.contentEquals("No classes found matching your criteria.")) {
-        logger.warn("No classes found matching criteria subject={}",
-                    subject.code);
+        logger.warn("No classes found matching criteria subject={}", subject);
 
         query.subject = null;
 
@@ -198,7 +199,7 @@ public class ScrapeCatalog {
   }
 
   public static void parseCatalog(ArrayList<Course> courses, String data,
-                                  Subject subject) {
+                                  String subject) {
     logger.trace("parsing raw catalog data...");
     Document doc = Jsoup.parse(data);
     Elements elements = doc.select("div.primary-head ~ *");
@@ -266,7 +267,7 @@ public class ScrapeCatalog {
           "Couldn't find substring \" - \" in divTag.text");
     }
 
-    Subject subject = Subject.fromCode(text.substring(0, textIndex1));
+    String subject = text.substring(0, textIndex1);
     String deptCourseId = text.substring(textIndex1 + 1, textIndex2);
     String courseName = text.substring(textIndex2 + 3);
 
@@ -284,7 +285,7 @@ public class ScrapeCatalog {
     class="section-body">Status: Open</div>
     </div> </a>
   */
-  private static Section parseSectionNode(Subject subject, Element aTag) {
+  private static Section parseSectionNode(String subject, Element aTag) {
 
     Elements children = aTag.select("div.section-content > div.section-body");
 
@@ -331,15 +332,13 @@ public class ScrapeCatalog {
       return SectionType.valueOf(raw);
     });
 
-    // @TODO Add support for time zone of the campus
-    //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
     List<Meeting> meetings = tc.pass(() -> {
       String times = sectionData.get("Days/Times");
       String dates = sectionData.get("Dates");
 
-      Subject.School school = subject.school();
-
-      return parseSectionTimesData(school.timezone, times, dates);
+      // @TODO Add support for time zone of the campus
+      //                          - Albert Liu, Jan 25, 2022 Tue 17:22 EST
+      return parseSectionTimesData(ZoneId.systemDefault(), times, dates);
     });
 
     Integer waitlistTotal =

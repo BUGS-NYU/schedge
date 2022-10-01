@@ -14,9 +14,9 @@ public class Section {
   public final List<Meeting> meetings;
   public final List<Section> recitations;
   public final Integer waitlistTotal;
-  public final Subject subjectCode;
+  public final String subjectCode;
 
-  public Section(Subject code, int registrationNumber, String sectionCode,
+  public Section(String code, int registrationNumber, String sectionCode,
                  SectionType type, SectionStatus status, List<Meeting> meetings,
                  List<Section> recitations, Integer waitlistTotal) {
     if (type != SectionType.LEC && !recitations.isEmpty()) {

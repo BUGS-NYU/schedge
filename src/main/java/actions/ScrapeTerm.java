@@ -1,5 +1,4 @@
 package actions;
-
 import static database.courses.InsertCourses.*;
 import static database.courses.UpdateSections.*;
 import static scraping.ScrapeCatalog.*;
@@ -8,7 +7,7 @@ import static utils.Utils.*;
 import cli.ConsoleProgressBarConsumer;
 import database.GetConnection;
 import database.models.SectionID;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import me.tongfei.progressbar.*;
 import scraping.models.Course;
@@ -28,8 +27,13 @@ public class ScrapeTerm {
             .setStyle(ProgressBarStyle.ASCII)
             .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
-    List<Subject> subjectData = Subject.allSubjects();
-    Iterable<Subject> subjects =
+    List<Subject> rawSubjectData = Subject.allSubjects();
+    var subjectData = new ArrayList<String>();
+    for (var s : rawSubjectData) {
+      subjectData.add(s.code);
+    }
+
+    Iterable<String> subjects =
         display ? ProgressBar.wrap(subjectData, bar) : subjectData;
 
     List<Course> courses = scrapeCatalog(term, subjects, batchSize);

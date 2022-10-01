@@ -72,7 +72,7 @@ public class Database implements Runnable {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
-    List<Subject> codes = subjectCodeMixin.getSubjects();
+    List<String> codes = subjectCodeMixin.getSubjects();
     GetConnection.withConnection(conn -> {
       Object o = SelectCourses.selectCourses(conn, term, codes);
       outputFile.writeOutput(o);

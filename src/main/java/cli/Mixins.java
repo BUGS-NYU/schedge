@@ -87,20 +87,16 @@ public final class Mixins {
 
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    public List<types.Subject> getSubjects() {
-      if (school == null) {
-        if (subject != null) {
-          throw new CommandLine.ParameterException(
-              spec.commandLine(),
-              "--subject doesn't make sense if school is null");
-        }
-        return types.Subject.allSubjects();
-      } else if (subject == null) {
-        return types.Subject.allSchools().get(school).subjects;
-      } else {
-        types.Subject s = types.Subject.fromCode(subject);
-        return Arrays.asList(s);
+    public List<String> getSubjects() {
+      if (subject != null) {
+        var subjects = new ArrayList<String>();
+        subjects.add(subject);
+
+        return subjects;
       }
+
+      throw new CommandLine.ParameterException(spec.commandLine(),
+                                               "unimplemented");
     }
   }
 

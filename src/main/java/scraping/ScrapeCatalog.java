@@ -1,4 +1,5 @@
 package scraping;
+
 import static utils.Client.*;
 import static utils.TryCatch.*;
 

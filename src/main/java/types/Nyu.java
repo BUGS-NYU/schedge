@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import database.models.FullRow;
 import database.models.Row;
 import utils.JsonMapper;
+import utils.Utils;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -35,6 +36,24 @@ public final class Nyu {
     public Subject(String code, String name) {
       this.code = code;
       this.name = name;
+    }
+
+    private static final ArrayList<String> allSubjects;
+
+    static {
+      var subjects = new ArrayList<String>();
+      for (String line : Utils.asResourceLines("/subjects.txt")) {
+        String[] s = line.split(",", 3);
+        String subject = s[0], school = s[1], name = s[2];
+
+        subjects.add(subject);
+      }
+
+      allSubjects = subjects;
+    }
+
+    public static ArrayList<String> allSubjects() {
+      return new ArrayList<>(allSubjects);
     }
   }
 

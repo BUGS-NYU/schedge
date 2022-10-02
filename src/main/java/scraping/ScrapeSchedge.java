@@ -22,19 +22,19 @@ public final class ScrapeSchedge {
 
   public static List<Course> scrapeFromSchedge(AsyncHttpClient client,
                                                Term term) {
-    var subjects = types.Subject.allSubjects().listIterator();
+    var subjects = Subject.allSubjects().listIterator();
 
     var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next().code));
+        engine.add(getData(client, term, subjects.next()));
       }
     }
 
     var output = new ArrayList<Course>();
     for (String text : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next().code));
+        engine.add(getData(client, term, subjects.next()));
       }
 
       if (text == null) {

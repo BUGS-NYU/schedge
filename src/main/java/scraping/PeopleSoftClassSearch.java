@@ -182,7 +182,7 @@ public final class PeopleSoftClassSearch {
     formMap.put("ICStateNum", "" + action);
   }
 
-  private static HashMap<String, String> parseFormFields(Element body) {
+  static HashMap<String, String> parseFormFields(Element body) {
     var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
     var inputs = optionsRoot.select("input");
     var map = new HashMap<String, String>();

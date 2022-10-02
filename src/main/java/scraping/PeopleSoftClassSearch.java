@@ -52,7 +52,7 @@ public final class PeopleSoftClassSearch {
         .collect(Collectors.joining("&"));
   }
 
-  Document navigateToTerm(Term term)
+  Future<Response> navigateToTerm(Term term)
       throws ExecutionException, InterruptedException {
     String yearText;
     switch (term.semester) {
@@ -135,9 +135,7 @@ public final class PeopleSoftClassSearch {
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       formMap.remove(semesterId);
 
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
-      return Jsoup.parse(responseBody, MAIN_URL);
+      return fut;
     }
   }
 
@@ -145,7 +143,15 @@ public final class PeopleSoftClassSearch {
                                                 Term term)
       throws ExecutionException, InterruptedException {
     var self = new PeopleSoftClassSearch(client);
-    Document doc = self.navigateToTerm(term);
+    return self.scrapeSchools(term);
+  }
+
+  public ArrayList<School> scrapeSchools(Term term)
+      throws ExecutionException, InterruptedException {
+    var fut = navigateToTerm(term);
+    var resp = fut.get();
+    var responseBody = resp.getResponseBody();
+    var doc = Jsoup.parse(responseBody, MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
     var cdata = (CDataNode)field.textNodes().get(0);
@@ -174,6 +180,38 @@ public final class PeopleSoftClassSearch {
     }
 
     return schools;
+  }
+
+  public static Object scrapeCourses(AsyncHttpClient client, Term term,
+                                     String subject)
+      throws ExecutionException, InterruptedException {
+    var self = new PeopleSoftClassSearch(client);
+    return self.scrapeCourses(term, subject);
+  }
+
+  public Object scrapeCourses(Term term, String subjectCode)
+      throws ExecutionException, InterruptedException {
+    var schools = scrapeSchools(term);
+
+    boolean found = false;
+    for (var school : schools) {
+      if (found)
+        break;
+
+      for (var subject : school.subjects) {
+        if (subject.code.contentEquals(subjectCode)) {
+          found = true;
+          break;
+        }
+      }
+    }
+
+    {
+      incrementStateNum();
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+    }
+
+    return null;
   }
 
   private void incrementStateNum() {

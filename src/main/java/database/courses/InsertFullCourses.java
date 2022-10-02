@@ -84,7 +84,7 @@ public final class InsertFullCourses {
         builder.append(sectionFields[i]);
       }
 
-      builder.append(")");
+      builder.append(") RETURNING id");
 
       sectionSql = builder.toString();
     }
@@ -94,11 +94,10 @@ public final class InsertFullCourses {
           conn.prepareStatement("INSERT INTO courses "
                                     + "(term, name, name_vec, subject_code, "
                                     + "dept_course_id) "
-                                    + "VALUES (?, ?, to_tsvector(?), ?, ?)",
-                                Statement.RETURN_GENERATED_KEYS);
+                                    + "VALUES (?, ?, to_tsvector(?), ?, ?) RETURNING id");
 
       this.sections =
-          conn.prepareStatement(sectionSql, Statement.RETURN_GENERATED_KEYS);
+          conn.prepareStatement(sectionSql);
 
       this.meetings = conn.prepareStatement(
           "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
@@ -134,13 +133,9 @@ public final class InsertFullCourses {
     for (Course c : courses) {
       Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode.code,
                      c.deptCourseId);
+      stmt.execute();
 
-      if (stmt.executeUpdate() == 0) {
-        throw new RuntimeException("inserting course=" + c.toString() +
-                                   " failed, no rows affected.");
-      }
-
-      ResultSet rs = stmt.getGeneratedKeys();
+      ResultSet rs = stmt.getResultSet();
       if (!rs.next())
         throw new RuntimeException("inserting course failed for course=" +
                                    c.toString());
@@ -183,12 +178,9 @@ public final class InsertFullCourses {
 
       try {
         Utils.setArray(stmt, fieldValues);
+        stmt.execute();
 
-        if (stmt.executeUpdate() == 0)
-          throw new RuntimeException("inserting section=" + s.toString() +
-                                     " failed, no rows affected.");
-
-        ResultSet rs = stmt.getGeneratedKeys();
+        ResultSet rs = stmt.getResultSet();
         if (!rs.next())
           throw new RuntimeException("inserting section=" + s.toString() +
                                      "failed");

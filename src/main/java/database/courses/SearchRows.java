@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
 import org.slf4j.*;
-import types.*;
+import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {

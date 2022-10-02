@@ -2,7 +2,8 @@ package database.models;
 
 import java.sql.*;
 import java.util.List;
-import types.*;
+
+import utils.Nyu;
 
 public class Row {
   public final int courseId;

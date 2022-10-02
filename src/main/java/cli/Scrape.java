@@ -3,12 +3,12 @@ package cli;
 import static picocli.CommandLine.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
+import utils.Nyu;
 
 /*
    @Todo: Add annotation for parameter.
@@ -64,7 +64,7 @@ public class Scrape implements Runnable {
       throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
-    types.Nyu.Term term = termMixin.getTerm();
+    Nyu.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
 
       var schools = PeopleSoftClassSearch.scrapeSchools(client, term);

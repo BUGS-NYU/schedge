@@ -4,7 +4,7 @@ import static picocli.CommandLine.*;
 
 import java.util.*;
 import picocli.CommandLine;
-import types.Nyu;
+import utils.Nyu;
 import types.User;
 import utils.*;
 

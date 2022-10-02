@@ -1,11 +1,11 @@
 package api;
 
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import database.models.*;
 import java.util.*;
 import java.util.stream.*;
-import types.*;
+
 public class RowsToCourses {
   public static Stream<Course> fullRowsToCourses(Stream<FullRow> rows) {
     HashMap<Integer, Section> sections = new HashMap<>();

@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
-import types.*;
+
+import utils.Nyu;
 
 // A meeting plus section information
 public class AugmentedMeeting {

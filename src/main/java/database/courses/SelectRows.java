@@ -1,6 +1,6 @@
 package database.courses;
 
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import database.models.*;
 import java.sql.*;
@@ -8,7 +8,6 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Stream;
 import org.slf4j.*;
-import types.*;
 import utils.Utils;
 
 public class SelectRows {

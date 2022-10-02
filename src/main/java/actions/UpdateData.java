@@ -1,10 +1,6 @@
 package actions;
 
-import static types.Nyu.*;
-import static utils.TryCatch.*;
-
 import org.slf4j.*;
-import utils.*;
 
 public final class UpdateData {
 

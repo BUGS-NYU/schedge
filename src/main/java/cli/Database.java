@@ -1,7 +1,7 @@
 package cli;
 
 import static picocli.CommandLine.*;
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import database.GetConnection;
 import database.UpdateSchools;

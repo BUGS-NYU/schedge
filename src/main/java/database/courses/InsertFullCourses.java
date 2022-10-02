@@ -1,6 +1,6 @@
 package database.courses;
 
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import java.sql.*;
 import java.util.List;

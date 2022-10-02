@@ -1,6 +1,6 @@
 package scraping;
 
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import java.util.*;
 import java.util.concurrent.*;

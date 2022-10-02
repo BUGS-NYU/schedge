@@ -1,11 +1,11 @@
 package database;
 
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import database.models.AugmentedMeeting;
 import java.sql.*;
 import java.util.*;
-import types.*;
+
 import utils.Utils;
 
 public final class SelectAugmentedMeetings {

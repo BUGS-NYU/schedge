@@ -2,7 +2,7 @@ package api.v1;
 
 import static database.GetConnection.withConnectionReturning;
 import static database.SelectSubjects.*;
-import static types.Nyu.*;
+import static utils.Nyu.*;
 
 import api.*;
 import io.javalin.http.Context;

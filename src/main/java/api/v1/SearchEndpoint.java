@@ -7,7 +7,8 @@ import io.javalin.http.Context;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.Collectors;
-import types.*;
+
+import utils.Nyu;
 
 public final class SearchEndpoint extends App.Endpoint {
 

@@ -28,6 +28,7 @@ public final class PeopleSoftClassSearch {
 
   private static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
       new FormEntry("ICAJAX", "1"),
+      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
       new FormEntry(
           "ICBcDomData",
           "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue"),
@@ -35,6 +36,11 @@ public final class PeopleSoftClassSearch {
 
   private static Uri MAIN_URI = Uri.create(MAIN_URL);
   private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
+
+  HashMap<String, String> formMap;
+  final AsyncHttpClient client;
+
+  PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
   public static String formEncode(HashMap<String, String> values) {
     return values.entrySet()
@@ -48,6 +54,40 @@ public final class PeopleSoftClassSearch {
 
   public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
                                                 Term term)
+      throws ExecutionException, InterruptedException {
+    var self = new PeopleSoftClassSearch(client);
+    Document doc = self.navigateToTerm(term);
+
+    var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
+    var cdata = (CDataNode)field.textNodes().get(0);
+
+    doc = Jsoup.parse(cdata.text(), MAIN_URL);
+    var results = doc.expectFirst("#win0divRESULTS");
+    var group = results.expectFirst("div[id=win0divGROUP$0]");
+
+    var schools = new ArrayList<School>();
+    for (var child : group.children()) {
+      var header = child.expectFirst("h2");
+      var school = new School(header.text());
+      schools.add(school);
+
+      var schoolTags = child.select("div.ps_box-link");
+      for (var schoolTag : schoolTags) {
+        var schoolTitle = schoolTag.text();
+        var parts = schoolTitle.split("\\(");
+
+        var titlePart = parts[0].trim();
+        var codePart = parts[1];
+        codePart = codePart.substring(0, codePart.length() - 1);
+
+        school.subjects.add(new Subject(codePart, titlePart));
+      }
+    }
+
+    return schools;
+  }
+
+  Document navigateToTerm(Term term)
       throws ExecutionException, InterruptedException {
     String yearText;
     switch (term.semester) {
@@ -91,7 +131,6 @@ public final class PeopleSoftClassSearch {
       fut.get();
     }
 
-    HashMap<String, String> formMap;
     {
       var fut = client.executeRequest(get(REDIRECT_URI));
       var resp = fut.get();
@@ -110,63 +149,40 @@ public final class PeopleSoftClassSearch {
 
         id = link.id();
       }
+
       if (id == null)
         throw new RuntimeException("yearText not found");
 
-      formMap = parseFormFields(body);
-      formMap.put("ICAction", id);
-      formMap.put("ICNAVTYPEDROPDOWN", "0");
+      this.formMap = parseFormFields(body);
+      this.formMap.put("ICAction", id);
     }
 
     { // Get the correct state on the page
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var fut = client.executeRequest(post(MAIN_URI, this.formMap));
       fut.get();
     }
 
-    Document doc;
     {
-      int action = Integer.parseInt(formMap.get("ICStateNum"));
-      action += 1;
-      formMap.put("ICStateNum", "" + action);
-      formMap.put("ICAction", semesterId);
-      formMap.put(semesterId, "Y");
+      this.incrementStateNum();
+      this.formMap.put("ICAction", semesterId);
+      this.formMap.put(semesterId, "Y");
 
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var fut = client.executeRequest(post(MAIN_URI, this.formMap));
+      this.formMap.remove(semesterId);
+
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
-      doc = Jsoup.parse(responseBody, MAIN_URL);
+      return Jsoup.parse(responseBody, MAIN_URL);
     }
-
-    var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
-    var cdata = (CDataNode)field.textNodes().get(0);
-
-    doc = Jsoup.parse(cdata.text(), MAIN_URL);
-    var results = doc.expectFirst("#win0divRESULTS");
-    var group = results.expectFirst("div[id=win0divGROUP$0]");
-
-    var schools = new ArrayList<School>();
-    for (var child : group.children()) {
-      var header = child.expectFirst("h2");
-      var school = new School(header.text());
-      schools.add(school);
-
-      var schoolTags = child.select("div.ps_box-link");
-      for (var schoolTag : schoolTags) {
-        var schoolTitle = schoolTag.text();
-        var parts = schoolTitle.split("\\(");
-
-        var titlePart = parts[0].trim();
-        var codePart = parts[1];
-        codePart = codePart.substring(0, codePart.length() - 1);
-
-        school.subjects.add(new Subject(codePart, titlePart));
-      }
-    }
-
-    return schools;
   }
 
-  static HashMap<String, String> parseFormFields(Element body) {
+  private void incrementStateNum() {
+    int action = Integer.parseInt(this.formMap.get("ICStateNum"));
+    action += 1;
+    this.formMap.put("ICStateNum", "" + action);
+  }
+
+  private static HashMap<String, String> parseFormFields(Element body) {
     var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
     var inputs = optionsRoot.select("input");
     var map = new HashMap<String, String>();

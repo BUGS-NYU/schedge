@@ -52,41 +52,6 @@ public final class PeopleSoftClassSearch {
         .collect(Collectors.joining("&"));
   }
 
-  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
-                                                Term term)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    Document doc = self.navigateToTerm(term);
-
-    var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
-    var cdata = (CDataNode)field.textNodes().get(0);
-
-    doc = Jsoup.parse(cdata.text(), MAIN_URL);
-    var results = doc.expectFirst("#win0divRESULTS");
-    var group = results.expectFirst("div[id=win0divGROUP$0]");
-
-    var schools = new ArrayList<School>();
-    for (var child : group.children()) {
-      var header = child.expectFirst("h2");
-      var school = new School(header.text());
-      schools.add(school);
-
-      var schoolTags = child.select("div.ps_box-link");
-      for (var schoolTag : schoolTags) {
-        var schoolTitle = schoolTag.text();
-        var parts = schoolTitle.split("\\(");
-
-        var titlePart = parts[0].trim();
-        var codePart = parts[1];
-        codePart = codePart.substring(0, codePart.length() - 1);
-
-        school.subjects.add(new Subject(codePart, titlePart));
-      }
-    }
-
-    return schools;
-  }
-
   Document navigateToTerm(Term term)
       throws ExecutionException, InterruptedException {
     String yearText;
@@ -174,6 +139,41 @@ public final class PeopleSoftClassSearch {
       var responseBody = resp.getResponseBody();
       return Jsoup.parse(responseBody, MAIN_URL);
     }
+  }
+
+  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
+                                                Term term)
+      throws ExecutionException, InterruptedException {
+    var self = new PeopleSoftClassSearch(client);
+    Document doc = self.navigateToTerm(term);
+
+    var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
+    var cdata = (CDataNode)field.textNodes().get(0);
+
+    doc = Jsoup.parse(cdata.text(), MAIN_URL);
+    var results = doc.expectFirst("#win0divRESULTS");
+    var group = results.expectFirst("div[id=win0divGROUP$0]");
+
+    var schools = new ArrayList<School>();
+    for (var child : group.children()) {
+      var header = child.expectFirst("h2");
+      var school = new School(header.text());
+      schools.add(school);
+
+      var schoolTags = child.select("div.ps_box-link");
+      for (var schoolTag : schoolTags) {
+        var schoolTitle = schoolTag.text();
+        var parts = schoolTitle.split("\\(");
+
+        var titlePart = parts[0].trim();
+        var codePart = parts[1];
+        codePart = codePart.substring(0, codePart.length() - 1);
+
+        school.subjects.add(new Subject(codePart, titlePart));
+      }
+    }
+
+    return schools;
   }
 
   private void incrementStateNum() {

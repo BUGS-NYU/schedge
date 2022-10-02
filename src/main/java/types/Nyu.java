@@ -52,7 +52,7 @@ public final class Nyu {
       public String name;
       public String deptCourseId;
       @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
-      public types.Subject subjectCode;
+      public String subjectCode;
       public List<Section> sections;
 
       public String toString() {

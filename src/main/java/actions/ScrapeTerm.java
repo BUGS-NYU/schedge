@@ -1,15 +1,4 @@
 package actions;
-import static database.courses.InsertCourses.*;
-import static database.courses.UpdateSections.*;
-import static utils.Utils.*;
-
-import cli.ConsoleProgressBarConsumer;
-import database.GetConnection;
-import database.models.SectionID;
-import java.util.*;
-import java.util.function.Function;
-import me.tongfei.progressbar.*;
-import types.*;
 
 public class ScrapeTerm {
 

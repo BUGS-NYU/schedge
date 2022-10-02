@@ -1,20 +1,16 @@
 package scraping;
 
 import static types.Nyu.*;
-import static utils.TryCatch.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
 import java.util.stream.Collectors;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
-import org.jsoup.select.Elements;
-import org.slf4j.*;
 
 public final class PeopleSoftClassSearch {
   public static final class FormEntry {

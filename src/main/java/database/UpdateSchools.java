@@ -4,13 +4,9 @@ import static types.Nyu.*;
 
 import java.sql.*;
 import java.util.*;
-import org.slf4j.*;
 import utils.Utils;
 
 public final class UpdateSchools {
-  private static Logger logger =
-      LoggerFactory.getLogger("database.UpdateSubjects");
-
   private static final String DELETE_TERM =
       "DELETE FROM schools WHERE term = ?";
   private static final String INSERT_SCHOOL =

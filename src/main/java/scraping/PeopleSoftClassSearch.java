@@ -118,22 +118,22 @@ public final class PeopleSoftClassSearch {
       if (id == null)
         throw new RuntimeException("yearText not found");
 
-      this.formMap = parseFormFields(body);
-      this.formMap.put("ICAction", id);
+      formMap = parseFormFields(body);
+      formMap.put("ICAction", id);
     }
 
     { // Get the correct state on the page
-      var fut = client.executeRequest(post(MAIN_URI, this.formMap));
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
       fut.get();
     }
 
     {
-      this.incrementStateNum();
-      this.formMap.put("ICAction", semesterId);
-      this.formMap.put(semesterId, "Y");
+      incrementStateNum();
+      formMap.put("ICAction", semesterId);
+      formMap.put(semesterId, "Y");
 
-      var fut = client.executeRequest(post(MAIN_URI, this.formMap));
-      this.formMap.remove(semesterId);
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      formMap.remove(semesterId);
 
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
@@ -177,9 +177,9 @@ public final class PeopleSoftClassSearch {
   }
 
   private void incrementStateNum() {
-    int action = Integer.parseInt(this.formMap.get("ICStateNum"));
+    int action = Integer.parseInt(formMap.get("ICStateNum"));
     action += 1;
-    this.formMap.put("ICStateNum", "" + action);
+    formMap.put("ICStateNum", "" + action);
   }
 
   private static HashMap<String, String> parseFormFields(Element body) {

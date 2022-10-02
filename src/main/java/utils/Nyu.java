@@ -1,4 +1,4 @@
-package types;
+package utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import database.models.FullRow;
 import database.models.Row;
-import utils.JsonMapper;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -36,6 +35,24 @@ public final class Nyu {
       this.code = code;
       this.name = name;
     }
+
+    private static final ArrayList<String> allSubjects;
+
+    static {
+      var subjects = new ArrayList<String>();
+      for (String line : Utils.asResourceLines("/subjects.txt")) {
+        String[] s = line.split(",", 3);
+        String subject = s[0], school = s[1], name = s[2];
+
+        subjects.add(subject);
+      }
+
+      allSubjects = subjects;
+    }
+
+    public static ArrayList<String> allSubjects() {
+      return new ArrayList<>(allSubjects);
+    }
   }
 
   public static final class School {
@@ -52,7 +69,7 @@ public final class Nyu {
       public String name;
       public String deptCourseId;
       @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
-      public types.Subject subjectCode;
+      public String subjectCode;
       public List<Section> sections;
 
       public String toString() {

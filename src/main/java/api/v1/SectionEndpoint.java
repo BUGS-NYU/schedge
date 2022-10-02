@@ -5,7 +5,7 @@ import database.GetConnection;
 import database.courses.SelectRows;
 import io.javalin.http.Context;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import types.*;
+import utils.Nyu;
 
 public final class SectionEndpoint extends App.Endpoint {
 

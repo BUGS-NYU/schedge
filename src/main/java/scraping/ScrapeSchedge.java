@@ -1,13 +1,14 @@
 package scraping;
 
+import static utils.Nyu.*;
+
 import java.util.*;
 import java.util.concurrent.*;
-
+import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
-import types.*;
 import utils.*;
 
 public final class ScrapeSchedge {
@@ -19,34 +20,36 @@ public final class ScrapeSchedge {
   //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
-  public static List<List<Nyu.Course>> scrapeFromSchedge(Nyu.Term term) {
-    Iterator<Subject> subjects = Subject.allSubjects().listIterator();
+  public static List<Course> scrapeFromSchedge(AsyncHttpClient client,
+                                               Term term) {
+    var subjects = Subject.allSubjects().listIterator();
 
-    FutureEngine<String> engine = new FutureEngine<>();
+    var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next().code));
+        engine.add(getData(client, term, subjects.next()));
       }
     }
 
-    ArrayList<List<Nyu.Course>> output = new ArrayList<>();
+    var output = new ArrayList<Course>();
     for (String text : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next().code));
+        engine.add(getData(client, term, subjects.next()));
       }
 
       if (text == null) {
         continue;
       }
 
-      List<Nyu.Course> courses = JsonMapper.fromJsonArray(text, Nyu.Course.class);
-      output.add(courses);
+      List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
+      output.addAll(courses);
     }
 
     return output;
   }
 
-  private static Future<String> getData(Nyu.Term term, String subject) {
+  private static Future<String> getData(AsyncHttpClient client, Term term,
+                                        String subject) {
     var parts = subject.split("-");
     String school = parts[1];
     String major = parts[0];
@@ -56,7 +59,7 @@ public final class ScrapeSchedge {
       school = "SHU";
     }
 
-    String[] components =
+    var components =
         new String[] {"" + term.year, term.semester.toString(), school, major};
 
     Uri uri =
@@ -66,7 +69,8 @@ public final class ScrapeSchedge {
 
     long start = System.nanoTime();
 
-    return Client.send(request, (resp, throwable) -> {
+    var fut = client.executeRequest(request).toCompletableFuture();
+    return fut.handleAsync((resp, throwable) -> {
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching took {} seconds: subject={}", duration, subject);

@@ -4,9 +4,8 @@ import static picocli.CommandLine.*;
 
 import java.util.*;
 import picocli.CommandLine;
-import utils.Nyu;
-import types.User;
 import utils.*;
+import utils.Nyu;
 
 public final class Mixins {
   @Spec private CommandLine.Model.CommandSpec spec;
@@ -31,30 +30,6 @@ public final class Mixins {
     private String inputFile;
 
     public String getInput() { return Utils.readFromFileOrStdin(inputFile); }
-  }
-
-  public static final class Login {
-    @Option(names = "--username", description = "Be correct of capitalization")
-    private String username;
-    @Option(names = "--pwd", description = "Be correct of capitalization")
-    private String password;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public User getUserNotNull() {
-      if (username == null || password == null) {
-        return null;
-      }
-      return new User(username, password);
-    }
-    public User getUser() {
-      User user = getUserNotNull();
-      if (user == null) {
-        throw new CommandLine.ParameterException(
-            spec.commandLine(), "Must provide --username AND --pwd");
-      }
-      return user;
-    }
   }
 
   public static final class OutputFile {

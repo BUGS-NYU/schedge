@@ -1,6 +1,6 @@
 # Schedge
-Schedge is an open source API to NYU's course catalog, geared at eventually helping
-NYU students plan their courses easier and faster.
+Schedge is an open source API to NYU's course catalog. Its goal is to help
+NYU students plan their semesters' courses easier and faster.
 
 NYU Albert is really annoying to use, and so is the rest of NYU's course catalog
 infrastructure. Our goal with this API is to make it easier for students to plan

@@ -193,25 +193,22 @@ public final class PeopleSoftClassSearch {
       throws ExecutionException, InterruptedException {
     var schools = scrapeSchools(term);
 
-    boolean found = false;
-    for (var school : schools) {
-      if (found)
-        break;
-
-      for (var subject : school.subjects) {
-        if (subject.code.contentEquals(subjectCode)) {
-          found = true;
-          break;
-        }
-      }
-    }
+    var found = schools.stream()
+                    .flatMap(school -> school.subjects.stream())
+                    .filter(subject -> subject.code.contentEquals(subjectCode))
+                    .findFirst();
+    if (!found.isPresent())
+      throw new RuntimeException("Subject not found: " + subjectCode);
 
     {
       incrementStateNum();
       var fut = client.executeRequest(post(MAIN_URI, formMap));
-    }
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+      var doc = Jsoup.parse(responseBody, MAIN_URL);
 
-    return null;
+      return doc;
+    }
   }
 
   private void incrementStateNum() {

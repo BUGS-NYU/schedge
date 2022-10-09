@@ -1,2 +1,4 @@
 *.jar filter=lfs diff=lfs merge=lfs -text
 *.ico filter=lfs diff=lfs merge=lfs -text
+src/build/docker/entrypoint.sh -text
+*.java text

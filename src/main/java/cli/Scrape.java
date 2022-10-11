@@ -30,55 +30,6 @@ public class Scrape implements Runnable {
                                              "\nMissing required subcommand.");
   }
 
-  // @Command(name = "catalog",
-  //          description = "Scrape catalog based on term, subject codes, "
-  //                        + "or school for one or multiple subjects/schools")
-  // public void
-  // catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectMixin,
-  //         @Option(names = "--batch-size", defaultValue = "20",
-  //                 description = "batch size if query more than one catalog")
-  //         int batchSize,
-  //         @Mixin Mixins.OutputFile outputFileMixin) {
-  //   long start = System.nanoTime();
-
-  //   List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
-  //       termMixin.getTerm(), subjectMixin.getSubjects(), batchSize);
-
-  //   outputFileMixin.writeOutput(courses);
-
-  //   Client.close();
-
-  //   long end = System.nanoTime();
-  //   double duration = (end - start) / 1000000000.0;
-  //   logger.info("{} seconds for {} courses", duration, courses.size());
-  // }
-
-  @Command(name = "subject", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Scrape the PeopleSoft Class Search",
-           description = "Scrape the PeopleSoft Class Search for a term")
-  public void
-  subject(@Mixin Mixins.Term termMixin,
-          @Mixin Mixins.OutputFile outputFileMixin,
-          @Parameters(index = "0", paramLabel = "SUBJECT",
-                      description = "A subject code like MATH-UA")
-          String subject)
-      throws IOException, ExecutionException, InterruptedException {
-    long start = System.nanoTime();
-
-    Nyu.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var courses = PeopleSoftClassSearch.scrapeCourses(client, term, subject);
-      outputFileMixin.writeOutput(courses);
-    }
-
-    long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
-  }
-
   @Command(name = "schools", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",

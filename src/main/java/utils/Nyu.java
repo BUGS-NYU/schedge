@@ -1,12 +1,12 @@
 package utils;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import database.models.FullRow;
 import database.models.Row;
-
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -65,17 +65,26 @@ public final class Nyu {
     }
   }
 
-    public static final class Course {
-      public String name;
-      public String deptCourseId;
-      @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
-      public String subjectCode;
-      public List<Section> sections;
+  public static final class Course {
+    public String name;
+    public String deptCourseId;
 
-      public String toString() {
-        return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
-      }
+    // @NOTE: This is de-normalized into the Course object because that makes it
+    // easier to work with when inserting into the database. However, we don't
+    // want to include it in the actual API, because it doesn't seem necessary
+    // right now.
+    //
+    //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
+    @JsonIgnore() public String subjectCode;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+
+    public List<Section> sections;
+
+    public String toString() {
+      return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
     }
+  }
 
   public static final class Meeting {
     private static DateTimeFormatter formatter =
@@ -86,8 +95,8 @@ public final class Nyu {
     public LocalDateTime endDate;   // When the meeting stops repeating
 
     // we eventually want to switch to using the `fromCode(String code)` version
-    // for the JSON creator. It will happen when we fully move away from scraping
-    // from Schedge V1.
+    // for the JSON creator. It will happen when we fully move away from
+    // scraping from Schedge V1.
     //                                  - Albert Liu, Feb 03, 2022 Thu 01:02 EST
     @JsonCreator
     public static Meeting
@@ -135,9 +144,11 @@ public final class Nyu {
     @JsonInclude(JsonInclude.Include.NON_NULL) public String grading;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
+
+    // @TODO: delete this
     @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
 
-    // Values that are sometimes necessary
+    // @TODO: delete this
     @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
 
     public static Section fromRow(Row row) {

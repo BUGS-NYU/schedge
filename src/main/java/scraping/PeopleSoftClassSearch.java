@@ -216,8 +216,39 @@ public final class PeopleSoftClassSearch {
 
       var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
       for (var courseHtml : coursesContainer.children()) {
-        System.err.println("Hello");
-        return courseHtml;
+        var course = new Course();
+
+        // This happens to work; nothing else really works as well.
+        var sections = courseHtml.select(".ps-htmlarea");
+
+        var first = true;
+        for (var section : sections) {
+          if (first) {
+            first = false;
+
+            var titleText = section.expectFirst("b").text().trim();
+            var titleSections = titleText.split(" ", 3);
+
+            var descriptionElements = section.select("p");
+            var descriptionP =
+                descriptionElements.get(descriptionElements.size() - 1);
+
+            course.name = titleSections[2];
+            course.subjectCode = titleSections[0];
+            course.deptCourseId = titleSections[1];
+            course.description = descriptionP.text();
+
+            if (!course.subjectCode.contentEquals(subjectCode)) {
+              throw new RuntimeException(
+                  "course.subjectCode=" + course.subjectCode +
+                  ", but subjectCode=" + subjectCode);
+            }
+
+            continue;
+          }
+        }
+
+        System.err.println("Hello" + course);
       }
 
       return coursesContainer;

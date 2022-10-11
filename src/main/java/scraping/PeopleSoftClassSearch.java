@@ -28,7 +28,6 @@ public final class PeopleSoftClassSearch {
 
   private static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
       new FormEntry("ICAJAX", "1"),
-      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
       new FormEntry(
           "ICBcDomData",
           "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue"),
@@ -36,11 +35,6 @@ public final class PeopleSoftClassSearch {
 
   private static Uri MAIN_URI = Uri.create(MAIN_URL);
   private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
-
-  HashMap<String, String> formMap;
-  final AsyncHttpClient client;
-
-  PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
   public static String formEncode(HashMap<String, String> values) {
     return values.entrySet()
@@ -52,7 +46,8 @@ public final class PeopleSoftClassSearch {
         .collect(Collectors.joining("&"));
   }
 
-  Future<Response> navigateToTerm(Term term)
+  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
+                                                Term term)
       throws ExecutionException, InterruptedException {
     String yearText;
     switch (term.semester) {
@@ -96,6 +91,7 @@ public final class PeopleSoftClassSearch {
       fut.get();
     }
 
+    HashMap<String, String> formMap;
     {
       var fut = client.executeRequest(get(REDIRECT_URI));
       var resp = fut.get();
@@ -114,12 +110,12 @@ public final class PeopleSoftClassSearch {
 
         id = link.id();
       }
-
       if (id == null)
         throw new RuntimeException("yearText not found");
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
+      formMap.put("ICNAVTYPEDROPDOWN", "0");
     }
 
     { // Get the correct state on the page
@@ -127,30 +123,19 @@ public final class PeopleSoftClassSearch {
       fut.get();
     }
 
+    Document doc;
     {
-      incrementStateNum();
+      int action = Integer.parseInt(formMap.get("ICStateNum"));
+      action += 1;
+      formMap.put("ICStateNum", "" + action);
       formMap.put("ICAction", semesterId);
       formMap.put(semesterId, "Y");
 
       var fut = client.executeRequest(post(MAIN_URI, formMap));
-
-      return fut;
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+      doc = Jsoup.parse(responseBody, MAIN_URL);
     }
-  }
-
-  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
-                                                Term term)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    return self.scrapeSchools(term);
-  }
-
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
-    var fut = navigateToTerm(term);
-    var resp = fut.get();
-    var responseBody = resp.getResponseBody();
-    var doc = Jsoup.parse(responseBody, MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
     var cdata = (CDataNode)field.textNodes().get(0);
@@ -179,110 +164,6 @@ public final class PeopleSoftClassSearch {
     }
 
     return schools;
-  }
-
-  public static Object scrapeCourses(AsyncHttpClient client, Term term,
-                                     String subject)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    return self.scrapeCourses(term, subject);
-  }
-
-  public Object scrapeCourses(Term term, String subjectCode)
-      throws ExecutionException, InterruptedException {
-    var schools = scrapeSchools(term);
-
-    var indices = findIndices(schools, subjectCode);
-    if (indices == null)
-      throw new RuntimeException("Subject not found: " + subjectCode);
-
-    // System.err.println("school=" + indices.school +
-    //                    ",subject=" + indices.subject);
-    {
-      incrementStateNum();
-      formMap.put("ICAction",
-                  "LINK" + (indices.school + 1) + "$" + (indices.subject + 1));
-
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
-      var doc = Jsoup.parse(responseBody, MAIN_URL);
-
-      {
-        var field = doc.expectFirst("#win0divPAGECONTAINER");
-        var cdata = (CDataNode)field.textNodes().get(0);
-        doc = Jsoup.parse(cdata.text(), MAIN_URL);
-      }
-
-      var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
-      for (var courseHtml : coursesContainer.children()) {
-        var course = new Course();
-
-        // This happens to work; nothing else really works as well.
-        var sections = courseHtml.select(".ps-htmlarea");
-
-        var first = true;
-        for (var section : sections) {
-          if (first) {
-            first = false;
-
-            var titleText = section.expectFirst("b").text().trim();
-            var titleSections = titleText.split(" ", 3);
-
-            var descriptionElements = section.select("p");
-            var descriptionP =
-                descriptionElements.get(descriptionElements.size() - 1);
-
-            course.name = titleSections[2];
-            course.subjectCode = titleSections[0];
-            course.deptCourseId = titleSections[1];
-            course.description = descriptionP.text();
-
-            if (!course.subjectCode.contentEquals(subjectCode)) {
-              throw new RuntimeException(
-                  "course.subjectCode=" + course.subjectCode +
-                  ", but subjectCode=" + subjectCode);
-            }
-
-            continue;
-          }
-        }
-
-        System.err.println("Hello" + course);
-      }
-
-      return coursesContainer;
-    }
-  }
-
-  private static final class SubjectIndices {
-    int school = 0;
-    int subject = 0;
-  }
-  private static SubjectIndices findIndices(ArrayList<School> schools,
-                                            String subjectCode) {
-    var indices = new SubjectIndices();
-    for (var school : schools) {
-      indices.subject = 0;
-
-      for (var subject : school.subjects) {
-        if (subject.code.contentEquals(subjectCode)) {
-          return indices;
-        }
-
-        indices.subject += 1;
-      }
-
-      indices.school += 1;
-    }
-
-    return null;
-  }
-
-  private void incrementStateNum() {
-    int action = Integer.parseInt(formMap.get("ICStateNum"));
-    action += 1;
-    formMap.put("ICStateNum", "" + action);
   }
 
   static HashMap<String, String> parseFormFields(Element body) {

@@ -53,29 +53,6 @@ public final class Mixins {
     }
   }
 
-  public static final class Subject {
-    @Option(names = "--school", description = "school code: UA, UT, UY, etc")
-    private String school;
-
-    @Option(names = "--subject",
-            description = "subject code: CSCI-UA, MATH-UA, etc")
-    private String subject;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public List<String> getSubjects() {
-      if (subject != null) {
-        var subjects = new ArrayList<String>();
-        subjects.add(subject);
-
-        return subjects;
-      }
-
-      throw new CommandLine.ParameterException(spec.commandLine(),
-                                               "unimplemented");
-    }
-  }
-
   public static final class Term {
     @Spec private CommandLine.Model.CommandSpec spec;
 

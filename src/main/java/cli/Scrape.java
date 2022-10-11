@@ -53,20 +53,46 @@ public class Scrape implements Runnable {
   //   logger.info("{} seconds for {} courses", duration, courses.size());
   // }
 
-  @Command(name = "ps", sortOptions = false,
+  @Command(name = "subject", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",
            optionListHeading = "%nOptions:%n",
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  ps(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
+  subject(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.OutputFile outputFileMixin,
+          @Parameters(index = "0", paramLabel = "SUBJECT",
+                      description = "A subject code like MATH-UA")
+          String subject)
       throws IOException, ExecutionException, InterruptedException {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      var courses = PeopleSoftClassSearch.scrapeCourses(client, term, subject);
+      outputFileMixin.writeOutput(courses);
+    }
 
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
+
+  @Command(name = "schools", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
+  public void
+  schools(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.OutputFile outputFileMixin)
+      throws IOException, ExecutionException, InterruptedException {
+    long start = System.nanoTime();
+
+    Nyu.Term term = termMixin.getTerm();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
       var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
       outputFileMixin.writeOutput(schools);
     }

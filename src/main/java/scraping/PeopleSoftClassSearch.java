@@ -133,7 +133,6 @@ public final class PeopleSoftClassSearch {
       formMap.put(semesterId, "Y");
 
       var fut = client.executeRequest(post(MAIN_URI, formMap));
-      formMap.remove(semesterId);
 
       return fut;
     }
@@ -193,22 +192,60 @@ public final class PeopleSoftClassSearch {
       throws ExecutionException, InterruptedException {
     var schools = scrapeSchools(term);
 
-    var found = schools.stream()
-                    .flatMap(school -> school.subjects.stream())
-                    .filter(subject -> subject.code.contentEquals(subjectCode))
-                    .findFirst();
-    if (!found.isPresent())
+    var indices = findIndices(schools, subjectCode);
+    if (indices == null)
       throw new RuntimeException("Subject not found: " + subjectCode);
 
+    // System.err.println("school=" + indices.school +
+    //                    ",subject=" + indices.subject);
     {
       incrementStateNum();
+      formMap.put("ICAction",
+                  "LINK" + (indices.school + 1) + "$" + (indices.subject + 1));
+
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
       var doc = Jsoup.parse(responseBody, MAIN_URL);
 
-      return doc;
+      {
+        var field = doc.expectFirst("#win0divPAGECONTAINER");
+        var cdata = (CDataNode)field.textNodes().get(0);
+        doc = Jsoup.parse(cdata.text(), MAIN_URL);
+      }
+
+      var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
+      for (var courseHtml : coursesContainer.children()) {
+        System.err.println("Hello");
+        return courseHtml;
+      }
+
+      return coursesContainer;
     }
+  }
+
+  private static final class SubjectIndices {
+    int school = 0;
+    int subject = 0;
+  }
+  private static SubjectIndices findIndices(ArrayList<School> schools,
+                                            String subjectCode) {
+    var indices = new SubjectIndices();
+    for (var school : schools) {
+      indices.subject = 0;
+
+      for (var subject : school.subjects) {
+        if (subject.code.contentEquals(subjectCode)) {
+          return indices;
+        }
+
+        indices.subject += 1;
+      }
+
+      indices.school += 1;
+    }
+
+    return null;
   }
 
   private void incrementStateNum() {

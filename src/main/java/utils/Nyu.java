@@ -68,6 +68,8 @@ public final class Nyu {
   public static final class Course {
     public String name;
     public String deptCourseId;
+    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+    public List<Section> sections;
 
     // @NOTE: This is de-normalized into the Course object because that makes it
     // easier to work with when inserting into the database. However, we don't
@@ -76,10 +78,6 @@ public final class Nyu {
     //
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     @JsonIgnore() public String subjectCode;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
-
-    public List<Section> sections;
 
     public String toString() {
       return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";

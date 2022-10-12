@@ -23,19 +23,33 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  private static String MAIN_URL =
+  static String MAIN_URL =
       "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
 
-  private static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
+  static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
       new FormEntry("ICAJAX", "1"),
       new FormEntry("ICNAVTYPEDROPDOWN", "0"),
       new FormEntry(
           "ICBcDomData",
-          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue"),
+          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
+              + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
+              + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
+              + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
+              + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
+              + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
+              + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
+              + "~Course Search~UnknownValue~UnknownValue~https"
+              + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue"),
   };
 
-  private static Uri MAIN_URI = Uri.create(MAIN_URL);
-  private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
+  static Uri MAIN_URI = Uri.create(MAIN_URL);
+  static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
 
   HashMap<String, String> formMap;
   final AsyncHttpClient client;
@@ -196,8 +210,6 @@ public final class PeopleSoftClassSearch {
     if (indices == null)
       throw new RuntimeException("Subject not found: " + subjectCode);
 
-    // System.err.println("school=" + indices.school +
-    //                    ",subject=" + indices.subject);
     {
       incrementStateNum();
       formMap.put("ICAction",
@@ -206,61 +218,76 @@ public final class PeopleSoftClassSearch {
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
-      var doc = Jsoup.parse(responseBody, MAIN_URL);
 
-      {
-        var field = doc.expectFirst("#win0divPAGECONTAINER");
-        var cdata = (CDataNode)field.textNodes().get(0);
-        doc = Jsoup.parse(cdata.text(), MAIN_URL);
-      }
-
-      var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
-      for (var courseHtml : coursesContainer.children()) {
-        var course = new Course();
-
-        // This happens to work; nothing else really works as well.
-        var sections = courseHtml.select(".ps-htmlarea");
-
-        var first = true;
-        for (var section : sections) {
-          if (first) {
-            first = false;
-
-            var titleText = section.expectFirst("b").text().trim();
-            var titleSections = titleText.split(" ", 3);
-
-            var descriptionElements = section.select("p");
-            var descriptionP =
-                descriptionElements.get(descriptionElements.size() - 1);
-
-            course.name = titleSections[2];
-            course.subjectCode = titleSections[0];
-            course.deptCourseId = titleSections[1];
-            course.description = descriptionP.text();
-
-            if (!course.subjectCode.contentEquals(subjectCode)) {
-              throw new RuntimeException(
-                  "course.subjectCode=" + course.subjectCode +
-                  ", but subjectCode=" + subjectCode);
-            }
-
-            continue;
-          }
-        }
-
-        System.err.println("Hello" + course);
-      }
-
-      return coursesContainer;
+      return parseSubject(responseBody, subjectCode);
     }
   }
 
-  private static final class SubjectIndices {
+  static ArrayList<Course> parseSubject(String html, String subjectCode) {
+    var doc = Jsoup.parse(html, MAIN_URL);
+
+    {
+      var field = doc.expectFirst("#win0divPAGECONTAINER");
+      var cdata = (CDataNode)field.textNodes().get(0);
+      doc = Jsoup.parse(cdata.text(), MAIN_URL);
+    }
+
+    var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
+
+    var courses = new ArrayList<Course>();
+    for (var courseHtml : coursesContainer.children()) {
+      courses.add(parseCourse(courseHtml, subjectCode));
+    }
+
+    return courses;
+  }
+
+  static Course parseCourse(Element courseHtml, String subjectCode) {
+    var course = new Course();
+
+    // This happens to work; nothing else really works as well.
+    var sections = courseHtml.select(".ps-htmlarea");
+
+    {
+      var section = sections.get(0);
+      var titleText = section.expectFirst("b").text().trim();
+      var titleSections = titleText.split(" ", 3);
+
+      var descriptionElements = section.select("p");
+      var descriptionP =
+          descriptionElements.get(descriptionElements.size() - 1);
+
+      course.name = titleSections[2];
+      course.subjectCode = titleSections[0];
+      course.deptCourseId = titleSections[1];
+      course.description = descriptionP.text();
+      course.sections = new ArrayList<>();
+    }
+
+    if (!course.subjectCode.contentEquals(subjectCode)) {
+      throw new RuntimeException("course.subjectCode=" + course.subjectCode +
+                                 ", but subjectCode=" + subjectCode);
+    }
+
+    var first = true;
+    for (var section : sections) {
+      if (first) {
+        first = false;
+        continue;
+      }
+
+      System.err.println("Hello" + course);
+    }
+
+    return course;
+  }
+
+  static final class SubjectIndices {
     int school = 0;
     int subject = 0;
   }
-  private static SubjectIndices findIndices(ArrayList<School> schools,
-                                            String subjectCode) {
+  static SubjectIndices findIndices(ArrayList<School> schools,
+                                    String subjectCode) {
     var indices = new SubjectIndices();
     for (var school : schools) {
       indices.subject = 0;
@@ -279,7 +306,7 @@ public final class PeopleSoftClassSearch {
     return null;
   }
 
-  private void incrementStateNum() {
+  void incrementStateNum() {
     int action = Integer.parseInt(formMap.get("ICStateNum"));
     action += 1;
     formMap.put("ICStateNum", "" + action);
@@ -304,7 +331,7 @@ public final class PeopleSoftClassSearch {
 
   // I think I get like silently rate-limited during testing without this
   // header.
-  private static String USER_AGENT =
+  static String USER_AGENT =
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
 
   static Request get(Uri uri) {

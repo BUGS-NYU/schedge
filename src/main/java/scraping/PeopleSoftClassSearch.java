@@ -23,18 +23,33 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  private static String MAIN_URL =
+  static String MAIN_URL =
       "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
 
-  private static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
+  static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
       new FormEntry("ICAJAX", "1"),
+      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
       new FormEntry(
           "ICBcDomData",
-          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue"),
+          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
+              + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
+              + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
+              + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
+              + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
+              + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
+              + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
+              + "~Course Search~UnknownValue~UnknownValue~https"
+              + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue"),
   };
 
-  private static Uri MAIN_URI = Uri.create(MAIN_URL);
-  private static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
+  static Uri MAIN_URI = Uri.create(MAIN_URL);
+  static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
 
   public static String formEncode(HashMap<String, String> values) {
     return values.entrySet()
@@ -115,7 +130,6 @@ public final class PeopleSoftClassSearch {
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
-      formMap.put("ICNAVTYPEDROPDOWN", "0");
     }
 
     { // Get the correct state on the page
@@ -185,7 +199,7 @@ public final class PeopleSoftClassSearch {
 
   // I think I get like silently rate-limited during testing without this
   // header.
-  private static String USER_AGENT =
+  static String USER_AGENT =
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
 
   static Request get(Uri uri) {

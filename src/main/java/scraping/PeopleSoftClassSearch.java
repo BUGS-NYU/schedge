@@ -267,6 +267,7 @@ public final class PeopleSoftClassSearch {
     }
 
     System.err.println("" + course);
+    System.err.println("  descr: " + course.description + "\n");
 
     if (!course.subjectCode.contentEquals(subjectCode)) {
       throw new RuntimeException("course.subjectCode=" + course.subjectCode +
@@ -274,14 +275,52 @@ public final class PeopleSoftClassSearch {
     }
 
     var first = true;
-    for (var section : sections) {
+    for (var sectionHtml : sections) {
       if (first) {
         first = false;
         continue;
       }
+
+      var wrapper = sectionHtml.expectFirst("td");
+      var data = wrapper.children();
+
+      var section = new Section();
+
+      var attributes = new HashMap<String, String>();
+
+      for (var attrLineDiv : data.get(1).select("div")) {
+        var attrLine = attrLineDiv.text();
+        var parts = attrLine.trim().split(":", 2);
+
+        if (parts.length == 1) {
+          attributes.put(parts[0].trim(), "");
+          continue;
+        }
+
+        attributes.put(parts[0].trim(), parts[1].trim());
+      }
+
+      System.err.println("  " + attributes + "\n");
+
+      for (int i = 2; i < data.size(); i++) {
+        var element = data.get(i);
+        if (element.tagName().contentEquals("br")) {
+          continue;
+        }
+
+        System.err.println("  " + element + "\n");
+      }
+
+      for (var node : wrapper.textNodes()) {
+        var text = node.text().trim();
+        if (text.length() == 0)
+          continue;
+
+        System.err.println("  " + text + "\n");
+      }
     }
 
-    System.err.println("  descr: " + course.description + "\n");
+    System.err.println("  sections: " + course.sections + "\n");
 
     return course;
   }

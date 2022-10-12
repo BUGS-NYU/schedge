@@ -68,7 +68,7 @@ public final class Nyu {
   public static final class Course {
     public String name;
     public String deptCourseId;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+    public String description;
     public List<Section> sections;
 
     // @NOTE: This is de-normalized into the Course object because that makes it

@@ -195,14 +195,14 @@ public final class PeopleSoftClassSearch {
     return schools;
   }
 
-  public static Object scrapeCourses(AsyncHttpClient client, Term term,
+  public static Object scrapeSubject(AsyncHttpClient client, Term term,
                                      String subject)
       throws ExecutionException, InterruptedException {
     var self = new PeopleSoftClassSearch(client);
-    return self.scrapeCourses(term, subject);
+    return self.scrapeSubject(term, subject);
   }
 
-  public Object scrapeCourses(Term term, String subjectCode)
+  public Object scrapeSubject(Term term, String subjectCode)
       throws ExecutionException, InterruptedException {
     var schools = scrapeSchools(term);
 
@@ -222,8 +222,7 @@ public final class PeopleSoftClassSearch {
       return parseSubject(responseBody, subjectCode);
     }
   }
-
-  static ArrayList<Course> parseSubject(String html, String subjectCode) {
+  static Object parseSubject(String html, String subjectCode) {
     var doc = Jsoup.parse(html, MAIN_URL);
 
     {
@@ -239,7 +238,7 @@ public final class PeopleSoftClassSearch {
       courses.add(parseCourse(courseHtml, subjectCode));
     }
 
-    return courses;
+    return coursesContainer;
   }
 
   static Course parseCourse(Element courseHtml, String subjectCode) {
@@ -253,20 +252,25 @@ public final class PeopleSoftClassSearch {
       var titleText = section.expectFirst("b").text().trim();
       var titleSections = titleText.split(" ", 3);
 
-      var descriptionElements = section.select("p");
-      var descriptionP =
-          descriptionElements.get(descriptionElements.size() - 1);
+      var descrElements = section.select("p");
+      var descrP = descrElements.get(descrElements.size() - 2);
 
       course.name = titleSections[2];
       course.subjectCode = titleSections[0];
       course.deptCourseId = titleSections[1];
-      course.description = descriptionP.text();
       course.sections = new ArrayList<>();
+
+      var textNodes = descrP.textNodes();
+      if (!textNodes.isEmpty()) {
+        course.description = textNodes.get(0).text();
+      }
     }
+
+    System.err.println("" + course);
 
     if (!course.subjectCode.contentEquals(subjectCode)) {
       throw new RuntimeException("course.subjectCode=" + course.subjectCode +
-                                 ", but subjectCode=" + subjectCode);
+                                 ", but subject=" + subjectCode);
     }
 
     var first = true;
@@ -275,9 +279,9 @@ public final class PeopleSoftClassSearch {
         first = false;
         continue;
       }
-
-      System.err.println("Hello" + course);
     }
+
+    System.err.println("  descr: " + course.description + "\n");
 
     return course;
   }

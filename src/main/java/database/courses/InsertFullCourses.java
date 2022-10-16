@@ -169,7 +169,7 @@ public final class InsertFullCourses {
                         Utils.nullable(Types.VARCHAR, s.prerequisites),
                         courseId,
                         s.code,
-                        s.type.name(),
+                        s.type,
                         s.status.name(),
                         Utils.nullable(Types.INTEGER, s.waitlistTotal),
                         Utils.nullable(Types.INTEGER, associatedWith),

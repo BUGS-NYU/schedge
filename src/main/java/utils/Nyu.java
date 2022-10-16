@@ -128,22 +128,22 @@ public final class Nyu {
     public int registrationNumber;
     public String code;
     public String[] instructors;
-    public SectionType type;
+    public String type;
     public SectionStatus status;
     public List<Meeting> meetings;
-    public List<Section> recitations;
 
+    @JsonInclude(NON_NULL) public List<Section> recitations;
     @JsonInclude(NON_NULL) public Integer waitlistTotal;
     @JsonInclude(NON_NULL) public String instructionMode;
-
-    // Values that need to be updated
-    @JsonInclude(NON_NULL) public String name;
     @JsonInclude(NON_NULL) public String campus;
     @JsonInclude(NON_NULL) public Double minUnits;
     @JsonInclude(NON_NULL) public Double maxUnits;
     @JsonInclude(NON_NULL) public String grading;
     @JsonInclude(NON_NULL) public String location;
     @JsonInclude(NON_NULL) public String notes;
+
+    // @TODO: delete this
+    @JsonInclude(NON_NULL) public String name;
 
     // @TODO: delete this
     @JsonInclude(NON_NULL) public String prerequisites;
@@ -158,7 +158,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType;
+      s.type = row.sectionType.getName();
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.minUnits = row.minUnits;
@@ -176,7 +176,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType;
+      s.type = row.sectionType.getName();
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.campus = row.campus;
@@ -204,7 +204,7 @@ public final class Nyu {
     Cancelled; // Cancelled
 
     public static SectionStatus parseStatus(String status) {
-      if (status.equals("Wait List"))
+      if (status.startsWith("Wait List"))
         return WaitList;
       else
         return valueOf(status);

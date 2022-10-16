@@ -30,6 +30,32 @@ public class Scrape implements Runnable {
                                              "\nMissing required subcommand.");
   }
 
+  @Command(name = "subject", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
+  public void
+  subject(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.OutputFile outputFileMixin,
+          @Parameters(index = "0", paramLabel = "SUBJECT",
+                      description = "A subject code like MATH-UA")
+          String subject)
+      throws IOException, ExecutionException, InterruptedException {
+    long start = System.nanoTime();
+
+    Nyu.Term term = termMixin.getTerm();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      var courses = PeopleSoftClassSearch.scrapeSubject(client, term, subject);
+      outputFileMixin.writeOutput(courses);
+    }
+
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
+
   @Command(name = "schools", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",

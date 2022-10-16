@@ -294,6 +294,8 @@ public final class PeopleSoftClassSearch {
       var textNodes = descrP.textNodes();
       if (!textNodes.isEmpty()) {
         course.description = textNodes.get(0).text();
+      } else {
+        course.description = "";
       }
     }
 
@@ -399,8 +401,6 @@ public final class PeopleSoftClassSearch {
     }
 
     section.notes = notes.toString().trim();
-    if (section.notes.length() == 0)
-      section.notes = null;
 
     var parts = metaText.split(" with ", 2);
     if (parts.length == 2) {

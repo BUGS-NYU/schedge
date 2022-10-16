@@ -13,40 +13,34 @@ INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
 CREATE TABLE courses (
   id                  SERIAL                      NOT NULL UNIQUE,
   term                varchar                     NOT NULL,
-
   name                varchar                     NOT NULL,
-  name_vec            TSVECTOR                    NOT NULL,
-
   subject_code        varchar                     NOT NULL,
   dept_course_id      varchar                     NOT NULL,
-  description         varchar,
-  description_vec     TSVECTOR,
+  description         varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
 
 CREATE TABLE sections (
   id                  SERIAL                          NOT NULL UNIQUE,
   registration_number int                             NOT NULL,
+
   course_id           int REFERENCES courses(id)
                           ON DELETE CASCADE           NOT NULL,
+
   section_code        varchar                         NOT NULL,
   section_type        varchar                         NOT NULL,
   section_status      varchar                         NOT NULL,
-  associated_with     int REFERENCES sections(id),
+  name                varchar                         NOT NULL,
+  min_units           float                           NOT NULL,
+  max_units           float                           NOT NULL,
+  campus              varchar                         NOT NULL,
+  notes               varchar                         NOT NULL,
+  instruction_mode    varchar                         NOT NULL,
+  grading             varchar                         NOT NULL,
+  location            varchar                         NOT NULL,
 
+  associated_with     int REFERENCES sections(id),
   waitlist_total      int,
-  name                varchar,
-  name_vec            TSVECTOR,
-  min_units           float,
-  max_units           float,
-  campus              varchar,
-  notes               varchar,
-  notes_vec           TSVECTOR,
-  instruction_mode    varchar,
-  grading             varchar,
-  location            varchar,
-  prerequisites       varchar,
-  prereqs_vec         TSVECTOR,
   instructors         varchar[],
 
   PRIMARY KEY (id)

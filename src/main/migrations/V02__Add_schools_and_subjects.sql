@@ -4,7 +4,6 @@
 CREATE TABLE schools (
   id                  SERIAL                      NOT NULL UNIQUE,
   term                varchar                     NOT NULL,
-  code                varchar                     NOT NULL,
   name                varchar                     NOT NULL,
   PRIMARY KEY (id)
 );
@@ -12,7 +11,8 @@ CREATE TABLE schools (
 CREATE TABLE subjects (
   id                  SERIAL                      NOT NULL UNIQUE,
   term                varchar                     NOT NULL,
-  school              varchar                     NOT NULL,
+  school              int REFERENCES schools(id)
+                      ON DELETE CASCADE           NOT NULL,
   code                varchar                     NOT NULL,
   name                varchar                     NOT NULL,
   PRIMARY KEY (id)

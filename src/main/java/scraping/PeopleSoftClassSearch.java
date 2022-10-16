@@ -1,5 +1,6 @@
 package scraping;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import java.net.URLEncoder;
@@ -117,16 +118,11 @@ public final class PeopleSoftClassSearch {
       var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
       var links = yearHeader.select("a.ps-link");
 
-      String id = null;
-      for (Element link : links) {
-        var text = link.text();
-        if (!text.contentEquals(yearText))
-          continue;
-
-        id = link.id();
-      }
-      if (id == null)
+      var link = find(links, l -> l.text().equals(yearText));
+      if (link == null)
         throw new RuntimeException("yearText not found");
+
+      var id = link.id();
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);

@@ -330,6 +330,18 @@ public final class PeopleSoftClassSearch {
     section.meetings = new ArrayList<>();
 
     {
+      var title = data.get(0).text();
+      var parts = title.split(" \\| ");
+      parts = parts[1].split(" ");
+      section.minUnits = Double.parseDouble(parts[0]);
+      if (parts.length > 2) {
+        section.maxUnits = Double.parseDouble(parts[2]);
+      } else {
+        section.maxUnits = section.minUnits;
+      }
+    }
+
+    {
       var fields = new HashMap<String, String>();
 
       for (var attrLineDiv : data.get(1).select("div")) {

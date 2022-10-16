@@ -37,11 +37,11 @@ CREATE TABLE sections (
   notes               varchar                         NOT NULL,
   instruction_mode    varchar                         NOT NULL,
   grading             varchar                         NOT NULL,
-  location            varchar                         NOT NULL,
+  instructors         varchar[]                       NOT NULL,
 
   associated_with     int REFERENCES sections(id),
+  location            varchar,
   waitlist_total      int,
-  instructors         varchar[],
 
   PRIMARY KEY (id)
 );

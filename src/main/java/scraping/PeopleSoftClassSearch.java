@@ -377,6 +377,7 @@ public final class PeopleSoftClassSearch {
 
       var status = fields.get("Class Status");
       s.status = SectionStatus.parseStatus(status);
+
       if (s.status == SectionStatus.WaitList) {
         var waitlistString = status.replaceAll("[^0-9]", "");
         s.waitlistTotal = Integer.parseInt(waitlistString);
@@ -405,6 +406,8 @@ public final class PeopleSoftClassSearch {
     var parts = metaText.split(" with ", 2);
     if (parts.length == 2) {
       section.instructors = parts[1].split("; ");
+    } else {
+      section.instructors = new String[0];
     }
 
     parts = parts[0].split(" at ", 2);
@@ -414,8 +417,7 @@ public final class PeopleSoftClassSearch {
 
     parts = parts[0].split(" ");
     if (parts.length <= 3) {
-      // No meetings
-      return section;
+      return section; // No meetings
     }
 
     int tokenIdx = 0;

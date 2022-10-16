@@ -27,7 +27,7 @@ public final class SearchRows {
     if (school != null)
       school = school.toUpperCase();
 
-    String begin = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+    String begin = "WITH q (query) AS (SELECT websearch_to_tsquery(?)) "
                    + "SELECT DISTINCT courses.id FROM q, "
                    + "courses JOIN sections ON courses.id = sections.course_id "
                    + "WHERE (" + fields + ") AND ";

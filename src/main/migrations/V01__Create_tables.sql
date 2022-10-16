@@ -30,7 +30,6 @@ CREATE TABLE sections (
   section_code        varchar                         NOT NULL,
   section_type        varchar                         NOT NULL,
   section_status      varchar                         NOT NULL,
-  name                varchar                         NOT NULL,
   min_units           float                           NOT NULL,
   max_units           float                           NOT NULL,
   campus              varchar                         NOT NULL,

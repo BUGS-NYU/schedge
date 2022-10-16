@@ -106,8 +106,8 @@ public final class InsertFullCourses {
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
-      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode,
-                     c.deptCourseId, c.description);
+      Utils.setArray(stmt, term.json(), c.name, c.subjectCode, c.deptCourseId,
+                     c.description);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();

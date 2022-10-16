@@ -320,7 +320,7 @@ public final class PeopleSoftClassSearch {
         fields.put(parts[0].trim(), parts[1].trim());
       }
 
-      System.err.println("  " + fields + "\n");
+      // System.err.println("  " + fields + "\n");
 
       var s = section;
       s.registrationNumber = Integer.parseInt(fields.get("Class#"));
@@ -332,14 +332,14 @@ public final class PeopleSoftClassSearch {
       s.status = SectionStatus.Open; // fields.get("Class Status");
     }
 
-    for (int i = 2; i < data.size(); i++) {
-      var element = data.get(i);
-      if (element.tagName().contentEquals("br")) {
-        continue;
-      }
+    // for (int i = 2; i < data.size(); i++) {
+    //   var element = data.get(i);
+    //   if (element.tagName().contentEquals("br")) {
+    //     continue;
+    //   }
 
-      System.err.println("  " + element + "\n");
-    }
+    //   System.err.println("  " + element + "\n");
+    // }
 
     // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with
     // Morrison, George Arthur; Margarint, Vlad-Dumitru
@@ -351,7 +351,7 @@ public final class PeopleSoftClassSearch {
       if (text.length() == 0)
         continue;
 
-      System.err.println("  - " + text + "\n");
+      // System.err.println("  - " + text + "\n");
       if (metaText == null) {
         metaText = text;
       } else {

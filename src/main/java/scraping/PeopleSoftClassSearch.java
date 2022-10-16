@@ -333,6 +333,7 @@ public final class PeopleSoftClassSearch {
       var title = data.get(0).text();
       var parts = title.split(" \\| ");
       parts = parts[1].split(" ");
+
       section.minUnits = Double.parseDouble(parts[0]);
       if (parts.length > 2) {
         section.maxUnits = Double.parseDouble(parts[2]);
@@ -347,13 +348,14 @@ public final class PeopleSoftClassSearch {
       for (var attrLineDiv : data.get(1).select("div")) {
         var attrLine = attrLineDiv.text();
         var parts = attrLine.trim().split(":", 2);
+        var key = parts[0].trim();
 
         if (parts.length == 1) {
-          fields.put(parts[0].trim(), "");
+          fields.put(key, "");
           continue;
         }
 
-        fields.put(parts[0].trim(), parts[1].trim());
+        fields.put(key, parts[1].trim());
       }
 
       // System.err.println("  " + fields + "\n");

@@ -269,7 +269,7 @@ public final class PeopleSoftClassSearch {
       courses.add(parseCourse(courseHtml, subjectCode));
     }
 
-    return coursesContainer;
+    return courses;
   }
 
   static Course parseCourse(Element courseHtml, String subjectCode) {
@@ -379,7 +379,6 @@ public final class PeopleSoftClassSearch {
       s.campus = fields.get("Course Location");
       s.grading = fields.get("Grading");
 
-      // @TODO: set the status correctly
       var status = fields.get("Class Status");
       s.status = SectionStatus.parseStatus(status);
       if (s.status == SectionStatus.WaitList) {

@@ -131,9 +131,9 @@ public final class Utils {
   public static ZoneId timezoneForCampus(String campus) {
     var tz = tzMap.get(campus);
     if (tz == null) {
-      // throw new IllegalArgumentException("Bad campus: " + campus);
-      System.err.print("Bad campus: " + campus);
-      return ZoneId.of("America/New_York");
+      throw new IllegalArgumentException("Bad campus: " + campus);
+      // System.err.print("Bad campus: " + campus);
+      // return ZoneId.of("America/New_York");
     }
 
     return tz;

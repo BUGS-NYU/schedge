@@ -166,7 +166,7 @@ public final class PeopleSoftClassSearch {
     return self.scrapeSchools(term);
   }
 
-  public ArrayList<School> scrapeSchools(Term term)
+  public ArrayList<Element> scrapeSchoolElements(Term term)
       throws ExecutionException, InterruptedException {
     var fut = navigateToTerm(term);
     var resp = fut.get();
@@ -179,9 +179,15 @@ public final class PeopleSoftClassSearch {
     doc = Jsoup.parse(cdata.text(), MAIN_URL);
     var results = doc.expectFirst("#win0divRESULTS");
     var group = results.expectFirst("div[id=win0divGROUP$0]");
+    return group.children();
+  }
+
+  public ArrayList<School> scrapeSchools(Term term)
+      throws ExecutionException, InterruptedException {
+    var children = scrapeSchoolElements(term);
 
     var schools = new ArrayList<School>();
-    for (var child : group.children()) {
+    for (var child : children) {
       var header = child.expectFirst("h2");
       var school = new School(header.text());
       schools.add(school);
@@ -211,16 +217,33 @@ public final class PeopleSoftClassSearch {
 
   public Object scrapeSubject(Term term, String subjectCode)
       throws ExecutionException, InterruptedException {
-    var schools = scrapeSchools(term);
+    var group = scrapeSchoolElements(term);
 
-    var indices = findIndices(schools, subjectCode);
-    if (indices == null)
+    Subject subject = null;
+    String actionString = null;
+    for (var child : group) {
+      var schoolTags = child.select("div.ps_box-link");
+      for (var schoolTag : schoolTags) {
+        var schoolTitle = schoolTag.text();
+        var parts = schoolTitle.split("\\(");
+
+        var titlePart = parts[0].trim();
+        var codePart = parts[1];
+        codePart = codePart.substring(0, codePart.length() - 1);
+
+        if (codePart.contentEquals(subjectCode)) {
+          subject = new Subject(codePart, titlePart);
+          actionString = schoolTag.id().substring(7);
+        }
+      }
+    }
+
+    if (subject == null)
       throw new RuntimeException("Subject not found: " + subjectCode);
 
     {
       incrementStateNum();
-      formMap.put("ICAction",
-                  "LINK" + (indices.school + 1) + "$" + (indices.subject + 1));
+      formMap.put("ICAction", actionString);
 
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       var resp = fut.get();
@@ -229,6 +252,7 @@ public final class PeopleSoftClassSearch {
       return parseSubject(responseBody, subjectCode);
     }
   }
+
   static Object parseSubject(String html, String subjectCode) {
     var doc = Jsoup.parse(html, MAIN_URL);
 
@@ -273,12 +297,16 @@ public final class PeopleSoftClassSearch {
       }
     }
 
-    System.err.println("" + course);
-    System.err.println("  descr: " + course.description + "\n");
+    // System.err.println("" + course);
+    // System.err.println("  descr: " + course.description + "\n");
 
     if (!course.subjectCode.contentEquals(subjectCode)) {
-      throw new RuntimeException("course.subjectCode=" + course.subjectCode +
-                                 ", but subject=" + subjectCode);
+      // This isn't an error for something like `SCA-UA`/`SCA-UA_1`, but
+      // could be different than expected for other schools,
+      // so for now we just log it.
+      //                  - Albert Liu, Oct 16, 2022 Sun 13:43
+      System.err.println("course.subjectCode=" + course.subjectCode +
+                         ", but subject=" + subjectCode);
     }
 
     var first = true;
@@ -292,7 +320,7 @@ public final class PeopleSoftClassSearch {
       course.sections.add(section);
     }
 
-    System.err.println("  sections: " + course.sections + "\n");
+    // System.err.println("  sections: " + course.sections + "\n");
 
     return course;
   }
@@ -409,8 +437,7 @@ public final class PeopleSoftClassSearch {
       }
     }
 
-    // @TODO: Set up time zones properly
-    var tz = ZoneId.of("America/New_York");
+    var tz = Utils.timezoneForCampus(section.campus);
 
     beginDateTime = beginDateTime.atZone(tz)
                         .withZoneSameInstant(ZoneOffset.UTC)
@@ -433,25 +460,16 @@ public final class PeopleSoftClassSearch {
     return section;
   }
 
-  static final class SubjectIndices {
-    int school = 0;
-    int subject = 0;
-  }
-  static SubjectIndices findIndices(ArrayList<School> schools,
-                                    String subjectCode) {
-    var indices = new SubjectIndices();
+  static Integer findIndices(ArrayList<School> schools, String subjectCode) {
+    var index = 0;
     for (var school : schools) {
-      indices.subject = 0;
-
       for (var subject : school.subjects) {
         if (subject.code.contentEquals(subjectCode)) {
-          return indices;
+          return index;
         }
 
-        indices.subject += 1;
+        index += 1;
       }
-
-      indices.school += 1;
     }
 
     return null;

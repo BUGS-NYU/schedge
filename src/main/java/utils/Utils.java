@@ -6,6 +6,8 @@ import java.net.*;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.*;
@@ -106,6 +108,35 @@ public final class Utils {
     default:
       return DayOfWeek.valueOf(dayOfWeek);
     }
+  }
+
+  static HashMap<String, ZoneId> tzMap;
+  static {
+    var map = new HashMap<String, ZoneId>();
+    map.put("NYU London (Global)", ZoneId.of("Europe/London"));
+    map.put("NYU Paris (Global)", ZoneId.of("Europe/Paris"));
+    map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
+    map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
+    map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
+    map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
+
+    // map.put("Off Campus", ZoneId.of("America/New_York"));
+
+    map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
+    map.put("Washington Square", ZoneId.of("America/New_York"));
+
+    tzMap = map;
+  }
+
+  public static ZoneId timezoneForCampus(String campus) {
+    var tz = tzMap.get(campus);
+    if (tz == null) {
+      // throw new IllegalArgumentException("Bad campus: " + campus);
+      System.err.print("Bad campus: " + campus);
+      return ZoneId.of("America/New_York");
+    }
+
+    return tz;
   }
 
   public static boolean deleteFile(File f) {

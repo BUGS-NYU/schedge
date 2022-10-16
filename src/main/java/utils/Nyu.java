@@ -1,5 +1,7 @@
 package utils;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -131,23 +133,23 @@ public final class Nyu {
     public List<Meeting> meetings;
     public List<Section> recitations;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;
+    @JsonInclude(NON_NULL) public Integer waitlistTotal;
+    @JsonInclude(NON_NULL) public String instructionMode;
 
     // Values that need to be updated
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String campus;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Double minUnits;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Double maxUnits;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String grading;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
+    @JsonInclude(NON_NULL) public String name;
+    @JsonInclude(NON_NULL) public String campus;
+    @JsonInclude(NON_NULL) public Double minUnits;
+    @JsonInclude(NON_NULL) public Double maxUnits;
+    @JsonInclude(NON_NULL) public String grading;
+    @JsonInclude(NON_NULL) public String location;
+    @JsonInclude(NON_NULL) public String notes;
 
     // @TODO: delete this
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
+    @JsonInclude(NON_NULL) public String prerequisites;
 
     // @TODO: delete this
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+    @JsonInclude(NON_NULL) public String description;
 
     public static Section fromRow(Row row) {
       Section s = new Section();

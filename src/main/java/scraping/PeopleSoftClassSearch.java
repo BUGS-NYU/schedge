@@ -269,7 +269,7 @@ public final class PeopleSoftClassSearch {
       courses.add(parseCourse(courseHtml, subjectCode));
     }
 
-    return courses;
+    return coursesContainer;
   }
 
   static Course parseCourse(Element courseHtml, String subjectCode) {
@@ -380,7 +380,12 @@ public final class PeopleSoftClassSearch {
       s.grading = fields.get("Grading");
 
       // @TODO: set the status correctly
-      s.status = SectionStatus.Open; // fields.get("Class Status");
+      var status = fields.get("Class Status");
+      s.status = SectionStatus.parseStatus(status);
+      if (s.status == SectionStatus.WaitList) {
+        var waitlistString = status.replaceAll("[^0-9]", "");
+        s.waitlistTotal = Integer.parseInt(waitlistString);
+      }
     }
 
     // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with

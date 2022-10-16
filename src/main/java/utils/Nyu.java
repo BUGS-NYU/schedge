@@ -204,7 +204,7 @@ public final class Nyu {
     Cancelled; // Cancelled
 
     public static SectionStatus parseStatus(String status) {
-      if (status.equals("Wait List"))
+      if (status.startsWith("Wait List"))
         return WaitList;
       else
         return valueOf(status);

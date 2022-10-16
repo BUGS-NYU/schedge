@@ -120,8 +120,6 @@ public final class Utils {
     map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
-    // map.put("Off Campus", ZoneId.of("America/New_York"));
-
     map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
     map.put("Washington Square", ZoneId.of("America/New_York"));
 
@@ -129,6 +127,10 @@ public final class Utils {
   }
 
   public static ZoneId timezoneForCampus(String campus) {
+    if (campus.equals("Off Campus")) {
+      return ZoneId.of("America/New_York");
+    }
+
     var tz = tzMap.get(campus);
     if (tz == null) {
       throw new IllegalArgumentException("Bad campus: " + campus);

@@ -207,14 +207,14 @@ public final class PeopleSoftClassSearch {
     return schools;
   }
 
-  public static Object scrapeSubject(AsyncHttpClient client, Term term,
-                                     String subject)
+  public static ArrayList<Course> scrapeSubject(AsyncHttpClient client,
+                                                Term term, String subject)
       throws ExecutionException, InterruptedException {
     var self = new PeopleSoftClassSearch(client);
     return self.scrapeSubject(term, subject);
   }
 
-  public Object scrapeSubject(Term term, String subjectCode)
+  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
       throws ExecutionException, InterruptedException {
     var group = scrapeSchoolElements(term);
 
@@ -253,7 +253,7 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  static Object parseSubject(String html, String subjectCode) {
+  static ArrayList<Course> parseSubject(String html, String subjectCode) {
     var doc = Jsoup.parse(html, MAIN_URL);
 
     {

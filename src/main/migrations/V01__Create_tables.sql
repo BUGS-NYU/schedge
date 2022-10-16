@@ -1,14 +1,14 @@
 CREATE TABLE schedge_meta (
   id                  SERIAL                        NOT NULL UNIQUE,
-  created_at          timestamp WITHOUT TIME ZONE   NOT NULL,
+  created_at          timestamp WITHOUT TIME ZONE   NOT NULL DEFAULT NOW(),
   updated_at          timestamp WITHOUT TIME ZONE   NOT NULL,
   name                varchar                       NOT NULL UNIQUE,
   value               varchar                       NOT NULL,
   PRIMARY KEY (id)
 );
 
-INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
-        VALUES            (NOW(),       NOW(),      'version',  '1');
+INSERT  INTO schedge_meta (updated_at, name,       value)
+        VALUES            (NOW(),      'version',  '1');
 
 CREATE TABLE courses (
   id                  SERIAL                      NOT NULL UNIQUE,

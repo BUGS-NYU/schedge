@@ -23,50 +23,26 @@ public final class InsertFullCourses {
     private static final String sectionSql;
 
     static {
-      String[] sectionFields = new String[] {"name", "?",
-                                             /* */
-                                             "name_vec", "to_tsvector(?)",
-                                             /* */
-                                             "registration_number", "?",
-                                             /* */
-                                             "campus", "?",
-                                             /* */
-                                             "min_units", "?",
-                                             /* */
-                                             "max_units", "?",
-                                             /* */
-                                             "instruction_mode", "?",
-                                             /* */
-                                             "location", "?",
-                                             /* */
-                                             "grading", "?",
-                                             /* */
-                                             "notes", "?",
-                                             /* */
-                                             "notes_vec", "to_tsvector(?)",
-                                             /* */
-                                             "prerequisites", "?",
-                                             /* */
-                                             "prereqs_vec", "to_tsvector(?)",
-                                             /* */
-                                             "course_id", "?",
-                                             /* */
-                                             "section_code", "?",
-                                             /* */
-                                             "section_type", "?",
-                                             /* */
-                                             "section_status", "?",
-                                             /* */
-                                             "waitlist_total", "?",
-                                             /* */
-                                             "associated_with", "?",
-                                             /* */
-                                             "instructors", "?"};
+      String[] sectionFields = new String[] {"registration_number",
+                                             "campus",
+                                             "min_units",
+                                             "max_units",
+                                             "instruction_mode",
+                                             "location",
+                                             "grading",
+                                             "notes",
+                                             "course_id",
+                                             "section_code",
+                                             "section_type",
+                                             "section_status",
+                                             "waitlist_total",
+                                             "associated_with",
+                                             "instructors"};
 
       StringBuilder builder = new StringBuilder();
       builder.append("INSERT INTO sections (");
 
-      for (int i = 0; i < sectionFields.length; i += 2) {
+      for (int i = 0; i < sectionFields.length; i++) {
         if (i != 0) {
           builder.append(", ");
         }
@@ -76,12 +52,12 @@ public final class InsertFullCourses {
 
       builder.append(") VALUES (");
 
-      for (int i = 1; i < sectionFields.length; i += 2) {
-        if (i != 1) {
+      for (int i = 0; i < sectionFields.length; i++) {
+        if (i != 0) {
           builder.append(", ");
         }
 
-        builder.append(sectionFields[i]);
+        builder.append('?');
       }
 
       builder.append(") RETURNING id");
@@ -90,11 +66,11 @@ public final class InsertFullCourses {
     }
 
     Prepared(Connection conn) throws SQLException {
-      this.courses = conn.prepareStatement(
-          "INSERT INTO courses "
-          + "(term, name, name_vec, subject_code, "
-          + "dept_course_id) "
-          + "VALUES (?, ?, to_tsvector(?), ?, ?) RETURNING id");
+      this.courses =
+          conn.prepareStatement("INSERT INTO courses "
+                                + "(term, name, subject_code, "
+                                + "dept_course_id, description) "
+                                + "VALUES (?, ?, ?, ?, ?) RETURNING id");
 
       this.sections = conn.prepareStatement(sectionSql);
 
@@ -130,8 +106,8 @@ public final class InsertFullCourses {
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
-      Utils.setArray(stmt, term.json(), c.name, c.name, c.subjectCode,
-                     c.deptCourseId);
+      Utils.setArray(stmt, term.json(), c.name, c.subjectCode, c.deptCourseId,
+                     c.description);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();
@@ -154,26 +130,21 @@ public final class InsertFullCourses {
 
     for (Section s : sections) {
       Object[] fieldValues =
-          new Object[] {s.name,
-                        s.name,
-                        s.registrationNumber,
+          new Object[] {s.registrationNumber,
                         s.campus,
                         s.minUnits,
                         s.maxUnits,
-                        Utils.nullable(Types.VARCHAR, s.instructionMode),
-                        s.location,
+                        s.instructionMode,
+                        Utils.nullable(Types.VARCHAR, s.location),
                         s.grading,
-                        Utils.nullable(Types.VARCHAR, s.notes),
-                        Utils.nullable(Types.VARCHAR, s.notes),
-                        Utils.nullable(Types.VARCHAR, s.prerequisites),
-                        Utils.nullable(Types.VARCHAR, s.prerequisites),
+                        s.notes,
                         courseId,
                         s.code,
                         s.type,
                         s.status.name(),
                         Utils.nullable(Types.INTEGER, s.waitlistTotal),
                         Utils.nullable(Types.INTEGER, associatedWith),
-                        Utils.nullable(Types.ARRAY, s.instructors)};
+                        s.instructors};
 
       try {
         Utils.setArray(stmt, fieldValues);

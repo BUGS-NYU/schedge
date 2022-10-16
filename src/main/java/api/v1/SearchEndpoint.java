@@ -7,7 +7,6 @@ import io.javalin.http.Context;
 import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import utils.Nyu;
 
 public final class SearchEndpoint extends App.Endpoint {
@@ -52,30 +51,6 @@ public final class SearchEndpoint extends App.Endpoint {
             openApiParam -> {
               openApiParam.description(
                   "The subject to search within. Can work cross school.");
-            })
-        .queryParam(
-            "titleWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course titles in search. Default is 2.");
-            })
-        .queryParam(
-            "descriptionWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course descriptions in search. Default is 1.");
-            })
-        .queryParam(
-            "notesWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course notes in search. Default is 0.");
-            })
-        .queryParam(
-            "prereqsWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course prerequisites in search. Default is 0.");
             })
         .json("400", App.ApiError.class,
               openApiParam -> {
@@ -130,16 +105,14 @@ public final class SearchEndpoint extends App.Endpoint {
       String fullData = ctx.queryParam("full");
       if (fullData != null && fullData.toLowerCase().equals("true")) {
         return RowsToCourses
-            .fullRowsToCourses(SearchRows.searchFullRows(
-                conn, term, subject, school, args, titleWeight,
-                descriptionWeight, notesWeight, prereqsWeight))
+            .fullRowsToCourses(
+                SearchRows.searchFullRows(conn, term, subject, school, args))
             .limit(resultSize)
             .collect(Collectors.toList());
       } else {
         return RowsToCourses
-            .rowsToCourses(SearchRows.searchRows(
-                conn, term, subject, school, args, titleWeight,
-                descriptionWeight, notesWeight, prereqsWeight))
+            .rowsToCourses(
+                SearchRows.searchRows(conn, term, subject, school, args))
             .limit(resultSize)
             .collect(Collectors.toList());
       }

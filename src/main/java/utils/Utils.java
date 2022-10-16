@@ -121,6 +121,7 @@ public final class Utils {
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
     map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
+    map.put("Brooklyn Campus", ZoneId.of("America/New_York"));
     map.put("Washington Square", ZoneId.of("America/New_York"));
 
     tzMap = map;

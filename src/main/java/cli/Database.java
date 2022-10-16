@@ -3,6 +3,7 @@ package cli;
 import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
+import actions.ScrapeTerm;
 import database.GetConnection;
 import database.UpdateSchools;
 import database.courses.InsertFullCourses;
@@ -44,6 +45,20 @@ public class Database implements Runnable {
           conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
       GetConnection.close();
     }
+
+    long end = System.nanoTime();
+    logger.info((end - start) / 1000000000 + " seconds");
+  }
+
+  @Command(name = "scrape-term", description = "Scrape all data for a term")
+  public void scrapeTerm(@Mixin Mixins.Term termMixin)
+      throws IOException, ExecutionException, InterruptedException {
+    long start = System.nanoTime();
+
+    var term = termMixin.getTerm();
+
+    ScrapeTerm.scrapeTerm(term);
+    GetConnection.close();
 
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");

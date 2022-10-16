@@ -306,14 +306,8 @@ public final class PeopleSoftClassSearch {
                   ", but subject=" + subjectCode);
     }
 
-    var first = true;
     Section lecture = null;
-    for (var sectionHtml : sections) {
-      if (first) {
-        first = false;
-        continue;
-      }
-
+    for (var sectionHtml : sections.subList(1, sections.size())) {
       var section = parseSection(sectionHtml);
       if (section.type.equals("Lecture")) {
         course.sections.add(section);

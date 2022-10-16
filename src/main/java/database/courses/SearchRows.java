@@ -56,7 +56,7 @@ public final class SearchRows {
     rs.close();
 
     PreparedStatement rowStmt = conn.prepareStatement(
-        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+        "WITH q (query) AS (SELECT websearch_to_tsquery(?)) "
         + "SELECT courses.*, sections.id AS section_id, "
         + "sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "

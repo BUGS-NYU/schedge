@@ -375,6 +375,11 @@ public final class PeopleSoftClassSearch {
 
     parts = parts[0].split(" ");
 
+    if (parts.length <= 3) {
+      // No meetings
+      return section;
+    }
+
     int tokenIdx = 0;
     int duration;
     LocalDateTime beginDateTime, endDateTime;
@@ -382,10 +387,6 @@ public final class PeopleSoftClassSearch {
     {
       var beginDateStr = parts[tokenIdx];
       var endDateStr = parts[tokenIdx + 2];
-      if (tokenIdx + 3 >= parts.length) {
-        // No meetings
-        return section;
-      }
 
       var dayStr = parts[tokenIdx + 3];
       var beginTimeStr = parts[tokenIdx + 4];

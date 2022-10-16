@@ -90,14 +90,13 @@ public final class InsertFullCourses {
     }
 
     Prepared(Connection conn) throws SQLException {
-      this.courses =
-          conn.prepareStatement("INSERT INTO courses "
-                                    + "(term, name, name_vec, subject_code, "
-                                    + "dept_course_id) "
-                                    + "VALUES (?, ?, to_tsvector(?), ?, ?) RETURNING id");
+      this.courses = conn.prepareStatement(
+          "INSERT INTO courses "
+          + "(term, name, name_vec, subject_code, "
+          + "dept_course_id) "
+          + "VALUES (?, ?, to_tsvector(?), ?, ?) RETURNING id");
 
-      this.sections =
-          conn.prepareStatement(sectionSql);
+      this.sections = conn.prepareStatement(sectionSql);
 
       this.meetings = conn.prepareStatement(
           "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
@@ -170,7 +169,7 @@ public final class InsertFullCourses {
                         Utils.nullable(Types.VARCHAR, s.prerequisites),
                         courseId,
                         s.code,
-                        s.type.name(),
+                        s.type,
                         s.status.name(),
                         Utils.nullable(Types.INTEGER, s.waitlistTotal),
                         Utils.nullable(Types.INTEGER, associatedWith),

@@ -15,11 +15,15 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
+import org.slf4j.*;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
+
+  static Logger logger =
+      LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
 
   public static final class FormEntry {
     public final String key;
@@ -265,7 +269,7 @@ public final class PeopleSoftClassSearch {
       courses.add(parseCourse(courseHtml, subjectCode));
     }
 
-    return coursesContainer;
+    return courses;
   }
 
   static Course parseCourse(Element courseHtml, String subjectCode) {
@@ -293,19 +297,17 @@ public final class PeopleSoftClassSearch {
       }
     }
 
-    // System.err.println("" + course);
-    // System.err.println("  descr: " + course.description + "\n");
-
     if (!course.subjectCode.contentEquals(subjectCode)) {
       // This isn't an error for something like `SCA-UA`/`SCA-UA_1`, but
       // could be different than expected for other schools,
       // so for now we just log it.
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
-      System.err.println("course.subjectCode=" + course.subjectCode +
-                         ", but subject=" + subjectCode);
+      logger.warn("course.subjectCode=" + course.subjectCode +
+                  ", but subject=" + subjectCode);
     }
 
     var first = true;
+    Section lecture = null;
     for (var sectionHtml : sections) {
       if (first) {
         first = false;
@@ -313,10 +315,20 @@ public final class PeopleSoftClassSearch {
       }
 
       var section = parseSection(sectionHtml);
-      course.sections.add(section);
-    }
+      if (section.type.equals("Lecture")) {
+        course.sections.add(section);
+        section.recitations = new ArrayList<>();
+        lecture = section;
 
-    // System.err.println("  sections: " + course.sections + "\n");
+        continue;
+      }
+
+      if (lecture == null) {
+        course.sections.add(section);
+      } else {
+        lecture.recitations.add(section);
+      }
+    }
 
     return course;
   }
@@ -326,13 +338,14 @@ public final class PeopleSoftClassSearch {
     var data = wrapper.children();
 
     var section = new Section();
-    section.recitations = new ArrayList<>();
     section.meetings = new ArrayList<>();
 
     {
       var title = data.get(0).text();
       var parts = title.split(" \\| ");
-      parts = parts[1].split(" ");
+
+      var unitString = parts.length < 2 ? "0 units" : parts[1];
+      parts = unitString.split(" ");
 
       section.minUnits = Double.parseDouble(parts[0]);
       if (parts.length > 2) {
@@ -358,26 +371,17 @@ public final class PeopleSoftClassSearch {
         fields.put(key, parts[1].trim());
       }
 
-      // System.err.println("  " + fields + "\n");
-
       var s = section;
       s.registrationNumber = Integer.parseInt(fields.get("Class#"));
       s.code = fields.get("Section");
-      s.type = SectionType.LEC; // fields.get("Component");
+      s.type = fields.get("Component");
       s.instructionMode = fields.get("Instruction Mode");
       s.campus = fields.get("Course Location");
       s.grading = fields.get("Grading");
+
+      // @TODO: set the status correctly
       s.status = SectionStatus.Open; // fields.get("Class Status");
     }
-
-    // for (int i = 2; i < data.size(); i++) {
-    //   var element = data.get(i);
-    //   if (element.tagName().contentEquals("br")) {
-    //     continue;
-    //   }
-
-    //   System.err.println("  " + element + "\n");
-    // }
 
     // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with
     // Morrison, George Arthur; Margarint, Vlad-Dumitru
@@ -389,7 +393,6 @@ public final class PeopleSoftClassSearch {
       if (text.length() == 0)
         continue;
 
-      // System.err.println("  - " + text + "\n");
       if (metaText == null) {
         metaText = text;
       } else {

@@ -1,5 +1,7 @@
 package utils;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -126,28 +128,28 @@ public final class Nyu {
     public int registrationNumber;
     public String code;
     public String[] instructors;
-    public SectionType type;
+    public String type;
     public SectionStatus status;
     public List<Meeting> meetings;
-    public List<Section> recitations;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String campus;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Double minUnits;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public Double maxUnits;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String grading;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
-
-    // @TODO: delete this
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
+    @JsonInclude(NON_NULL) public List<Section> recitations;
+    @JsonInclude(NON_NULL) public Integer waitlistTotal;
+    @JsonInclude(NON_NULL) public String instructionMode;
+    @JsonInclude(NON_NULL) public String campus;
+    @JsonInclude(NON_NULL) public Double minUnits;
+    @JsonInclude(NON_NULL) public Double maxUnits;
+    @JsonInclude(NON_NULL) public String grading;
+    @JsonInclude(NON_NULL) public String location;
+    @JsonInclude(NON_NULL) public String notes;
 
     // @TODO: delete this
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;
+    @JsonInclude(NON_NULL) public String name;
 
     // @TODO: delete this
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String description;
+    @JsonInclude(NON_NULL) public String prerequisites;
+
+    // @TODO: delete this
+    @JsonInclude(NON_NULL) public String description;
 
     public static Section fromRow(Row row) {
       Section s = new Section();
@@ -156,7 +158,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType;
+      s.type = row.sectionType.getName();
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.minUnits = row.minUnits;
@@ -174,7 +176,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType;
+      s.type = row.sectionType.getName();
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.campus = row.campus;

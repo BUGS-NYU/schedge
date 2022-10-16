@@ -374,7 +374,6 @@ public final class PeopleSoftClassSearch {
     }
 
     parts = parts[0].split(" ");
-
     if (parts.length <= 3) {
       // No meetings
       return section;

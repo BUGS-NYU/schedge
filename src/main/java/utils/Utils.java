@@ -83,18 +83,25 @@ public final class Utils {
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
     switch (dayOfWeek) {
     case "Mo":
+    case "Mon":
       return DayOfWeek.MONDAY;
     case "Tu":
+    case "Tue":
       return DayOfWeek.TUESDAY;
     case "We":
+    case "Wed":
       return DayOfWeek.WEDNESDAY;
     case "Th":
+    case "Thu":
       return DayOfWeek.THURSDAY;
     case "Fr":
+    case "Fri":
       return DayOfWeek.FRIDAY;
     case "Sa":
+    case "Sat":
       return DayOfWeek.SATURDAY;
     case "Su":
+    case "Sun":
       return DayOfWeek.SUNDAY;
     default:
       return DayOfWeek.valueOf(dayOfWeek);

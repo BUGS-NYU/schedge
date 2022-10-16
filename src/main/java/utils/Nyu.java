@@ -133,15 +133,15 @@ public final class Nyu {
 
     @JsonInclude(JsonInclude.Include.NON_NULL) public Integer waitlistTotal;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String instructionMode;
-
-    // Values that need to be updated
-    @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String campus;
     @JsonInclude(JsonInclude.Include.NON_NULL) public Double minUnits;
     @JsonInclude(JsonInclude.Include.NON_NULL) public Double maxUnits;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String grading;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String location;
     @JsonInclude(JsonInclude.Include.NON_NULL) public String notes;
+
+    // @TODO: delete this
+    @JsonInclude(JsonInclude.Include.NON_NULL) public String name;
 
     // @TODO: delete this
     @JsonInclude(JsonInclude.Include.NON_NULL) public String prerequisites;

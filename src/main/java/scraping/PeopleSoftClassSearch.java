@@ -4,6 +4,9 @@ import static utils.Nyu.*;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -11,8 +14,12 @@ import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
+import utils.Utils;
 
 public final class PeopleSoftClassSearch {
+  private static DateTimeFormatter timeParser =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
+
   public static final class FormEntry {
     public final String key;
     public final String value;
@@ -281,48 +288,149 @@ public final class PeopleSoftClassSearch {
         continue;
       }
 
-      var wrapper = sectionHtml.expectFirst("td");
-      var data = wrapper.children();
+      var section = parseSection(sectionHtml);
+      course.sections.add(section);
+    }
 
-      var section = new Section();
+    System.err.println("  sections: " + course.sections + "\n");
 
-      var attributes = new HashMap<String, String>();
+    return course;
+  }
+
+  static Section parseSection(Element sectionHtml) {
+    var wrapper = sectionHtml.expectFirst("td");
+    var data = wrapper.children();
+
+    var section = new Section();
+    section.recitations = new ArrayList<>();
+    section.meetings = new ArrayList<>();
+
+    {
+      var fields = new HashMap<String, String>();
 
       for (var attrLineDiv : data.get(1).select("div")) {
         var attrLine = attrLineDiv.text();
         var parts = attrLine.trim().split(":", 2);
 
         if (parts.length == 1) {
-          attributes.put(parts[0].trim(), "");
+          fields.put(parts[0].trim(), "");
           continue;
         }
 
-        attributes.put(parts[0].trim(), parts[1].trim());
+        fields.put(parts[0].trim(), parts[1].trim());
       }
 
-      System.err.println("  " + attributes + "\n");
+      System.err.println("  " + fields + "\n");
 
-      for (int i = 2; i < data.size(); i++) {
-        var element = data.get(i);
-        if (element.tagName().contentEquals("br")) {
-          continue;
-        }
+      var s = section;
+      s.registrationNumber = Integer.parseInt(fields.get("Class#"));
+      s.code = fields.get("Section");
+      s.type = SectionType.LEC; // fields.get("Component");
+      s.instructionMode = fields.get("Instruction Mode");
+      s.campus = fields.get("Course Location");
+      s.grading = fields.get("Grading");
+      s.status = SectionStatus.Open; // fields.get("Class Status");
+    }
 
-        System.err.println("  " + element + "\n");
+    for (int i = 2; i < data.size(); i++) {
+      var element = data.get(i);
+      if (element.tagName().contentEquals("br")) {
+        continue;
       }
 
-      for (var node : wrapper.textNodes()) {
-        var text = node.text().trim();
-        if (text.length() == 0)
-          continue;
+      System.err.println("  " + element + "\n");
+    }
 
-        System.err.println("  " + text + "\n");
+    // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with
+    // Morrison, George Arthur; Margarint, Vlad-Dumitru
+    String metaText = null;
+
+    var notes = new StringBuilder();
+    for (var node : wrapper.textNodes()) {
+      var text = node.text().trim();
+      if (text.length() == 0)
+        continue;
+
+      System.err.println("  - " + text + "\n");
+      if (metaText == null) {
+        metaText = text;
+      } else {
+        notes.append(text);
       }
     }
 
-    System.err.println("  sections: " + course.sections + "\n");
+    section.notes = notes.toString().trim();
+    if (section.notes.length() == 0)
+      section.notes = null;
 
-    return course;
+    var parts = metaText.split(" with ", 2);
+    if (parts.length == 2) {
+      section.instructors = parts[1].split("; ");
+    }
+
+    parts = parts[0].split(" at ", 2);
+    if (parts.length == 2) {
+      section.location = parts[1];
+    }
+
+    parts = parts[0].split(" ");
+
+    int tokenIdx = 0;
+    int duration;
+    LocalDateTime beginDateTime, endDateTime;
+    DayOfWeek[] days;
+    {
+      var beginDateStr = parts[tokenIdx];
+      var endDateStr = parts[tokenIdx + 2];
+      if (tokenIdx + 3 >= parts.length) {
+        // No meetings
+        return section;
+      }
+
+      var dayStr = parts[tokenIdx + 3];
+      var beginTimeStr = parts[tokenIdx + 4];
+      var beginTimeHalfStr = parts[tokenIdx + 5];
+      var endTimeStr = parts[tokenIdx + 7];
+      var endTimeHalfStr = parts[tokenIdx + 8];
+
+      beginDateTime = LocalDateTime.from(timeParser.parse(
+          beginDateStr + ' ' + beginTimeStr + beginTimeHalfStr));
+      var stopDateTime = LocalDateTime.from(
+          timeParser.parse(beginDateStr + ' ' + endTimeStr + endTimeHalfStr));
+      duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
+
+      endDateTime =
+          LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
+
+      var dayStrings = dayStr.split(",");
+      days = new DayOfWeek[dayStrings.length];
+      for (int i = 0; i < dayStrings.length; i++) {
+        days[i] = Utils.parseDayOfWeek(dayStrings[i]);
+      }
+    }
+
+    // @TODO: Set up time zones properly
+    var tz = ZoneId.of("America/New_York");
+
+    beginDateTime = beginDateTime.atZone(tz)
+                        .withZoneSameInstant(ZoneOffset.UTC)
+                        .toLocalDateTime();
+
+    endDateTime = endDateTime.atZone(tz)
+                      .withZoneSameInstant(ZoneOffset.UTC)
+                      .toLocalDateTime();
+
+    for (var day : days) {
+      var meeting = new Meeting();
+      var adjuster = TemporalAdjusters.nextOrSame(day);
+      meeting.beginDate = beginDateTime.with(adjuster);
+      meeting.minutesDuration = duration;
+      meeting.endDate = endDateTime;
+
+      section.meetings.add(meeting);
+    }
+
+    return section;
   }
 
   static final class SubjectIndices {

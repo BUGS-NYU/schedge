@@ -142,19 +142,9 @@ public final class Nyu {
     @JsonInclude(NON_NULL) public String location;
     @JsonInclude(NON_NULL) public String notes;
 
-    // @TODO: delete this
-    @JsonInclude(NON_NULL) public String name;
-
-    // @TODO: delete this
-    @JsonInclude(NON_NULL) public String prerequisites;
-
-    // @TODO: delete this
-    @JsonInclude(NON_NULL) public String description;
-
     public static Section fromRow(Row row) {
       Section s = new Section();
       s.waitlistTotal = row.waitlistTotal;
-      s.name = row.sectionName;
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
@@ -172,7 +162,6 @@ public final class Nyu {
     public static Section fromFullRow(FullRow row) {
       Section s = new Section();
       s.waitlistTotal = row.waitlistTotal;
-      s.name = row.sectionName;
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
@@ -186,7 +175,6 @@ public final class Nyu {
       s.grading = row.grading;
       s.notes = row.notes;
       s.location = row.location;
-      s.prerequisites = row.prerequisites;
 
       return s;
     }

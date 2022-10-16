@@ -2,7 +2,6 @@ package database.models;
 
 import java.sql.*;
 import java.util.List;
-
 import utils.Nyu;
 
 public class Row {
@@ -10,6 +9,7 @@ public class Row {
   public final String name;
   public final String subject;
   public final String deptCourseId;
+  public final String description;
 
   public final int sectionId;
   public final int registrationNumber;
@@ -30,6 +30,7 @@ public class Row {
   public Row(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
+    this.description = rs.getString("description");
     this.subject = rs.getString("subject_code");
     this.deptCourseId = rs.getString("dept_course_id");
     this.sectionId = rs.getInt("section_id");
@@ -49,7 +50,8 @@ public class Row {
     this.instructors = instructors;
 
     this.sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
-    this.sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
+    this.sectionStatus =
+        Nyu.SectionStatus.valueOf(rs.getString("section_status"));
 
     int associatedWith = rs.getInt("associated_with");
     this.associatedWith = rs.wasNull() ? null : associatedWith;

@@ -15,36 +15,10 @@ public final class SearchRows {
 
   public static Stream<Row> searchRows(Connection conn, Nyu.Term term,
                                        String subject, String school,
-                                       String query, int titleWeight,
-                                       int descriptionWeight, int notesWeight,
-                                       int prereqsWeight) throws SQLException {
-    if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
-        prereqsWeight == 0) {
-      throw new IllegalArgumentException("all of the weights were zero");
-    }
-
+                                       String query) throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
-    ArrayList<String> rankings = new ArrayList<>();
-    if (titleWeight != 0) {
-      fields.add("courses.name_vec @@ q.query");
-      fields.add("sections.name_vec @@ q.query");
-      rankings.add(titleWeight + " * ts_rank_cd(courses.name_vec, q.query)");
-      rankings.add(titleWeight + " * ts_rank_cd(sections.name_vec, q.query)");
-    }
-    if (descriptionWeight != 0) {
-      fields.add("courses.description_vec @@ q.query");
-      rankings.add(descriptionWeight +
-                   " * ts_rank_cd(courses.description_vec, q.query)");
-    }
-    if (notesWeight != 0) {
-      fields.add("sections.notes_vec @@ q.query");
-      rankings.add(notesWeight + " * ts_rank_cd(sections.notes_vec, q.query)");
-    }
-    if (prereqsWeight != 0) {
-      fields.add("sections.prereqs_vec @@ q.query");
-      rankings.add(prereqsWeight +
-                   " * ts_rank_cd(sections.prereqs_vec, q.query)");
-    }
+    fields.add(
+        "to_tsvector(courses.name || ' ' || courses.description || ' ' || sections.notes) @@ q.query");
 
     // @TODO fix all this shit
 
@@ -56,7 +30,7 @@ public final class SearchRows {
     String begin = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
                    + "SELECT DISTINCT courses.id FROM q, "
                    + "courses JOIN sections ON courses.id = sections.course_id "
-                   + "WHERE (" + String.join(" OR ", fields) + ") AND ";
+                   + "WHERE (" + fields + ") AND ";
     PreparedStatement idStmt;
     if (subject != null && school != null) {
       idStmt = conn.prepareStatement(
@@ -92,8 +66,7 @@ public final class SearchRows {
         + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "WHERE courses.id = ANY (?) "
-        + "ORDER BY " + String.join(" + ", rankings) + " DESC");
+        + "WHERE courses.id = ANY (?)");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
     Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(
@@ -110,37 +83,13 @@ public final class SearchRows {
     return rows.stream();
   }
 
-  public static Stream<FullRow>
-  searchFullRows(Connection conn, Nyu.Term term, String subject, String school,
-                 String query, int titleWeight, int descriptionWeight,
-                 int notesWeight, int prereqsWeight) throws SQLException {
-    if (titleWeight == 0 && descriptionWeight == 0 && notesWeight == 0 &&
-        prereqsWeight == 0) {
-      throw new IllegalArgumentException("all of the weights were zero");
-    }
-
+  public static Stream<FullRow> searchFullRows(Connection conn, Nyu.Term term,
+                                               String subject, String school,
+                                               String query)
+      throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
-    ArrayList<String> rankings = new ArrayList<>();
-    if (titleWeight != 0) {
-      fields.add("courses.name_vec @@ q.query");
-      fields.add("sections.name_vec @@ q.query");
-      rankings.add(titleWeight + " * ts_rank_cd(courses.name_vec, q.query)");
-      rankings.add(titleWeight + " * ts_rank_cd(sections.name_vec, q.query)");
-    }
-    if (descriptionWeight != 0) {
-      fields.add("courses.description_vec @@ q.query");
-      rankings.add(descriptionWeight +
-                   " * ts_rank_cd(courses.description_vec, q.query)");
-    }
-    if (notesWeight != 0) {
-      fields.add("sections.notes_vec @@ q.query");
-      rankings.add(notesWeight + " * ts_rank_cd(sections.notes_vec, q.query)");
-    }
-    if (prereqsWeight != 0) {
-      fields.add("sections.prereqs_vec @@ q.query");
-      rankings.add(prereqsWeight +
-                   " * ts_rank_cd(sections.prereqs_vec, q.query)");
-    }
+    fields.add(
+        "to_tsvector(courses.name || ' ' || courses.description || ' ' || sections.notes) @@ q.query");
 
     if (subject != null)
       subject = subject.toUpperCase();
@@ -187,8 +136,7 @@ public final class SearchRows {
         + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
-        + "WHERE courses.id = ANY (?) "
-        + "ORDER BY " + String.join(" + ", rankings) + " DESC");
+        + "WHERE courses.id = ANY (?)");
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
     Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(

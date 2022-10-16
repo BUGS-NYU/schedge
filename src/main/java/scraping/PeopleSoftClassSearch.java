@@ -1,5 +1,6 @@
 package scraping;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import java.net.URLEncoder;
@@ -17,7 +18,7 @@ import org.jsoup.nodes.*;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
-  private static DateTimeFormatter timeParser =
+  static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
   public static final class FormEntry {
@@ -127,17 +128,11 @@ public final class PeopleSoftClassSearch {
       var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
       var links = yearHeader.select("a.ps-link");
 
-      String id = null;
-      for (Element link : links) {
-        var text = link.text();
-        if (!text.contentEquals(yearText))
-          continue;
-
-        id = link.id();
-      }
-
-      if (id == null)
+      var link = find(links, l -> l.text().equals(yearText));
+      if (link == null)
         throw new RuntimeException("yearText not found");
+
+      var id = link.id();
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
@@ -223,19 +218,20 @@ public final class PeopleSoftClassSearch {
     String actionString = null;
     for (var child : group) {
       var schoolTags = child.select("div.ps_box-link");
-      for (var schoolTag : schoolTags) {
-        var schoolTitle = schoolTag.text();
-        var parts = schoolTitle.split("\\(");
+      var schoolTag = find(schoolTags, tag -> tag.text().contains(subjectCode));
+      if (schoolTag == null)
+        continue;
 
-        var titlePart = parts[0].trim();
-        var codePart = parts[1];
-        codePart = codePart.substring(0, codePart.length() - 1);
+      var schoolTitle = schoolTag.text();
+      var parts = schoolTitle.split("\\(");
 
-        if (codePart.contentEquals(subjectCode)) {
-          subject = new Subject(codePart, titlePart);
-          actionString = schoolTag.id().substring(7);
-        }
-      }
+      var titlePart = parts[0].trim();
+      var codePart = parts[1];
+      codePart = codePart.substring(0, codePart.length() - 1);
+
+      subject = new Subject(codePart, titlePart);
+      actionString = schoolTag.id().substring(7);
+      break;
     }
 
     if (subject == null)
@@ -458,21 +454,6 @@ public final class PeopleSoftClassSearch {
     }
 
     return section;
-  }
-
-  static Integer findIndices(ArrayList<School> schools, String subjectCode) {
-    var index = 0;
-    for (var school : schools) {
-      for (var subject : school.subjects) {
-        if (subject.code.contentEquals(subjectCode)) {
-          return index;
-        }
-
-        index += 1;
-      }
-    }
-
-    return null;
   }
 
   void incrementStateNum() {

@@ -132,7 +132,7 @@ public final class Utils {
     var tz = tzMap.get(campus);
     if (tz == null) {
       throw new IllegalArgumentException("Bad campus: " + campus);
-      // System.err.print("Bad campus: " + campus);
+      // System.err.println("Bad campus: " + campus);
       // return ZoneId.of("America/New_York");
     }
 

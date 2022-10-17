@@ -1,8 +1,5 @@
 package api;
 
-import api.v1.*;
-import database.GetConnection;
-import database.Migrations;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -56,7 +53,6 @@ public class App {
   }
 
   public static void run() {
-    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
 
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
@@ -114,11 +110,5 @@ public class App {
           stackTrace, ctx.queryParamMap().toString(), ctx.path());
       logger.warn(message);
     });
-
-    new SchoolInfoEndpoint().addTo(app);
-
-    new SearchEndpoint().addTo(app);
-    new GenerateScheduleEndpoint().addTo(app);
-    new CoursesEndpoint().addTo(app);
   }
 }

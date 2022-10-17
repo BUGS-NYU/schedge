@@ -2,9 +2,7 @@ import static picocli.CommandLine.*;
 import static utils.TryCatch.*;
 import static utils.Utils.*;
 
-import actions.*;
 import api.App;
-import cli.Mixins;
 import java.util.concurrent.TimeUnit;
 import picocli.CommandLine;
 
@@ -20,25 +18,17 @@ public class Main implements Runnable {
   boolean displayHelp;
 
   public static void main(String[] args) {
-    new CommandLine(new Main())
-        .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
-        .addSubcommand("db", new CommandLine(new cli.Database()))
-        .execute(args);
+    new CommandLine(new Main()).execute(args);
   }
 
   @Override
   public void run() {
-    throw new ParameterException(
-        spec.commandLine(),
-        "Please provide command query, parse, scrape, or db");
+    throw new ParameterException(spec.commandLine(),
+                                 "Please provide command scrape or db");
   }
 
   @Command(name = "serve", description = "runs the app\n")
-  public void
-  serve(@Mixin Mixins.BatchSize batchSize,
-        @Option(names = "--scrape",
-                description = "whether or not to scrape while serving")
-        boolean scrape) {
+  public void serve() {
     App.run();
 
     // while (scrape) {

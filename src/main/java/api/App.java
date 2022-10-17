@@ -75,8 +75,10 @@ public class App {
       info.setTitle("Schedge");
       info.setDescription(description);
 
+      // Redoc uses webjars to do... something
       config.staticFiles.enableWebjars();
 
+      // Set up OpenAPI + Redoc
       var htmlPath = "/api";
       var jsonPath = "/api/swagger.json";
       var openApiConfig = new OpenApiConfiguration();
@@ -89,6 +91,7 @@ public class App {
       config.plugins.register(new OpenApiPlugin(openApiConfig));
       config.plugins.register(new ReDocPlugin(reDocConfig));
 
+      // Add static files for the NextJS UI
       config.staticFiles.add(staticFiles -> {
         // Not working anymore
         staticFiles.hostedPath = "/";

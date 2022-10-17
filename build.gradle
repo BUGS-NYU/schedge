@@ -79,8 +79,8 @@ jar {
   dependsOn configurations.runtimeClasspath
 
   from('src/main') {
-      include 'migrations/*.sql'
-   }
+    include 'migrations/*.sql'
+  }
 
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }

@@ -54,7 +54,7 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
 
     String[] regNumsStrArray = regNumsString.split(",");
     if (regNumsStrArray.length == 0) {
-      throw new RuntimeException("didn't provide any regstration numbers");
+      throw new RuntimeException("didn't provide any registration numbers");
     }
 
     var registrationNumbers = new ArrayList<Integer>();

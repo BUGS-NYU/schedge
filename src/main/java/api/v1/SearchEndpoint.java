@@ -69,8 +69,7 @@ public final class SearchEndpoint extends App.Endpoint {
 
     Object output = GetConnection.withConnectionReturning(conn -> {
       var rows = SearchRows.searchFullRows(conn, term, args);
-
-      return fullRowsToCourses(rows)
+      return RowsToCourses.fullRowsToCourses(rows)
           .limit(resultSize)
           .collect(Collectors.toList());
     });

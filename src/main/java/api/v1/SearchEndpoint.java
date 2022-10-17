@@ -1,5 +1,7 @@
 package api.v1;
 
+import static api.RowsToCourses.*;
+
 import api.*;
 import database.GetConnection;
 import database.courses.SearchRows;
@@ -72,50 +74,20 @@ public final class SearchEndpoint extends App.Endpoint {
       throw new RuntimeException("Query can be at most 50 characters long.");
     }
 
-    String school = ctx.queryParam("school"), subject =
-                                                  ctx.queryParam("subject");
-
-    int resultSize, titleWeight, descriptionWeight, notesWeight, prereqsWeight;
+    int resultSize;
     try {
       resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                        .map(Integer::parseInt)
                        .orElse(50);
-
-      titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
-                        .map(Integer::parseInt)
-                        .orElse(2);
-
-      descriptionWeight =
-          Optional.ofNullable(ctx.queryParam("descriptionWeight"))
-              .map(Integer::parseInt)
-              .orElse(1);
-
-      notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
-                        .map(Integer::parseInt)
-                        .orElse(0);
-
-      prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(0);
     } catch (NumberFormatException e) {
       throw new RuntimeException("Limit needs to be a positive integer.");
     }
 
     Object output = GetConnection.withConnectionReturning(conn -> {
-      String fullData = ctx.queryParam("full");
-      if (fullData != null && fullData.toLowerCase().equals("true")) {
-        return RowsToCourses
-            .fullRowsToCourses(
-                SearchRows.searchFullRows(conn, term, subject, school, args))
-            .limit(resultSize)
-            .collect(Collectors.toList());
-      } else {
-        return RowsToCourses
-            .rowsToCourses(
-                SearchRows.searchRows(conn, term, subject, school, args))
-            .limit(resultSize)
-            .collect(Collectors.toList());
-      }
+      var rows = SearchRows.searchFullRows(conn, term, args);
+      return RowsToCourses.fullRowsToCourses(rows)
+          .limit(resultSize)
+          .collect(Collectors.toList());
     });
 
     return output;

@@ -1,7 +1,7 @@
 plugins {
-    id "java"
-    id "application"
-    id 'com.avast.gradle.docker-compose' version '0.15.0'
+  id "java"
+  id "application"
+  id 'com.avast.gradle.docker-compose' version '0.15.0'
 }
 
 mainClassName = 'Main'
@@ -25,40 +25,47 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    implementation(
-            // Logging
-            "org.slf4j:slf4j-api:1.7.25",
-            "org.slf4j:slf4j-simple:1.7.30",
+  annotationProcessor(
+    "io.javalin.community.openapi:openapi-annotation-processor:5.1.0"
+  )
 
-            // Database driver and connection pool
-            "org.postgresql:postgresql:42.2.12",
-            "com.zaxxer:HikariCP:3.4.1",
+  implementation(
+    // Logging
+    "org.slf4j:slf4j-api:2.0.3",
+    "org.slf4j:slf4j-simple:2.0.3",
 
-            // HTTP requests and HTML Parsing
-            "org.asynchttpclient:async-http-client-bom:2.10.5",
-            "org.asynchttpclient:async-http-client:2.10.5",
-            "org.jsoup:jsoup:1.15.3",
+    // Database driver and connection pool
+    "org.postgresql:postgresql:42.2.12",
+    "com.zaxxer:HikariCP:3.4.1",
 
-            // Command line arg parsing and progress bar
-            "info.picocli:picocli:4.1.4",
-            "me.tongfei:progressbar:0.8.1",
+    // HTTP requests and HTML Parsing
+    "org.asynchttpclient:async-http-client-bom:2.10.5",
+    "org.asynchttpclient:async-http-client:2.10.5",
+    "org.jsoup:jsoup:1.15.3",
 
-            // JSON
-            "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
+    // Command line arg parsing and progress bar
+    "info.picocli:picocli:4.1.4",
+    "me.tongfei:progressbar:0.8.1",
 
-            // Web server framework and documentation
-            "io.javalin:javalin:4.3.0",
-            "io.javalin:javalin-openapi:4.3.0",
-    )
+    // JSON
+    "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
+
+    // Web server framework and documentation
+    "io.javalin:javalin:5.1.0",
+    // for /openapi route with JSON scheme
+    "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
+    // for ReDoc UI
+    "io.javalin.community.openapi:javalin-redoc-plugin:5.1.0",
+  )
 }
 
 // The build directory should not begin with the same name as the script
 allprojects {
-    buildDir = ".build"
+  buildDir = ".build"
 }
 
 // @TODO use application plugin to make a distribution instead of using
@@ -74,6 +81,7 @@ jar {
   // This will become relevant in a little bit when we move off of flyway
   from('src/main') {
       include 'migrations/*.sql'
+      include 'resources/**/*'
    }
 
   from {

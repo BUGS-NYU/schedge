@@ -65,38 +65,35 @@ public class App {
   public static void run() {
     GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
 
-    Javalin app =
-        Javalin
-            .create(config -> {
-              config.enableCorsForAllOrigins();
+    Javalin app = Javalin.create(config -> {
+      config.enableCorsForAllOrigins();
 
-              String description =
-                  "Schedge is an API to NYU's course catalog. "
-                  + "Please note that <b>this API is currently under "
-                  + "active development and is subject to change</b>."
-                  + "<br/><br/>If you'd like to contribute, "
-                  + "<a href=\"https://github.com/A1Liu/schedge\">"
-                  + "check out the repository</a>.";
+      var description = "Schedge is an API to NYU's course catalog. "
+                        + "Please note that <b>this API is currently under "
+                        + "active development and is subject to change</b>."
+                        + "<br/><br/>If you'd like to contribute, "
+                        + "<a href=\"https://github.com/A1Liu/schedge\">"
+                        + "check out the repository</a>.";
 
-              Info info =
-                  new Info().version("0.1").title("Schedge").description(
-                      description);
+      var info =
+          new Info().version("0.1").title("Schedge").description(description);
 
-              config.enableWebjars();
+      config.enableWebjars();
 
-              OpenApiOptions options = new OpenApiOptions(info)
-                                           .path("/api/swagger.json")
-                                           .reDoc(new ReDocOptions("/api"));
-              config.registerPlugin(new OpenApiPlugin(options));
+      var options = new OpenApiOptions(info)
+                        .path("/api/swagger.json")
+                        .reDoc(new ReDocOptions("/api"));
+      config.registerPlugin(new OpenApiPlugin(options));
 
-              config.addStaticFiles(staticFiles -> {
-                staticFiles.hostedPath = "/";
-                staticFiles.directory = "/next/";
-                staticFiles.location = Location.CLASSPATH;
-                staticFiles.precompress = true;
-              });
-            })
-            .start(4358);
+      config.addStaticFiles(staticFiles -> {
+        staticFiles.hostedPath = "/";
+        staticFiles.directory = "/next/";
+        staticFiles.location = Location.CLASSPATH;
+        staticFiles.precompress = true;
+      });
+    });
+
+    app.start(4358);
 
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();

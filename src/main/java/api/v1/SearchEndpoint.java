@@ -27,12 +27,6 @@ public final class SearchEndpoint extends App.Endpoint {
                      openApiParam.description(
                          SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
                    })
-        .queryParam(
-            "full", Boolean.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "if present and equal to 'true', then you'll get full output");
-            })
         .queryParam("query", String.class, false,
                     openApiParam -> {
                       openApiParam.description(
@@ -43,16 +37,6 @@ public final class SearchEndpoint extends App.Endpoint {
             openApiParam -> {
               openApiParam.description(
                   "The maximum number of top-level sections to return. Capped at 50.");
-            })
-        .queryParam("school", String.class, false,
-                    openApiParam -> {
-                      openApiParam.description("The school to search within.");
-                    })
-        .queryParam(
-            "subject", String.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The subject to search within. Can work cross school.");
             })
         .json("400", App.ApiError.class,
               openApiParam -> {

@@ -75,24 +75,24 @@ public class App {
       info.setTitle("Schedge");
       info.setDescription(description);
 
+      config.staticFiles.enableWebjars();
+
       var htmlPath = "/api";
       var jsonPath = "/api/swagger.json";
       var openApiConfig = new OpenApiConfiguration();
       openApiConfig.setInfo(info);
       openApiConfig.setDocumentationPath(jsonPath);
-
       var reDocConfig = new ReDocConfiguration();
       reDocConfig.setDocumentationPath(jsonPath);
       reDocConfig.setWebJarPath("/api/webjars");
       reDocConfig.setUiPath(htmlPath);
-
       config.plugins.register(new OpenApiPlugin(openApiConfig));
       config.plugins.register(new ReDocPlugin(reDocConfig));
 
-      config.staticFiles.enableWebjars();
       config.staticFiles.add(staticFiles -> {
+        // Not working anymore
         staticFiles.hostedPath = "/";
-        staticFiles.directory = "/next";
+        staticFiles.directory = "/next/";
         staticFiles.location = Location.CLASSPATH;
         staticFiles.precompress = true;
       });

@@ -78,13 +78,16 @@ public class App {
       var info =
           new Info().version("0.1").title("Schedge").description(description);
 
+      // Redoc uses webjars to do... something
       config.enableWebjars();
 
+      // Set up OpenAPI + Redoc
       var options = new OpenApiOptions(info)
                         .path("/api/swagger.json")
                         .reDoc(new ReDocOptions("/api"));
       config.registerPlugin(new OpenApiPlugin(options));
 
+      // Add static files for the NextJS UI
       config.addStaticFiles(staticFiles -> {
         staticFiles.hostedPath = "/";
         staticFiles.directory = "/next/";

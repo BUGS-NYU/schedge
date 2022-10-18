@@ -97,7 +97,7 @@ public class App {
         staticFiles.hostedPath = "/";
         staticFiles.directory = "/next/";
         staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = true;
+        staticFiles.precompress = false;
       });
     });
 

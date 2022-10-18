@@ -19,9 +19,14 @@ You'll need to install a few applications to contribute to this project:
   This is used to run the application in both production and development. Ideally
   it would not be necessary, but for now it is, to reduce the need to download
   an infinite number of dependencies all the time.
-- [Java Development Kit 8 or later](https://www.oracle.com/java/technologies/downloads/) -
+- [Java Development Kit](https://www.oracle.com/java/technologies/downloads/) -
   The project is written in Java, so you'll probably need to install a Java
   Development Kit (JDK) in order to build and run it.
+
+  **NOTE:** Please use at least version 11 and at most version 18. This project
+  uses Java 11 features, so at least JDK 11 is required, but Gradle doesn't
+  seem to support anything later than 18 right now, so you will not be able
+  to build code if you install JDK 19.
 
 > NOTE: If you're on MacOS, you may need to do additional work to set up
 > your computer. Open the Terminal App and run the following command:
@@ -53,7 +58,7 @@ You'll need to install a few applications to contribute to this project:
 ## Useful Commands
 - `yarn schedge db populate --semester=sp --year=2022` -
   Populate your database with data from production
-- `yarn exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
+- `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database
 
 

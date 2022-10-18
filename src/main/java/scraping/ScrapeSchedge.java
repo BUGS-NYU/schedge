@@ -1,14 +1,14 @@
 package scraping;
 
+import static utils.Nyu.*;
+
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.*;
-import java.util.stream.*;
+import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
-import types.*;
 import utils.*;
 
 public final class ScrapeSchedge {
@@ -20,20 +20,21 @@ public final class ScrapeSchedge {
   //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
-  public static List<List<Course>> scrapeFromSchedge(Term term) {
-    Iterator<Subject> subjects = Subject.allSubjects().listIterator();
+  public static List<Course> scrapeFromSchedge(AsyncHttpClient client,
+                                               Term term) {
+    var subjects = Subject.allSubjects().listIterator();
 
-    FutureEngine<String> engine = new FutureEngine<>();
+    var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(client, term, subjects.next()));
       }
     }
 
-    ArrayList<List<Course>> output = new ArrayList<>();
+    var output = new ArrayList<Course>();
     for (String text : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(term, subjects.next()));
+        engine.add(getData(client, term, subjects.next()));
       }
 
       if (text == null) {
@@ -41,23 +42,25 @@ public final class ScrapeSchedge {
       }
 
       List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
-      output.add(courses);
+      output.addAll(courses);
     }
 
     return output;
   }
 
-  private static Future<String> getData(Term term, Subject subject) {
-    String school = subject.schoolCode;
-    String major = subject.code.split("-")[0];
+  private static Future<String> getData(AsyncHttpClient client, Term term,
+                                        String subject) {
+    var parts = subject.split("-");
+    String school = parts[1];
+    String major = parts[0];
 
     // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {
       school = "SHU";
     }
 
-    String[] components =
-        new String[] {"" + term.year, term.semString(), school, major};
+    var components =
+        new String[] {"" + term.year, term.semester.toString(), school, major};
 
     Uri uri =
         Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
@@ -66,7 +69,8 @@ public final class ScrapeSchedge {
 
     long start = System.nanoTime();
 
-    return Client.send(request, (resp, throwable) -> {
+    var fut = client.executeRequest(request).toCompletableFuture();
+    return fut.handleAsync((resp, throwable) -> {
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching took {} seconds: subject={}", duration, subject);

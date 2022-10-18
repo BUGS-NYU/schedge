@@ -6,6 +6,8 @@ import java.net.*;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.*;
@@ -83,22 +85,61 @@ public final class Utils {
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
     switch (dayOfWeek) {
     case "Mo":
+    case "Mon":
       return DayOfWeek.MONDAY;
     case "Tu":
+    case "Tue":
       return DayOfWeek.TUESDAY;
     case "We":
+    case "Wed":
       return DayOfWeek.WEDNESDAY;
     case "Th":
+    case "Thu":
       return DayOfWeek.THURSDAY;
     case "Fr":
+    case "Fri":
       return DayOfWeek.FRIDAY;
     case "Sa":
+    case "Sat":
       return DayOfWeek.SATURDAY;
     case "Su":
+    case "Sun":
       return DayOfWeek.SUNDAY;
     default:
       return DayOfWeek.valueOf(dayOfWeek);
     }
+  }
+
+  static HashMap<String, ZoneId> tzMap;
+  static {
+    var map = new HashMap<String, ZoneId>();
+    map.put("NYU London (Global)", ZoneId.of("Europe/London"));
+    map.put("NYU Paris (Global)", ZoneId.of("Europe/Paris"));
+    map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
+    map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
+    map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
+    map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
+
+    map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
+    map.put("Brooklyn Campus", ZoneId.of("America/New_York"));
+    map.put("Washington Square", ZoneId.of("America/New_York"));
+
+    tzMap = map;
+  }
+
+  public static ZoneId timezoneForCampus(String campus) {
+    if (campus.equals("Off Campus")) {
+      return ZoneId.of("America/New_York");
+    }
+
+    var tz = tzMap.get(campus);
+    if (tz == null) {
+      throw new IllegalArgumentException("Bad campus: " + campus);
+      // System.err.println("Bad campus: " + campus);
+      // return ZoneId.of("America/New_York");
+    }
+
+    return tz;
   }
 
   public static boolean deleteFile(File f) {

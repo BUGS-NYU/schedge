@@ -2,31 +2,19 @@ package api.v1;
 
 import static database.GetConnection.withConnectionReturning;
 import static database.SelectSubjects.*;
+import static utils.Nyu.*;
 
 import api.*;
-import database.*;
-import io.javalin.http.Handler;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.javalin.http.Context;
+import io.javalin.openapi.*;
 import java.util.*;
-import types.Term;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
 
-  public final class SubjectInfo {
-    public String code;
-    public String name;
-  }
-
-  public final class SchoolInfo {
-    public String code;
-    public String name;
-    public ArrayList<SubjectInfo> subjects;
-  }
-
   public final class Info {
     public Term term;
-    public HashMap<String, SchoolInfo> schools;
+    public ArrayList<School> schools;
   }
 
   public static final String TERM_PARAM_DESCRIPTION =
@@ -47,58 +35,41 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
     return new Term(termString.substring(0, 2), year);
   }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint provides general information on the subjects in a term");
-          openApiOperation.summary("Schools and Subjects");
-        })
-        .pathParam("term", String.class,
-                   openApiParam -> {
-                     openApiParam.description(TERM_PARAM_DESCRIPTION);
-                   })
-        .json("200", Info.class,
-              openApiParam -> { openApiParam.description("OK."); });
-  }
+  @OpenApi(
+      path = "/api/schools/{term}", methods = HttpMethod.GET,
+      summary = "School Info",
+      description =
+          "This endpoint provides general information on the subjects in a term",
+      pathParams =
+      {
+        @OpenApiParam(name = "term",
+                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                      example = "fa2022",required = true)
+      },
+      responses =
+      {
+        @OpenApiResponse(status = "200", description = "School information",
+                         content = @OpenApiContent(from = Info.class))
+        ,
+            @OpenApiResponse(status = "400",
+                             description = "One of the values in the path "
+                                           + "parameter was "
+                                           + "not valid.",
+                             content =
+                                 @OpenApiContent(from = App.ApiError.class))
+      })
+  public Object
+  handleEndpoint(Context ctx) {
+    Term term = parseTerm(ctx.pathParam("term"));
 
-  public Handler getHandler() {
-    return ctx -> {
-      Term term = parseTerm(ctx.pathParam("term"));
+    Info info = new Info();
+    info.term = term;
+    info.schools = withConnectionReturning(conn -> {
+      ArrayList<School> schools = selectSchoolsForTerm(conn, term);
 
-      Info info = new Info();
-      info.term = term;
-      info.schools = withConnectionReturning(conn -> {
-        ArrayList<Subject> subjects = selectSubjectsForTerm(conn, term);
-        ArrayList<School> schools = selectSchoolsForTerm(conn, term);
+      return schools;
+    });
 
-        HashMap<String, ArrayList<SubjectInfo>> subjectsInfo = new HashMap<>();
-        for (Subject subject : subjects) {
-          SubjectInfo subjectInfo = new SubjectInfo();
-          subjectInfo.name = subject.name;
-          subjectInfo.code = subject.code;
-
-          subjectsInfo.computeIfAbsent(subject.school, k -> new ArrayList<>())
-              .add(subjectInfo);
-        }
-
-        ArrayList<SubjectInfo> empty = new ArrayList<>();
-        HashMap<String, SchoolInfo> schoolsInfo = new HashMap<>();
-
-        for (School school : schools) {
-          SchoolInfo schoolInfo = new SchoolInfo();
-          schoolInfo.code = school.code;
-          schoolInfo.name = school.name;
-          schoolInfo.subjects = subjectsInfo.getOrDefault(school.code, empty);
-
-          schoolsInfo.put(schoolInfo.code, schoolInfo);
-        }
-
-        return schoolsInfo;
-      });
-
-      ctx.status(200);
-      ctx.json(info);
-    };
+    return info;
   }
 }

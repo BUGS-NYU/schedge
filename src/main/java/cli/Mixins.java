@@ -4,8 +4,8 @@ import static picocli.CommandLine.*;
 
 import java.util.*;
 import picocli.CommandLine;
-import types.User;
 import utils.*;
+import utils.Nyu;
 
 public final class Mixins {
   @Spec private CommandLine.Model.CommandSpec spec;
@@ -32,30 +32,6 @@ public final class Mixins {
     public String getInput() { return Utils.readFromFileOrStdin(inputFile); }
   }
 
-  public static final class Login {
-    @Option(names = "--username", description = "Be correct of capitalization")
-    private String username;
-    @Option(names = "--pwd", description = "Be correct of capitalization")
-    private String password;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public User getUserNotNull() {
-      if (username == null || password == null) {
-        return null;
-      }
-      return new User(username, password);
-    }
-    public User getUser() {
-      User user = getUserNotNull();
-      if (user == null) {
-        throw new CommandLine.ParameterException(
-            spec.commandLine(), "Must provide --username AND --pwd");
-      }
-      return user;
-    }
-  }
-
   public static final class OutputFile {
     @Option(names = "--pretty", defaultValue = "true",
             description = "Either true or false")
@@ -74,33 +50,6 @@ public final class Mixins {
       }
 
       Utils.writeToFileOrStdout(outputFile, jsonData);
-    }
-  }
-
-  public static final class Subject {
-    @Option(names = "--school", description = "school code: UA, UT, UY, etc")
-    private String school;
-
-    @Option(names = "--subject",
-            description = "subject code: CSCI-UA, MATH-UA, etc")
-    private String subject;
-
-    @Spec private CommandLine.Model.CommandSpec spec;
-
-    public List<types.Subject> getSubjects() {
-      if (school == null) {
-        if (subject != null) {
-          throw new CommandLine.ParameterException(
-              spec.commandLine(),
-              "--subject doesn't make sense if school is null");
-        }
-        return types.Subject.allSubjects();
-      } else if (subject == null) {
-        return types.Subject.allSchools().get(school).subjects;
-      } else {
-        types.Subject s = types.Subject.fromCode(subject);
-        return Arrays.asList(s);
-      }
     }
   }
 
@@ -124,7 +73,7 @@ public final class Mixins {
             description = "display a help message")
     boolean displayHelp;
 
-    public types.Term getTermAllowNull() {
+    public Nyu.Term getTermAllowNull() {
       if (termId != null && (semester != null || year != null)) {
         throw new CommandLine.MutuallyExclusiveArgsException(
             spec.commandLine(),
@@ -136,14 +85,14 @@ public final class Mixins {
           throw new CommandLine.ParameterException(
               spec.commandLine(), "Must provide both --semester AND --year");
         }
-        return new types.Term(semester, year);
+        return new Nyu.Term(semester, year);
       } else {
-        return types.Term.fromId(termId);
+        return Nyu.Term.fromId(termId);
       }
     }
 
-    public types.Term getTerm() {
-      types.Term t = getTermAllowNull();
+    public Nyu.Term getTerm() {
+      Nyu.Term t = getTermAllowNull();
       if (t == null) {
         throw new CommandLine.ParameterException(
             spec.commandLine(),

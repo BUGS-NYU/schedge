@@ -1,48 +1,41 @@
 package actions;
 
-import static database.courses.InsertCourses.*;
-import static database.courses.UpdateSections.*;
-import static scraping.ScrapeCatalog.*;
-import static utils.Utils.*;
+import static database.courses.InsertFullCourses.*;
+import static scraping.PeopleSoftClassSearch.*;
+import static utils.Nyu.*;
 
-import cli.ConsoleProgressBarConsumer;
 import database.GetConnection;
-import database.models.SectionID;
-import java.util.List;
-import java.util.function.Function;
-import me.tongfei.progressbar.*;
-import scraping.models.Course;
-import types.*;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.*;
+import org.asynchttpclient.*;
 
 public class ScrapeTerm {
 
-  public static void scrapeTerm(Term term, int batchSize,
-                                int batchSizeSections) {
-    scrapeTerm(term, batchSize, batchSizeSections, false);
+  public static void scrapeTerm(Term term)
+      throws IOException, ExecutionException, InterruptedException {
+    scrapeTerm(term, false);
   }
 
-  public static void scrapeTerm(Term term, int batchSize, int batchSizeSections,
-                                boolean display) {
-    ProgressBarBuilder bar =
-        new ProgressBarBuilder()
-            .setStyle(ProgressBarStyle.ASCII)
-            .setConsumer(new ConsoleProgressBarConsumer(System.out));
+  public static void scrapeTerm(Term term, boolean display)
+      throws IOException, ExecutionException, InterruptedException {
+    /* ProgressBarBuilder bar =
+    new ProgressBarBuilder()
+    .setStyle(ProgressBarStyle.ASCII)
+    .setConsumer(new ConsoleProgressBarConsumer(System.out));
 
-    List<Subject> subjectData = Subject.allSubjects();
-    Iterable<Subject> subjects =
+    Iterable<String> subjects =
         display ? ProgressBar.wrap(subjectData, bar) : subjectData;
+        */
 
-    List<Course> courses = scrapeCatalog(term, subjects, batchSize);
+    ArrayList<Course> courses;
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      courses = scrapeSubject(client, term, "MATH-UA");
+    }
 
     GetConnection.withConnection(conn -> {
-      clearPrevious(conn, term);
-
-      List<SectionID> idData = insertCourses(conn, term, courses);
-
-      Iterable<SectionID> ids =
-          display ? ProgressBar.wrap(idData, bar) : idData;
-
-      updateSections(conn, term, ids.iterator(), batchSizeSections);
+      //
+      insertCourses(conn, term, courses);
     });
   }
 }

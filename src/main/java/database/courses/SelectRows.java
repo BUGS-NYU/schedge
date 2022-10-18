@@ -1,12 +1,13 @@
 package database.courses;
 
+import static utils.Nyu.*;
+
 import database.models.*;
 import java.sql.*;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Stream;
 import org.slf4j.*;
-import types.*;
 import utils.Utils;
 
 public class SelectRows {
@@ -14,10 +15,10 @@ public class SelectRows {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.SelectRows");
 
-  public static Stream<Row> selectRows(Connection conn, Term term, Subject code)
+  public static Stream<Row> selectRows(Connection conn, Term term, String code)
       throws SQLException {
     return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
-                      term.json(), code.code);
+                      term.json(), code);
   }
 
   public static Stream<Row> selectRow(Connection conn, Term term,
@@ -91,10 +92,10 @@ public class SelectRows {
   }
 
   public static Stream<FullRow> selectFullRows(Connection conn, Term term,
-                                               Subject code)
+                                               String code)
       throws SQLException {
     return selectFullRows(conn, "courses.term = ? AND courses.subject_code = ?",
-                          term.json(), code.code);
+                          term.json(), code);
   }
 
   public static Stream<FullRow> selectFullRow(Connection conn, Term term,

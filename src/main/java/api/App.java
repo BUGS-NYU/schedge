@@ -7,23 +7,19 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
-import io.javalin.plugin.openapi.OpenApiOptions;
-import io.javalin.plugin.openapi.OpenApiPlugin;
-import io.javalin.plugin.openapi.dsl.OpenApiBuilder;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
-import io.javalin.plugin.openapi.ui.ReDocOptions;
-import io.swagger.v3.oas.models.info.Info;
+import io.javalin.openapi.OpenApiInfo;
+import io.javalin.openapi.plugin.OpenApiConfiguration;
+import io.javalin.openapi.plugin.OpenApiPlugin;
+import io.javalin.openapi.plugin.redoc.ReDocConfiguration;
+import io.javalin.openapi.plugin.redoc.ReDocPlugin;
 import java.io.*;
 import org.slf4j.*;
 
 public class App {
-
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
   public abstract static class Endpoint implements Handler {
     public abstract String getPath();
-    public abstract OpenApiDocumentation
-    configureDocs(OpenApiDocumentation docs);
 
     public abstract Object handleEndpoint(Context ctx);
 
@@ -43,10 +39,7 @@ public class App {
       }
     }
 
-    public final void addTo(Javalin app) {
-      var docs = this.configureDocs(OpenApiBuilder.document());
-      app.get("/api" + getPath(), OpenApiBuilder.documented(docs, this));
-    }
+    public final void addTo(Javalin app) { app.get("/api" + getPath(), this); }
   }
 
   public static class ApiError extends RuntimeException {
@@ -66,7 +59,9 @@ public class App {
     GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
 
     Javalin app = Javalin.create(config -> {
-      config.enableCorsForAllOrigins();
+      config.plugins.enableCors(cors -> { // It's a public API
+        cors.add(it -> { it.anyHost(); });
+      });
 
       var description = "Schedge is an API to NYU's course catalog. "
                         + "Please note that <b>this API is currently under "
@@ -75,24 +70,33 @@ public class App {
                         + "<a href=\"https://github.com/A1Liu/schedge\">"
                         + "check out the repository</a>.";
 
-      var info =
-          new Info().version("0.1").title("Schedge").description(description);
+      var info = new OpenApiInfo();
+      info.setVersion("2.0.0");
+      info.setTitle("Schedge");
+      info.setDescription(description);
 
       // Redoc uses webjars to do... something
-      config.enableWebjars();
+      config.staticFiles.enableWebjars();
 
       // Set up OpenAPI + Redoc
-      var options = new OpenApiOptions(info)
-                        .path("/api/swagger.json")
-                        .reDoc(new ReDocOptions("/api"));
-      config.registerPlugin(new OpenApiPlugin(options));
+      var htmlPath = "/api";
+      var jsonPath = "/api/swagger.json";
+      var openApiConfig = new OpenApiConfiguration();
+      openApiConfig.setInfo(info);
+      openApiConfig.setDocumentationPath(jsonPath);
+      var reDocConfig = new ReDocConfiguration();
+      reDocConfig.setDocumentationPath(jsonPath);
+      reDocConfig.setWebJarPath("/api/webjars");
+      reDocConfig.setUiPath(htmlPath);
+      config.plugins.register(new OpenApiPlugin(openApiConfig));
+      config.plugins.register(new ReDocPlugin(reDocConfig));
 
       // Add static files for the NextJS UI
-      config.addStaticFiles(staticFiles -> {
+      config.staticFiles.add(staticFiles -> {
         staticFiles.hostedPath = "/";
         staticFiles.directory = "/next/";
         staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = true;
+        staticFiles.precompress = false;
       });
     });
 

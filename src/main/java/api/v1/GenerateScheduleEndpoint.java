@@ -1,48 +1,44 @@
 package api.v1;
 
 import static actions.ScheduleSections.*;
-import static utils.Nyu.*;
 
 import api.*;
 import database.*;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Context;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.javalin.openapi.*;
 import java.util.ArrayList;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
 
   public String getPath() { return "/generateSchedule/{term}"; }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint returns either an ordered schedule, or a pair"
-              + " 'conflictA' and 'conflictB'. You can use the 'valid' field "
-              + "to check whether the schedule is valid.");
-          openApiOperation.summary("Schedule Checking Endpoint");
-        })
-        .pathParam("term", String.class,
-                   openApiParam -> {
-                     openApiParam.description(
-                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
-                   })
-        .queryParam("registrationNumbers", String.class, false,
-                    openApiParam
-                    -> openApiParam.description("CSV of registration numbers"))
-        .json("400", App.ApiError.class,
-              openApiParam -> {
-                openApiParam.description(
-                    "One of the values in the path parameter was not valid.");
-              })
-        .json("200", Schedule.class, openApiParam -> {
-          openApiParam.description("OK.");
-
-          ArrayList<Section> sections = new ArrayList<>();
-        });
-  }
-
+  @OpenApi(
+          path = "/generateSchedule/{term}", methods = HttpMethod.GET,
+          summary = "Scheduler",
+          description =  "This endpoint returns either an ordered schedule, or a pair"
+                  + " 'conflictA' and 'conflictB'. You can use the 'valid' field "
+                  + "to check whether the schedule is valid.",
+          pathParams =
+                  {
+                          @OpenApiParam(name = "term",
+                                  description =
+                                          SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                                  example = "fa2022", required = true)
+                  },
+          responses =
+                  {
+                          @OpenApiResponse(status = "200",
+                                  description = "Schedule created for the provided courses",
+                                  content = @OpenApiContent(from = Schedule.class))
+                          ,
+                          @OpenApiResponse(status = "400",
+                                  description = "One of the values in the path "
+                                          + "parameter was "
+                                          + "not valid.",
+                                  content =
+                                  @OpenApiContent(from = App.ApiError.class))}
+  )
   public Object handleEndpoint(Context ctx) {
     String termString = ctx.pathParam("term");
     var term = SchoolInfoEndpoint.parseTerm(termString);

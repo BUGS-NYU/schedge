@@ -6,7 +6,7 @@ import static utils.Nyu.*;
 
 import api.*;
 import io.javalin.http.Context;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.javalin.openapi.*;
 import java.util.*;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
@@ -35,22 +35,31 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
     return new Term(termString.substring(0, 2), year);
   }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint provides general information on the subjects in a term");
-          openApiOperation.summary("Schools and Subjects");
-        })
-        .pathParam("term", String.class,
-                   openApiParam -> {
-                     openApiParam.description(TERM_PARAM_DESCRIPTION);
-                   })
-        .json("200", Info.class,
-              openApiParam -> { openApiParam.description("OK."); });
-  }
-
-  public Object handleEndpoint(Context ctx) {
+  @OpenApi(
+      path = "/api/schools/{term}", methods = HttpMethod.GET,
+      summary = "School Info",
+      description =
+          "This endpoint provides general information on the subjects in a term",
+      pathParams =
+      {
+        @OpenApiParam(name = "term",
+                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                      example = "fa2022",required = true)
+      },
+      responses =
+      {
+        @OpenApiResponse(status = "200", description = "School information",
+                         content = @OpenApiContent(from = Info.class))
+        ,
+            @OpenApiResponse(status = "400",
+                             description = "One of the values in the path "
+                                           + "parameter was "
+                                           + "not valid.",
+                             content =
+                                 @OpenApiContent(from = App.ApiError.class))
+      })
+  public Object
+  handleEndpoint(Context ctx) {
     Term term = parseTerm(ctx.pathParam("term"));
 
     Info info = new Info();

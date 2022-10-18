@@ -5,4 +5,5 @@
 
 *.sh -text
 *.js -text
+*.jsx -text
 *.java text

@@ -6,7 +6,7 @@ import api.*;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Context;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.javalin.openapi.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import utils.Nyu;
@@ -15,39 +15,39 @@ public final class SearchEndpoint extends App.Endpoint {
 
   public String getPath() { return "/search/{term}"; }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint returns a list of courses for a year and semester, given search terms.");
-          openApiOperation.summary("Search Endpoint");
-        })
-        .pathParam("term", String.class,
-                   openApiParam -> {
-                     openApiParam.description(
-                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
-                   })
-        .queryParam("query", String.class, false,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "A query string to pass to the search engine.");
-                    })
-        .queryParam(
-            "limit", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The maximum number of top-level sections to return. Capped at 50.");
-            })
-        .json("400", App.ApiError.class,
-              openApiParam -> {
-                openApiParam.description(
-                    "One of the values in the path parameter was not valid.");
-              })
-        .jsonArray("200", Nyu.Course.class,
-                   openApiParam -> { openApiParam.description("OK."); });
-  }
-
-  public Object handleEndpoint(Context ctx) {
+  @OpenApi(
+      path = "/api/search/{term}", methods = HttpMethod.GET, summary = "Search",
+      description =
+          "This endpoint returns a list of courses for a year and semester, given search terms.",
+      pathParams =
+      {
+        @OpenApiParam(name = "term",
+                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                      example = "fa2022", required = true)
+        ,
+            @OpenApiParam(name = "query",
+                          description = "Query string created by the user",
+                          example = "Linear algebra", required = true),
+            @OpenApiParam(
+                name = "limit", type = Integer.class,
+                description =
+                    "Maximum number of courses in the result. Defaults to 50.",
+                example = "30", required = true)
+      },
+      responses =
+      {
+        @OpenApiResponse(status = "200", description = "Search results",
+                         content = @OpenApiContent(from = Nyu.Course[].class))
+        ,
+            @OpenApiResponse(status = "400",
+                             description = "One of the values in the path "
+                                           + "parameter was "
+                                           + "not valid.",
+                             content =
+                                 @OpenApiContent(from = App.ApiError.class))
+      })
+  public Object
+  handleEndpoint(Context ctx) {
     String termString = ctx.pathParam("term");
     var term = SchoolInfoEndpoint.parseTerm(termString);
 

@@ -29,10 +29,14 @@ repositories {
 }
 
 dependencies {
+  annotationProcessor(
+    "io.javalin.community.openapi:openapi-annotation-processor:5.1.0"
+  )
+
   implementation(
     // Logging
-    "org.slf4j:slf4j-api:1.7.25",
-    "org.slf4j:slf4j-simple:1.7.30",
+    "org.slf4j:slf4j-api:2.0.3",
+    "org.slf4j:slf4j-simple:2.0.3",
 
     // Database driver and connection pool
     "org.postgresql:postgresql:42.2.12",
@@ -51,8 +55,11 @@ dependencies {
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 
     // Web server framework and documentation
-    "io.javalin:javalin:4.3.0",
-    "io.javalin:javalin-openapi:4.3.0",
+    "io.javalin:javalin:5.1.1",
+    // for /openapi route with JSON scheme
+    "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
+    // for ReDoc UI
+    "io.javalin.community.openapi:javalin-redoc-plugin:5.1.0",
   )
 }
 

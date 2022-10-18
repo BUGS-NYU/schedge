@@ -93,7 +93,6 @@ public class App {
 
       // Add static files for the NextJS UI
       config.staticFiles.add(staticFiles -> {
-        // Not working anymore
         staticFiles.hostedPath = "/";
         staticFiles.directory = "/next/";
         staticFiles.location = Location.CLASSPATH;

@@ -1,16 +1,14 @@
 package scraping;
 
 import static utils.ArrayJS.*;
+import static utils.Http.*;
 import static utils.Nyu.*;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
@@ -81,16 +79,6 @@ public final class PeopleSoftClassSearch {
   final AsyncHttpClient client;
 
   public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
-
-  public static String formEncode(HashMap<String, String> values) {
-    return values.entrySet()
-        .stream()
-        .map(e -> {
-          return e.getKey() + "=" +
-              URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
-        })
-        .collect(Collectors.joining("&"));
-  }
 
   static String yearText(Term term) {
     switch (term.semester) {
@@ -486,31 +474,5 @@ public final class PeopleSoftClassSearch {
     }
 
     return map;
-  }
-
-  // I think I get like silently rate-limited during testing without this
-  // header.
-  static String USER_AGENT =
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
-
-  static Request get(Uri uri) {
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(10_000)
-        .setMethod("GET")
-        .setHeader("User-Agent", USER_AGENT)
-        .build();
-  }
-
-  static Request post(Uri uri, HashMap<String, String> body) {
-    String s = formEncode(body);
-
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(10_000)
-        .setMethod("POST")
-        .setHeader("Content-Type", "application/x-www-form-urlencoded")
-        .setBody(s)
-        .build();
   }
 }

@@ -39,7 +39,8 @@ public class Database implements Runnable {
     var term = termMixin.getTerm();
 
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
+      var search = new PeopleSoftClassSearch(client);
+      var schools = search.scrapeSchools(term);
 
       GetConnection.withConnection(
           conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });

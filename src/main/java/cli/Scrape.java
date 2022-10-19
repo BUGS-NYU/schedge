@@ -47,7 +47,8 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var courses = PeopleSoftClassSearch.scrapeSubject(client, term, subject);
+      var search = new PeopleSoftClassSearch(client);
+      var courses = search.scrapeSubject(term, subject);
       outputFileMixin.writeOutput(courses);
     }
 
@@ -70,7 +71,8 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.getTerm();
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var schools = PeopleSoftClassSearch.scrapeSchools(client, term);
+      var search = new PeopleSoftClassSearch(client);
+      var schools = search.scrapeSchools(term);
       outputFileMixin.writeOutput(schools);
     }
 

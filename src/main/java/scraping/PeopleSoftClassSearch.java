@@ -80,7 +80,7 @@ public final class PeopleSoftClassSearch {
   HashMap<String, String> formMap;
   final AsyncHttpClient client;
 
-  PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
+  public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
   public static String formEncode(HashMap<String, String> values) {
     return values.entrySet()
@@ -169,15 +169,13 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
-                                                Term term)
+  public ArrayList<School> scrapeSchools(Term term)
       throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
 
     var schools = new ArrayList<School>();
     School school = null;
 
-    for (var subject : self.scrapeSubjects(term)) {
+    for (var subject : scrapeSubjects(term)) {
       if (school == null || school.name.equals(subject.schoolName)) {
         school = new School(subject.schoolName);
       }
@@ -222,13 +220,6 @@ public final class PeopleSoftClassSearch {
     }
 
     return out;
-  }
-
-  public static ArrayList<Course> scrapeSubject(AsyncHttpClient client,
-                                                Term term, String subject)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    return self.scrapeSubject(term, subject);
   }
 
   public ArrayList<Course> scrapeSubject(Term term, String subjectCode)

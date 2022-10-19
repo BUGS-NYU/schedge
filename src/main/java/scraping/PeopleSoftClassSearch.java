@@ -78,44 +78,41 @@ public final class PeopleSoftClassSearch {
         .collect(Collectors.joining("&"));
   }
 
-  Future<Response> navigateToTerm(Term term)
-      throws ExecutionException, InterruptedException {
-    String yearText;
+  static String yearText(Term term) {
     switch (term.semester) {
     case ja:
     case sp:
     case su:
-      yearText = (term.year - 1) + "-" + term.year;
-      break;
+      return (term.year - 1) + "-" + term.year;
 
     case fa:
-      yearText = term.year + "-" + (term.year + 1);
-      break;
+      return term.year + "-" + (term.year + 1);
 
     default:
       throw new RuntimeException("whatever");
     }
+  }
 
-    String semesterId;
-    {
-      switch (term.semester) {
-      case fa:
-        semesterId = "NYU_CLS_WRK_NYU_FALL$36$";
-        break;
-      case ja:
-        semesterId = "NYU_CLS_WRK_NYU_WINTER$37$";
-        break;
-      case sp:
-        semesterId = "NYU_CLS_WRK_NYU_SPRING$38$";
-        break;
-      case su:
-        semesterId = "NYU_CLS_WRK_NYU_SUMMER$39$";
-        break;
+  static String semesterId(Term term) {
+    switch (term.semester) {
+    case fa:
+      return "NYU_CLS_WRK_NYU_FALL$36$";
+    case ja:
+      return "NYU_CLS_WRK_NYU_WINTER$37$";
+    case sp:
+      return "NYU_CLS_WRK_NYU_SPRING$38$";
+    case su:
+      return "NYU_CLS_WRK_NYU_SUMMER$39$";
 
-      default:
-        throw new RuntimeException("whatever");
-      }
+    default:
+      throw new RuntimeException("whatever");
     }
+  }
+
+  Future<Response> navigateToTerm(Term term)
+      throws ExecutionException, InterruptedException {
+    String yearText = yearText(term);
+    String semesterId = semesterId(term);
 
     { // ignore the response here because we just want the cookies
       var fut = client.executeRequest(get(MAIN_URI));

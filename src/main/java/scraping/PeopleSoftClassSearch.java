@@ -169,13 +169,11 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
-
+  static ArrayList<School> translateSubjects(ArrayList<SubjectElem> raw) {
     var schools = new ArrayList<School>();
     School school = null;
 
-    for (var subject : scrapeSubjects(term)) {
+    for (var subject : raw) {
       if (school == null || school.name.equals(subject.schoolName)) {
         school = new School(subject.schoolName);
       }
@@ -184,6 +182,11 @@ public final class PeopleSoftClassSearch {
     }
 
     return schools;
+  }
+
+  public ArrayList<School> scrapeSchools(Term term)
+      throws ExecutionException, InterruptedException {
+    return translateSubjects(scrapeSubjects(term));
   }
 
   public ArrayList<SubjectElem> scrapeSubjects(Term term)

@@ -1,7 +1,6 @@
 package actions;
 
 import static database.courses.InsertFullCourses.*;
-import static scraping.PeopleSoftClassSearch.*;
 import static utils.Nyu.*;
 
 import database.GetConnection;
@@ -9,6 +8,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import org.asynchttpclient.*;
+import scraping.PeopleSoftClassSearch;
 
 public class ScrapeTerm {
 
@@ -30,7 +30,8 @@ public class ScrapeTerm {
 
     ArrayList<Course> courses;
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      courses = scrapeSubject(client, term, "MATH-UA");
+      var search = new PeopleSoftClassSearch(client);
+      courses = search.scrapeSubject(term, "MATH-UA");
     }
 
     GetConnection.withConnection(conn -> {

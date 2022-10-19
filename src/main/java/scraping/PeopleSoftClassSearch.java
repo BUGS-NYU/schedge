@@ -25,6 +25,20 @@ public final class PeopleSoftClassSearch {
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
 
+  public static final class SubjectElem {
+    public final String schoolName;
+    public final String code;
+    public final String name;
+    public final String action;
+
+    SubjectElem(String school, String code, String name, String action) {
+      this.schoolName = school;
+      this.code = code;
+      this.name = name;
+      this.action = action;
+    }
+  }
+
   public static final class FormEntry {
     public final String key;
     public final String value;
@@ -159,10 +173,22 @@ public final class PeopleSoftClassSearch {
                                                 Term term)
       throws ExecutionException, InterruptedException {
     var self = new PeopleSoftClassSearch(client);
-    return self.scrapeSchools(term);
+
+    var schools = new ArrayList<School>();
+    School school = null;
+
+    for (var subject : self.scrapeSubjects(term)) {
+      if (school == null || school.name.equals(subject.schoolName)) {
+        school = new School(subject.schoolName);
+      }
+
+      school.subjects.add(new Subject(subject.code, subject.name));
+    }
+
+    return schools;
   }
 
-  public ArrayList<Element> scrapeSchoolElements(Term term)
+  public ArrayList<SubjectElem> scrapeSubjects(Term term)
       throws ExecutionException, InterruptedException {
     var fut = navigateToTerm(term);
     var resp = fut.get();
@@ -175,18 +201,10 @@ public final class PeopleSoftClassSearch {
     doc = Jsoup.parse(cdata.text(), MAIN_URL);
     var results = doc.expectFirst("#win0divRESULTS");
     var group = results.expectFirst("div[id=win0divGROUP$0]");
-    return group.children();
-  }
 
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
-    var children = scrapeSchoolElements(term);
-
-    var schools = new ArrayList<School>();
-    for (var child : children) {
-      var header = child.expectFirst("h2");
-      var school = new School(header.text());
-      schools.add(school);
+    var out = new ArrayList<SubjectElem>();
+    for (var child : group.children()) {
+      var school = child.expectFirst("h2").text();
 
       var schoolTags = child.select("div.ps_box-link");
       for (var schoolTag : schoolTags) {
@@ -197,11 +215,13 @@ public final class PeopleSoftClassSearch {
         var codePart = parts[1];
         codePart = codePart.substring(0, codePart.length() - 1);
 
-        school.subjects.add(new Subject(codePart, titlePart));
+        var action = schoolTag.id().substring(7);
+
+        out.add(new SubjectElem(school, codePart, titlePart, action));
       }
     }
 
-    return schools;
+    return out;
   }
 
   public static ArrayList<Course> scrapeSubject(AsyncHttpClient client,
@@ -213,34 +233,15 @@ public final class PeopleSoftClassSearch {
 
   public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
       throws ExecutionException, InterruptedException {
-    var group = scrapeSchoolElements(term);
+    var subjects = scrapeSubjects(term);
 
-    Subject subject = null;
-    String actionString = null;
-    for (var child : group) {
-      var schoolTags = child.select("div.ps_box-link");
-      var schoolTag = find(schoolTags, tag -> tag.text().contains(subjectCode));
-      if (schoolTag == null)
-        continue;
-
-      var schoolTitle = schoolTag.text();
-      var parts = schoolTitle.split("\\(");
-
-      var titlePart = parts[0].trim();
-      var codePart = parts[1];
-      codePart = codePart.substring(0, codePart.length() - 1);
-
-      subject = new Subject(codePart, titlePart);
-      actionString = schoolTag.id().substring(7);
-      break;
-    }
-
+    var subject = find(subjects, s -> s.code.equals(subjectCode));
     if (subject == null)
       throw new RuntimeException("Subject not found: " + subjectCode);
 
     {
       incrementStateNum();
-      formMap.put("ICAction", actionString);
+      formMap.put("ICAction", subject.action);
 
       var fut = client.executeRequest(post(MAIN_URI, formMap));
       var resp = fut.get();

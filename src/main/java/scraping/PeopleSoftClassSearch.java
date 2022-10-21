@@ -17,9 +17,6 @@ import org.slf4j.*;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
-  static DateTimeFormatter timeParser =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
-
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
 
@@ -157,24 +154,10 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  static ArrayList<School> translateSubjects(ArrayList<SubjectElem> raw) {
-    var schools = new ArrayList<School>();
-    School school = null;
-
-    for (var subject : raw) {
-      if (school == null || school.name.equals(subject.schoolName)) {
-        school = new School(subject.schoolName);
-      }
-
-      school.subjects.add(new Subject(subject.code, subject.name));
-    }
-
-    return schools;
-  }
-
   public ArrayList<School> scrapeSchools(Term term)
       throws ExecutionException, InterruptedException {
-    return translateSubjects(scrapeSubjects(term));
+    var subjects = scrapeSubjects(term);
+    return Parser.translateSubjects(subjects);
   }
 
   public ArrayList<SubjectElem> scrapeSubjects(Term term)
@@ -229,24 +212,71 @@ public final class PeopleSoftClassSearch {
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
 
-      return parseSubject(responseBody, subjectCode);
+      return Parser.parseSubject(responseBody, subjectCode);
     }
   }
 
+  void incrementStateNum() {
+    int action = Integer.parseInt(formMap.get("ICStateNum"));
+    action += 1;
+    formMap.put("ICStateNum", "" + action);
+  }
+
+  static HashMap<String, String> parseFormFields(Element body) {
+    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
+    var inputs = optionsRoot.select("input");
+    var map = new HashMap<String, String>();
+    for (var input : inputs) {
+      var attr = input.attributes();
+
+      map.put(input.id(), attr.get("value"));
+    }
+
+    for (var entry : FORM_DEFAULTS) {
+      map.computeIfAbsent(entry.key, k -> entry.value);
+    }
+
+    return map;
+  }
+}
+
+class Parser {
+  static Logger logger = PeopleSoftClassSearch.logger;
+
+  static DateTimeFormatter timeParser =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
+
+  static ArrayList<School>
+  translateSubjects(ArrayList<PeopleSoftClassSearch.SubjectElem> raw) {
+    var schools = new ArrayList<School>();
+    School school = null;
+
+    for (var subject : raw) {
+      if (school == null || school.name.equals(subject.schoolName)) {
+        school = new School(subject.schoolName);
+      }
+
+      school.subjects.add(new Subject(subject.code, subject.name));
+    }
+
+    return schools;
+  }
+
   static ArrayList<Course> parseSubject(String html, String subjectCode) {
-    var doc = Jsoup.parse(html, MAIN_URL);
+    var doc = Jsoup.parse(html);
 
     {
       var field = doc.expectFirst("#win0divPAGECONTAINER");
       var cdata = (CDataNode)field.textNodes().get(0);
-      doc = Jsoup.parse(cdata.text(), MAIN_URL);
+      doc = Jsoup.parse(cdata.text());
     }
 
     var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
 
     var courses = new ArrayList<Course>();
     for (var courseHtml : coursesContainer.children()) {
-      courses.add(parseCourse(courseHtml, subjectCode));
+      var course = parseCourse(courseHtml, subjectCode);
+      courses.add(course);
     }
 
     return courses;
@@ -451,28 +481,5 @@ public final class PeopleSoftClassSearch {
     }
 
     return section;
-  }
-
-  void incrementStateNum() {
-    int action = Integer.parseInt(formMap.get("ICStateNum"));
-    action += 1;
-    formMap.put("ICStateNum", "" + action);
-  }
-
-  static HashMap<String, String> parseFormFields(Element body) {
-    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
-    var inputs = optionsRoot.select("input");
-    var map = new HashMap<String, String>();
-    for (var input : inputs) {
-      var attr = input.attributes();
-
-      map.put(input.id(), attr.get("value"));
-    }
-
-    for (var entry : FORM_DEFAULTS) {
-      map.computeIfAbsent(entry.key, k -> entry.value);
-    }
-
-    return map;
   }
 }

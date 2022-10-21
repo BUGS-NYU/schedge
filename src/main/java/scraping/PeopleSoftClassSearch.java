@@ -34,6 +34,11 @@ public final class PeopleSoftClassSearch {
     }
   }
 
+  public static final class CoursesForTerm {
+    public final ArrayList<School> schools = new ArrayList<>();
+    public final ArrayList<Course> courses = new ArrayList<>();
+  }
+
   public static final class FormEntry {
     public final String key;
     public final String value;
@@ -108,6 +113,50 @@ public final class PeopleSoftClassSearch {
     }
   }
 
+  public ArrayList<School> scrapeSchools(Term term)
+      throws ExecutionException, InterruptedException {
+    var subjects = scrapeSubjectList(term);
+    return Parser.translateSubjects(subjects);
+  }
+
+  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
+      throws ExecutionException, InterruptedException {
+    var subjects = scrapeSubjectList(term);
+
+    var subject = find(subjects, s -> s.code.equals(subjectCode));
+    if (subject == null)
+      throw new RuntimeException("Subject not found: " + subjectCode);
+
+    {
+      incrementStateNum();
+      formMap.put("ICAction", subject.action);
+
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+
+      return Parser.parseSubject(responseBody, subjectCode);
+    }
+  }
+
+  public CoursesForTerm scrapeTerm(Term term)
+      throws ExecutionException, InterruptedException {
+    var subjects = scrapeSubjectList(term);
+
+    for (var subject : subjects) {
+      incrementStateNum();
+      formMap.put("ICAction", subject.action);
+
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+
+      var courses = Parser.parseSubject(responseBody, subject.code);
+    }
+
+    return null;
+  }
+
   Future<Response> navigateToTerm(Term term)
       throws ExecutionException, InterruptedException {
     String yearText = yearText(term);
@@ -154,13 +203,7 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
-    var subjects = scrapeSubjects(term);
-    return Parser.translateSubjects(subjects);
-  }
-
-  public ArrayList<SubjectElem> scrapeSubjects(Term term)
+  ArrayList<SubjectElem> scrapeSubjectList(Term term)
       throws ExecutionException, InterruptedException {
     var fut = navigateToTerm(term);
     var resp = fut.get();
@@ -194,26 +237,6 @@ public final class PeopleSoftClassSearch {
     }
 
     return out;
-  }
-
-  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
-      throws ExecutionException, InterruptedException {
-    var subjects = scrapeSubjects(term);
-
-    var subject = find(subjects, s -> s.code.equals(subjectCode));
-    if (subject == null)
-      throw new RuntimeException("Subject not found: " + subjectCode);
-
-    {
-      incrementStateNum();
-      formMap.put("ICAction", subject.action);
-
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
-
-      return Parser.parseSubject(responseBody, subjectCode);
-    }
   }
 
   void incrementStateNum() {

@@ -25,6 +25,7 @@ public final class Try extends HashMap<String, Object> {
   }
 
   public static Try Ctx() { return new Try(null, DEFAULT_LOGGER); }
+  public static Try Ctx(Logger logger) { return new Try(null, logger); }
   public Try child() { return new Try(this, null); }
 
   public static void tcPass(CallVoid supplier) {
@@ -70,9 +71,11 @@ public final class Try extends HashMap<String, Object> {
     try {
       return supplier.get();
     } catch (Throwable e) {
-      logger.warn(this.toString());
-      if (e instanceof RuntimeException) throw (RuntimeException)e;
-      if (e instanceof Error) throw (Error)e;
+      logger.warn("Context: " + this.toString());
+      if (e instanceof RuntimeException)
+        throw(RuntimeException) e;
+      if (e instanceof Error)
+        throw(Error) e;
       throw new RuntimeException(e);
     }
   }

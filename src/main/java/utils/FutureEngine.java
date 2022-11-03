@@ -49,7 +49,7 @@ public final class FutureEngine<Output>
       Future<Output> box = this.tasks.poll();
 
       if (box.isDone()) {
-        Output output = Ctx().fatal(() -> box.get());
+        Output output = tcPass(() -> box.get());
         this.size.decrementAndGet();
 
         return output;

@@ -17,7 +17,7 @@ public class JsonMapper {
     var ctx = Ctx();
     ctx.put("json", json);
 
-    return ctx.fatal(() -> objMapper.readValue(json, clazz));
+    return ctx.log(() -> objMapper.readValue(json, clazz));
   }
   public static <E> List<E> fromJsonArray(String json, Class<E> clazz) {
     CollectionType type =
@@ -26,7 +26,7 @@ public class JsonMapper {
     var ctx = Ctx();
     ctx.put("json", json);
 
-    return ctx.fatal(() -> objMapper.readValue(json, type));
+    return ctx.log(() -> objMapper.readValue(json, type));
   }
 
   public static String toJson(Object o) { return toJson(o, false); }

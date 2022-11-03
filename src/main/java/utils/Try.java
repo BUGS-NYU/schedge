@@ -34,16 +34,17 @@ public final class Try extends HashMap<String, Object> {
   public Try child() { return new Try(this, null); }
 
   public static void tcPass(CallVoid supplier) {
-    try {
+    tcPass(() -> {
       supplier.get();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+      return null;
+    });
   }
 
   public static <E> E tcPass(Call<E> supplier) {
     try {
       return supplier.get();
+    } catch (RuntimeException e) {
+      throw e;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -65,43 +66,25 @@ public final class Try extends HashMap<String, Object> {
   }
 
   public void log(CallVoid supplier) {
-    try {
+    log(() -> {
       supplier.get();
-    } catch (Exception e) {
-      logger.warn(this.toString());
-      throw new RuntimeException(e);
-    }
+      return null;
+    });
   }
 
   public <E> E log(Call<E> supplier) {
     try {
       return supplier.get();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       logger.warn(this.toString());
+      if (e instanceof RuntimeException) throw (RuntimeException)e;
+      if (e instanceof Error) throw (Error)e;
       throw new RuntimeException(e);
     }
   }
 
-  public void fatal(CallVoid supplier) {
-    try {
-      supplier.get();
-    } catch (Exception e) {
-      logger.error(this.toString());
-      throw new Error(e);
-    }
-  }
-
-  public <E> E fatal(Call<E> supplier) {
-    try {
-      return supplier.get();
-    } catch (Exception e) {
-      logger.error(this.toString());
-      throw new Error(e);
-    }
-  }
-
   @Override
-  public final String toString() {
+  public String toString() {
     // @TODO: this code assumes that a context will only ever run
     // the toString method once; that's a wrong assumption, but
     // probably fine to make for as long as this project will live

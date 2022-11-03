@@ -1,7 +1,6 @@
 package cli;
 
 import static picocli.CommandLine.*;
-import static utils.Try.*;
 
 import java.util.*;
 import picocli.CommandLine;
@@ -44,7 +43,7 @@ public final class Mixins {
     private String outputFile;
 
     public void writeOutput(Object output) {
-      var jsonData = tcIgnore(() -> JsonMapper.toJson(output, pretty));
+      var jsonData = Try.tcIgnore(() -> JsonMapper.toJson(output, pretty));
 
       if (jsonData == null) {
         jsonData = output.toString();

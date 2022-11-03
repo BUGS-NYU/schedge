@@ -82,6 +82,6 @@ public class GetConnection {
   }
 
   public static void close() {
-    Ctx().fatal(() -> HolderClass.dataSource.close());
+    tcPass(() -> HolderClass.dataSource.close());
   }
 }

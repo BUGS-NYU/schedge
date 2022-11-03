@@ -1,12 +1,7 @@
 package utils;
 
-import java.io.*;
-import java.lang.Void;
 import java.util.*;
-import java.util.Arrays;
-import java.util.function.Consumer;
 import org.slf4j.*;
-import org.slf4j.helpers.MessageFormatter;
 
 public final class Try extends HashMap<String, Object> {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");

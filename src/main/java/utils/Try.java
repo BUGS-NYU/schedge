@@ -82,23 +82,13 @@ public final class Try extends HashMap<String, Object> {
     // @TODO: this code assumes that a context will only ever run
     // the toString method once; that's a wrong assumption, but
     // probably fine to make for as long as this project will live
-    // on for.
-    //
-    // Additionally, the only consequence of breaking that assumption
-    // is that some internal fields will be duplicated; this may
-    // cause a weird memory leak in the future or something, but
-    // it's not my problem right now so whatever.
+    // on for, since the consequence is limited to wasted memory.
     //
     //                        - Albert Liu, Nov 02, 2022 Wed 23:14
-
-    var ctx = this.parent;
-    while (ctx != null) {
-
+    for (var ctx = this.parent; ctx != null; ctx = ctx.parent) {
       for (var entry : ctx.entrySet()) {
         this.computeIfAbsent(entry.getKey(), k -> entry.getValue());
       }
-
-      ctx = ctx.parent;
     }
 
     return super.toString();

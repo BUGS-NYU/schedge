@@ -501,6 +501,12 @@ class Parser {
 
       var dayStr = parts[tokenIdx + 3];
 
+      // @Note: Asynchronous classes will have the pattern:
+      //
+      //            01/25/2021 - 05/14/2021 Thu
+      //
+      // Since the time doesn't really matter anyways, we just substitute
+      // in the time of 11.59PM .
       String beginTimeStr, endTimeStr;
       if (parts.length > 4) {
         beginTimeStr = parts[tokenIdx + 4] + parts[tokenIdx + 5];

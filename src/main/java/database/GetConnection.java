@@ -1,6 +1,6 @@
 package database;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import com.zaxxer.hikari.*;
 import java.sql.*;
@@ -55,25 +55,14 @@ public class GetConnection {
   }
 
   public static void withConnection(SQLConsumer f) {
-    Connection conn = tcPass(() -> getConnection());
-
-    try {
-      conn.setAutoCommit(false);
-
+    withConnectionReturning(conn -> {
       f.accept(conn);
-
-      conn.commit();
-    } catch (SQLException e) {
-      tcIgnore(() -> conn.rollback());
-
-      throw new RuntimeException(e);
-    } finally {
-      tcIgnore(() -> conn.close());
-    }
+      return null;
+    });
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
-    Connection conn = tcPass(() -> getConnection());
+    Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
 
     try {
       conn.setAutoCommit(false);
@@ -92,9 +81,7 @@ public class GetConnection {
     }
   }
 
-  private static Connection getConnection() throws SQLException {
-    return HolderClass.dataSource.getConnection();
+  public static void close() {
+    Ctx().fatal(() -> HolderClass.dataSource.close());
   }
-
-  public static void close() { tcFatal(() -> HolderClass.dataSource.close()); }
 }

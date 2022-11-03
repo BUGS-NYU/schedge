@@ -501,7 +501,7 @@ class Parser {
 
       var dayStr = parts[tokenIdx + 3];
 
-      // @Note: Asynchronous classes will have the pattern:
+      // @Note: Asynchronous classes have the pattern:
       //
       //            01/25/2021 - 05/14/2021 Thu
       //

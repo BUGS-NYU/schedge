@@ -180,7 +180,7 @@ public final class PeopleSoftClassSearch {
         var subjectCourses = scrapeSubject(term, subject.code);
         out.courses.addAll(subjectCourses);
 
-        Thread.sleep(5000);
+        Thread.sleep(20_000);
       }
     }
 

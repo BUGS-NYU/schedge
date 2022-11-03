@@ -1,6 +1,6 @@
 package database;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import java.sql.*;
 import java.util.*;

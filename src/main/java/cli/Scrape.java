@@ -13,9 +13,7 @@ import utils.Nyu;
 /*
    @Todo: Add annotation for parameter.
 */
-@Command(name = "scrape",
-         description =
-             "Query then parse NYU Albert data based on different catagories")
+@Command(name = "scrape", description = "Scrape course data")
 public class Scrape implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
 
@@ -28,6 +26,29 @@ public class Scrape implements Runnable {
   public void run() {
     throw new CommandLine.ParameterException(spec.commandLine(),
                                              "\nMissing required subcommand.");
+  }
+
+  @Command(name = "term", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
+  public void
+  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
+      throws IOException, ExecutionException, InterruptedException {
+    long start = System.nanoTime();
+
+    Nyu.Term term = termMixin.getTerm();
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      var search = new PeopleSoftClassSearch(client);
+      var courses = search.scrapeTerm(term);
+      outputFileMixin.writeOutput(courses);
+    }
+
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
   }
 
   @Command(name = "subject", sortOptions = false,

@@ -142,6 +142,7 @@ public final class PeopleSoftClassSearch {
   public CoursesForTerm scrapeTerm(Term term)
       throws ExecutionException, InterruptedException {
     var subjects = scrapeSubjectList(term);
+    var courses = new ArrayList<Course>();
 
     for (var subject : subjects) {
       incrementStateNum();
@@ -151,7 +152,7 @@ public final class PeopleSoftClassSearch {
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
 
-      var courses = Parser.parseSubject(responseBody, subject.code);
+      courses.addAll(Parser.parseSubject(responseBody, subject.code));
     }
 
     return null;

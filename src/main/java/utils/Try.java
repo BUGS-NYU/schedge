@@ -6,6 +6,15 @@ import org.slf4j.*;
 public final class Try extends HashMap<String, Object> {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
 
+  private final class TryCounter {
+    int value = 0;
+
+    @Override
+    public String toString() {
+      return "" + value;
+    }
+  }
+
   public interface Call<E> {
     E get() throws Exception;
   }
@@ -58,6 +67,12 @@ public final class Try extends HashMap<String, Object> {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public void increment(String name) { increment(name, 1); }
+  public void increment(String name, int i) {
+    var counter = (TryCounter)this.computeIfAbsent(name, k -> new TryCounter());
+    counter.value += i;
   }
 
   public void log(CallVoid supplier) {

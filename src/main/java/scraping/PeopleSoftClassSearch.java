@@ -88,10 +88,7 @@ public final class PeopleSoftClassSearch {
   final AsyncHttpClient client;
   final Try ctx = Try.Ctx(logger);
 
-  public PeopleSoftClassSearch(AsyncHttpClient client) {
-    this.client = client;
-    this.ctx.put("formMap", formMap);
-  }
+  public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
   static String yearText(Term term) {
     switch (term.semester) {
@@ -167,9 +164,8 @@ public final class PeopleSoftClassSearch {
       var subjects = scrapeSubjectList(term);
       var courses = new ArrayList<Course>();
 
-      ctx.put("subjectList", subjects);
-
       for (var subject : subjects) {
+        ctx.increment("subjectsSeen");
         ctx.put("subjectStart", subject);
 
         incrementStateNum();
@@ -218,6 +214,7 @@ public final class PeopleSoftClassSearch {
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
+      ctx.put("formMap", formMap);
     }
 
     { // Get the correct state on the page

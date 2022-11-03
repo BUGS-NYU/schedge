@@ -32,6 +32,10 @@ public final class Try extends HashMap<String, Object> {
   public static Try Ctx() { return new Try(null, DEFAULT_LOGGER); }
 
   public Try child() { return new Try(this, null); }
+  public Try add(String key, Object value) {
+    this.put(key, value);
+    return this;
+  }
 
   public static void tcPass(CallVoid supplier) {
     tcPass(() -> {

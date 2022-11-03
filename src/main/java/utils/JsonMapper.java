@@ -14,8 +14,7 @@ public class JsonMapper {
   private static ObjectMapper objMapper = new ObjectMapper();
 
   public static <E> E fromJson(String json, Class<E> clazz) {
-    var ctx = Ctx();
-    ctx.put("json", json);
+    var ctx = Ctx().add("json", json);
 
     return ctx.log(() -> objMapper.readValue(json, clazz));
   }
@@ -23,8 +22,7 @@ public class JsonMapper {
     CollectionType type =
         objMapper.getTypeFactory().constructCollectionType(List.class, clazz);
 
-    var ctx = Ctx();
-    ctx.put("json", json);
+    var ctx = Ctx().add("json", json);
 
     return ctx.log(() -> objMapper.readValue(json, type));
   }

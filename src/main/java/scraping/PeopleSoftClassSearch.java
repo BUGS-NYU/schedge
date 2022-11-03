@@ -507,6 +507,8 @@ class Parser {
       //
       // Since the time doesn't really matter anyways, we just substitute
       // in the time of 11.59PM .
+      //
+      //                    - Albert Liu, Nov 03, 2022 Thu 18:35
       String beginTimeStr, endTimeStr;
       if (parts.length > 4) {
         beginTimeStr = parts[tokenIdx + 4] + parts[tokenIdx + 5];

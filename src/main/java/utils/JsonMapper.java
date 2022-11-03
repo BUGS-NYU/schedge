@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -14,17 +14,19 @@ public class JsonMapper {
   private static ObjectMapper objMapper = new ObjectMapper();
 
   public static <E> E fromJson(String json, Class<E> clazz) {
-    return tcFatal(()
-                       -> objMapper.readValue(json, clazz),
-                   "Failed to parse JSON (value={})", json);
+    var ctx = Ctx();
+    ctx.put("json", json);
+
+    return ctx.log(() -> objMapper.readValue(json, clazz));
   }
   public static <E> List<E> fromJsonArray(String json, Class<E> clazz) {
     CollectionType type =
         objMapper.getTypeFactory().constructCollectionType(List.class, clazz);
 
-    return tcFatal(()
-                       -> objMapper.readValue(json, type),
-                   "Failed to parse JSON (value={})", json);
+    var ctx = Ctx();
+    ctx.put("json", json);
+
+    return ctx.log(() -> objMapper.readValue(json, type));
   }
 
   public static String toJson(Object o) { return toJson(o, false); }

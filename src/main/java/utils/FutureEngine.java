@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -49,7 +49,7 @@ public final class FutureEngine<Output>
       Future<Output> box = this.tasks.poll();
 
       if (box.isDone()) {
-        Output output = tcFatal(() -> box.get());
+        Output output = tcPass(() -> box.get());
         this.size.decrementAndGet();
 
         return output;

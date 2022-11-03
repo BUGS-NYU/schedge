@@ -24,18 +24,15 @@ public final class Try extends HashMap<String, Object> {
   }
 
   public final Logger logger;
-  public final Try parent;
 
-  private Try(Try parent, Logger logger) {
+  private Try(Logger logger) {
     super();
 
-    this.parent = parent;
     this.logger = logger;
   }
 
-  public static Try Ctx() { return new Try(null, DEFAULT_LOGGER); }
-  public static Try Ctx(Logger logger) { return new Try(null, logger); }
-  public Try child() { return new Try(this, null); }
+  public static Try Ctx() { return new Try(DEFAULT_LOGGER); }
+  public static Try Ctx(Logger logger) { return new Try(logger); }
 
   public static void tcPass(CallVoid supplier) {
     tcPass(() -> {
@@ -93,22 +90,5 @@ public final class Try extends HashMap<String, Object> {
         throw(Error) e;
       throw new RuntimeException(e);
     }
-  }
-
-  @Override
-  public String toString() {
-    // @TODO: this code assumes that a context will only ever run
-    // the toString method once; that's a wrong assumption, but
-    // probably fine to make for as long as this project will live
-    // on for, since the consequence is limited to wasted memory.
-    //
-    //                        - Albert Liu, Nov 02, 2022 Wed 23:14
-    for (var ctx = this.parent; ctx != null; ctx = ctx.parent) {
-      for (var entry : ctx.entrySet()) {
-        this.computeIfAbsent(entry.getKey(), k -> entry.getValue());
-      }
-    }
-
-    return super.toString();
   }
 }

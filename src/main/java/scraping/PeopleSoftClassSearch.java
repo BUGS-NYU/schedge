@@ -16,7 +16,6 @@ import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
-import utils.Try;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
@@ -66,7 +65,6 @@ public final class PeopleSoftClassSearch {
 
   HashMap<String, String> formMap;
   final AsyncHttpClient client;
-  final Try ctx = Try.Ctx(logger);
 
   PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
@@ -213,10 +211,7 @@ public final class PeopleSoftClassSearch {
                                                 Term term, String subject)
       throws ExecutionException, InterruptedException {
     var self = new PeopleSoftClassSearch(client);
-    self.ctx.put("term", term);
-    self.ctx.put("subject", subject);
-
-    return self.ctx.log(() -> self.scrapeSubject(term, subject));
+    return self.scrapeSubject(term, subject);
   }
 
   public ArrayList<Course> scrapeSubject(Term term, String subjectCode)

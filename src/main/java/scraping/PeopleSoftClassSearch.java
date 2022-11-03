@@ -14,6 +14,7 @@ import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
+import utils.Try;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
@@ -31,6 +32,12 @@ public final class PeopleSoftClassSearch {
       this.code = code;
       this.name = name;
       this.action = action;
+    }
+
+    @Override
+    public String toString() {
+      return "SubjectElem(schoolName=" + schoolName + ",code=" + code +
+          ",name=" + name + ",action=" + action + ")";
     }
   }
 
@@ -79,8 +86,12 @@ public final class PeopleSoftClassSearch {
 
   HashMap<String, String> formMap;
   final AsyncHttpClient client;
+  final Try ctx = Try.Ctx(logger);
 
-  public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
+  public PeopleSoftClassSearch(AsyncHttpClient client) {
+    this.client = client;
+    this.ctx.put("formMap", formMap);
+  }
 
   static String yearText(Term term) {
     switch (term.semester) {
@@ -115,47 +126,68 @@ public final class PeopleSoftClassSearch {
 
   public ArrayList<School> scrapeSchools(Term term)
       throws ExecutionException, InterruptedException {
-    var subjects = scrapeSubjectList(term);
-    return Parser.translateSubjects(subjects);
+    ctx.put("term", term);
+
+    return ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+      return Parser.translateSubjects(subjects);
+    });
   }
 
   public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
       throws ExecutionException, InterruptedException {
-    var subjects = scrapeSubjectList(term);
+    ctx.put("term", term);
+    ctx.put("subject", subjectCode);
 
-    var subject = find(subjects, s -> s.code.equals(subjectCode));
-    if (subject == null)
-      throw new RuntimeException("Subject not found: " + subjectCode);
+    return ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
 
-    {
-      incrementStateNum();
-      formMap.put("ICAction", subject.action);
+      var subject = find(subjects, s -> s.code.equals(subjectCode));
+      if (subject == null)
+        throw new RuntimeException("Subject not found: " + subjectCode);
 
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
+      {
+        incrementStateNum();
+        formMap.put("ICAction", subject.action);
 
-      return Parser.parseSubject(responseBody, subjectCode);
-    }
+        var fut = client.executeRequest(post(MAIN_URI, formMap));
+        var resp = fut.get();
+        var responseBody = resp.getResponseBody();
+
+        return Parser.parseSubject(responseBody, subjectCode);
+      }
+    });
   }
 
   public CoursesForTerm scrapeTerm(Term term)
       throws ExecutionException, InterruptedException {
-    var subjects = scrapeSubjectList(term);
-    var courses = new ArrayList<Course>();
+    ctx.put("term", term);
 
-    for (var subject : subjects) {
-      incrementStateNum();
-      formMap.put("ICAction", subject.action);
+    return ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+      var courses = new ArrayList<Course>();
 
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
+      ctx.put("subjectList", subjects);
 
-      courses.addAll(Parser.parseSubject(responseBody, subject.code));
-    }
+      for (var subject : subjects) {
+        ctx.put("subjectStart", subject);
 
-    return null;
+        incrementStateNum();
+        formMap.put("ICAction", subject.action);
+
+        var fut = client.executeRequest(post(MAIN_URI, formMap));
+        var resp = fut.get();
+        var responseBody = resp.getResponseBody();
+
+        ctx.put("subjectCodeDone", subject.code);
+
+        courses.addAll(Parser.parseSubject(responseBody, subject.code));
+
+        ctx.put("subjectCodeParsed", subject.code);
+      }
+
+      return null;
+    });
   }
 
   Future<Response> navigateToTerm(Term term)

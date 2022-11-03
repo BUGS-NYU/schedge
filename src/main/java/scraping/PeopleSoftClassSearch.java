@@ -489,20 +489,30 @@ class Parser {
     int duration;
     LocalDateTime beginDateTime, endDateTime;
     DayOfWeek[] days;
+
     {
+      for (var part : parts) {
+        System.out.println("part=" + part);
+      }
+      System.out.println("\n\n");
+
       var beginDateStr = parts[tokenIdx];
       var endDateStr = parts[tokenIdx + 2];
 
       var dayStr = parts[tokenIdx + 3];
-      var beginTimeStr = parts[tokenIdx + 4];
-      var beginTimeHalfStr = parts[tokenIdx + 5];
-      var endTimeStr = parts[tokenIdx + 7];
-      var endTimeHalfStr = parts[tokenIdx + 8];
 
-      beginDateTime = LocalDateTime.from(timeParser.parse(
-          beginDateStr + ' ' + beginTimeStr + beginTimeHalfStr));
-      var stopDateTime = LocalDateTime.from(
-          timeParser.parse(beginDateStr + ' ' + endTimeStr + endTimeHalfStr));
+      String beginTimeStr, endTimeStr;
+      if (parts.length > 4) {
+        beginTimeStr = parts[tokenIdx + 4] + parts[tokenIdx + 5];
+        endTimeStr = parts[tokenIdx + 7] + parts[tokenIdx + 8];
+      } else {
+        beginTimeStr = endTimeStr = "11.59PM";
+      }
+
+      beginDateTime = LocalDateTime.from(
+          timeParser.parse(beginDateStr + ' ' + beginTimeStr));
+      var stopDateTime =
+          LocalDateTime.from(timeParser.parse(beginDateStr + ' ' + endTimeStr));
       duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
 
       endDateTime =

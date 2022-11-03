@@ -121,6 +121,9 @@ public final class Utils {
     map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
+    map.put("Online", ZoneId.of("America/New_York"));
+    map.put("Distance Learning/Asynchronous", ZoneId.of("America/New_York"));
+
     map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
     map.put("Brooklyn Campus", ZoneId.of("America/New_York"));
     map.put("Washington Square", ZoneId.of("America/New_York"));

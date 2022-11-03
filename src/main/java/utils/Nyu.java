@@ -55,6 +55,8 @@ public final class Nyu {
     public static ArrayList<String> allSubjects() {
       return new ArrayList<>(allSubjects);
     }
+
+    public String toString() { return "Subject(" + code + "," + name + ")"; }
   }
 
   public static final class School {
@@ -65,6 +67,8 @@ public final class Nyu {
       this.name = name;
       this.subjects = new ArrayList<>();
     }
+
+    public String toString() { return "School(" + name + ")"; }
   }
 
   public static final class Course {

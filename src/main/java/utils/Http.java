@@ -37,7 +37,7 @@ public final class Http {
 
     return new RequestBuilder()
         .setUri(uri)
-        .setRequestTimeout(10_000)
+        .setRequestTimeout(20_000)
         .setMethod("POST")
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .setBody(s)

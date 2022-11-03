@@ -156,34 +156,35 @@ public final class PeopleSoftClassSearch {
     });
   }
 
+  // @TODO: There's a more good way to do this, where we just imitate a user
+  // navigating the page normally; but I am tired and don't want to do it
+  // right now.
+  //
+  //                          - Albert Liu, Nov 03, 2022 Thu 16:08
   public CoursesForTerm scrapeTerm(Term term)
       throws ExecutionException, InterruptedException {
+    var out = new CoursesForTerm();
+
     ctx.put("term", term);
 
-    return ctx.log(() -> {
-      var subjects = scrapeSubjectList(term);
-      var courses = new ArrayList<Course>();
+    out.schools.addAll(scrapeSchools(term));
 
-      for (var subject : subjects) {
-        ctx.increment("subjectsSeen");
-        ctx.put("subjectStart", subject);
+    System.out.println(out.schools);
 
-        incrementStateNum();
-        formMap.put("ICAction", subject.action);
+    for (var school : out.schools) {
+      for (var subject : school.subjects) {
+        client.getConfig().getCookieStore().clear();
 
-        var fut = client.executeRequest(post(MAIN_URI, formMap));
-        var resp = fut.get();
-        var responseBody = resp.getResponseBody();
+        System.out.println("SUBJECT: " + subject);
 
-        ctx.put("subjectCodeDone", subject.code);
+        var subjectCourses = scrapeSubject(term, subject.code);
+        out.courses.addAll(subjectCourses);
 
-        courses.addAll(Parser.parseSubject(responseBody, subject.code));
-
-        ctx.put("subjectCodeParsed", subject.code);
+        Thread.sleep(5000);
       }
+    }
 
-      return null;
-    });
+    return out;
   }
 
   Future<Response> navigateToTerm(Term term)
@@ -305,8 +306,9 @@ class Parser {
     School school = null;
 
     for (var subject : raw) {
-      if (school == null || school.name.equals(subject.schoolName)) {
+      if (school == null || !school.name.equals(subject.schoolName)) {
         school = new School(subject.schoolName);
+        schools.add(school);
       }
 
       school.subjects.add(new Subject(subject.code, subject.name));

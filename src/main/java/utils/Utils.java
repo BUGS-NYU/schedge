@@ -118,6 +118,7 @@ public final class Utils {
     map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
     map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
     map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
+    map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
     map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
@@ -134,9 +135,9 @@ public final class Utils {
 
     var tz = tzMap.get(campus);
     if (tz == null) {
-      throw new IllegalArgumentException("Bad campus: " + campus);
-      // System.err.println("Bad campus: " + campus);
-      // return ZoneId.of("America/New_York");
+      // throw new IllegalArgumentException("Bad campus: " + campus);
+      System.err.println("Bad campus: " + campus);
+      return ZoneId.of("America/New_York");
     }
 
     return tz;

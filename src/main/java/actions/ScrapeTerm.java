@@ -28,15 +28,15 @@ public class ScrapeTerm {
         display ? ProgressBar.wrap(subjectData, bar) : subjectData;
         */
 
-    ArrayList<Course> courses;
+    PeopleSoftClassSearch.CoursesForTerm courses;
     try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
       var search = new PeopleSoftClassSearch(client);
-      courses = search.scrapeSubject(term, "MATH-UA");
+      courses = search.scrapeTerm(term);
     }
 
     GetConnection.withConnection(conn -> {
       //
-      insertCourses(conn, term, courses);
+      insertCourses(conn, term, courses.courses);
     });
   }
 }

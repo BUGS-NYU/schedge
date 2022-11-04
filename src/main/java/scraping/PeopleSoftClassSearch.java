@@ -197,7 +197,7 @@ public final class PeopleSoftClassSearch {
         bar.step();
       }
 
-      Thread.sleep(3_000);
+      Thread.sleep(5_000);
       client.getConfig().getCookieStore().clear();
 
       ctx.put("subject", subject);

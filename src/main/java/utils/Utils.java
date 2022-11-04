@@ -113,6 +113,8 @@ public final class Utils {
   static HashMap<String, ZoneId> tzMap;
   static {
     var map = new HashMap<String, ZoneId>();
+    var nyc = ZoneId.of("America/New_York");
+
     map.put("NYU London (Global)", ZoneId.of("Europe/London"));
     map.put("NYU Paris (Global)", ZoneId.of("Europe/Paris"));
     map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
@@ -121,12 +123,14 @@ public final class Utils {
     map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
-    map.put("Online", ZoneId.of("America/New_York"));
-    map.put("Distance Learning/Asynchronous", ZoneId.of("America/New_York"));
+    map.put("Online", nyc);
+    map.put("Distance Learning/Asynchronous", nyc);
+    map.put("Distance Learning/Synchronous", nyc);
+    map.put("Distance Ed (Learning Space)", nyc);
 
-    map.put("NYU Washington DC (Global)", ZoneId.of("America/New_York"));
-    map.put("Brooklyn Campus", ZoneId.of("America/New_York"));
-    map.put("Washington Square", ZoneId.of("America/New_York"));
+    map.put("NYU Washington DC (Global)", nyc);
+    map.put("Brooklyn Campus", nyc);
+    map.put("Washington Square", nyc);
 
     tzMap = map;
   }

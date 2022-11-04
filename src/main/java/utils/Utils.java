@@ -124,6 +124,7 @@ public final class Utils {
 
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 
+    map.put("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai"));
     map.put("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv"));
     map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
     map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
@@ -141,7 +142,11 @@ public final class Utils {
     map.put("Distance Learning/Synchronous", nyc);
     map.put("Distance Ed (Learning Space)", nyc);
 
+    map.put("Grad Stern at Purchase", nyc);
     map.put("Dental Center", nyc);
+    map.put("Hosp. for Joint Diseases", nyc);
+    map.put("Inst. of Fine Arts", nyc);
+    map.put("Medical Center", nyc);
     map.put("NYU Washington DC (Global)", nyc);
     map.put("Brooklyn Campus", nyc);
     map.put("Washington Square", nyc);

@@ -534,7 +534,7 @@ class Parser {
 
     // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with
     // Morrison, George Arthur; Margarint, Vlad-Dumitru
-    String metaText = null;
+    String metaText = "";
 
     var notes = new StringBuilder();
     for (var node : wrapper.textNodes()) {
@@ -542,7 +542,7 @@ class Parser {
       if (text.length() == 0)
         continue;
 
-      if (metaText == null) {
+      if (metaText.isEmpty()) {
         metaText = text;
       } else {
         notes.append(text);

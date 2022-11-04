@@ -120,6 +120,7 @@ public final class Utils {
     map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
     map.put("NYU Madrid (Global)", ZoneId.of("Europe/Madrid"));
     map.put("NYU Prague (Global)", ZoneId.of("Europe/Prague"));
+    map.put("Athens", ZoneId.of("Europe/Athens"));
 
     map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
 

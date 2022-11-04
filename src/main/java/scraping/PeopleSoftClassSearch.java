@@ -575,11 +575,31 @@ class Parser {
     LocalDateTime beginDateTime, endDateTime;
     DayOfWeek[] days;
 
+    // Default pattern:
+    //      01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM
+    // Asynchronous classes:
+    //      01/25/2021 - 05/14/2021 Thu
+    // Some online classes also have:
+    //      01/25/2021 - 05/14/2021 6.15 PM - 7.30 PM
     {
       var beginDateStr = parts[tokenIdx];
-      var endDateStr = parts[tokenIdx + 2];
+      tokenIdx += 2;
 
-      var dayStr = parts[tokenIdx + 3];
+      var endDateStr = parts[tokenIdx];
+      tokenIdx += 1;
+
+      var dayStr = parts[tokenIdx];
+      if (dayStr.charAt(0) >= '0' && dayStr.charAt(0) <= '9') {
+        dayStr = "Sun,Sat,Mon,Tue,Wed,Thu,Fri";
+      } else {
+        tokenIdx += 1;
+      }
+
+      var dayStrings = dayStr.split(",");
+      days = new DayOfWeek[dayStrings.length];
+      for (int i = 0; i < dayStrings.length; i++) {
+        days[i] = Utils.parseDayOfWeek(dayStrings[i]);
+      }
 
       // @Note: Asynchronous classes have the pattern:
       //
@@ -590,11 +610,12 @@ class Parser {
       //
       //                    - Albert Liu, Nov 03, 2022 Thu 18:35
       String beginTimeStr, endTimeStr;
-      if (parts.length > 4) {
-        beginTimeStr = parts[tokenIdx + 4] + parts[tokenIdx + 5];
-        endTimeStr = parts[tokenIdx + 7] + parts[tokenIdx + 8];
-      } else {
+      if (tokenIdx >= parts.length) {
         beginTimeStr = endTimeStr = "11.59PM";
+      } else {
+        beginTimeStr = parts[tokenIdx] + parts[tokenIdx + 1];
+        tokenIdx += 3;
+        endTimeStr = parts[tokenIdx] + parts[tokenIdx + 1];
       }
 
       beginDateTime = LocalDateTime.from(
@@ -605,12 +626,6 @@ class Parser {
 
       endDateTime =
           LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
-
-      var dayStrings = dayStr.split(",");
-      days = new DayOfWeek[dayStrings.length];
-      for (int i = 0; i < dayStrings.length; i++) {
-        days[i] = Utils.parseDayOfWeek(dayStrings[i]);
-      }
     }
 
     var tz = Utils.timezoneForCampus(section.campus);

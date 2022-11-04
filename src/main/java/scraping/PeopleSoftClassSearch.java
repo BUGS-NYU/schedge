@@ -154,7 +154,7 @@ public final class PeopleSoftClassSearch {
         var resp = fut.get();
         var responseBody = resp.getResponseBody();
 
-        return Parser.parseSubject(responseBody, subjectCode);
+        return Parser.parseSubject(ctx, responseBody, subjectCode);
       }
     });
   }
@@ -169,6 +169,11 @@ public final class PeopleSoftClassSearch {
    * @param bar Nullable progress bar to output progress to
    */
   public CoursesForTerm scrapeTerm(Term term, ProgressBar bar)
+      throws ExecutionException, InterruptedException {
+    return ctx.log(() -> { return scrapeTermInternal(term, bar); });
+  }
+
+  CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
       throws ExecutionException, InterruptedException {
     var out = new CoursesForTerm();
     if (bar != null) {
@@ -209,7 +214,7 @@ public final class PeopleSoftClassSearch {
       var resp = fut.get();
       var responseBody = resp.getResponseBody();
 
-      var courses = Parser.parseSubject(responseBody, subject.code);
+      var courses = Parser.parseSubject(ctx, responseBody, subject.code);
       out.courses.addAll(courses);
 
       incrementStateNum();
@@ -390,7 +395,8 @@ class Parser {
     return schools;
   }
 
-  static ArrayList<Course> parseSubject(String html, String subjectCode) {
+  static ArrayList<Course> parseSubject(Try ctx, String html,
+                                        String subjectCode) {
     var doc = Jsoup.parse(html);
 
     {
@@ -403,14 +409,14 @@ class Parser {
 
     var courses = new ArrayList<Course>();
     for (var courseHtml : coursesContainer.children()) {
-      var course = parseCourse(courseHtml, subjectCode);
+      var course = parseCourse(ctx, courseHtml, subjectCode);
       courses.add(course);
     }
 
     return courses;
   }
 
-  static Course parseCourse(Element courseHtml, String subjectCode) {
+  static Course parseCourse(Try ctx, Element courseHtml, String subjectCode) {
     var course = new Course();
 
     // This happens to work; nothing else really works as well.
@@ -452,7 +458,7 @@ class Parser {
 
     Section lecture = null;
     for (var sectionHtml : sections.subList(1, sections.size())) {
-      var section = parseSection(sectionHtml);
+      var section = parseSection(ctx, sectionHtml);
       if (section.type.equals("Lecture")) {
         course.sections.add(section);
         section.recitations = new ArrayList<>();
@@ -471,7 +477,7 @@ class Parser {
     return course;
   }
 
-  static Section parseSection(Element sectionHtml) {
+  static Section parseSection(Try ctx, Element sectionHtml) {
     var wrapper = sectionHtml.expectFirst("td");
     var data = wrapper.children();
 
@@ -556,6 +562,8 @@ class Parser {
     if (parts.length == 2) {
       section.location = parts[1];
     }
+
+    ctx.put("meetingString", parts[0]);
 
     parts = parts[0].split(" ");
     if (parts.length <= 3) {

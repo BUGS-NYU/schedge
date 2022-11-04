@@ -113,21 +113,34 @@ public final class Utils {
   static HashMap<String, ZoneId> tzMap;
   static {
     var map = new HashMap<String, ZoneId>();
-    var nyc = ZoneId.of("America/New_York");
 
     map.put("NYU London (Global)", ZoneId.of("Europe/London"));
     map.put("NYU Paris (Global)", ZoneId.of("Europe/Paris"));
     map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
     map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
+    map.put("NYU Madrid (Global)", ZoneId.of("Europe/Madrid"));
+    map.put("NYU Prague (Global)", ZoneId.of("Europe/Prague"));
+
+    map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
+
+    map.put("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv"));
     map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
     map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
-    map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
+
+    map.put("NYU Accra (Global)", ZoneId.of("Africa/Accra"));
+
+    map.put("NYU Buenos Aires (Global)",
+            ZoneId.of("America/Argentina/Buenos_Aires"));
+    map.put("NYU Los Angeles (Global)", ZoneId.of("America/Los_Angeles"));
+
+    var nyc = ZoneId.of("America/New_York");
 
     map.put("Online", nyc);
     map.put("Distance Learning/Asynchronous", nyc);
     map.put("Distance Learning/Synchronous", nyc);
     map.put("Distance Ed (Learning Space)", nyc);
 
+    map.put("Dental Center", nyc);
     map.put("NYU Washington DC (Global)", nyc);
     map.put("Brooklyn Campus", nyc);
     map.put("Washington Square", nyc);

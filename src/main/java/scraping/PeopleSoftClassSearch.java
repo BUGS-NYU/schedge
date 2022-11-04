@@ -181,7 +181,7 @@ public final class PeopleSoftClassSearch {
     var rawSubjects = ctx.log(() -> {
       var subjects = scrapeSubjectList(term);
 
-      out.schools.addAll(Parser.translateSubjects(rawSubjects));
+      out.schools.addAll(Parser.translateSubjects(subjects));
       ctx.put("schools", out.schools);
 
       return subjects;
@@ -333,7 +333,7 @@ public final class PeopleSoftClassSearch {
   static Request get(Uri uri) {
     return new RequestBuilder()
         .setUri(uri)
-        .setRequestTimeout(10_000)
+        .setRequestTimeout(30_000)
         .setMethod("GET")
         .setHeader("User-Agent", USER_AGENT)
         .build();

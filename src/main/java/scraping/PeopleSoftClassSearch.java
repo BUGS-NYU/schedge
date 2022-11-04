@@ -197,13 +197,27 @@ public final class PeopleSoftClassSearch {
         bar.step();
       }
 
-      Thread.sleep(5_000);
-      client.getConfig().getCookieStore().clear();
-
       ctx.put("subject", subject);
 
-      var subjectCourses = scrapeSubject(term, subject.code);
-      out.courses.addAll(subjectCourses);
+      Thread.sleep(5_000);
+      // client.getConfig().getCookieStore().clear();
+
+      incrementStateNum();
+      formMap.put("ICAction", subject.action);
+
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+
+      var courses = Parser.parseSubject(responseBody, subject.code);
+      out.courses.addAll(courses);
+
+      incrementStateNum();
+      formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+
+      fut = client.executeRequest(post(MAIN_URI, formMap));
+      resp = fut.get();
+      responseBody = resp.getResponseBody();
     }
 
     return out;
@@ -423,13 +437,17 @@ class Parser {
       }
     }
 
-    if (!course.subjectCode.contentEquals(subjectCode)) {
+    var matchingSubject = course.subjectCode.contentEquals(subjectCode);
+    if (!matchingSubject) {
       // This isn't an error for something like `SCA-UA`/`SCA-UA_1`, but
       // could be different than expected for other schools,
       // so for now we just log it.
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
-      logger.warn("course.subjectCode=" + course.subjectCode +
-                  ", but subject=" + subjectCode);
+      var isSCA = subjectCode.startsWith("SCA");
+      if (!isSCA) {
+        logger.warn("course.subjectCode=" + course.subjectCode +
+                    ", but subject=" + subjectCode);
+      }
     }
 
     Section lecture = null;

@@ -170,40 +170,43 @@ public final class PeopleSoftClassSearch {
    */
   public CoursesForTerm scrapeTerm(Term term, ProgressBar bar)
       throws ExecutionException, InterruptedException {
-    return ctx.log(() -> {
-      var out = new CoursesForTerm();
-      if (bar != null) {
-        bar.setExtraMessage("fetching subject list...");
-        bar.maxHint(-1);
-      }
+    var out = new CoursesForTerm();
+    if (bar != null) {
+      bar.setExtraMessage("fetching subject list...");
+      bar.maxHint(-1);
+    }
 
-      ctx.put("term", term);
+    ctx.put("term", term);
 
-      var rawSubjects = scrapeSubjectList(term);
+    var rawSubjects = ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+
       out.schools.addAll(Parser.translateSubjects(rawSubjects));
       ctx.put("schools", out.schools);
 
-      if (bar != null) {
-        bar.maxHint(rawSubjects.size() + 1);
-      }
-
-      for (var subject : rawSubjects) {
-        if (bar != null) {
-          bar.setExtraMessage("fetching " + subject.code);
-          bar.step();
-        }
-
-        Thread.sleep(3_000);
-        client.getConfig().getCookieStore().clear();
-
-        ctx.put("subject", subject);
-
-        var subjectCourses = scrapeSubject(term, subject.code);
-        out.courses.addAll(subjectCourses);
-      }
-
-      return out;
+      return subjects;
     });
+
+    if (bar != null) {
+      bar.maxHint(rawSubjects.size() + 1);
+    }
+
+    for (var subject : rawSubjects) {
+      if (bar != null) {
+        bar.setExtraMessage("fetching " + subject.code);
+        bar.step();
+      }
+
+      Thread.sleep(3_000);
+      client.getConfig().getCookieStore().clear();
+
+      ctx.put("subject", subject);
+
+      var subjectCourses = scrapeSubject(term, subject.code);
+      out.courses.addAll(subjectCourses);
+    }
+
+    return out;
   }
 
   Future<Response> navigateToTerm(Term term)

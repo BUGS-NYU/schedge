@@ -58,7 +58,7 @@ public class Database implements Runnable {
 
     var term = termMixin.getTerm();
 
-    ScrapeTerm.scrapeTerm(term);
+    ScrapeTerm.scrapeTerm(term, true);
     GetConnection.close();
 
     long end = System.nanoTime();

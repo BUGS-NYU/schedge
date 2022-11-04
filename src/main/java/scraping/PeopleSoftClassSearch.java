@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
+import me.tongfei.progressbar.ProgressBar;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
@@ -161,30 +162,46 @@ public final class PeopleSoftClassSearch {
   // right now.
   //
   //                          - Albert Liu, Nov 03, 2022 Thu 16:08
-  public CoursesForTerm scrapeTerm(Term term)
+  /**
+   * @param term The term to scrape
+   * @param bar Nullable progress bar to output progress to
+   */
+  public CoursesForTerm scrapeTerm(Term term, ProgressBar bar)
       throws ExecutionException, InterruptedException {
-    var out = new CoursesForTerm();
+    return ctx.log(() -> {
+      var out = new CoursesForTerm();
+      if (bar != null) {
+        bar.setExtraMessage("fetching subject list...");
+        bar.maxHint(-1);
+      }
 
-    ctx.put("term", term);
+      ctx.put("term", term);
 
-    out.schools.addAll(scrapeSchools(term));
+      var rawSubjects = scrapeSubjectList(term);
+      out.schools.addAll(Parser.translateSubjects(rawSubjects));
+      ctx.put("schools", out.schools);
 
-    System.out.println(out.schools);
+      if (bar != null) {
+        bar.maxHint(rawSubjects.size() + 1);
+      }
 
-    for (var school : out.schools) {
-      for (var subject : school.subjects) {
+      for (var subject : rawSubjects) {
+        if (bar != null) {
+          bar.setExtraMessage("fetching " + subject.code);
+          bar.step();
+        }
+
+        Thread.sleep(5_000);
         client.getConfig().getCookieStore().clear();
 
-        System.out.println("SUBJECT: " + subject);
+        ctx.put("subject", subject);
 
         var subjectCourses = scrapeSubject(term, subject.code);
         out.courses.addAll(subjectCourses);
-
-        Thread.sleep(20_000);
       }
-    }
 
-    return out;
+      return out;
+    });
   }
 
   Future<Response> navigateToTerm(Term term)

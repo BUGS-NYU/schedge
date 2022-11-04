@@ -4,6 +4,7 @@ import static picocli.CommandLine.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import me.tongfei.progressbar.ProgressBar;
 import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
@@ -40,9 +41,10 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient();
+         ProgressBar bar = new ProgressBar("Scrape", -1)) {
       var search = new PeopleSoftClassSearch(client);
-      var courses = search.scrapeTerm(term);
+      var courses = search.scrapeTerm(term, bar);
       outputFileMixin.writeOutput(courses);
     }
 

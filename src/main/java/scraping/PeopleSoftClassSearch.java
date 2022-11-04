@@ -491,11 +491,6 @@ class Parser {
     DayOfWeek[] days;
 
     {
-      for (var part : parts) {
-        System.out.println("part=" + part);
-      }
-      System.out.println("\n\n");
-
       var beginDateStr = parts[tokenIdx];
       var endDateStr = parts[tokenIdx + 2];
 

@@ -55,6 +55,26 @@ CREATE TABLE meetings (
   PRIMARY KEY (id)
 );
 
+CREATE TABLE schools (
+  id                  SERIAL                      NOT NULL UNIQUE,
+  term                varchar                     NOT NULL,
+  name                varchar                     NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE subjects (
+  id                  SERIAL                      NOT NULL UNIQUE,
+  term                varchar                     NOT NULL,
+  school              int REFERENCES schools(id)
+                      ON DELETE CASCADE           NOT NULL,
+  code                varchar                     NOT NULL,
+  name                varchar                     NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX schools_term_idx ON schools (term);
+CREATE INDEX subjects_term_idx ON subjects (term);
+
 CREATE INDEX courses_term_idx ON courses (term);
 CREATE INDEX sections_course_id_idx ON sections (course_id);
 CREATE INDEX meetings_section_id_idx ON meetings (section_id);

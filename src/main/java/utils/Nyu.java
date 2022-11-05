@@ -152,7 +152,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
+      s.type = row.sectionType;
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.minUnits = row.minUnits;
@@ -169,7 +169,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
+      s.type = row.sectionType;
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.campus = row.campus;

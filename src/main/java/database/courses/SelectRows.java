@@ -67,7 +67,7 @@ public class SelectRows {
         + "sections.registration_number, sections.section_code,"
         + "sections.section_type, sections.section_status, "
         + "sections.instructors, sections.associated_with, "
-        + "sections.waitlist_total, sections.name as section_name, "
+        + "sections.waitlist_total, "
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.instruction_mode "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
@@ -133,10 +133,10 @@ public class SelectRows {
         "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "
         + "sections.instructors, sections.associated_with, "
-        + "sections.waitlist_total, sections.name AS section_name, "
+        + "sections.waitlist_total, "
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.campus, sections.instruction_mode, "
-        + "sections.grading, sections.notes, sections.prerequisites "
+        + "sections.grading, sections.notes "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "
         + "WHERE " + conditions);
 

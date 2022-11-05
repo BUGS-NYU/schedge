@@ -451,8 +451,8 @@ class Parser {
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
       var isSCA = subjectCode.startsWith("SCA-UA");
       if (!isSCA) {
-        logger.warn("course.subjectCode=" + course.subjectCode +
-                    ", but subject=" + subjectCode);
+        logger.warn(course.name + " - course.subjectCode=" +
+                    course.subjectCode + ", but subject=" + subjectCode);
       }
     }
 

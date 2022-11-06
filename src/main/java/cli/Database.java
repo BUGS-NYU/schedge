@@ -6,7 +6,7 @@ import static utils.Nyu.*;
 import actions.ScrapeTerm;
 import database.GetConnection;
 import database.UpdateSchools;
-import database.courses.InsertFullCourses;
+import database.InsertCourses;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 import org.asynchttpclient.*;
@@ -82,8 +82,8 @@ public class Database implements Runnable {
         double duration = (end - start) / 1000000000.0;
         logger.info("Fetching took {} seconds", duration);
 
-        InsertFullCourses.clearPrevious(conn, term);
-        InsertFullCourses.insertCourses(conn, term, courses);
+        InsertCourses.clearPrevious(conn, term);
+        InsertCourses.insertCourses(conn, term, courses);
       });
 
       GetConnection.close();

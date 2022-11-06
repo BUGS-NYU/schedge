@@ -2,15 +2,9 @@ package utils;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import database.models.FullRow;
-import database.models.Row;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import com.fasterxml.jackson.annotation.*;
+import database.models.*;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -144,23 +138,6 @@ public final class Nyu {
     @JsonInclude(NON_NULL) public String notes;
 
     public static Section fromRow(Row row) {
-      Section s = new Section();
-      s.waitlistTotal = row.waitlistTotal;
-      s.registrationNumber = row.registrationNumber;
-      s.code = row.sectionCode;
-      s.instructors = row.instructors;
-      s.type = row.sectionType;
-      s.status = row.sectionStatus;
-      s.meetings = row.meetings;
-      s.minUnits = row.minUnits;
-      s.maxUnits = row.maxUnits;
-      s.instructionMode = row.instructionMode;
-      s.location = row.location;
-
-      return s;
-    }
-
-    public static Section fromFullRow(FullRow row) {
       Section s = new Section();
       s.waitlistTotal = row.waitlistTotal;
       s.registrationNumber = row.registrationNumber;

@@ -1,10 +1,8 @@
 package api.v1;
 
-import static api.RowsToCourses.*;
-
 import api.*;
 import database.GetConnection;
-import database.courses.SearchRows;
+import database.SearchRows;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
 import java.util.*;
@@ -68,8 +66,8 @@ public final class SearchEndpoint extends App.Endpoint {
     }
 
     Object output = GetConnection.withConnectionReturning(conn -> {
-      var rows = SearchRows.searchFullRows(conn, term, args);
-      return RowsToCourses.fullRowsToCourses(rows)
+      var rows = SearchRows.searchRows(conn, term, args);
+      return RowsToCourses.rowsToCourses(rows)
           .limit(resultSize)
           .collect(Collectors.toList());
     });

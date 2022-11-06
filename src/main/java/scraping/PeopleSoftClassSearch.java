@@ -11,19 +11,43 @@ import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import me.tongfei.progressbar.ProgressBar;
 import org.asynchttpclient.*;
 import org.asynchttpclient.uri.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
+import utils.Try;
 import utils.Utils;
 
 public final class PeopleSoftClassSearch {
-  static DateTimeFormatter timeParser =
-      DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
-
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
+
+  public static final class SubjectElem {
+    public final String schoolName;
+    public final String code;
+    public final String name;
+    public final String action;
+
+    SubjectElem(String school, String code, String name, String action) {
+      this.schoolName = school;
+      this.code = code;
+      this.name = name;
+      this.action = action;
+    }
+
+    @Override
+    public String toString() {
+      return "SubjectElem(schoolName=" + schoolName + ",code=" + code +
+          ",name=" + name + ",action=" + action + ")";
+    }
+  }
+
+  public static final class CoursesForTerm {
+    public final ArrayList<School> schools = new ArrayList<>();
+    public final ArrayList<Course> courses = new ArrayList<>();
+  }
 
   public static final class FormEntry {
     public final String key;
@@ -65,57 +89,149 @@ public final class PeopleSoftClassSearch {
 
   HashMap<String, String> formMap;
   final AsyncHttpClient client;
+  final Try ctx = Try.Ctx(logger);
 
-  PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
+  public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
 
-  public static String formEncode(HashMap<String, String> values) {
-    return values.entrySet()
-        .stream()
-        .map(e -> {
-          return e.getKey() + "=" +
-              URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
-        })
-        .collect(Collectors.joining("&"));
-  }
-
-  Future<Response> navigateToTerm(Term term)
-      throws ExecutionException, InterruptedException {
-    String yearText;
+  static String yearText(Term term) {
     switch (term.semester) {
     case ja:
     case sp:
     case su:
-      yearText = (term.year - 1) + "-" + term.year;
-      break;
+      return (term.year - 1) + "-" + term.year;
 
     case fa:
-      yearText = term.year + "-" + (term.year + 1);
-      break;
+      return term.year + "-" + (term.year + 1);
 
     default:
       throw new RuntimeException("whatever");
     }
+  }
 
-    String semesterId;
-    {
-      switch (term.semester) {
-      case fa:
-        semesterId = "NYU_CLS_WRK_NYU_FALL$36$";
-        break;
-      case ja:
-        semesterId = "NYU_CLS_WRK_NYU_WINTER$37$";
-        break;
-      case sp:
-        semesterId = "NYU_CLS_WRK_NYU_SPRING$38$";
-        break;
-      case su:
-        semesterId = "NYU_CLS_WRK_NYU_SUMMER$39$";
-        break;
+  static String semesterId(Term term) {
+    switch (term.semester) {
+    case fa:
+      return "NYU_CLS_WRK_NYU_FALL$36$";
+    case ja:
+      return "NYU_CLS_WRK_NYU_WINTER$37$";
+    case sp:
+      return "NYU_CLS_WRK_NYU_SPRING$38$";
+    case su:
+      return "NYU_CLS_WRK_NYU_SUMMER$39$";
 
-      default:
-        throw new RuntimeException("whatever");
-      }
+    default:
+      throw new RuntimeException("whatever");
     }
+  }
+
+  public ArrayList<School> scrapeSchools(Term term)
+      throws ExecutionException, InterruptedException {
+    ctx.put("term", term);
+
+    return ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+      return Parser.translateSubjects(subjects);
+    });
+  }
+
+  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
+      throws ExecutionException, InterruptedException {
+    ctx.put("term", term);
+    ctx.put("subject", subjectCode);
+
+    return ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+
+      var subject = find(subjects, s -> s.code.equals(subjectCode));
+      if (subject == null)
+        throw new RuntimeException("Subject not found: " + subjectCode);
+
+      {
+        incrementStateNum();
+        formMap.put("ICAction", subject.action);
+
+        var fut = client.executeRequest(post(MAIN_URI, formMap));
+        var resp = fut.get();
+        var responseBody = resp.getResponseBody();
+
+        return Parser.parseSubject(ctx, responseBody, subjectCode);
+      }
+    });
+  }
+
+  // @TODO: There's a more good way to do this, where we just imitate a user
+  // navigating the page normally; but I am tired and don't want to do it
+  // right now.
+  //
+  //                          - Albert Liu, Nov 03, 2022 Thu 16:08
+  /**
+   * @param term The term to scrape
+   * @param bar Nullable progress bar to output progress to
+   */
+  public CoursesForTerm scrapeTerm(Term term, ProgressBar bar)
+      throws ExecutionException, InterruptedException {
+    return ctx.log(() -> { return scrapeTermInternal(term, bar); });
+  }
+
+  CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
+      throws ExecutionException, InterruptedException {
+    var out = new CoursesForTerm();
+    if (bar != null) {
+      bar.setExtraMessage("fetching subject list...");
+      bar.maxHint(-1);
+    }
+
+    ctx.put("term", term);
+
+    var rawSubjects = ctx.log(() -> {
+      var subjects = scrapeSubjectList(term);
+
+      out.schools.addAll(Parser.translateSubjects(subjects));
+      ctx.put("schools", out.schools);
+
+      return subjects;
+    });
+
+    if (bar != null) {
+      bar.maxHint(rawSubjects.size() + 1);
+    }
+
+    for (var subject : rawSubjects) {
+      if (bar != null) {
+        bar.setExtraMessage("fetching " + subject.code);
+        bar.step();
+      }
+
+      ctx.put("subject", subject);
+
+      Thread.sleep(5_000);
+      // client.getConfig().getCookieStore().clear();
+
+      incrementStateNum();
+      formMap.put("ICAction", subject.action);
+
+      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = fut.get();
+      var responseBody = resp.getResponseBody();
+
+      var courses = Parser.parseSubject(ctx, responseBody, subject.code);
+      out.courses.addAll(courses);
+
+      incrementStateNum();
+      formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+
+      fut = client.executeRequest(post(MAIN_URI, formMap));
+      resp = fut.get();
+      responseBody = resp.getResponseBody();
+    }
+
+    return out;
+  }
+
+  Future<Response> navigateToTerm(Term term)
+      throws ExecutionException, InterruptedException {
+    String yearText = yearText(term);
+    String semesterId = semesterId(term);
 
     { // ignore the response here because we just want the cookies
       var fut = client.executeRequest(get(MAIN_URI));
@@ -140,6 +256,7 @@ public final class PeopleSoftClassSearch {
 
       formMap = parseFormFields(body);
       formMap.put("ICAction", id);
+      ctx.put("formMap", formMap);
     }
 
     { // Get the correct state on the page
@@ -158,14 +275,7 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public static ArrayList<School> scrapeSchools(AsyncHttpClient client,
-                                                Term term)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    return self.scrapeSchools(term);
-  }
-
-  public ArrayList<Element> scrapeSchoolElements(Term term)
+  ArrayList<SubjectElem> scrapeSubjectList(Term term)
       throws ExecutionException, InterruptedException {
     var fut = navigateToTerm(term);
     var resp = fut.get();
@@ -178,18 +288,10 @@ public final class PeopleSoftClassSearch {
     doc = Jsoup.parse(cdata.text(), MAIN_URL);
     var results = doc.expectFirst("#win0divRESULTS");
     var group = results.expectFirst("div[id=win0divGROUP$0]");
-    return group.children();
-  }
 
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
-    var children = scrapeSchoolElements(term);
-
-    var schools = new ArrayList<School>();
-    for (var child : children) {
-      var header = child.expectFirst("h2");
-      var school = new School(header.text());
-      schools.add(school);
+    var out = new ArrayList<SubjectElem>();
+    for (var child : group.children()) {
+      var school = child.expectFirst("h2").text();
 
       var schoolTags = child.select("div.ps_box-link");
       for (var schoolTag : schoolTags) {
@@ -200,79 +302,121 @@ public final class PeopleSoftClassSearch {
         var codePart = parts[1];
         codePart = codePart.substring(0, codePart.length() - 1);
 
-        school.subjects.add(new Subject(codePart, titlePart));
+        var action = schoolTag.id().substring(7);
+
+        out.add(new SubjectElem(school, codePart, titlePart, action));
       }
+    }
+
+    return out;
+  }
+
+  void incrementStateNum() {
+    int action = Integer.parseInt(formMap.get("ICStateNum"));
+    action += 1;
+    formMap.put("ICStateNum", "" + action);
+  }
+
+  static HashMap<String, String> parseFormFields(Element body) {
+    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
+    var inputs = optionsRoot.select("input");
+    var map = new HashMap<String, String>();
+    for (var input : inputs) {
+      var attr = input.attributes();
+
+      map.put(input.id(), attr.get("value"));
+    }
+
+    for (var entry : FORM_DEFAULTS) {
+      map.computeIfAbsent(entry.key, k -> entry.value);
+    }
+
+    return map;
+  }
+
+  // I think I get like silently rate-limited during testing without this
+  // header.
+  static String USER_AGENT =
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
+
+  static String formEncode(HashMap<String, String> values) {
+    return values.entrySet()
+        .stream()
+        .map(e -> {
+          return e.getKey() + "=" +
+              URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
+        })
+        .collect(Collectors.joining("&"));
+  }
+
+  static Request get(Uri uri) {
+    return new RequestBuilder()
+        .setUri(uri)
+        .setRequestTimeout(30_000)
+        .setMethod("GET")
+        .setHeader("User-Agent", USER_AGENT)
+        .build();
+  }
+
+  static Request post(Uri uri, HashMap<String, String> body) {
+    String s = formEncode(body);
+
+    return new RequestBuilder()
+        .setUri(uri)
+        .setRequestTimeout(30_000)
+        .setMethod("POST")
+        .setHeader("User-Agent", USER_AGENT)
+        .setHeader("Content-Type", "application/x-www-form-urlencoded")
+        .setBody(s)
+        .build();
+  }
+}
+
+class Parser {
+  static Logger logger = PeopleSoftClassSearch.logger;
+
+  static DateTimeFormatter timeParser =
+      DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
+
+  static ArrayList<School>
+  translateSubjects(ArrayList<PeopleSoftClassSearch.SubjectElem> raw) {
+    var schools = new ArrayList<School>();
+    School school = null;
+
+    for (var subject : raw) {
+      if (school == null || !school.name.equals(subject.schoolName)) {
+        school = new School(subject.schoolName);
+        schools.add(school);
+      }
+
+      school.subjects.add(new Subject(subject.code, subject.name));
     }
 
     return schools;
   }
 
-  public static ArrayList<Course> scrapeSubject(AsyncHttpClient client,
-                                                Term term, String subject)
-      throws ExecutionException, InterruptedException {
-    var self = new PeopleSoftClassSearch(client);
-    return self.scrapeSubject(term, subject);
-  }
-
-  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
-      throws ExecutionException, InterruptedException {
-    var group = scrapeSchoolElements(term);
-
-    Subject subject = null;
-    String actionString = null;
-    for (var child : group) {
-      var schoolTags = child.select("div.ps_box-link");
-      var schoolTag = find(schoolTags, tag -> tag.text().contains(subjectCode));
-      if (schoolTag == null)
-        continue;
-
-      var schoolTitle = schoolTag.text();
-      var parts = schoolTitle.split("\\(");
-
-      var titlePart = parts[0].trim();
-      var codePart = parts[1];
-      codePart = codePart.substring(0, codePart.length() - 1);
-
-      subject = new Subject(codePart, titlePart);
-      actionString = schoolTag.id().substring(7);
-      break;
-    }
-
-    if (subject == null)
-      throw new RuntimeException("Subject not found: " + subjectCode);
-
-    {
-      incrementStateNum();
-      formMap.put("ICAction", actionString);
-
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
-
-      return parseSubject(responseBody, subjectCode);
-    }
-  }
-
-  static ArrayList<Course> parseSubject(String html, String subjectCode) {
-    var doc = Jsoup.parse(html, MAIN_URL);
+  static ArrayList<Course> parseSubject(Try ctx, String html,
+                                        String subjectCode) {
+    var doc = Jsoup.parse(html);
 
     {
       var field = doc.expectFirst("#win0divPAGECONTAINER");
       var cdata = (CDataNode)field.textNodes().get(0);
-      doc = Jsoup.parse(cdata.text(), MAIN_URL);
+      doc = Jsoup.parse(cdata.text());
     }
 
     var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
 
     var courses = new ArrayList<Course>();
     for (var courseHtml : coursesContainer.children()) {
-      courses.add(parseCourse(courseHtml, subjectCode));
+      var course = parseCourse(ctx, courseHtml, subjectCode);
+      courses.add(course);
     }
 
     return courses;
   }
 
-  static Course parseCourse(Element courseHtml, String subjectCode) {
+  static Course parseCourse(Try ctx, Element courseHtml, String subjectCode) {
     var course = new Course();
 
     // This happens to work; nothing else really works as well.
@@ -299,18 +443,22 @@ public final class PeopleSoftClassSearch {
       }
     }
 
-    if (!course.subjectCode.contentEquals(subjectCode)) {
+    var matchingSubject = course.subjectCode.contentEquals(subjectCode);
+    if (!matchingSubject) {
       // This isn't an error for something like `SCA-UA`/`SCA-UA_1`, but
       // could be different than expected for other schools,
       // so for now we just log it.
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
-      logger.warn("course.subjectCode=" + course.subjectCode +
-                  ", but subject=" + subjectCode);
+      var isSCA = subjectCode.startsWith("SCA-UA");
+      if (!isSCA) {
+        logger.warn(course.name + " - course.subjectCode=" +
+                    course.subjectCode + ", but subject=" + subjectCode);
+      }
     }
 
     Section lecture = null;
     for (var sectionHtml : sections.subList(1, sections.size())) {
-      var section = parseSection(sectionHtml);
+      var section = parseSection(ctx, sectionHtml);
       if (section.type.equals("Lecture")) {
         course.sections.add(section);
         section.recitations = new ArrayList<>();
@@ -329,7 +477,7 @@ public final class PeopleSoftClassSearch {
     return course;
   }
 
-  static Section parseSection(Element sectionHtml) {
+  static Section parseSection(Try ctx, Element sectionHtml) {
     var wrapper = sectionHtml.expectFirst("td");
     var data = wrapper.children();
 
@@ -386,7 +534,7 @@ public final class PeopleSoftClassSearch {
 
     // 01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM at SPR 2503 with
     // Morrison, George Arthur; Margarint, Vlad-Dumitru
-    String metaText = null;
+    String metaText = "";
 
     var notes = new StringBuilder();
     for (var node : wrapper.textNodes()) {
@@ -394,7 +542,7 @@ public final class PeopleSoftClassSearch {
       if (text.length() == 0)
         continue;
 
-      if (metaText == null) {
+      if (metaText.isEmpty()) {
         metaText = text;
       } else {
         notes.append(text);
@@ -415,6 +563,8 @@ public final class PeopleSoftClassSearch {
       section.location = parts[1];
     }
 
+    ctx.put("meetingString", parts[0]);
+
     parts = parts[0].split(" ");
     if (parts.length <= 3) {
       return section; // No meetings
@@ -424,30 +574,58 @@ public final class PeopleSoftClassSearch {
     int duration;
     LocalDateTime beginDateTime, endDateTime;
     DayOfWeek[] days;
+
+    // Default pattern:
+    //      01/25/2021 - 05/14/2021 Thu 6.15 PM - 7.30 PM
+    // Asynchronous classes:
+    //      01/25/2021 - 05/14/2021 Thu
+    // Some online classes also have:
+    //      01/25/2021 - 05/14/2021 6.15 PM - 7.30 PM
     {
       var beginDateStr = parts[tokenIdx];
-      var endDateStr = parts[tokenIdx + 2];
+      tokenIdx += 2;
 
-      var dayStr = parts[tokenIdx + 3];
-      var beginTimeStr = parts[tokenIdx + 4];
-      var beginTimeHalfStr = parts[tokenIdx + 5];
-      var endTimeStr = parts[tokenIdx + 7];
-      var endTimeHalfStr = parts[tokenIdx + 8];
+      var endDateStr = parts[tokenIdx];
+      tokenIdx += 1;
 
-      beginDateTime = LocalDateTime.from(timeParser.parse(
-          beginDateStr + ' ' + beginTimeStr + beginTimeHalfStr));
-      var stopDateTime = LocalDateTime.from(
-          timeParser.parse(beginDateStr + ' ' + endTimeStr + endTimeHalfStr));
-      duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
-
-      endDateTime =
-          LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
+      var dayStr = parts[tokenIdx];
+      if (dayStr.charAt(0) >= '0' && dayStr.charAt(0) <= '9') {
+        dayStr = "Sun,Sat,Mon,Tue,Wed,Thu,Fri";
+      } else {
+        tokenIdx += 1;
+      }
 
       var dayStrings = dayStr.split(",");
       days = new DayOfWeek[dayStrings.length];
       for (int i = 0; i < dayStrings.length; i++) {
         days[i] = Utils.parseDayOfWeek(dayStrings[i]);
       }
+
+      // @Note: Asynchronous classes have the pattern:
+      //
+      //            01/25/2021 - 05/14/2021 Thu
+      //
+      // Since the time doesn't really matter anyways, we just substitute
+      // in the time of 11.59PM .
+      //
+      //                    - Albert Liu, Nov 03, 2022 Thu 18:35
+      String beginTimeStr, endTimeStr;
+      if (tokenIdx >= parts.length) {
+        beginTimeStr = endTimeStr = "11.59PM";
+      } else {
+        beginTimeStr = parts[tokenIdx] + parts[tokenIdx + 1];
+        tokenIdx += 3;
+        endTimeStr = parts[tokenIdx] + parts[tokenIdx + 1];
+      }
+
+      beginDateTime = LocalDateTime.from(
+          timeParser.parse(beginDateStr + ' ' + beginTimeStr));
+      var stopDateTime =
+          LocalDateTime.from(timeParser.parse(beginDateStr + ' ' + endTimeStr));
+      duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
+
+      endDateTime =
+          LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
     }
 
     var tz = Utils.timezoneForCampus(section.campus);
@@ -471,54 +649,5 @@ public final class PeopleSoftClassSearch {
     }
 
     return section;
-  }
-
-  void incrementStateNum() {
-    int action = Integer.parseInt(formMap.get("ICStateNum"));
-    action += 1;
-    formMap.put("ICStateNum", "" + action);
-  }
-
-  static HashMap<String, String> parseFormFields(Element body) {
-    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
-    var inputs = optionsRoot.select("input");
-    var map = new HashMap<String, String>();
-    for (var input : inputs) {
-      var attr = input.attributes();
-
-      map.put(input.id(), attr.get("value"));
-    }
-
-    for (var entry : FORM_DEFAULTS) {
-      map.computeIfAbsent(entry.key, k -> entry.value);
-    }
-
-    return map;
-  }
-
-  // I think I get like silently rate-limited during testing without this
-  // header.
-  static String USER_AGENT =
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
-
-  static Request get(Uri uri) {
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(10_000)
-        .setMethod("GET")
-        .setHeader("User-Agent", USER_AGENT)
-        .build();
-  }
-
-  static Request post(Uri uri, HashMap<String, String> body) {
-    String s = formEncode(body);
-
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(10_000)
-        .setMethod("POST")
-        .setHeader("Content-Type", "application/x-www-form-urlencoded")
-        .setBody(s)
-        .build();
   }
 }

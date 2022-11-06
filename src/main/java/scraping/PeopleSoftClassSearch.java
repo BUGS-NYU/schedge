@@ -3,7 +3,9 @@ package scraping;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
-import java.net.URLEncoder;
+import java.io.IOException;
+import java.net.*;
+import java.net.http.*;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -12,8 +14,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import me.tongfei.progressbar.ProgressBar;
-import org.asynchttpclient.*;
-import org.asynchttpclient.uri.Uri;
+import org.asynchttpclient.AsyncHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
@@ -84,14 +85,21 @@ public final class PeopleSoftClassSearch {
               + "NYU_CLS_SRCH.GBL?~UnknownValue"),
   };
 
-  static Uri MAIN_URI = Uri.create(MAIN_URL);
-  static Uri REDIRECT_URI = Uri.create(MAIN_URL + "?&");
+  static URI MAIN_URI = URI.create(MAIN_URL);
+  static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
   HashMap<String, String> formMap;
-  final AsyncHttpClient client;
+  final HttpClient client;
   final Try ctx = Try.Ctx(logger);
 
-  public PeopleSoftClassSearch(AsyncHttpClient client) { this.client = client; }
+  public PeopleSoftClassSearch() {
+    var cookieHandler = new CookieManager();
+    var builder = HttpClient.newBuilder();
+
+    this.client = builder.connectTimeout(Duration.of(30, ChronoUnit.DAYS))
+                      .cookieHandler(cookieHandler)
+                      .build();
+  }
 
   static String yearText(Term term) {
     switch (term.semester) {
@@ -124,8 +132,7 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public ArrayList<School> scrapeSchools(Term term)
-      throws ExecutionException, InterruptedException {
+  public ArrayList<School> scrapeSchools(Term term) {
     ctx.put("term", term);
 
     return ctx.log(() -> {
@@ -134,8 +141,7 @@ public final class PeopleSoftClassSearch {
     });
   }
 
-  public ArrayList<Course> scrapeSubject(Term term, String subjectCode)
-      throws ExecutionException, InterruptedException {
+  public ArrayList<Course> scrapeSubject(Term term, String subjectCode) {
     ctx.put("term", term);
     ctx.put("subject", subjectCode);
 
@@ -150,9 +156,9 @@ public final class PeopleSoftClassSearch {
         incrementStateNum();
         formMap.put("ICAction", subject.action);
 
-        var fut = client.executeRequest(post(MAIN_URI, formMap));
-        var resp = fut.get();
-        var responseBody = resp.getResponseBody();
+        var resp = client.send(post(MAIN_URI, formMap),
+                               HttpResponse.BodyHandlers.ofString());
+        var responseBody = resp.body();
 
         return Parser.parseSubject(ctx, responseBody, subjectCode);
       }
@@ -168,13 +174,12 @@ public final class PeopleSoftClassSearch {
    * @param term The term to scrape
    * @param bar Nullable progress bar to output progress to
    */
-  public CoursesForTerm scrapeTerm(Term term, ProgressBar bar)
-      throws ExecutionException, InterruptedException {
+  public CoursesForTerm scrapeTerm(Term term, ProgressBar bar) {
     return ctx.log(() -> { return scrapeTermInternal(term, bar); });
   }
 
   CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
-      throws ExecutionException, InterruptedException {
+      throws ExecutionException, IOException, InterruptedException {
     var out = new CoursesForTerm();
     if (bar != null) {
       bar.setExtraMessage("fetching subject list...");
@@ -196,6 +201,8 @@ public final class PeopleSoftClassSearch {
       bar.maxHint(rawSubjects.size() + 1);
     }
 
+    var handler = HttpResponse.BodyHandlers.ofString();
+
     for (var subject : rawSubjects) {
       if (bar != null) {
         bar.setExtraMessage("fetching " + subject.code);
@@ -210,9 +217,8 @@ public final class PeopleSoftClassSearch {
       incrementStateNum();
       formMap.put("ICAction", subject.action);
 
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
+      var resp = client.send(post(MAIN_URI, formMap), handler);
+      var responseBody = resp.body();
 
       var courses = Parser.parseSubject(ctx, responseBody, subject.code);
       out.courses.addAll(courses);
@@ -220,28 +226,26 @@ public final class PeopleSoftClassSearch {
       incrementStateNum();
       formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
 
-      fut = client.executeRequest(post(MAIN_URI, formMap));
-      resp = fut.get();
-      responseBody = resp.getResponseBody();
+      resp = client.send(post(MAIN_URI, formMap), handler);
+      responseBody = resp.body();
     }
 
     return out;
   }
 
-  Future<Response> navigateToTerm(Term term)
-      throws ExecutionException, InterruptedException {
+  HttpResponse<String> navigateToTerm(Term term)
+      throws IOException, ExecutionException, InterruptedException {
     String yearText = yearText(term);
     String semesterId = semesterId(term);
 
+    var handler = HttpResponse.BodyHandlers.ofString();
     { // ignore the response here because we just want the cookies
-      var fut = client.executeRequest(get(MAIN_URI));
-      fut.get();
+      client.send(get(MAIN_URI), handler);
     }
 
     {
-      var fut = client.executeRequest(get(REDIRECT_URI));
-      var resp = fut.get();
-      var responseBody = resp.getResponseBody();
+      var resp = client.send(get(REDIRECT_URI), handler);
+      var responseBody = resp.body();
       var doc = Jsoup.parse(responseBody, MAIN_URL);
       var body = doc.body();
 
@@ -260,8 +264,7 @@ public final class PeopleSoftClassSearch {
     }
 
     { // Get the correct state on the page
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
-      fut.get();
+      client.send(post(MAIN_URI, formMap), handler);
     }
 
     {
@@ -269,17 +272,16 @@ public final class PeopleSoftClassSearch {
       formMap.put("ICAction", semesterId);
       formMap.put(semesterId, "Y");
 
-      var fut = client.executeRequest(post(MAIN_URI, formMap));
+      var resp = client.send(post(MAIN_URI, formMap), handler);
 
-      return fut;
+      return resp;
     }
   }
 
   ArrayList<SubjectElem> scrapeSubjectList(Term term)
-      throws ExecutionException, InterruptedException {
-    var fut = navigateToTerm(term);
-    var resp = fut.get();
-    var responseBody = resp.getResponseBody();
+      throws ExecutionException, IOException, InterruptedException {
+    var resp = navigateToTerm(term);
+    var responseBody = resp.body();
     var doc = Jsoup.parse(responseBody, MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
@@ -349,25 +351,25 @@ public final class PeopleSoftClassSearch {
         .collect(Collectors.joining("&"));
   }
 
-  static Request get(Uri uri) {
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(30_000)
-        .setMethod("GET")
+  static HttpRequest get(URI uri) {
+    return HttpRequest.newBuilder()
+        .uri(uri)
+        .timeout(Duration.of(30, ChronoUnit.DAYS))
         .setHeader("User-Agent", USER_AGENT)
+        .setHeader("Content-Type", "application/x-www-form-urlencoded")
+        .GET()
         .build();
   }
 
-  static Request post(Uri uri, HashMap<String, String> body) {
+  static HttpRequest post(URI uri, HashMap<String, String> body) {
     String s = formEncode(body);
 
-    return new RequestBuilder()
-        .setUri(uri)
-        .setRequestTimeout(30_000)
-        .setMethod("POST")
+    return HttpRequest.newBuilder()
+        .uri(uri)
+        .timeout(Duration.of(30, ChronoUnit.DAYS))
         .setHeader("User-Agent", USER_AGENT)
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
-        .setBody(s)
+        .POST(HttpRequest.BodyPublishers.ofString(s))
         .build();
   }
 }

@@ -2,12 +2,10 @@ package scraping;
 
 import static utils.Nyu.*;
 
+import java.net.*;
+import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.Request;
-import org.asynchttpclient.RequestBuilder;
-import org.asynchttpclient.uri.Uri;
 import org.slf4j.*;
 import utils.*;
 
@@ -20,9 +18,9 @@ public final class ScrapeSchedge {
   //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
-  public static List<Course> scrapeFromSchedge(AsyncHttpClient client,
-                                               Term term) {
+  public static List<Course> scrapeFromSchedge(Term term) {
     var subjects = Subject.allSubjects().listIterator();
+    var client = HttpClient.newHttpClient();
 
     var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {
@@ -48,7 +46,7 @@ public final class ScrapeSchedge {
     return output;
   }
 
-  private static Future<String> getData(AsyncHttpClient client, Term term,
+  private static Future<String> getData(HttpClient client, Term term,
                                         String subject) {
     var parts = subject.split("-");
     String school = parts[1];
@@ -62,14 +60,15 @@ public final class ScrapeSchedge {
     var components =
         new String[] {"" + term.year, term.semester.toString(), school, major};
 
-    Uri uri =
-        Uri.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
+    var uri =
+        URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
-    Request request = new RequestBuilder().setUri(uri).build();
+    var request = HttpRequest.newBuilder().uri(uri).build();
 
     long start = System.nanoTime();
 
-    var fut = client.executeRequest(request).toCompletableFuture();
+    var handler = HttpResponse.BodyHandlers.ofString();
+    var fut = client.sendAsync(request, handler);
     return fut.handleAsync((resp, throwable) -> {
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
@@ -81,7 +80,7 @@ public final class ScrapeSchedge {
         return null;
       }
 
-      String text = resp.getResponseBody();
+      String text = resp.body();
       return text;
     });
   }

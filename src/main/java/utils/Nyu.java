@@ -11,7 +11,6 @@ import database.models.FullRow;
 import database.models.Row;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -107,7 +106,7 @@ public final class Nyu {
     fromJson(@JsonProperty("beginDate") String beginDate,
              @JsonProperty("minutesDuration") int minutesDuration,
              @JsonProperty("endDate") String endDate) {
-      Meeting meeting = new Meeting();
+      var meeting = new Meeting();
       meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
       meeting.minutesDuration = minutesDuration;
       meeting.endDate = LocalDateTime.parse(endDate, formatter);
@@ -116,14 +115,12 @@ public final class Nyu {
     }
 
     public String getBeginDate() {
-      ZonedDateTime zoned = beginDate.atZone(ZoneOffset.UTC);
-
+      var zoned = beginDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
     }
 
     public String getEndDate() {
-      ZonedDateTime zoned = endDate.atZone(ZoneOffset.UTC);
-
+      var zoned = endDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
     }
   }

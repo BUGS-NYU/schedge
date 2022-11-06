@@ -2,6 +2,7 @@ package database.models;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
@@ -39,15 +40,21 @@ public class AugmentedMeeting {
     minutesDuration = rs.getInt("duration");
   }
 
-  public String getBeginDate() { return beginDate.format(formatter); }
+  public String getBeginDate() {
+    var zoned = beginDate.atZone(ZoneOffset.UTC);
+    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+  }
+
+  public String getEndDate() {
+    var zoned = endDate.atZone(ZoneOffset.UTC);
+    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+  }
 
   public int getMinutesDuration() { return minutesDuration; }
 
   public int getMinutesInDay() {
     return beginDate.get(ChronoField.MINUTE_OF_DAY);
   }
-
-  public String getEndDate() { return endDate.format(formatter); }
 
   @Override
   public String toString() {

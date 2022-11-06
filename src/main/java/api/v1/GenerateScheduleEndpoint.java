@@ -1,15 +1,13 @@
 package api.v1;
 
-import static actions.ScheduleSections.Schedule;
-import static actions.ScheduleSections.generateSchedule;
+import static actions.ScheduleSections.*;
 
 import api.App;
-import database.GetConnection;
-import database.SelectAugmentedMeetings;
-import database.models.AugmentedMeeting;
+import database.*;
+import database.models.*;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
 

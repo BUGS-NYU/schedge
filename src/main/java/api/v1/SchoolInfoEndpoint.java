@@ -1,14 +1,13 @@
 package api.v1;
 
-import static database.GetConnection.withConnectionReturning;
-import static database.SelectSubjects.selectSchoolsForTerm;
-import static utils.Nyu.School;
-import static utils.Nyu.Term;
+import static database.GetConnection.*;
+import static database.SelectSubjects.*;
+import static utils.Nyu.*;
 
-import api.App;
+import api.*;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.ArrayList;
+import java.util.*;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }

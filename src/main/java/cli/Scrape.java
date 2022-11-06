@@ -35,8 +35,7 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
-      throws IOException, ExecutionException, InterruptedException {
+  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();

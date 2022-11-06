@@ -1,15 +1,11 @@
 package utils;
 
 import java.io.*;
-import java.lang.Runnable;
 import java.net.*;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.*;
 
 public final class Utils {
@@ -78,10 +74,6 @@ public final class Utils {
     return new Scanner(inReader).useDelimiter("\\A").next();
   }
 
-  public static <T, E> E map(T t, Function<T, E> f) {
-    return t != null ? f.apply(t) : null;
-  }
-
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
     switch (dayOfWeek) {
     case "Mo":
@@ -108,74 +100,6 @@ public final class Utils {
     default:
       return DayOfWeek.valueOf(dayOfWeek);
     }
-  }
-
-  static HashMap<String, ZoneId> tzMap;
-  static {
-    var map = new HashMap<String, ZoneId>();
-
-    map.put("NYU London (Global)", ZoneId.of("Europe/London"));
-    map.put("NYU Paris (Global)", ZoneId.of("Europe/Paris"));
-    map.put("NYU Florence (Global)", ZoneId.of("Europe/Rome"));
-    map.put("NYU Berlin (Global)", ZoneId.of("Europe/Berlin"));
-    map.put("NYU Madrid (Global)", ZoneId.of("Europe/Madrid"));
-    map.put("NYU Prague (Global)", ZoneId.of("Europe/Prague"));
-    map.put("Athens", ZoneId.of("Europe/Athens"));
-
-    map.put("NYU Sydney (Global)", ZoneId.of("Australia/Sydney"));
-
-    map.put("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai"));
-    map.put("Abu Dhabi", ZoneId.of("Asia/Dubai"));
-    map.put("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv"));
-    map.put("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai"));
-    map.put("Shanghai", ZoneId.of("Asia/Shanghai"));
-
-    map.put("NYU Accra (Global)", ZoneId.of("Africa/Accra"));
-
-    map.put("NYU Buenos Aires (Global)",
-            ZoneId.of("America/Argentina/Buenos_Aires"));
-    map.put("NYU Los Angeles (Global)", ZoneId.of("America/Los_Angeles"));
-
-    var nyc = ZoneId.of("America/New_York");
-
-    map.put("Online", nyc);
-    map.put("Distance Learning/Asynchronous", nyc);
-    map.put("Distance Learning / Blended", nyc);
-    map.put("Distance Learning/Synchronous", nyc);
-    map.put("Distance Ed (Learning Space)", nyc);
-    map.put("Distance Education", nyc);
-
-    map.put("St. Thomas Aquinas College", nyc);
-    map.put("Sarah Lawrence", nyc);
-    map.put("ePoly", nyc);
-
-    map.put("Woolworth Bldg.-15 Barclay St", nyc);
-    map.put("Grad Stern at Purchase", nyc);
-    map.put("Dental Center", nyc);
-    map.put("Midtown Center", nyc);
-    map.put("Hosp. for Joint Diseases", nyc);
-    map.put("Inst. of Fine Arts", nyc);
-    map.put("Medical Center", nyc);
-    map.put("NYU Washington DC (Global)", nyc);
-    map.put("Brooklyn Campus", nyc);
-    map.put("Washington Square", nyc);
-
-    tzMap = map;
-  }
-
-  public static ZoneId timezoneForCampus(String campus) {
-    if (campus.equals("Off Campus")) {
-      return ZoneId.of("America/New_York");
-    }
-
-    var tz = tzMap.get(campus);
-    if (tz == null) {
-      // throw new IllegalArgumentException("Bad campus: " + campus);
-      System.err.println("Bad campus: " + campus);
-      return ZoneId.of("America/New_York");
-    }
-
-    return tz;
   }
 
   public static boolean deleteFile(File f) {

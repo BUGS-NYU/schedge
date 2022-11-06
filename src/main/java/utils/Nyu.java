@@ -5,7 +5,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import com.fasterxml.jackson.annotation.*;
 import database.models.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
+import java.time.format.*;
 import java.util.*;
 
 public final class Nyu {
@@ -78,6 +78,13 @@ public final class Nyu {
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     @JsonIgnore() public String subjectCode;
 
+    // @NOTE: these are required for the Javalin OpenAPI integration
+    // to pick up fields on the output data
+    public String getName() { return name; }
+    public String getDeptCourseId() { return deptCourseId; }
+    public String getDescription() { return description; }
+    public List<Section> getSections() { return sections; }
+
     public String toString() {
       return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
     }
@@ -126,16 +133,15 @@ public final class Nyu {
     public String type;
     public SectionStatus status;
     public List<Meeting> meetings;
-
-    @JsonInclude(NON_NULL) public List<Section> recitations;
-    @JsonInclude(NON_NULL) public Integer waitlistTotal;
-    @JsonInclude(NON_NULL) public String instructionMode;
-    @JsonInclude(NON_NULL) public String campus;
-    @JsonInclude(NON_NULL) public Double minUnits;
-    @JsonInclude(NON_NULL) public Double maxUnits;
-    @JsonInclude(NON_NULL) public String grading;
-    @JsonInclude(NON_NULL) public String location;
-    @JsonInclude(NON_NULL) public String notes;
+    public List<Section> recitations;
+    public Integer waitlistTotal;
+    public String instructionMode;
+    public String campus;
+    public Double minUnits;
+    public Double maxUnits;
+    public String grading;
+    public String location;
+    public String notes;
 
     public static Section fromRow(Row row) {
       Section s = new Section();
@@ -155,6 +161,29 @@ public final class Nyu {
       s.location = row.location;
 
       return s;
+    }
+
+    public int getRegistrationNumber() { return registrationNumber; }
+    public String getCode() { return code; }
+    public String[] getInstructors() { return instructors; }
+    public String getType() { return type; }
+    public SectionStatus getStatus() { return status; }
+    public String getCampus() { return campus; }
+    public List<Meeting> getMeetings() { return meetings; }
+    public String getInstructionMode() { return instructionMode; }
+    public Double getMinUnits() { return minUnits; }
+    public Double getMaxUnits() { return maxUnits; }
+    public String getGrading() { return grading; }
+    public String getLocation() { return location; }
+    public String getNotes() { return notes; }
+
+    @JsonInclude(NON_NULL)
+    public List<Section> getRecitations() {
+      return recitations;
+    }
+    @JsonInclude(NON_NULL)
+    public Integer getWaitlistTotal() {
+      return waitlistTotal;
     }
 
     public String toString() { return JsonMapper.toJson(this); }
@@ -405,5 +434,97 @@ public final class Nyu {
     public int hashCode() {
       return Objects.hash(semester, year);
     }
+  }
+
+  public static final class Campus {
+    public final String name;
+    public final String timezoneId;
+    public final String timezoneName;
+
+    @JsonIgnore() public final ZoneId timezone;
+
+    public Campus(String name, ZoneId zone) {
+      this.name = name;
+      this.timezone = zone;
+      this.timezoneId = zone.getId();
+      this.timezoneName =
+          zone.getDisplayName(TextStyle.FULL_STANDALONE, Locale.US);
+    }
+
+    public static final HashMap<String, Campus> campuses;
+
+    static {
+      var map = new HashMap<String, Campus>();
+
+      var nyc = ZoneId.of("America/New_York");
+      var buenosAires = ZoneId.of("America/Argentina/Buenos_Aires");
+      var losAngeles = ZoneId.of("America/Los_Angeles");
+
+      var campusList = new Campus[] {
+          new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
+          new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
+          new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
+          new Campus("NYU Berlin (Global)", ZoneId.of("Europe/Berlin")),
+          new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
+          new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
+          new Campus("Athens", ZoneId.of("Europe/Athens")),
+
+          new Campus("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai")),
+          new Campus("Abu Dhabi", ZoneId.of("Asia/Dubai")),
+          new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
+          new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
+          new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),
+
+          new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
+
+          new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+          new Campus("NYU Buenos Aires (Global)", buenosAires),
+          new Campus("NYU Los Angeles (Global)", losAngeles),
+
+          new Campus("Off Campus", nyc),
+          new Campus("Online", nyc),
+          new Campus("Distance Learning/Asynchronous", nyc),
+          new Campus("Distance Learning / Blended", nyc),
+          new Campus("Distance Learning/Synchronous", nyc),
+          new Campus("Distance Ed (Learning Space)", nyc),
+          new Campus("Distance Education", nyc),
+
+          new Campus("St. Thomas Aquinas College", nyc),
+          new Campus("Sarah Lawrence", nyc),
+          new Campus("ePoly", nyc),
+
+          new Campus("Woolworth Bldg.-15 Barclay St", nyc),
+          new Campus("Grad Stern at Purchase", nyc),
+          new Campus("Dental Center", nyc),
+          new Campus("Midtown Center", nyc),
+          new Campus("Hosp. for Joint Diseases", nyc),
+          new Campus("Inst. of Fine Arts", nyc),
+          new Campus("Medical Center", nyc),
+          new Campus("NYU Washington DC (Global)", nyc),
+          new Campus("Brooklyn Campus", nyc),
+          new Campus("Washington Square", nyc),
+      };
+
+      for (var campus : campusList) {
+        map.put(campus.name, campus);
+      }
+
+      campuses = map;
+    }
+
+    public static ZoneId timezoneForCampus(String name) {
+      var campus = campuses.get(name);
+      if (campus == null) {
+        // throw new IllegalArgumentException("Bad campus: " + campus);
+        System.err.println("Bad campus: " + name);
+        return ZoneId.of("America/New_York");
+      }
+
+      return campus.timezone;
+    }
+
+    public String getName() { return name; }
+    public String getTimezoneId() { return timezoneId; }
+    public String getTimezoneName() { return timezoneName; }
   }
 }

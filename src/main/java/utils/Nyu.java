@@ -4,6 +4,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 import com.fasterxml.jackson.annotation.*;
 import database.models.*;
+import io.javalin.openapi.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
@@ -115,6 +116,8 @@ public final class Nyu {
       return meeting;
     }
 
+    public int getMinutesDuration() { return minutesDuration; }
+
     public String getBeginDate() {
       var zoned = beginDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
@@ -167,7 +170,12 @@ public final class Nyu {
     public String getCode() { return code; }
     public String[] getInstructors() { return instructors; }
     public String getType() { return type; }
-    public SectionStatus getStatus() { return status; }
+
+    @OpenApiPropertyType(definedBy = String.class)
+    public SectionStatus getStatus() {
+      return status;
+    }
+
     public String getCampus() { return campus; }
     public List<Meeting> getMeetings() { return meetings; }
     public String getInstructionMode() { return instructionMode; }

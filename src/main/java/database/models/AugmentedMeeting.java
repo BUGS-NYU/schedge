@@ -2,6 +2,7 @@ package database.models;
 
 import java.sql.*;
 import java.time.*;
+import io.javalin.openapi.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
@@ -38,6 +39,18 @@ public class AugmentedMeeting {
     endDate = rs.getTimestamp("end_date").toLocalDateTime();
     minutesDuration = rs.getInt("duration");
   }
+
+  public String getSubject() { return subject; }
+  public String getDeptCourseId() { return deptCourseId; }
+
+  public String getSectionCode() { return sectionCode; }
+  public int getRegistrationNumber() { return registrationNumber; }
+  public String getSectionType() { return sectionType; }
+
+  @OpenApiPropertyType(definedBy = String.class)
+  public Nyu.SectionStatus getSectionStatus() { return sectionStatus; }
+  public String getInstructionMode() { return instructionMode; }
+  public String getLocation() { return location; }
 
   public String getBeginDate() {
     var zoned = beginDate.atZone(ZoneOffset.UTC);

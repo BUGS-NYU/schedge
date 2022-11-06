@@ -80,17 +80,25 @@ public class App {
       var openApiConfig = new OpenApiConfiguration();
       openApiConfig.setInfo(info);
       openApiConfig.setDocumentationPath(jsonPath);
-      var reDocConfig = new ReDocConfiguration();
-      reDocConfig.setDocumentationPath(jsonPath);
-      reDocConfig.setWebJarPath("/api/webjars");
-      reDocConfig.setUiPath(htmlPath);
+      // var reDocConfig = new ReDocConfiguration();
+      // reDocConfig.setDocumentationPath(jsonPath);
+      // reDocConfig.setWebJarPath("/api/webjars");
+      // reDocConfig.setUiPath(htmlPath);
       config.plugins.register(new OpenApiPlugin(openApiConfig));
-      config.plugins.register(new ReDocPlugin(reDocConfig));
+      // config.plugins.register(new ReDocPlugin(reDocConfig));
 
       // Add static files for the NextJS UI
       config.staticFiles.add(staticFiles -> {
         staticFiles.hostedPath = "/";
-        staticFiles.directory = "/next/";
+        staticFiles.directory = "/next";
+        staticFiles.location = Location.CLASSPATH;
+        staticFiles.precompress = false;
+      });
+
+      // Static files for the ReDoc API Docs
+      config.staticFiles.add(staticFiles -> {
+        staticFiles.hostedPath = "/api";
+        staticFiles.directory = "/api";
         staticFiles.location = Location.CLASSPATH;
         staticFiles.precompress = false;
       });

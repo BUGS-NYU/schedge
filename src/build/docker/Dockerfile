@@ -1,4 +1,13 @@
 # FROM openjdk:8u212-jre-alpine3.9
+
+# @Note: Can use the following to prevent Docker's "load metadata"
+# bullshit: https://stackoverflow.com/a/70483395
+#
+# TLDR is that you need to download the image ahead of time, and then
+# tag it with a custom name (e.g. schedge/jdk-slim) and use the new
+# custom name in the Dockerfile (i.e. FROM schedge/jdk-slim).
+#
+#                               - Albert Liu, Nov 06, 2022 Sun 13:21
 FROM openjdk:17.0.2-jdk-slim-buster
 
 WORKDIR "/home/user"

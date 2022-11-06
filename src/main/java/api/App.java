@@ -47,7 +47,7 @@ public class App {
       this.status = status;
     }
 
-    public String getMessage() { return message; }
+    public String getMessage() { return message + "c"; }
   }
 
   public static void run() {

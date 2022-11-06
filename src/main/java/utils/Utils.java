@@ -1,15 +1,11 @@
 package utils;
 
 import java.io.*;
-import java.lang.Runnable;
 import java.net.*;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.*;
 
 public final class Utils {
@@ -76,10 +72,6 @@ public final class Utils {
       }
     }
     return new Scanner(inReader).useDelimiter("\\A").next();
-  }
-
-  public static <T, E> E map(T t, Function<T, E> f) {
-    return t != null ? f.apply(t) : null;
   }
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
@@ -163,21 +155,6 @@ public final class Utils {
     map.put("Washington Square", nyc);
 
     tzMap = map;
-  }
-
-  public static ZoneId timezoneForCampus(String campus) {
-    if (campus.equals("Off Campus")) {
-      return ZoneId.of("America/New_York");
-    }
-
-    var tz = tzMap.get(campus);
-    if (tz == null) {
-      // throw new IllegalArgumentException("Bad campus: " + campus);
-      System.err.println("Bad campus: " + campus);
-      return ZoneId.of("America/New_York");
-    }
-
-    return tz;
   }
 
   public static boolean deleteFile(File f) {

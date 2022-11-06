@@ -26,6 +26,10 @@ public class Row {
   public final String location;
   public final String instructionMode;
 
+  public String campus;
+  public String grading;
+  public String notes;
+
   public Row(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
@@ -35,6 +39,10 @@ public class Row {
     this.sectionId = rs.getInt("section_id");
     this.registrationNumber = rs.getInt("registration_number");
     this.sectionCode = rs.getString("section_code");
+
+    this.campus = rs.getString("campus");
+    this.grading = rs.getString("grading");
+    this.notes = rs.getString("notes");
 
     Array instructorArray = rs.getArray("instructors");
     String[] instructors = null;

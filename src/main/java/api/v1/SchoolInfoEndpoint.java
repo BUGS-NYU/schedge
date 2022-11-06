@@ -1,6 +1,6 @@
 package api.v1;
 
-import static database.GetConnection.*;
+import static database.GetConnection.withConnectionReturning;
 import static database.SelectSubjects.*;
 import static utils.Nyu.*;
 
@@ -44,7 +44,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022", required = true)
+                      example = "fa2022",required = true)
       },
       responses =
       {

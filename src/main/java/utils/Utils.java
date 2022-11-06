@@ -148,6 +148,8 @@ public final class Utils {
     map.put("St. Thomas Aquinas College", nyc);
     map.put("Sarah Lawrence", nyc);
     map.put("ePoly", nyc);
+    map.put("Medical Center Long Island", nyc);
+    map.put("NYU New York (Global)", nyc);
 
     map.put("Woolworth Bldg.-15 Barclay St", nyc);
     map.put("Grad Stern at Purchase", nyc);

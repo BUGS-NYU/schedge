@@ -405,7 +405,14 @@ class Parser {
       doc = Jsoup.parse(cdata.text());
     }
 
-    var coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
+    Element coursesContainer;
+    try {
+
+      coursesContainer = doc.expectFirst("div[id=win0divSELECT_COURSE$0]");
+    } catch (org.jsoup.helper.ValidationException e) {
+      System.out.println(doc);
+      throw e;
+    }
 
     var courses = new ArrayList<Course>();
     for (var courseHtml : coursesContainer.children()) {

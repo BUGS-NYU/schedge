@@ -1,14 +1,14 @@
 CREATE TABLE schedge_meta (
   id                  SERIAL                        NOT NULL UNIQUE,
-  created_at          timestamp WITHOUT TIME ZONE   NOT NULL,
+  created_at          timestamp WITHOUT TIME ZONE   NOT NULL DEFAULT NOW(),
   updated_at          timestamp WITHOUT TIME ZONE   NOT NULL,
   name                varchar                       NOT NULL UNIQUE,
   value               varchar                       NOT NULL,
   PRIMARY KEY (id)
 );
 
-INSERT  INTO schedge_meta (created_at,  updated_at, name,       value)
-        VALUES            (NOW(),       NOW(),      'version',  '1');
+INSERT  INTO schedge_meta (updated_at, name,       value)
+        VALUES            (NOW(),      'version',  '1');
 
 CREATE TABLE courses (
   id                  SERIAL                      NOT NULL UNIQUE,
@@ -54,6 +54,26 @@ CREATE TABLE meetings (
   duration            int                             NOT NULL,
   PRIMARY KEY (id)
 );
+
+CREATE TABLE schools (
+  id                  SERIAL                      NOT NULL UNIQUE,
+  term                varchar                     NOT NULL,
+  name                varchar                     NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE subjects (
+  id                  SERIAL                      NOT NULL UNIQUE,
+  term                varchar                     NOT NULL,
+  school              int REFERENCES schools(id)
+                      ON DELETE CASCADE           NOT NULL,
+  code                varchar                     NOT NULL,
+  name                varchar                     NOT NULL,
+  PRIMARY KEY (id)
+);
+
+CREATE INDEX schools_term_idx ON schools (term);
+CREATE INDEX subjects_term_idx ON subjects (term);
 
 CREATE INDEX courses_term_idx ON courses (term);
 CREATE INDEX sections_course_id_idx ON sections (course_id);

@@ -55,6 +55,8 @@ public final class Nyu {
     public static ArrayList<String> allSubjects() {
       return new ArrayList<>(allSubjects);
     }
+
+    public String toString() { return "Subject(" + code + "," + name + ")"; }
   }
 
   public static final class School {
@@ -65,6 +67,8 @@ public final class Nyu {
       this.name = name;
       this.subjects = new ArrayList<>();
     }
+
+    public String toString() { return "School(" + name + ")"; }
   }
 
   public static final class Course {
@@ -148,7 +152,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
+      s.type = row.sectionType;
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.minUnits = row.minUnits;
@@ -165,7 +169,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
+      s.type = row.sectionType;
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.campus = row.campus;

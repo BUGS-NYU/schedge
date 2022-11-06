@@ -1,41 +1,42 @@
 package actions;
 
+import static database.UpdateSchools.*;
 import static database.courses.InsertFullCourses.*;
-import static scraping.PeopleSoftClassSearch.*;
 import static utils.Nyu.*;
 
 import database.GetConnection;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import me.tongfei.progressbar.ProgressBar;
 import org.asynchttpclient.*;
+import scraping.PeopleSoftClassSearch;
 
 public class ScrapeTerm {
 
-  public static void scrapeTerm(Term term)
-      throws IOException, ExecutionException, InterruptedException {
-    scrapeTerm(term, false);
-  }
-
   public static void scrapeTerm(Term term, boolean display)
       throws IOException, ExecutionException, InterruptedException {
-    /* ProgressBarBuilder bar =
-    new ProgressBarBuilder()
-    .setStyle(ProgressBarStyle.ASCII)
-    .setConsumer(new ConsoleProgressBarConsumer(System.out));
-
-    Iterable<String> subjects =
-        display ? ProgressBar.wrap(subjectData, bar) : subjectData;
-        */
-
-    ArrayList<Course> courses;
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      courses = scrapeSubject(client, term, "MATH-UA");
+    if (!display) {
+      scrapeTerm(term, null);
+      return;
     }
 
-    GetConnection.withConnection(conn -> {
-      //
-      insertCourses(conn, term, courses);
-    });
+    try (ProgressBar bar = new ProgressBar("Scraper", -1)) {
+      scrapeTerm(term, bar);
+    }
+  }
+
+  // @Note: bar is nullable
+  static void scrapeTerm(Term term, ProgressBar bar)
+      throws IOException, ExecutionException, InterruptedException {
+    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
+      var search = new PeopleSoftClassSearch(client);
+      var termData = search.scrapeTerm(term, bar);
+
+      GetConnection.withConnection(conn -> {
+        updateSchoolsForTerm(conn, term, termData.schools);
+        insertCourses(conn, term, termData.courses);
+      });
+    }
   }
 }

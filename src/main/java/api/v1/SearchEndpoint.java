@@ -1,13 +1,12 @@
 package api.v1;
 
-import static api.RowsToCourses.*;
-
-import api.*;
+import api.App;
+import api.RowsToCourses;
 import database.GetConnection;
 import database.courses.SearchRows;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.*;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import utils.Nyu;
 

@@ -1,8 +1,11 @@
 package api.v1;
 
-import api.*;
+import api.App;
 import io.javalin.http.Context;
-import io.javalin.openapi.*;
+import io.javalin.openapi.HttpMethod;
+import io.javalin.openapi.OpenApi;
+import io.javalin.openapi.OpenApiContent;
+import io.javalin.openapi.OpenApiResponse;
 
 public final class Health extends App.Endpoint {
   public String getPath() { return "/stat"; }

@@ -1,12 +1,14 @@
 package api.v1;
 
-import static utils.Nyu.*;
+import static utils.Nyu.Course;
 
-import api.*;
+import api.App;
+import api.SelectCourses;
 import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() { return "/courses/{term}/{subject}"; }

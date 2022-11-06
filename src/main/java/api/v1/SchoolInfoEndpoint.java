@@ -1,13 +1,14 @@
 package api.v1;
 
 import static database.GetConnection.withConnectionReturning;
-import static database.SelectSubjects.*;
-import static utils.Nyu.*;
+import static database.SelectSubjects.selectSchoolsForTerm;
+import static utils.Nyu.School;
+import static utils.Nyu.Term;
 
-import api.*;
+import api.App;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.*;
+import java.util.ArrayList;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
@@ -44,7 +45,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022",required = true)
+                      example = "fa2022", required = true)
       },
       responses =
       {

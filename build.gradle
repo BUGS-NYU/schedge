@@ -42,9 +42,7 @@ dependencies {
     "org.postgresql:postgresql:42.2.12",
     "com.zaxxer:HikariCP:3.4.1",
 
-    // HTTP requests and HTML Parsing
-    "org.asynchttpclient:async-http-client-bom:2.10.5",
-    "org.asynchttpclient:async-http-client:2.10.5",
+    // HTML Parsing
     "org.jsoup:jsoup:1.15.3",
 
     // Command line arg parsing and progress bar
@@ -58,8 +56,6 @@ dependencies {
     "io.javalin:javalin:5.1.1",
     // for /openapi route with JSON scheme
     "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
-    // for ReDoc UI
-    "io.javalin.community.openapi:javalin-redoc-plugin:5.1.0",
   )
 }
 

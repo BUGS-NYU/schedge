@@ -5,11 +5,9 @@ import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
 import database.GetConnection;
-import database.UpdateSchools;
 import database.InsertCourses;
+import database.UpdateSchools;
 import java.io.*;
-import java.util.concurrent.ExecutionException;
-import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
@@ -32,28 +30,24 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-schools", description = "Scrape schools for a term")
-  public void scrapeSchools(@Mixin Mixins.Term termMixin)
-      throws IOException, ExecutionException, InterruptedException {
+  public void scrapeSchools(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
     var term = termMixin.getTerm();
 
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var search = new PeopleSoftClassSearch(client);
-      var schools = search.scrapeSchools(term);
+    var search = new PeopleSoftClassSearch();
+    var schools = search.scrapeSchools(term);
 
-      GetConnection.withConnection(
-          conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
-      GetConnection.close();
-    }
+    GetConnection.withConnection(
+        conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
+    GetConnection.close();
 
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
   @Command(name = "scrape-term", description = "Scrape all data for a term")
-  public void scrapeTerm(@Mixin Mixins.Term termMixin)
-      throws IOException, ExecutionException, InterruptedException {
+  public void scrapeTerm(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
     var term = termMixin.getTerm();
@@ -74,20 +68,18 @@ public class Database implements Runnable {
     long start = System.nanoTime();
 
     Term term = termMixin.getTerm();
-    try (var client = new DefaultAsyncHttpClient()) {
-      GetConnection.withConnection(conn -> {
-        var courses = ScrapeSchedge.scrapeFromSchedge(client, term);
+    GetConnection.withConnection(conn -> {
+      var courses = ScrapeSchedge.scrapeFromSchedge(term);
 
-        long end = System.nanoTime();
-        double duration = (end - start) / 1000000000.0;
-        logger.info("Fetching took {} seconds", duration);
+      long end = System.nanoTime();
+      double duration = (end - start) / 1000000000.0;
+      logger.info("Fetching took {} seconds", duration);
 
-        InsertCourses.clearPrevious(conn, term);
-        InsertCourses.insertCourses(conn, term, courses);
-      });
+      InsertCourses.clearPrevious(conn, term);
+      InsertCourses.insertCourses(conn, term, courses);
+    });
 
-      GetConnection.close();
-    }
+    GetConnection.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

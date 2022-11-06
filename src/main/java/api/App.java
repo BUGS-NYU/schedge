@@ -7,7 +7,6 @@ import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.openapi.OpenApiInfo;
 import io.javalin.openapi.plugin.*;
-import io.javalin.openapi.plugin.redoc.*;
 import java.io.*;
 import org.slf4j.*;
 

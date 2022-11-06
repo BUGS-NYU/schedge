@@ -1,4 +1,4 @@
-package database.courses;
+package database;
 
 import static utils.Nyu.*;
 
@@ -13,7 +13,7 @@ import utils.Utils;
  */
 public final class InsertCourses {
   private static Logger logger =
-      LoggerFactory.getLogger("database.courses.InsertCourses");
+      LoggerFactory.getLogger("database.InsertCourses");
 
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement courses;

@@ -6,7 +6,7 @@ import static utils.Nyu.*;
 import actions.ScrapeTerm;
 import database.GetConnection;
 import database.UpdateSchools;
-import database.courses.InsertCourses;
+import database.InsertCourses;
 import java.io.*;
 import java.util.concurrent.ExecutionException;
 import org.asynchttpclient.*;

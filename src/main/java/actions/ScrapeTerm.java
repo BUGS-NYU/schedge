@@ -1,7 +1,7 @@
 package actions;
 
 import static database.UpdateSchools.*;
-import static database.courses.InsertCourses.*;
+import static database.InsertCourses.*;
 import static utils.Nyu.*;
 
 import database.GetConnection;

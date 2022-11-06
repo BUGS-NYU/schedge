@@ -1,4 +1,4 @@
-package database.courses;
+package database;
 
 import database.models.*;
 import java.sql.*;

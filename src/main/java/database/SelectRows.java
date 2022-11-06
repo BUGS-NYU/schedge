@@ -1,4 +1,4 @@
-package database.courses;
+package database;
 
 import static utils.Nyu.*;
 

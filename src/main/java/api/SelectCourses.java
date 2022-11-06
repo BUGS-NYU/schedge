@@ -2,7 +2,7 @@ package api;
 
 import static utils.Nyu.*;
 
-import database.courses.SelectRows;
+import database.SelectRows;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;

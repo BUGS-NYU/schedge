@@ -5,18 +5,16 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Locale;
-
 import utils.Nyu;
 
 // A meeting plus section information
 public class AugmentedMeeting {
-  public final String sectionName;
   public final String subject;
   public final String deptCourseId;
 
   public final String sectionCode;
   public final int registrationNumber;
-  public final Nyu.SectionType sectionType;
+  public final String sectionType;
   public final Nyu.SectionStatus sectionStatus;
   public final String instructionMode;
   public final String location;
@@ -32,9 +30,8 @@ public class AugmentedMeeting {
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
-    sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
+    sectionType = rs.getString("section_type");
     sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
-    sectionName = rs.getString("section_name");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");
     beginDate = rs.getTimestamp("begin_date").toLocalDateTime();
@@ -55,9 +52,9 @@ public class AugmentedMeeting {
   @Override
   public String toString() {
     return "AugmentedMeeting{"
-        + "sectionName='" + sectionName + '\'' + ", subject=" + subject +
-        ", deptCourseId='" + deptCourseId + '\'' + ", sectionCode='" +
-        sectionCode + '\'' + ", registrationNumber=" + registrationNumber +
+        + "subject=" + subject + ", deptCourseId='" + deptCourseId + '\'' +
+        ", sectionCode='" + sectionCode + '\'' +
+        ", registrationNumber=" + registrationNumber +
         ", sectionType=" + sectionType + ", sectionStatus=" + sectionStatus +
         ", instructionMode='" + instructionMode + '\'' + ", location='" +
         location + '\'' + ", beginDate=" + beginDate +

@@ -4,6 +4,11 @@
 !/.build/libs/schedge.jar
 
 /src/build/gradle
+/src/main
+/src/components
+/src/data
+/src/pages
+/public
 
 /.git
 /.gradle

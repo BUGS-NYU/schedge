@@ -10,7 +10,7 @@ import java.util.*;
 
 public final class CampusEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/courses/{term}/{subject}"; }
+  public String getPath() { return "/campus"; }
 
   class Data {
     public HashMap<String, Campus> campuses;

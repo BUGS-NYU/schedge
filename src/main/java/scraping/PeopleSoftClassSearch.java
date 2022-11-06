@@ -95,7 +95,7 @@ public final class PeopleSoftClassSearch {
     var cookieHandler = new CookieManager();
     var builder = HttpClient.newBuilder();
 
-    this.client = builder.connectTimeout(Duration.of(30, ChronoUnit.DAYS))
+    this.client = builder.connectTimeout(Duration.of(30, ChronoUnit.SECONDS))
                       .cookieHandler(cookieHandler)
                       .build();
   }
@@ -353,7 +353,7 @@ public final class PeopleSoftClassSearch {
   static HttpRequest get(URI uri) {
     return HttpRequest.newBuilder()
         .uri(uri)
-        .timeout(Duration.of(30, ChronoUnit.DAYS))
+        .timeout(Duration.of(30, ChronoUnit.SECONDS))
         .setHeader("User-Agent", USER_AGENT)
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .GET()
@@ -365,7 +365,7 @@ public final class PeopleSoftClassSearch {
 
     return HttpRequest.newBuilder()
         .uri(uri)
-        .timeout(Duration.of(30, ChronoUnit.DAYS))
+        .timeout(Duration.of(30, ChronoUnit.SECONDS))
         .setHeader("User-Agent", USER_AGENT)
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .POST(HttpRequest.BodyPublishers.ofString(s))

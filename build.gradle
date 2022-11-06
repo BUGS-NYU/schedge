@@ -42,9 +42,7 @@ dependencies {
     "org.postgresql:postgresql:42.2.12",
     "com.zaxxer:HikariCP:3.4.1",
 
-    // HTTP requests and HTML Parsing
-    "org.asynchttpclient:async-http-client-bom:2.10.5",
-    "org.asynchttpclient:async-http-client:2.10.5",
+    // HTML Parsing
     "org.jsoup:jsoup:1.15.3",
 
     // Command line arg parsing and progress bar

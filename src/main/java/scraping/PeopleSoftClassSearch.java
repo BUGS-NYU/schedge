@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 import me.tongfei.progressbar.ProgressBar;
-import org.asynchttpclient.AsyncHttpClient;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;

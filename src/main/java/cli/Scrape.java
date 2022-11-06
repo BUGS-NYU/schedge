@@ -5,7 +5,6 @@ import static picocli.CommandLine.*;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import me.tongfei.progressbar.ProgressBar;
-import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;

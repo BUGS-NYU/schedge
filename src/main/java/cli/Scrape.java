@@ -5,7 +5,6 @@ import static picocli.CommandLine.*;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import me.tongfei.progressbar.ProgressBar;
-import org.asynchttpclient.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
@@ -36,14 +35,12 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
-      throws IOException, ExecutionException, InterruptedException {
+  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient();
-         ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var search = new PeopleSoftClassSearch(client);
+    try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
+      var search = new PeopleSoftClassSearch();
       var courses = search.scrapeTerm(term, bar);
       outputFileMixin.writeOutput(courses);
     }
@@ -64,16 +61,13 @@ public class Scrape implements Runnable {
           @Mixin Mixins.OutputFile outputFileMixin,
           @Parameters(index = "0", paramLabel = "SUBJECT",
                       description = "A subject code like MATH-UA")
-          String subject)
-      throws IOException, ExecutionException, InterruptedException {
+          String subject) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var search = new PeopleSoftClassSearch(client);
-      var courses = search.scrapeSubject(term, subject);
-      outputFileMixin.writeOutput(courses);
-    }
+    var search = new PeopleSoftClassSearch();
+    var courses = search.scrapeSubject(term, subject);
+    outputFileMixin.writeOutput(courses);
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
@@ -88,16 +82,13 @@ public class Scrape implements Runnable {
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
   schools(@Mixin Mixins.Term termMixin,
-          @Mixin Mixins.OutputFile outputFileMixin)
-      throws IOException, ExecutionException, InterruptedException {
+          @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-      var search = new PeopleSoftClassSearch(client);
-      var schools = search.scrapeSchools(term);
-      outputFileMixin.writeOutput(schools);
-    }
+    var search = new PeopleSoftClassSearch();
+    var schools = search.scrapeSchools(term);
+    outputFileMixin.writeOutput(schools);
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

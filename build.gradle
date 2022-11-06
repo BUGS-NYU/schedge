@@ -56,8 +56,6 @@ dependencies {
     "io.javalin:javalin:5.1.1",
     // for /openapi route with JSON scheme
     "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
-    // for ReDoc UI
-    "io.javalin.community.openapi:javalin-redoc-plugin:5.1.0",
   )
 }
 

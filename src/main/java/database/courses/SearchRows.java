@@ -9,11 +9,7 @@ import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-
-  private static Logger logger =
-      LoggerFactory.getLogger("database.courses.SearchCourses");
-
-  public static Stream<FullRow> searchFullRows(Connection conn, Nyu.Term term,
+  public static Stream<Row> searchFullRows(Connection conn, Nyu.Term term,
                                                String query)
       throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
@@ -54,10 +50,10 @@ public final class SearchRows {
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));
 
-    ArrayList<FullRow> rows = new ArrayList<>();
+    ArrayList<Row> rows = new ArrayList<>();
     rs = rowStmt.executeQuery();
     while (rs.next()) {
-      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
+      rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
     rs.close();

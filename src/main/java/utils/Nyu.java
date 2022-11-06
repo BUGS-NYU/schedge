@@ -137,24 +137,7 @@ public final class Nyu {
     @JsonInclude(NON_NULL) public String location;
     @JsonInclude(NON_NULL) public String notes;
 
-    public static Section fromRow(Row row) {
-      Section s = new Section();
-      s.waitlistTotal = row.waitlistTotal;
-      s.registrationNumber = row.registrationNumber;
-      s.code = row.sectionCode;
-      s.instructors = row.instructors;
-      s.type = row.sectionType;
-      s.status = row.sectionStatus;
-      s.meetings = row.meetings;
-      s.minUnits = row.minUnits;
-      s.maxUnits = row.maxUnits;
-      s.instructionMode = row.instructionMode;
-      s.location = row.location;
-
-      return s;
-    }
-
-    public static Section fromFullRow(FullRow row) {
+    public static Section fromFullRow(Row row) {
       Section s = new Section();
       s.waitlistTotal = row.waitlistTotal;
       s.registrationNumber = row.registrationNumber;

@@ -628,7 +628,7 @@ class Parser {
           LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
     }
 
-    var tz = Utils.timezoneForCampus(section.campus);
+    var tz = Campus.timezoneForCampus(section.campus);
 
     beginDateTime = beginDateTime.atZone(tz)
                         .withZoneSameInstant(ZoneOffset.UTC)

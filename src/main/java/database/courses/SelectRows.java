@@ -10,15 +10,14 @@ import java.util.stream.Stream;
 import utils.Utils;
 
 public class SelectRows {
-  public static Stream<Row> selectFullRows(Connection conn, Term term,
-                                               String code)
+  public static Stream<Row> selectRows(Connection conn, Term term, String code)
       throws SQLException {
-    return selectFullRows(conn, "courses.term = ? AND courses.subject_code = ?",
-                          term.json(), code);
+    return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
+                      term.json(), code);
   }
 
-  public static Stream<Row> selectFullRow(Connection conn, Term term,
-                                              int registrationNumber)
+  public static Stream<Row> selectRow(Connection conn, Term term,
+                                      int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
         "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
@@ -36,14 +35,12 @@ public class SelectRows {
     rs.close();
     sectionIdStmt.close();
 
-    return selectFullRows(conn,
-                          "sections.associated_with = ? OR sections.id = ?",
-                          sectionId, sectionId);
+    return selectRows(conn, "sections.associated_with = ? OR sections.id = ?",
+                      sectionId, sectionId);
   }
 
-  public static Stream<Row>
-  selectFullRows(Connection conn, String conditions, Object... objects)
-      throws SQLException {
+  public static Stream<Row> selectRows(Connection conn, String conditions,
+                                       Object... objects) throws SQLException {
     Map<Integer, List<Meeting>> meetingsList =
         selectMeetings(conn, conditions, objects);
 

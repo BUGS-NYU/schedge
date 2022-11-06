@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.*;
 
 public class RowsToCourses {
-  public static Stream<Course> fullRowsToCourses(Stream<Row> rows) {
+  public static Stream<Course> rowsToCourses(Stream<Row> rows) {
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
 
@@ -25,7 +25,7 @@ public class RowsToCourses {
               }
 
               if (row.associatedWith == null) {
-                Section s = Section.fromFullRow(row);
+                Section s = Section.fromRow(row);
                 sections.put(row.sectionId, s);
                 courses.get(row.courseId).sections.add(s);
               }
@@ -43,12 +43,12 @@ public class RowsToCourses {
           s.recitations = new ArrayList<>();
         }
 
-        s.recitations.add(Section.fromFullRow(row));
+        s.recitations.add(Section.fromRow(row));
         return;
       }
 
       // Orphans get added to course regardless
-      courses.get(row.courseId).sections.add(Section.fromFullRow(row));
+      courses.get(row.courseId).sections.add(Section.fromRow(row));
     });
 
     return courses.entrySet().stream().map(entry -> entry.getValue());

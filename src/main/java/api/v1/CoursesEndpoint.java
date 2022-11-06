@@ -52,7 +52,7 @@ public final class CoursesEndpoint extends App.Endpoint {
     Object output = GetConnection.withConnectionReturning(conn -> {
       List<String> subjects = Collections.singletonList(subject);
 
-      return SelectCourses.selectFullCourses(conn, term, subjects);
+      return SelectCourses.selectCourses(conn, term, subjects);
     });
 
     return output;

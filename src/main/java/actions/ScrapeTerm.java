@@ -1,12 +1,11 @@
 package actions;
 
 import static database.UpdateSchools.*;
-import static database.courses.InsertFullCourses.*;
+import static database.courses.InsertCourses.*;
 import static utils.Nyu.*;
 
 import database.GetConnection;
 import java.io.IOException;
-import java.util.*;
 import java.util.concurrent.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.asynchttpclient.*;

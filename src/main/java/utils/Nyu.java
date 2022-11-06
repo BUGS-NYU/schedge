@@ -137,7 +137,7 @@ public final class Nyu {
     @JsonInclude(NON_NULL) public String location;
     @JsonInclude(NON_NULL) public String notes;
 
-    public static Section fromFullRow(Row row) {
+    public static Section fromRow(Row row) {
       Section s = new Section();
       s.waitlistTotal = row.waitlistTotal;
       s.registrationNumber = row.registrationNumber;

@@ -11,7 +11,7 @@ import utils.Utils;
  * This class insert courses into the Postgresql database based on
  * the data scraped from Albert Mobile
  */
-public final class InsertFullCourses {
+public final class InsertCourses {
   private static Logger logger =
       LoggerFactory.getLogger("database.courses.InsertCourses");
 

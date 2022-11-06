@@ -4,14 +4,12 @@ import database.models.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
-import org.slf4j.*;
 import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-  public static Stream<Row> searchFullRows(Connection conn, Nyu.Term term,
-                                               String query)
-      throws SQLException {
+  public static Stream<Row> searchRows(Connection conn, Nyu.Term term,
+                                       String query) throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
     fields.add(
         "to_tsvector(courses.name || ' ' || courses.description || ' ' || sections.notes) @@ q.query");

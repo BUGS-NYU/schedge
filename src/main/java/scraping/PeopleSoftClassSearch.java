@@ -5,17 +5,13 @@ import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import java.io.IOException;
-import java.net.*;
-import java.net.http.*;
-import java.time.*;
-import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
-import utils.Try;
+import utils.*;
 
 public final class PeopleSoftClassSearch {
   static Logger logger =
@@ -55,11 +51,6 @@ public final class PeopleSoftClassSearch {
       this.value = value;
     }
   }
-
-  static String MAIN_URL =
-      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
-
-  static URI MAIN_URI = URI.create(MAIN_URL);
 
   final Try ctx = Try.Ctx(logger);
 
@@ -124,7 +115,6 @@ public final class PeopleSoftClassSearch {
     var ps = new PSClient();
 
     var resp = ps.navigateToTerm(term).get();
-
     var subjects = parseTermPage(resp.body());
 
     out.schools.addAll(translateSubjects(subjects));
@@ -153,12 +143,12 @@ public final class PeopleSoftClassSearch {
   }
 
   ArrayList<SubjectElem> parseTermPage(String responseBody) {
-    var doc = Jsoup.parse(responseBody, MAIN_URL);
+    var doc = Jsoup.parse(responseBody, PSClient.MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
     var cdata = (CDataNode)field.textNodes().get(0);
 
-    doc = Jsoup.parse(cdata.text(), MAIN_URL);
+    doc = Jsoup.parse(cdata.text(), PSClient.MAIN_URL);
     var results = doc.expectFirst("#win0divRESULTS");
     var group = results.expectFirst("div[id=win0divGROUP$0]");
 
@@ -182,17 +172,5 @@ public final class PeopleSoftClassSearch {
     }
 
     return out;
-  }
-
-  static HttpRequest post(URI uri, HashMap<String, String> body) {
-    String s = PSClient.formEncode(body);
-
-    return HttpRequest.newBuilder()
-        .uri(uri)
-        .timeout(Duration.of(30, ChronoUnit.SECONDS))
-        .setHeader("User-Agent", PSClient.USER_AGENT)
-        .setHeader("Content-Type", "application/x-www-form-urlencoded")
-        .POST(HttpRequest.BodyPublishers.ofString(s))
-        .build();
   }
 }

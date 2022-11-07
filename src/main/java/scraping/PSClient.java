@@ -34,7 +34,7 @@ public class PSClient {
                       .build();
   }
 
-  Future<HttpResponse<String>> navigateToTerm(Nyu.Term term)
+  CompletableFuture<HttpResponse<String>> navigateToTerm(Nyu.Term term)
       throws IOException, InterruptedException {
     String yearText = yearText(term);
     String semesterId = semesterId(term);
@@ -78,7 +78,7 @@ public class PSClient {
     }
   }
 
-  Future<HttpResponse<String>>
+  CompletableFuture<HttpResponse<String>>
   fetchSubject(PeopleSoftClassSearch.SubjectElem subject) {
     var fut = this.inProgress;
     if (fut == null) {

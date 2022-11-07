@@ -90,14 +90,10 @@ public final class PeopleSoftClassSearch {
         throw new RuntimeException("Subject not found: " + subjectCode);
 
       {
-        ps.incrementStateNum();
-        ps.formMap.put("ICAction", subject.action);
-
-        resp = ps.client.send(post(MAIN_URI, ps.formMap),
-                              HttpResponse.BodyHandlers.ofString());
+        resp = ps.fetchSubject(subject).get();
         var responseBody = resp.body();
 
-        return parseSubject(ctx, responseBody, subjectCode);
+        return parseSubject(ctx, responseBody, subject.code);
       }
     });
   }

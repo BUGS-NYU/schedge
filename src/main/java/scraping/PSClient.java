@@ -80,10 +80,8 @@ public class PSClient {
 
   Future<HttpResponse<String>>
   fetchSubject(PeopleSoftClassSearch.SubjectElem subject) {
-    CompletableFuture<HttpResponse<String>> fut;
-    if (this.inProgress != null) {
-      fut = this.inProgress;
-    } else { // <HttpResponse<String>>
+    var fut = this.inProgress;
+    if (fut == null) {
       fut = CompletableFuture.completedFuture(null);
     }
 
@@ -105,6 +103,9 @@ public class PSClient {
       formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
 
       var resp = tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
+
+      tcPass(() -> Thread.sleep(5000));
+
       return resp;
     });
 

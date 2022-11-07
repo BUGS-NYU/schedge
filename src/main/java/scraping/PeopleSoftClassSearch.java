@@ -7,12 +7,10 @@ import static utils.Nyu.*;
 import java.io.IOException;
 import java.net.*;
 import java.net.http.*;
-import java.nio.charset.StandardCharsets;
 import java.time.*;
 import java.time.temporal.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
@@ -60,28 +58,6 @@ public final class PeopleSoftClassSearch {
 
   static String MAIN_URL =
       "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
-
-  static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
-      new FormEntry("ICAJAX", "1"),
-      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
-      new FormEntry(
-          "ICBcDomData",
-          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-              + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
-              + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
-              + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
-              + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
-              + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
-              + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
-              + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
-              + "~Course Search~UnknownValue~UnknownValue~https"
-              + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-              + "NYU_CLS_SRCH.GBL?~UnknownValue"),
-  };
 
   static URI MAIN_URI = URI.create(MAIN_URL);
 
@@ -136,7 +112,7 @@ public final class PeopleSoftClassSearch {
    * @param bar Nullable progress bar to output progress to
    */
   public CoursesForTerm scrapeTerm(Term term, ProgressBar bar) {
-    return ctx.log(() -> { return scrapeTermInternal(term, bar); });
+    return ctx.log(() -> scrapeTermInternal(term, bar));
   }
 
   CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
@@ -162,8 +138,6 @@ public final class PeopleSoftClassSearch {
       bar.maxHint(subjects.size() + 1);
     }
 
-    var handler = HttpResponse.BodyHandlers.ofString();
-
     for (var subject : subjects) {
       if (bar != null) {
         bar.setExtraMessage("fetching " + subject.code);
@@ -171,23 +145,25 @@ public final class PeopleSoftClassSearch {
       }
 
       ctx.put("subject", subject);
-
-      Thread.sleep(5_000);
-
-      ps.incrementStateNum();
-      ps.formMap.put("ICAction", subject.action);
-
-      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
+      var fut = ps.fetchSubject(subject);
+      resp = fut.get();
+      //
+      //      Thread.sleep(5_000);
+      //
+      //      ps.incrementStateNum();
+      //      ps.formMap.put("ICAction", subject.action);
+      //
+      //      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
       var responseBody = resp.body();
 
       var courses = parseSubject(ctx, responseBody, subject.code);
       out.courses.addAll(courses);
 
-      ps.incrementStateNum();
-      ps.formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
-
-      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
-      responseBody = resp.body();
+      //      ps.incrementStateNum();
+      //      ps.formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+      //
+      //      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
+      //      responseBody = resp.body();
     }
 
     return out;

@@ -109,8 +109,11 @@ public final class PeopleSoftClassSearch {
 
     var ps = new PSClient();
 
-    var resp = ps.navigateToTerm(term).get();
-    var subjects = parseTermPage(resp.body());
+    ArrayList<SubjectElem> subjects;
+    {
+      var resp = ps.navigateToTerm(term).get();
+      subjects = parseTermPage(resp.body());
+    }
 
     out.schools.addAll(translateSubjects(subjects));
     ctx.put("schools", out.schools);
@@ -127,11 +130,19 @@ public final class PeopleSoftClassSearch {
 
       ctx.put("subject", subject);
 
-      resp = ps.fetchSubject(subject).get();
-      var responseBody = resp.body();
+      while (true)
+        try {
+          var resp = ps.fetchSubject(subject).get();
+          var responseBody = resp.body();
 
-      var courses = parseSubject(ctx, responseBody, subject.code);
-      out.courses.addAll(courses);
+          var courses = parseSubject(ctx, responseBody, subject.code);
+          out.courses.addAll(courses);
+          break;
+        } catch (ExecutionException e) {
+          Thread.sleep(10_000);
+          ps = new PSClient();
+          ps.navigateToTerm(term).get();
+        }
     }
 
     return out;

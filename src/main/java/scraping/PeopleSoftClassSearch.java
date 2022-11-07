@@ -89,11 +89,6 @@ public final class PeopleSoftClassSearch {
     });
   }
 
-  // @TODO: There's a more good way to do this, where we just imitate a user
-  // navigating the page normally; but I am tired and don't want to do it
-  // right now.
-  //
-  //                          - Albert Liu, Nov 03, 2022 Thu 16:08
   /**
    * @param term The term to scrape
    * @param bar Nullable progress bar to output progress to

@@ -145,25 +145,12 @@ public final class PeopleSoftClassSearch {
       }
 
       ctx.put("subject", subject);
-      var fut = ps.fetchSubject(subject);
-      resp = fut.get();
-      //
-      //      Thread.sleep(5_000);
-      //
-      //      ps.incrementStateNum();
-      //      ps.formMap.put("ICAction", subject.action);
-      //
-      //      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
+
+      resp = ps.fetchSubject(subject).get();
       var responseBody = resp.body();
 
       var courses = parseSubject(ctx, responseBody, subject.code);
       out.courses.addAll(courses);
-
-      //      ps.incrementStateNum();
-      //      ps.formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
-      //
-      //      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
-      //      responseBody = resp.body();
     }
 
     return out;

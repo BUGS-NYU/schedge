@@ -2,6 +2,7 @@ package scraping;
 
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
+import static utils.Try.*;
 
 import java.io.*;
 import java.net.*;
@@ -20,13 +21,9 @@ import utils.*;
 public class PSClient {
   static Logger logger = PeopleSoftClassSearch.logger;
 
-  static String MAIN_URL =
-      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
-  static URI MAIN_URI = URI.create(MAIN_URL);
-  static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
-
   HttpClient client;
   HashMap<String, String> formMap;
+  CompletableFuture<HttpResponse<String>> inProgress;
 
   public PSClient() {
     var cookieHandler = new CookieManager();
@@ -80,6 +77,44 @@ public class PSClient {
       return resp;
     }
   }
+
+  Future<HttpResponse<String>>
+  fetchSubject(PeopleSoftClassSearch.SubjectElem subject) {
+    CompletableFuture<HttpResponse<String>> fut;
+    if (this.inProgress != null) {
+      fut = this.inProgress;
+    } else { // <HttpResponse<String>>
+      fut = CompletableFuture.completedFuture(null);
+    }
+
+    var handler = HttpResponse.BodyHandlers.ofString();
+
+    var out = fut.handle((resp_, err_) -> {
+      incrementStateNum();
+      formMap.put("ICAction", subject.action);
+
+      return tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
+    });
+
+    this.inProgress = out.handle((resp_, err) -> {
+      if (err != null) {
+        // @TODO
+      }
+
+      incrementStateNum();
+      formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+
+      var resp = tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
+      return resp;
+    });
+
+    return out;
+  }
+
+  static String MAIN_URL =
+      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
+  static URI MAIN_URI = URI.create(MAIN_URL);
+  static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
   static final PeopleSoftClassSearch.FormEntry[] FORM_DEFAULTS =
       new PeopleSoftClassSearch.FormEntry[] {

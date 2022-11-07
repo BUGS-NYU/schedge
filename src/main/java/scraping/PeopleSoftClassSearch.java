@@ -1,5 +1,6 @@
 package scraping;
 
+import static scraping.PSCoursesParser.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
@@ -83,58 +84,19 @@ public final class PeopleSoftClassSearch {
   };
 
   static URI MAIN_URI = URI.create(MAIN_URL);
-  static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
-  HashMap<String, String> formMap;
-  final HttpClient client;
   final Try ctx = Try.Ctx(logger);
 
-  public PeopleSoftClassSearch() {
-    var cookieHandler = new CookieManager();
-    var builder = HttpClient.newBuilder();
-
-    this.client = builder.connectTimeout(Duration.of(30, ChronoUnit.SECONDS))
-                      .cookieHandler(cookieHandler)
-                      .build();
-  }
-
-  static String yearText(Term term) {
-    switch (term.semester) {
-    case ja:
-    case sp:
-    case su:
-      return (term.year - 1) + "-" + term.year;
-
-    case fa:
-      return term.year + "-" + (term.year + 1);
-
-    default:
-      throw new RuntimeException("whatever");
-    }
-  }
-
-  static String semesterId(Term term) {
-    switch (term.semester) {
-    case fa:
-      return "NYU_CLS_WRK_NYU_FALL$36$";
-    case ja:
-      return "NYU_CLS_WRK_NYU_WINTER$37$";
-    case sp:
-      return "NYU_CLS_WRK_NYU_SPRING$38$";
-    case su:
-      return "NYU_CLS_WRK_NYU_SUMMER$39$";
-
-    default:
-      throw new RuntimeException("whatever");
-    }
-  }
+  public PeopleSoftClassSearch() {}
 
   public ArrayList<School> scrapeSchools(Term term) {
     ctx.put("term", term);
 
     return ctx.log(() -> {
-      var subjects = scrapeSubjectList(term);
-      return PSCoursesParser.translateSubjects(subjects);
+      var ps = new PSClient();
+      var resp = ps.navigateToTerm(term).get();
+      var subjects = parseTermPage(resp.body());
+      return translateSubjects(subjects);
     });
   }
 
@@ -143,21 +105,23 @@ public final class PeopleSoftClassSearch {
     ctx.put("subject", subjectCode);
 
     return ctx.log(() -> {
-      var subjects = scrapeSubjectList(term);
+      var ps = new PSClient();
+      var resp = ps.navigateToTerm(term).get();
+      var subjects = parseTermPage(resp.body());
 
       var subject = find(subjects, s -> s.code.equals(subjectCode));
       if (subject == null)
         throw new RuntimeException("Subject not found: " + subjectCode);
 
       {
-        incrementStateNum();
-        formMap.put("ICAction", subject.action);
+        ps.incrementStateNum();
+        ps.formMap.put("ICAction", subject.action);
 
-        var resp = client.send(post(MAIN_URI, formMap),
-                               HttpResponse.BodyHandlers.ofString());
+        resp = ps.client.send(post(MAIN_URI, ps.formMap),
+                              HttpResponse.BodyHandlers.ofString());
         var responseBody = resp.body();
 
-        return PSCoursesParser.parseSubject(ctx, responseBody, subjectCode);
+        return parseSubject(ctx, responseBody, subjectCode);
       }
     });
   }
@@ -185,22 +149,22 @@ public final class PeopleSoftClassSearch {
 
     ctx.put("term", term);
 
-    var rawSubjects = ctx.log(() -> {
-      var subjects = scrapeSubjectList(term);
+    var ps = new PSClient();
 
-      out.schools.addAll(PSCoursesParser.translateSubjects(subjects));
-      ctx.put("schools", out.schools);
+    var resp = ps.navigateToTerm(term).get();
 
-      return subjects;
-    });
+    var subjects = parseTermPage(resp.body());
+
+    out.schools.addAll(translateSubjects(subjects));
+    ctx.put("schools", out.schools);
 
     if (bar != null) {
-      bar.maxHint(rawSubjects.size() + 1);
+      bar.maxHint(subjects.size() + 1);
     }
 
     var handler = HttpResponse.BodyHandlers.ofString();
 
-    for (var subject : rawSubjects) {
+    for (var subject : subjects) {
       if (bar != null) {
         bar.setExtraMessage("fetching " + subject.code);
         bar.step();
@@ -209,77 +173,27 @@ public final class PeopleSoftClassSearch {
       ctx.put("subject", subject);
 
       Thread.sleep(5_000);
-      // client.getConfig().getCookieStore().clear();
 
-      incrementStateNum();
-      formMap.put("ICAction", subject.action);
+      ps.incrementStateNum();
+      ps.formMap.put("ICAction", subject.action);
 
-      var resp = client.send(post(MAIN_URI, formMap), handler);
+      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
       var responseBody = resp.body();
 
-      var courses =
-          PSCoursesParser.parseSubject(ctx, responseBody, subject.code);
+      var courses = parseSubject(ctx, responseBody, subject.code);
       out.courses.addAll(courses);
 
-      incrementStateNum();
-      formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+      ps.incrementStateNum();
+      ps.formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
 
-      resp = client.send(post(MAIN_URI, formMap), handler);
+      resp = ps.client.send(post(MAIN_URI, ps.formMap), handler);
       responseBody = resp.body();
     }
 
     return out;
   }
 
-  HttpResponse<String> navigateToTerm(Term term)
-      throws IOException, ExecutionException, InterruptedException {
-    String yearText = yearText(term);
-    String semesterId = semesterId(term);
-
-    var handler = HttpResponse.BodyHandlers.ofString();
-    { // ignore the response here because we just want the cookies
-      client.send(get(MAIN_URI), handler);
-    }
-
-    {
-      var resp = client.send(get(REDIRECT_URI), handler);
-      var responseBody = resp.body();
-      var doc = Jsoup.parse(responseBody, MAIN_URL);
-      var body = doc.body();
-
-      var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
-      var links = yearHeader.select("a.ps-link");
-
-      var link = find(links, l -> l.text().equals(yearText));
-      if (link == null)
-        throw new RuntimeException("yearText not found");
-
-      var id = link.id();
-
-      formMap = parseFormFields(body);
-      formMap.put("ICAction", id);
-      ctx.put("formMap", formMap);
-    }
-
-    { // Get the correct state on the page
-      client.send(post(MAIN_URI, formMap), handler);
-    }
-
-    {
-      incrementStateNum();
-      formMap.put("ICAction", semesterId);
-      formMap.put(semesterId, "Y");
-
-      var resp = client.send(post(MAIN_URI, formMap), handler);
-
-      return resp;
-    }
-  }
-
-  ArrayList<SubjectElem> scrapeSubjectList(Term term)
-      throws ExecutionException, IOException, InterruptedException {
-    var resp = navigateToTerm(term);
-    var responseBody = resp.body();
+  ArrayList<SubjectElem> parseTermPage(String responseBody) {
     var doc = Jsoup.parse(responseBody, MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
@@ -311,61 +225,13 @@ public final class PeopleSoftClassSearch {
     return out;
   }
 
-  void incrementStateNum() {
-    int action = Integer.parseInt(formMap.get("ICStateNum"));
-    action += 1;
-    formMap.put("ICStateNum", "" + action);
-  }
-
-  static HashMap<String, String> parseFormFields(Element body) {
-    var optionsRoot = body.expectFirst("#win0divPSTOOLSHIDDENS");
-    var inputs = optionsRoot.select("input");
-    var map = new HashMap<String, String>();
-    for (var input : inputs) {
-      var attr = input.attributes();
-
-      map.put(input.id(), attr.get("value"));
-    }
-
-    for (var entry : FORM_DEFAULTS) {
-      map.computeIfAbsent(entry.key, k -> entry.value);
-    }
-
-    return map;
-  }
-
-  // I think I get like silently rate-limited during testing without this
-  // header.
-  static String USER_AGENT =
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
-
-  static String formEncode(HashMap<String, String> values) {
-    return values.entrySet()
-        .stream()
-        .map(e -> {
-          return e.getKey() + "=" +
-              URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
-        })
-        .collect(Collectors.joining("&"));
-  }
-
-  static HttpRequest get(URI uri) {
-    return HttpRequest.newBuilder()
-        .uri(uri)
-        .timeout(Duration.of(30, ChronoUnit.SECONDS))
-        .setHeader("User-Agent", USER_AGENT)
-        .setHeader("Content-Type", "application/x-www-form-urlencoded")
-        .GET()
-        .build();
-  }
-
   static HttpRequest post(URI uri, HashMap<String, String> body) {
-    String s = formEncode(body);
+    String s = PSClient.formEncode(body);
 
     return HttpRequest.newBuilder()
         .uri(uri)
         .timeout(Duration.of(30, ChronoUnit.SECONDS))
-        .setHeader("User-Agent", USER_AGENT)
+        .setHeader("User-Agent", PSClient.USER_AGENT)
         .setHeader("Content-Type", "application/x-www-form-urlencoded")
         .POST(HttpRequest.BodyPublishers.ofString(s))
         .build();

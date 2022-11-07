@@ -130,19 +130,33 @@ public final class PeopleSoftClassSearch {
 
       ctx.put("subject", subject);
 
-      while (true)
+      ArrayList<Course> courses = null;
+      for (int i = 0; i < 10; i++) {
         try {
           var resp = ps.fetchSubject(subject).get();
           var responseBody = resp.body();
 
-          var courses = parseSubject(ctx, responseBody, subject.code);
-          out.courses.addAll(courses);
+          ctx.put("body", responseBody);
+
+          courses = parseSubject(ctx, responseBody, subject.code);
           break;
         } catch (ExecutionException e) {
           Thread.sleep(10_000);
           ps = new PSClient();
           ps.navigateToTerm(term).get();
         }
+      }
+
+      if (courses == null) {
+        var resp = ps.fetchSubject(subject).get();
+        var responseBody = resp.body();
+
+        ctx.put("body", responseBody);
+
+        courses = parseSubject(ctx, responseBody, subject.code);
+      }
+
+      out.courses.addAll(courses);
     }
 
     return out;

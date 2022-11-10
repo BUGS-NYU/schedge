@@ -116,7 +116,7 @@ public final class PeopleSoftClassSearch {
     }
 
     out.schools.addAll(translateSubjects(subjects));
-    ctx.put("schools", out.schools);
+    // ctx.put("schools", out.schools);
 
     if (bar != null) {
       bar.maxHint(subjects.size() + 1);
@@ -136,12 +136,14 @@ public final class PeopleSoftClassSearch {
           var resp = ps.fetchSubject(subject).get();
           var responseBody = resp.body();
 
-          ctx.put("body", responseBody);
+          // ctx.put("body", responseBody);
 
           courses = parseSubject(ctx, responseBody, subject.code);
           break;
         } catch (ExecutionException e) {
           Thread.sleep(10_000);
+          System.out.println(e.getMessage());
+          System.out.println(subject);
           ps = new PSClient();
           ps.navigateToTerm(term).get();
         }

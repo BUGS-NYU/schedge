@@ -545,7 +545,7 @@ public final class Nyu {
       var campus = campuses.get(name);
       if (campus == null) {
         // throw new IllegalArgumentException("Bad campus: " + campus);
-        System.err.println("Bad campus: " + name);
+        System.err.println("\nBad campus: " + name);
         return ZoneId.of("America/New_York");
       }
 

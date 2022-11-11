@@ -16,7 +16,7 @@ public class ScrapeTerm {
       return;
     }
 
-    try (ProgressBar bar = new ProgressBar("Scraper", -1)) {
+    try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
       scrapeTerm(term, bar);
     }
   }

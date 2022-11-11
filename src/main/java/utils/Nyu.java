@@ -324,6 +324,19 @@ public final class Nyu {
       return new Term(semester, id / 10 + 1900);
     }
 
+    public static Term fromString(String termString) {
+      if (termString.contentEquals("current")) {
+        return getCurrentTerm();
+      }
+
+      if (termString.contentEquals("next")) {
+        return getCurrentTerm().nextTerm();
+      }
+
+      int year = Integer.parseInt(termString.substring(2));
+      return new Term(termString.substring(0, 2), year);
+    }
+
     // @TODO Make this more accurate
     public static Nyu.Semester getSemester(LocalDateTime time) {
       switch (time.getMonth()) {

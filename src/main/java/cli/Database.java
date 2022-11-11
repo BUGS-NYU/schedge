@@ -7,7 +7,6 @@ import actions.ScrapeTerm;
 import database.GetConnection;
 import database.InsertCourses;
 import database.UpdateSchools;
-import java.io.*;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
@@ -33,7 +32,7 @@ public class Database implements Runnable {
   public void scrapeSchools(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
-    var term = termMixin.getTerm();
+    var term = termMixin.term;
 
     var schools = PeopleSoftClassSearch.scrapeSchools(term);
 
@@ -46,12 +45,13 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-term", description = "Scrape all data for a term")
-  public void scrapeTerm(@Mixin Mixins.Term termMixin) {
+  public void scrapeTerm(@Parameters(paramLabel = "TERMS", description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020", converter = Mixins.TermConverter.class) Term[] terms) {
     long start = System.nanoTime();
 
-    var term = termMixin.getTerm();
+    for (var term : terms) {
+      ScrapeTerm.scrapeTerm(term, true);
+    }
 
-    ScrapeTerm.scrapeTerm(term, true);
     GetConnection.close();
 
     long end = System.nanoTime();
@@ -66,7 +66,7 @@ public class Database implements Runnable {
   populate(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
+    Term term = termMixin.term;
     GetConnection.withConnection(conn -> {
       var courses = ScrapeSchedge.scrapeFromSchedge(term);
 

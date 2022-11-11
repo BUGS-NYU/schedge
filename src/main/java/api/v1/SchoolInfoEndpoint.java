@@ -22,19 +22,6 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
       + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
 
-  public static Term parseTerm(String termString) {
-    if (termString.contentEquals("current")) {
-      return Term.getCurrentTerm();
-    }
-
-    if (termString.contentEquals("next")) {
-      return Term.getCurrentTerm().nextTerm();
-    }
-
-    int year = Integer.parseInt(termString.substring(2));
-    return new Term(termString.substring(0, 2), year);
-  }
-
   @OpenApi(
       path = "/api/schools/{term}", methods = HttpMethod.GET,
       summary = "School Info",
@@ -60,7 +47,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       })
   public Object
   handleEndpoint(Context ctx) {
-    Term term = parseTerm(ctx.pathParam("term"));
+    Term term = Term.fromString(ctx.pathParam("term"));
 
     Info info = new Info();
     info.term = term;

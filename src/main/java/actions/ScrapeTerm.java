@@ -24,6 +24,8 @@ public class ScrapeTerm {
   // @Note: bar is nullable
   static void scrapeTerm(Term term, ProgressBar bar) {
     GetConnection.withConnection(conn -> {
+      clearPrevious(conn, term);
+
       var termData = PeopleSoftClassSearch.scrapeTerm(term, bar);
       updateSchoolsForTerm(conn, term, termData.getSchools());
 

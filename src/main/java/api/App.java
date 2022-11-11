@@ -62,14 +62,14 @@ public class App {
       });
 
       var description = "Schedge is an API to NYU's course catalog. "
-                        + "Please note that <b>this API is currently under "
+                        + "Please note that <b>this API is a beta build currently under "
                         + "active development and is subject to change</b>."
                         + "<br/><br/>If you'd like to contribute, "
                         + "<a href=\"https://github.com/A1Liu/schedge\">"
                         + "check out the repository</a>.";
 
       var info = new OpenApiInfo();
-      info.setVersion("2.0.0");
+      info.setVersion("2.0.0 beta");
       info.setTitle("Schedge");
       info.setDescription(description);
 

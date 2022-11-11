@@ -22,27 +22,29 @@ public final class SearchEndpoint extends App.Endpoint {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
                       example = "fa2022", required = true)
+      },
+      queryParams =
+      {
+        @OpenApiParam(name = "query",
+                      description = "Query string created by the user",
+                      example = "Linear algebra", required = true)
         ,
-            @OpenApiParam(name = "query",
-                          description = "Query string created by the user",
-                          example = "Linear algebra", required = true),
             @OpenApiParam(
                 name = "limit", type = Integer.class,
                 description =
-                    "Maximum number of courses in the result. Defaults to 50.",
-                example = "30", required = true)
+                    "Maximum number of courses in the result. Defaults to 20.",
+                example = "30")
       },
       responses =
       {
         @OpenApiResponse(status = "200", description = "Search results",
                          content = @OpenApiContent(from = Nyu.Course[].class))
         ,
-            @OpenApiResponse(status = "400",
-                             description = "One of the values in the path "
-                                           + "parameter was "
-                                           + "not valid.",
-                             content =
-                                 @OpenApiContent(from = App.ApiError.class))
+            @OpenApiResponse(
+                status = "400",
+                description =
+                    "Didn't provide a query, or the path param was an invalid term.",
+                content = @OpenApiContent(from = App.ApiError.class))
       })
   public Object
   handleEndpoint(Context ctx) {
@@ -60,7 +62,7 @@ public final class SearchEndpoint extends App.Endpoint {
     try {
       resultSize = Optional.ofNullable(ctx.queryParam("limit"))
                        .map(Integer::parseInt)
-                       .orElse(50);
+                       .orElse(20);
     } catch (NumberFormatException e) {
       throw new RuntimeException("Limit needs to be a positive integer.");
     }

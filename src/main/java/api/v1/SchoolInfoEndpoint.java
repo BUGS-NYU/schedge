@@ -31,7 +31,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022",required = true)
+                      example = "fa2022", required = true)
       },
       responses =
       {

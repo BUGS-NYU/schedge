@@ -110,6 +110,7 @@ public class App {
 
     new SchoolInfoEndpoint().addTo(app);
     new CampusEndpoint().addTo(app);
+    new ListTermsEndpoint().addTo(app);
 
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);

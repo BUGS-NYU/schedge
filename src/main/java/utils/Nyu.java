@@ -303,6 +303,7 @@ public final class Nyu {
   }
 
   public static final class Term {
+
     public final Nyu.Semester semester;
     public final int year;
 
@@ -478,16 +479,24 @@ public final class Nyu {
 
       var nyc = ZoneId.of("America/New_York");
       var buenosAires = ZoneId.of("America/Argentina/Buenos_Aires");
+      var berlin = ZoneId.of("Europe/Berlin");
       var losAngeles = ZoneId.of("America/Los_Angeles");
 
       var campusList = new Campus[] {
+          new Campus("Dublin", ZoneId.of("Europe/Dublin")),
           new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
           new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
-          new Campus("NYU Berlin (Global)", ZoneId.of("Europe/Berlin")),
+          new Campus("NYU Berlin (Global)", berlin),
+          new Campus("Berlin", berlin),
+          new Campus("Germany", berlin),
           new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
+          new Campus("Madrid", ZoneId.of("Europe/Madrid")),
           new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
+          new Campus("Prague", ZoneId.of("Europe/Prague")),
           new Campus("Athens", ZoneId.of("Europe/Athens")),
+          new Campus("Greece", ZoneId.of("Europe/Athens")),
+          new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
 
           new Campus("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai")),
           new Campus("Abu Dhabi", ZoneId.of("Asia/Dubai")),
@@ -498,8 +507,17 @@ public final class Nyu {
           new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
 
           new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+
           new Campus("NYU Buenos Aires (Global)", buenosAires),
           new Campus("NYU Los Angeles (Global)", losAngeles),
+          new Campus("Colombia", ZoneId.of("America/Bogota")),
+
+          // @Note: Brazil has 3 time zones; I have no idea which one is the
+          // right one, but the primary time zone of Brazil is Brazil/East so
+          // this is a best-effort choice.
+          //
+          //                              - Albert Liu, Nov 10, 2022 Thu 22:09
+          new Campus("Brazil", ZoneId.of("Brazil/East")),
 
           new Campus("Off Campus", nyc),
           new Campus("Online", nyc),
@@ -514,6 +532,7 @@ public final class Nyu {
           new Campus("ePoly", nyc),
           new Campus("Medical Center Long Island", nyc),
           new Campus("NYU New York (Global)", nyc),
+          new Campus("Wallkill Correctional Facility", nyc),
 
           new Campus("Woolworth Bldg.-15 Barclay St", nyc),
           new Campus("Grad Stern at Purchase", nyc),
@@ -523,6 +542,7 @@ public final class Nyu {
           new Campus("Inst. of Fine Arts", nyc),
           new Campus("Medical Center", nyc),
           new Campus("NYU Washington DC (Global)", nyc),
+          new Campus("Washington, DC", nyc),
           new Campus("Brooklyn Campus", nyc),
           new Campus("Washington Square", nyc),
       };
@@ -538,7 +558,7 @@ public final class Nyu {
       var campus = campuses.get(name);
       if (campus == null) {
         // throw new IllegalArgumentException("Bad campus: " + campus);
-        System.err.println("Bad campus: " + name);
+        System.err.println("\nBad campus: " + name);
         return ZoneId.of("America/New_York");
       }
 

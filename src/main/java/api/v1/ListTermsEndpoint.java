@@ -34,12 +34,6 @@ public final class ListTermsEndpoint extends App.Endpoint {
       path = "/api/terms", methods = HttpMethod.GET, summary = "Terms List",
       description =
           "This endpoint provides a list of terms that Schedge has data for",
-      pathParams =
-      {
-        @OpenApiParam(name = "term",
-                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022", required = true)
-      },
       responses =
       {
         @OpenApiResponse(status = "200", description = "List of terms",

@@ -24,11 +24,15 @@ public class ScrapeTerm {
   // @Note: bar is nullable
   static void scrapeTerm(Term term, ProgressBar bar) {
     var search = new PeopleSoftClassSearch();
-    var termData = search.scrapeTerm(term, bar);
 
     GetConnection.withConnection(conn -> {
+      var termData = search.scrapeTerm(term, bar);
       updateSchoolsForTerm(conn, term, termData.schools);
-      insertCourses(conn, term, termData.courses);
+
+      while (termData.hasNext()) {
+        var coursesBatch = termData.next();
+        insertCourses(conn, term, coursesBatch);
+      }
     });
   }
 }

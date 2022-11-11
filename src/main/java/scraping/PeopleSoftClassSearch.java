@@ -37,9 +37,82 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public static final class CoursesForTerm {
-    public final ArrayList<School> schools = new ArrayList<>();
-    public final ArrayList<Course> courses = new ArrayList<>();
+  public static final class CoursesForTerm
+      implements Iterator<ArrayList<Course>> {
+    public final ArrayList<School> schools;
+
+    private final ArrayList<SubjectElem> subjects;
+    private final ProgressBar bar;
+    private final Try ctx;
+    private final Term term;
+
+    private PSClient ps;
+    private int index = 0;
+
+    private CoursesForTerm(Term term, ProgressBar bar, Try ctx) {
+      this.term = term;
+      this.bar = bar;
+      this.ctx = ctx;
+
+      this.ps = new PSClient();
+
+      if (bar != null) {
+        bar.setExtraMessage("fetching subject list...");
+        bar.maxHint(-1);
+      }
+
+      var resp = ctx.log(() -> {
+        ctx.put("term", term);
+
+        return ps.navigateToTerm(term).get();
+      });
+
+      this.subjects = ctx.log(() -> parseTermPage(resp.body()));
+
+      if (bar != null) {
+        bar.maxHint(subjects.size() + 1);
+      }
+
+      this.schools = ctx.log(() -> translateSubjects(subjects));
+    }
+
+    @Override
+    public boolean hasNext() {
+      return index < subjects.size();
+    }
+
+    @Override
+    public ArrayList<Course> next() {
+      var subject = subjects.get(index);
+      index += 1;
+
+      ctx.put("subject", subject);
+
+      if (bar != null) {
+        bar.setExtraMessage("fetching " + subject.code);
+        bar.step();
+      }
+
+      var responseBody = Try.tcPass(() -> {
+        for (int i = 0; i < 10; i++) {
+          try {
+            var resp = ps.fetchSubject(subject).get();
+            return resp.body();
+          } catch (ExecutionException e) {
+            Thread.sleep(10_000);
+            System.out.println(e.getMessage());
+            System.out.println(subject);
+            ps = new PSClient();
+            ps.navigateToTerm(term).get();
+          }
+        }
+
+        var resp = ps.fetchSubject(subject).get();
+        return resp.body();
+      });
+
+      return parseSubject(ctx, responseBody, subject.code);
+    }
   }
 
   public static final class FormEntry {
@@ -99,72 +172,10 @@ public final class PeopleSoftClassSearch {
 
   CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
       throws ExecutionException, IOException, InterruptedException {
-    var out = new CoursesForTerm();
-    if (bar != null) {
-      bar.setExtraMessage("fetching subject list...");
-      bar.maxHint(-1);
-    }
-
-    ctx.put("term", term);
-
-    var ps = new PSClient();
-
-    ArrayList<SubjectElem> subjects;
-    {
-      var resp = ps.navigateToTerm(term).get();
-      subjects = parseTermPage(resp.body());
-    }
-
-    out.schools.addAll(translateSubjects(subjects));
-    // ctx.put("schools", out.schools);
-
-    if (bar != null) {
-      bar.maxHint(subjects.size() + 1);
-    }
-
-    for (var subject : subjects) {
-      if (bar != null) {
-        bar.setExtraMessage("fetching " + subject.code);
-        bar.step();
-      }
-
-      ctx.put("subject", subject);
-
-      ArrayList<Course> courses = null;
-      for (int i = 0; i < 10; i++) {
-        try {
-          var resp = ps.fetchSubject(subject).get();
-          var responseBody = resp.body();
-
-          // ctx.put("body", responseBody);
-
-          courses = parseSubject(ctx, responseBody, subject.code);
-          break;
-        } catch (ExecutionException e) {
-          Thread.sleep(10_000);
-          System.out.println(e.getMessage());
-          System.out.println(subject);
-          ps = new PSClient();
-          ps.navigateToTerm(term).get();
-        }
-      }
-
-      if (courses == null) {
-        var resp = ps.fetchSubject(subject).get();
-        var responseBody = resp.body();
-
-        ctx.put("body", responseBody);
-
-        courses = parseSubject(ctx, responseBody, subject.code);
-      }
-
-      out.courses.addAll(courses);
-    }
-
-    return out;
+    return new CoursesForTerm(term, bar, ctx);
   }
 
-  ArrayList<SubjectElem> parseTermPage(String responseBody) {
+  static ArrayList<SubjectElem> parseTermPage(String responseBody) {
     var doc = Jsoup.parse(responseBody, PSClient.MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");

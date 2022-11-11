@@ -469,6 +469,7 @@ public final class Nyu {
       var losAngeles = ZoneId.of("America/Los_Angeles");
 
       var campusList = new Campus[] {
+          new Campus("Dublin", ZoneId.of("Europe/Dublin")),
           new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
           new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
@@ -486,8 +487,16 @@ public final class Nyu {
           new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
 
           new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+
           new Campus("NYU Buenos Aires (Global)", buenosAires),
           new Campus("NYU Los Angeles (Global)", losAngeles),
+
+          // @Note: Brazil has 3 time zones; I have no idea which one is the
+          // right one, but the primary time zone of Brazil is Brazil/East so
+          // this is a best-effort choice.
+          //
+          //                              - Albert Liu, Nov 10, 2022 Thu 22:09
+          new Campus("Brazil", ZoneId.of("Brazil/East")),
 
           new Campus("Off Campus", nyc),
           new Campus("Online", nyc),
@@ -502,6 +511,7 @@ public final class Nyu {
           new Campus("ePoly", nyc),
           new Campus("Medical Center Long Island", nyc),
           new Campus("NYU New York (Global)", nyc),
+          new Campus("Wallkill Correctional Facility", nyc),
 
           new Campus("Woolworth Bldg.-15 Barclay St", nyc),
           new Campus("Grad Stern at Purchase", nyc),
@@ -511,6 +521,7 @@ public final class Nyu {
           new Campus("Inst. of Fine Arts", nyc),
           new Campus("Medical Center", nyc),
           new Campus("NYU Washington DC (Global)", nyc),
+          new Campus("Washington, DC", nyc),
           new Campus("Brooklyn Campus", nyc),
           new Campus("Washington Square", nyc),
       };

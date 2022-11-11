@@ -7,6 +7,8 @@ import database.*;
 import database.models.AugmentedMeeting;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
+import utils.*;
+
 import java.util.ArrayList;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
@@ -41,7 +43,7 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
   )
   public Object handleEndpoint(Context ctx) {
     String termString = ctx.pathParam("term");
-    var term = SchoolInfoEndpoint.parseTerm(termString);
+    var term = Nyu.Term.fromString(termString);
 
     String regNumsString = ctx.queryParam("registrationNumbers");
     if (regNumsString == null) {

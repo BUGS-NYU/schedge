@@ -47,7 +47,7 @@ public final class SearchEndpoint extends App.Endpoint {
   public Object
   handleEndpoint(Context ctx) {
     String termString = ctx.pathParam("term");
-    var term = SchoolInfoEndpoint.parseTerm(termString);
+    var term = Nyu.Term.fromString(termString);
 
     String args = ctx.queryParam("query");
     if (args == null) {

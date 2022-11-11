@@ -113,6 +113,20 @@ public final class PeopleSoftClassSearch {
 
       return parseSubject(ctx, responseBody, subject.code);
     }
+
+    // @Note: This happens to allow JSON serialization of this object to
+    // correctly run scraping, by forcing the serialization of the object to
+    // run this method, which then consumes the iterator. It's stupid.
+    //
+    //                                  - Albert Liu, Nov 10, 2022 Thu 22:21
+    public ArrayList<Course> getCourses() {
+      var courses = new ArrayList<Course>();
+      while (this.hasNext()) {
+        courses.addAll(this.next());
+      }
+
+      return courses;
+    }
   }
 
   public static final class FormEntry {

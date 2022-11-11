@@ -474,9 +474,13 @@ public final class Nyu {
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
           new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
           new Campus("NYU Berlin (Global)", ZoneId.of("Europe/Berlin")),
+          new Campus("Germany", ZoneId.of("Europe/Berlin")),
           new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
+          new Campus("Madrid", ZoneId.of("Europe/Madrid")),
           new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
           new Campus("Athens", ZoneId.of("Europe/Athens")),
+          new Campus("Greece", ZoneId.of("Europe/Athens")),
+          new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
 
           new Campus("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai")),
           new Campus("Abu Dhabi", ZoneId.of("Asia/Dubai")),
@@ -490,6 +494,7 @@ public final class Nyu {
 
           new Campus("NYU Buenos Aires (Global)", buenosAires),
           new Campus("NYU Los Angeles (Global)", losAngeles),
+          new Campus("Colombia", ZoneID.of("America/Bogota")),
 
           // @Note: Brazil has 3 time zones; I have no idea which one is the
           // right one, but the primary time zone of Brazil is Brazil/East so

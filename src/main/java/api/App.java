@@ -22,12 +22,14 @@ public class App {
     public final void handle(Context ctx) {
       try {
         Object output = this.handleEndpoint(ctx);
+        if (output instanceof ApiError) {
+          var e = (ApiError)output;
+          ctx.status(e.status);
+          ctx.json(e);
+        }
 
         ctx.status(200);
         ctx.json(output);
-      } catch (ApiError e) {
-        ctx.status(e.status);
-        ctx.json(e);
       } catch (Exception e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
@@ -37,7 +39,7 @@ public class App {
     public final void addTo(Javalin app) { app.get("/api" + getPath(), this); }
   }
 
-  public static class ApiError extends RuntimeException {
+  public static class ApiError {
     private final int status;
     private final String message;
 
@@ -47,6 +49,7 @@ public class App {
       this.status = status;
     }
 
+    public int getStatus() { return status; }
     public String getMessage() { return message; }
   }
 

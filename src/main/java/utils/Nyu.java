@@ -466,6 +466,7 @@ public final class Nyu {
 
       var nyc = ZoneId.of("America/New_York");
       var buenosAires = ZoneId.of("America/Argentina/Buenos_Aires");
+      var berlin = ZoneId.of("Europe/Berlin");
       var losAngeles = ZoneId.of("America/Los_Angeles");
 
       var campusList = new Campus[] {
@@ -473,11 +474,13 @@ public final class Nyu {
           new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
           new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
-          new Campus("NYU Berlin (Global)", ZoneId.of("Europe/Berlin")),
-          new Campus("Germany", ZoneId.of("Europe/Berlin")),
+          new Campus("NYU Berlin (Global)", berlin),
+          new Campus("Berlin", berlin),
+          new Campus("Germany", berlin),
           new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
           new Campus("Madrid", ZoneId.of("Europe/Madrid")),
           new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
+          new Campus("Prague", ZoneId.of("Europe/Prague")),
           new Campus("Athens", ZoneId.of("Europe/Athens")),
           new Campus("Greece", ZoneId.of("Europe/Athens")),
           new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
@@ -494,7 +497,7 @@ public final class Nyu {
 
           new Campus("NYU Buenos Aires (Global)", buenosAires),
           new Campus("NYU Los Angeles (Global)", losAngeles),
-          new Campus("Colombia", ZoneID.of("America/Bogota")),
+          new Campus("Colombia", ZoneId.of("America/Bogota")),
 
           // @Note: Brazil has 3 time zones; I have no idea which one is the
           // right one, but the primary time zone of Brazil is Brazil/East so

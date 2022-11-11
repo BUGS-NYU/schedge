@@ -39,8 +39,6 @@ public final class PeopleSoftClassSearch {
 
   public static final class CoursesForTerm
       implements Iterator<ArrayList<Course>> {
-    public final ArrayList<School> schools;
-
     private final ArrayList<SubjectElem> subjects;
     private final ProgressBar bar;
     private final Try ctx;
@@ -72,8 +70,6 @@ public final class PeopleSoftClassSearch {
       if (bar != null) {
         bar.maxHint(subjects.size() + 1);
       }
-
-      this.schools = ctx.log(() -> translateSubjects(subjects));
     }
 
     @Override
@@ -114,6 +110,10 @@ public final class PeopleSoftClassSearch {
       return parseSubject(ctx, responseBody, subject.code);
     }
 
+    public ArrayList<School> getSchools() {
+      return ctx.log(() -> translateSubjects(subjects));
+    }
+
     // @Note: This happens to allow JSON serialization of this object to
     // correctly run scraping, by forcing the serialization of the object to
     // run this method, which then consumes the iterator. It's stupid.
@@ -139,11 +139,9 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  final Try ctx = Try.Ctx(logger);
+  public static ArrayList<School> scrapeSchools(Term term) {
+    var ctx = Try.Ctx(logger);
 
-  public PeopleSoftClassSearch() {}
-
-  public ArrayList<School> scrapeSchools(Term term) {
     ctx.put("term", term);
 
     return ctx.log(() -> {
@@ -154,7 +152,9 @@ public final class PeopleSoftClassSearch {
     });
   }
 
-  public ArrayList<Course> scrapeSubject(Term term, String subjectCode) {
+  public static ArrayList<Course> scrapeSubject(Term term, String subjectCode) {
+    var ctx = Try.Ctx(logger);
+
     ctx.put("term", term);
     ctx.put("subject", subjectCode);
 
@@ -180,12 +180,8 @@ public final class PeopleSoftClassSearch {
    * @param term The term to scrape
    * @param bar Nullable progress bar to output progress to
    */
-  public CoursesForTerm scrapeTerm(Term term, ProgressBar bar) {
-    return ctx.log(() -> scrapeTermInternal(term, bar));
-  }
-
-  CoursesForTerm scrapeTermInternal(Term term, ProgressBar bar)
-      throws ExecutionException, IOException, InterruptedException {
+  public static CoursesForTerm scrapeTerm(Term term, ProgressBar bar) {
+    var ctx = Try.Ctx(logger);
     return new CoursesForTerm(term, bar, ctx);
   }
 

@@ -35,8 +35,7 @@ public class Database implements Runnable {
 
     var term = termMixin.getTerm();
 
-    var search = new PeopleSoftClassSearch();
-    var schools = search.scrapeSchools(term);
+    var schools = PeopleSoftClassSearch.scrapeSchools(term);
 
     GetConnection.withConnection(
         conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });

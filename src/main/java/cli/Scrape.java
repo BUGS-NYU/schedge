@@ -40,8 +40,7 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.getTerm();
     try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var search = new PeopleSoftClassSearch();
-      var courses = search.scrapeTerm(term, bar);
+      var courses = PeopleSoftClassSearch.scrapeTerm(term, bar);
       outputFileMixin.writeOutput(courses);
     }
 
@@ -65,8 +64,7 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    var search = new PeopleSoftClassSearch();
-    var courses = search.scrapeSubject(term, subject);
+    var courses = PeopleSoftClassSearch.scrapeSubject(term, subject);
     outputFileMixin.writeOutput(courses);
 
     long end = System.nanoTime();
@@ -86,8 +84,7 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.getTerm();
-    var search = new PeopleSoftClassSearch();
-    var schools = search.scrapeSchools(term);
+    var schools = PeopleSoftClassSearch.scrapeSchools(term);
     outputFileMixin.writeOutput(schools);
 
     long end = System.nanoTime();

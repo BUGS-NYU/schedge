@@ -502,6 +502,7 @@ public final class Nyu {
       var buenosAires = ZoneId.of("America/Argentina/Buenos_Aires");
       var berlin = ZoneId.of("Europe/Berlin");
       var losAngeles = ZoneId.of("America/Los_Angeles");
+      var dubai = ZoneId.of("Asia/Dubai");
 
       var campusList = new Campus[] {
           new Campus("Dublin", ZoneId.of("Europe/Dublin")),
@@ -519,8 +520,9 @@ public final class Nyu {
           new Campus("Greece", ZoneId.of("Europe/Athens")),
           new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
 
-          new Campus("NYU Abu Dhabi (Global)", ZoneId.of("Asia/Dubai")),
-          new Campus("Abu Dhabi", ZoneId.of("Asia/Dubai")),
+          new Campus("NYU Abu Dhabi (Global)", dubai),
+          new Campus("Abu Dhabi", dubai),
+          new Campus("Abu Dhabi - Other", dubai),
           new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
           new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
           new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),

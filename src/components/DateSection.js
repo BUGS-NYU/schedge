@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styles from "./date-section.module.css";
 import {
   parseDate,
   addMinutes,
@@ -22,42 +22,42 @@ export default function DateSection({ sortedSectionMeetings }) {
     <>
       {/* Sections with one meeting a week */}
       {sortedSectionMeetings.length === 1 && (
-        <DateContainer>
-          <BoldedDate>
+        <div className={styles.dateContainer}>
+          <div className={styles.boldedDate}>
             {days[parsedMeetings[0].startTime.getDay()]}s{" "}
-          </BoldedDate>
+          </div>
           from{" "}
-          <BoldedDate>
+          <div className={styles.boldedDate}>
             {convertToLocaleTimeStr(parsedMeetings[0].startTime)}{" "}
-          </BoldedDate>
+          </div>
           to{" "}
-          <BoldedDate>
+          <div className={styles.boldedDate}>
             {convertToLocaleTimeStr(parsedMeetings[0].endTime)}
-          </BoldedDate>
-        </DateContainer>
+          </div>
+        </div>
       )}
       {/* Sections with two identical meetings a week */}
       {sortedSectionMeetings.length === 2 &&
         isEqualTime(parsedMeetings[0].startTime, parsedMeetings[1].startTime) &&
         parsedMeetings[0].minutesDuration ===
           parsedMeetings[1].minutesDuration && (
-          <DateContainer>
-            <BoldedDate>
+          <div className={styles.dateContainer}>
+            <div className={styles.boldedDate}>
               {days[parsedMeetings[0].startTime.getDay()]}s{" "}
-            </BoldedDate>
+            </div>
             and{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {days[parsedMeetings[1].startTime.getDay()]}s{" "}
-            </BoldedDate>
+            </div>
             from{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[0].startTime)}{" "}
-            </BoldedDate>
+            </div>
             to{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[1].endTime)}
-            </BoldedDate>
-          </DateContainer>
+            </div>
+          </div>
         )}
       {/* Section with two different meetings a week */}
       {sortedSectionMeetings.length === 2 &&
@@ -69,59 +69,54 @@ export default function DateSection({ sortedSectionMeetings }) {
           parsedMeetings[0].minutesDuration ===
             parsedMeetings[1].minutesDuration
         ) && (
-          <DateContainer>
-            <BoldedDate>
+          <div className={styles.dateContainer}>
+            <div className={styles.boldedDate}>
               {days[parsedMeetings[0].startTime.getDay()]}s{" "}
-            </BoldedDate>
+            </div>
             from{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[0].startTime)}{" "}
-            </BoldedDate>
+            </div>
             to{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[0].endTime)}
-            </BoldedDate>
+            </div>
             {" and "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {days[parsedMeetings[0].startTime.getDay()]}s{" "}
-            </BoldedDate>
+            </div>
             from{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[1].startTime)}{" "}
-            </BoldedDate>
+            </div>
             to{" "}
-            <BoldedDate>
+            <div className={styles.boldedDate}>
               {convertToLocaleTimeStr(parsedMeetings[1].endTime)}
-            </BoldedDate>
-          </DateContainer>
+            </div>
+          </div>
         )}
       {/* Sections with more than two meetings a week */}
       {sortedSectionMeetings.length > 2 && (
-        <DateContainer>
+        <div className={styles.dateContainer}>
           {parsedMeetings.map((meeting, i) => (
             <React.Fragment key={i}>
-              <BoldedDate>{days[meeting.startTime.getDay()]}s </BoldedDate>
+              <div className={styles.boldedDate}>
+                {days[meeting.startTime.getDay()]}s{" "}
+              </div>
               from{" "}
-              <BoldedDate>
+              <div className={styles.boldedDate}>
                 {convertToLocaleTimeStr(meeting.startTime)}{" "}
-              </BoldedDate>
+              </div>
               to{" "}
-              <BoldedDate>{convertToLocaleTimeStr(meeting.endTime)}</BoldedDate>
+              <div className={styles.boldedDate}>
+                {convertToLocaleTimeStr(meeting.endTime)}
+              </div>
               {i < sortedSectionMeetings.length - 1 && ", "}
               <br />
             </React.Fragment>
           ))}
-        </DateContainer>
+        </div>
       )}
     </>
   );
 }
-
-const DateContainer = styled.div`
-  margin: -0.2rem 0 1rem 1rem;
-  font-size: 1.25rem;
-`;
-
-const BoldedDate = styled.span`
-  font-weight: bold;
-`;

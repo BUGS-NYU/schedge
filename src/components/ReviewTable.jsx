@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styles from "./review-table.module.css";
 
 const ExpandMoreIcon = ({ style }) => {
   return (
@@ -20,41 +20,61 @@ const ExpandMoreIcon = ({ style }) => {
 export default function ReviewTable({ ratings, remaining, page, setPage }) {
   return (
     <React.Fragment>
-      <RatingTable>
-        <TableHeaders>
+      <table className={styles.ratingTable}>
+        <thead style={{ width: "100%" }}>
           <tr>
-            <Header>Information</Header>
-            <Header comment={true}>Comment</Header>
+            <th className={styles.header}>Information</th>
+            <th
+              className={styles.header}
+              style={{ borderLeft: "1.2px solid var(--grey600)" }}
+            >
+              Comment
+            </th>
           </tr>
-        </TableHeaders>
-        <TableBody>
+        </thead>
+        <tbody className={styles.tableBody}>
           {ratings &&
             ratings.length > 0 &&
             ratings.map((rating, idx) => {
               const date = new Date(rating.rTimestamp);
               return (
-                <RatingContainer key={rating.id} isOdd={idx % 2 === 0}>
-                  <InfoContainer>
-                    <Rating>{rating.rClass}</Rating>
-                    <Rating>{`Overall: ${rating.rOverall}`}</Rating>
-                    <Rating>{`Helpful: ${rating.rHelpful}`}</Rating>
-                    <Rating>{`${
+                <tr
+                  className={styles.ratingContainer}
+                  key={rating.id}
+                  style={{
+                    backgroundColor:
+                      idx % 2 === 0 ? "var(--grey400)" : "var(--grey300)",
+                  }}
+                >
+                  <td className={styles.infoContainer}>
+                    <p className={styles.rating}>{rating.rClass}</p>
+                    <p
+                      className={styles.rating}
+                    >{`Overall: ${rating.rOverall}`}</p>
+                    <p
+                      className={styles.rating}
+                    >{`Helpful: ${rating.rHelpful}`}</p>
+                    <p className={styles.rating}>{`${
                       date.getMonth() + 1
-                    }/${date.getDate()}/${date.getFullYear()}`}</Rating>
-                  </InfoContainer>
-                  <Comment
+                    }/${date.getDate()}/${date.getFullYear()}`}</p>
+                  </td>
+                  <td
+                    className={styles.comment}
                     dangerouslySetInnerHTML={{
                       __html: rating.rComments,
                     }}
                   />
-                </RatingContainer>
+                </tr>
               );
             })}
-        </TableBody>
-      </RatingTable>
-      <ButtonContainer>
+        </tbody>
+      </table>
+
+      <div style={{ backgroundColor: "var(--grey100)" }}>
         {!(page === 1) && (
-          <ExpandButton
+          <button
+            className={styles.expandButton}
+            style={{ float: "left" }}
             onClick={() => {
               setPage((old) => Math.max(old - 1, 1));
             }}
@@ -65,17 +85,18 @@ export default function ReviewTable({ ratings, remaining, page, setPage }) {
               }}
             />
             <span>Prev</span>
-          </ExpandButton>
+          </button>
         )}
         {remaining > 0 && (
-          <ExpandButton
+          <button
+            className={styles.expandButton}
+            style={{ float: "right" }}
             onClick={() => {
               console.log("expand");
               // if (!isPreviousData && remaining > 0) {
               //   setPage((old) => old + 1);
               // }
             }}
-            next={true}
           >
             <span>Next</span>
             <ExpandMoreIcon
@@ -83,81 +104,9 @@ export default function ReviewTable({ ratings, remaining, page, setPage }) {
                 transform: "rotate(-90deg)",
               }}
             />
-          </ExpandButton>
+          </button>
         )}
-      </ButtonContainer>
+      </div>
     </React.Fragment>
   );
 }
-
-const RatingTable = styled.table`
-  width: 40vw;
-  border-spacing: 0;
-  border-collapse: collapse;
-`;
-
-const TableHeaders = styled.thead`
-  width: 100%;
-`;
-
-const Header = styled.th`
-  border-top: 1.2px solid var(--grey600);
-  border-bottom: 1.2px solid var(--grey600);
-  padding: 1rem;
-  background-color: var(--grey500);
-  border-left: ${(props) =>
-    props.comment ? "1.2px solid var(--grey600)" : ""};
-`;
-
-const TableBody = styled.tbody`
-  width: 100%;
-  background-color: var(--grey400);
-  height: 100vh;
-`;
-
-const RatingContainer = styled.tr`
-  padding: 0.4rem;
-  font-size: 1rem;
-  color: var(--grey900);
-  font-weight: bold;
-  background-color: ${(props) =>
-    props.isOdd ? "var(--grey400)" : "var(--grey300)"};
-  border-bottom: 1.2px solid var(--grey600);
-  border-top: 1.2px solid var(--grey600);
-`;
-
-const InfoContainer = styled.td`
-  text-align: center;
-  vertical-align: middle;
-  padding: 0.4rem 0;
-`;
-
-const Rating = styled.p`
-  padding: 0.1rem 0.6rem;
-`;
-
-const Comment = styled.td`
-  padding: 1rem;
-  border-left: 1.2px solid var(--grey600);
-  width: 75%;
-`;
-
-const ExpandButton = styled.div`
-  font-size: 1.1rem;
-  padding: 0.8rem 0.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background-color: var(--grey100);
-  color: var(--grey800);
-  transition: 0.1s;
-  float: ${(props) => (props.next ? "right" : "left")};
-
-  :hover {
-  }
-`;
-
-const ButtonContainer = styled.div`
-  background-color: var(--grey100);
-`;

@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "react-query";
-import styled from "styled-components";
+import styles from "./instructor.module.css";
 import ReviewsBuilder from "./ReviewsBuilder";
 import ReviewTableHeaders from "./ReviewTableHeaders";
 import ReviewTable from "./ReviewTable";
@@ -52,9 +52,13 @@ export default function Instructor({ instructor }) {
 
   return (
     <React.Fragment>
-      <InstructorName clickable={true} onClick={() => setDrawer(true)}>
+      <button
+        className={styles.instructorName}
+        clickable={true}
+        onClick={() => setDrawer(true)}
+      >
         {instructor}
-      </InstructorName>
+      </button>
       <div>
         {data.rmpId !== "" ? (
           <ReviewsBuilder currentInstructor={data} />
@@ -79,11 +83,3 @@ export default function Instructor({ instructor }) {
     </React.Fragment>
   );
 }
-
-const InstructorName = styled.div`
-  cursor: pointer;
-  transition: 0.1s;
-
-  :hover {
-  }
-`;

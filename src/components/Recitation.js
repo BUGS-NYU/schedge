@@ -1,7 +1,5 @@
 import React from "react";
-
-import styled from "styled-components";
-
+import styles from "./recitation.module.css";
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
 import {
@@ -21,7 +19,10 @@ function Recitation({
   lastRecitation,
 }) {
   return (
-    <RecitationContainer lastRecitation={lastRecitation}>
+    <div
+      className={styles.recitationContainer}
+      style={{ borderBottom: !lastRecitation && "1px solid" }}
+    >
       {courseName !== recitation.name && (
         <h3 className="sectionName">{recitation.name}</h3>
       )}
@@ -34,13 +35,13 @@ function Recitation({
         type={recitation.type}
         registrationNumber={recitation.registrationNumber}
       />
-      <RecitationDescription>{recitation.notes}</RecitationDescription>
+      <div className={styles.recitationDescription}>{recitation.notes}</div>
 
       {sortedRecitationsMeetings && (
         <DateSection sortedSectionMeetings={sortedRecitationsMeetings} />
       )}
-      <UtilBar>
-        <StatusContainer>
+      <div className={styles.utilBar}>
+        <div classNames={styles.statusContainer}>
           <span
             style={{
               color: styleStatus(recitation.status),
@@ -48,8 +49,9 @@ function Recitation({
           >
             {changeStatus(recitation)}
           </span>
-        </StatusContainer>
-        <WishlistButton
+        </div>
+        <button
+          className={styles.wishlistButton}
           onClick={() =>
             wishlistCourse({
               year,
@@ -60,89 +62,10 @@ function Recitation({
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>
-        </WishlistButton>
-      </UtilBar>
-    </RecitationContainer>
+        </button>
+      </div>
+    </div>
   );
 }
-
-const RecitationContainer = styled.div`
-  padding: 1.8vmin 2.8vmin;
-  background-color: var(--grey100);
-  width: 100%;
-  margin-left: 1%;
-  position: relative;
-  border-bottom: ${(props) => (props.lastRecitation ? "" : "1px solid")};
-
-  & > .sectionName {
-    font-size: 1.8rem;
-    font-family: var(--condensedFont);
-    color: var(--grey800);
-    margin-bottom: 0.25rem;
-  }
-
-  & > .sectionNum {
-    font-size: 1.6rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-    margin: 0 0 -1rem 1rem;
-  }
-
-  & > .attributes {
-    display: flex;
-    flex-wrap: wrap;
-  }
-`;
-
-const RecitationDescription = styled.div`
-  padding: 0 1.5rem 1.5rem 0.5rem;
-  max-width: 68%;
-  color: var(--grey700);
-`;
-
-const UtilBar = styled.div`
-  padding: 0.5rem;
-  height: 6vh;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const StatusContainer = styled.div`
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 2rem;
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
-`;
-
-const WishlistButton = styled.div`
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-right: 2rem;
-  transition: 0.1s;
-
-  :hover {
-  }
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
-`;
 
 export default Recitation;

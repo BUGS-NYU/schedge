@@ -113,7 +113,8 @@ public final class Utils {
   public static void setObject(PreparedStatement stmt, int index, Object obj)
       throws SQLException {
     if (obj == null) {
-      throw new IllegalArgumentException("object is null");
+      throw new IllegalArgumentException("object at index " + index +
+                                         " is null");
     }
 
     if (obj instanceof NullWrapper) {

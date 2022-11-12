@@ -4,13 +4,10 @@ import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
-import database.GetConnection;
-import database.InsertCourses;
-import database.UpdateSchools;
+import database.*;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.PeopleSoftClassSearch;
-import scraping.ScrapeSchedge;
+import scraping.*;
 
 @Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
@@ -45,7 +42,10 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-term", description = "Scrape all data for a term")
-  public void scrapeTerm(@Parameters(paramLabel = "TERMS", description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020", converter = Mixins.TermConverter.class) Term[] terms) {
+  public void scrapeTerm(@Parameters(
+      paramLabel = "TERMS",
+      description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020",
+      converter = Mixins.TermConverter.class) Term[] terms) {
     long start = System.nanoTime();
 
     for (var term : terms) {
@@ -68,11 +68,13 @@ public class Database implements Runnable {
 
     Term term = termMixin.term;
     GetConnection.withConnection(conn -> {
-      var courses = ScrapeSchedge.scrapeFromSchedge(term);
+      var courses = ScrapeSchedge2.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching took {} seconds", duration);
+      if (courses == null)
+        return;
 
       InsertCourses.clearPrevious(conn, term);
       InsertCourses.insertCourses(conn, term, courses);

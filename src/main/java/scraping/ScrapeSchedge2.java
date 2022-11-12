@@ -1,7 +1,10 @@
 package scraping;
 
+import static utils.JsonMapper.*;
 import static utils.Nyu.*;
+import static utils.Try.*;
 
+import api.v1.*;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
@@ -13,16 +16,38 @@ public final class ScrapeSchedge2 {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
-  private static final String LIST_TERMS = "https://nyu.a1liu.com/api/terms";
   private static final String LIST_SCHOOLS =
       "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
-  public static List<Course> scrapeFromSchedge(Term term) {
-    var subjects = Subject.allSubjects().listIterator();
-    var client = HttpClient.newHttpClient();
+  static final class ScrapeResult {
+    String text;
+    String subject;
+  }
 
-    var engine = new FutureEngine<String>();
+  public static List<Course> scrapeFromSchedge(Term term) {
+    var client = HttpClient.newHttpClient();
+    var termString = term.json();
+
+    var schoolsUri = URI.create(LIST_SCHOOLS + termString);
+    var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+    var handler = HttpResponse.BodyHandlers.ofString();
+    var resp = tcPass(() -> client.send(request, handler));
+    var data = resp.body();
+
+    var info = fromJson(data, SchoolInfoEndpoint.Info.class);
+
+    var subjectList = new ArrayList<String>();
+
+    for (var school : info.schools) {
+      for (var subject : school.subjects) {
+        subjectList.add(subject.code);
+      }
+    }
+
+    var subjects = subjectList.iterator();
+    var engine = new FutureEngine<ScrapeResult>();
+
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
@@ -30,26 +55,28 @@ public final class ScrapeSchedge2 {
     }
 
     var output = new ArrayList<Course>();
-    for (String text : engine) {
+    for (var result : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
 
-      if (text == null) {
+      if (result == null) {
         continue;
       }
 
-      List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
+      List<Course> courses = fromJsonArray(result.text, Course.class);
+      for (var course : courses) {
+        course.subjectCode = result.subject;
+      }
       output.addAll(courses);
     }
 
     return output;
   }
 
-  private static Future<String> getData(HttpClient client, Term term,
-                                        String subject) {
+  private static Future<ScrapeResult> getData(HttpClient client, Term term,
+                                              String subject) {
     var uri = URI.create(COURSES + term.json() + "/" + subject);
-
     var request = HttpRequest.newBuilder().uri(uri).build();
 
     long start = System.nanoTime();
@@ -67,8 +94,11 @@ public final class ScrapeSchedge2 {
         return null;
       }
 
-      String text = resp.body();
-      return text;
+      var out = new ScrapeResult();
+      out.text = resp.body();
+      out.subject = subject;
+
+      return out;
     });
   }
 }

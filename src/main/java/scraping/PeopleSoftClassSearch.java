@@ -69,6 +69,7 @@ public final class PeopleSoftClassSearch {
 
       if (bar != null) {
         bar.maxHint(subjects.size() + 1);
+        bar.step();
       }
     }
 
@@ -84,17 +85,17 @@ public final class PeopleSoftClassSearch {
 
       ctx.put("subject", subject);
 
-      if (bar != null) {
+      if (bar != null)
         bar.setExtraMessage("fetching " + subject.code);
-        bar.step();
-      }
 
-      var responseBody = Try.tcPass(() -> {
+      var parsed = Try.tcPass(() -> {
         for (int i = 0; i < 10; i++) {
           try {
             var resp = ps.fetchSubject(subject).get();
-            return resp.body();
-          } catch (ExecutionException e) {
+            var body = resp.body();
+
+            return parseSubject(ctx, body, subject.code);
+          } catch (Exception e) {
             Thread.sleep(10_000);
             System.out.println(e.getMessage());
             System.out.println(subject);
@@ -104,10 +105,15 @@ public final class PeopleSoftClassSearch {
         }
 
         var resp = ps.fetchSubject(subject).get();
-        return resp.body();
+        var body = resp.body();
+
+        return parseSubject(ctx, body, subject.code);
       });
 
-      return parseSubject(ctx, responseBody, subject.code);
+      if (bar != null)
+        bar.step();
+
+      return parsed;
     }
 
     public ArrayList<School> getSchools() {

@@ -1,0 +1,36 @@
+.wishlistCourseContainer {
+  min-height: 15rem;
+  background-color: var(--grey300);
+  border-bottom: 1px solid var(--grey200);
+  border-top: 1px solid var(--grey200);
+}
+
+.wishlistUtilBox {
+  display: flex;
+  height: 4rem;
+  margin-top: 1.5rem;
+  align-items: center;
+
+  & > .removeButton {
+    cursor: pointer;
+    color: #bd2f2f;
+    font-size: 0.9rem;
+    margin-left: 1rem;
+  }
+}
+
+.customFormControlLabel {
+  margin: 0;
+  color: black;
+  background-color: var(--grey400);
+  border-radius: 5px;
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.customCheckbox {
+  color: var(--purpleMain);
+  & :global(.Mui-checked) {
+    color: var(--purpleMain);
+  }
+}

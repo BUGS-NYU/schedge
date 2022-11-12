@@ -1,11 +1,11 @@
 import React from "react";
-import styled from "styled-components";
+import styles from "./wishlist-course.module.css";
 import { generateScheduleTime } from "components/util";
 
 function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
   return (
-    <WishlistCourseContainer>
-      <WishlistTextBox>
+    <div className={styles.wishlistCourseContainer}>
+      <div style={{ padding: "1rem" }}>
         <div>{course.name}</div>
         <div>
           Section: <span>{course.code}</span>
@@ -28,11 +28,13 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
             Meetings: <span>{generateScheduleTime(course.meetings)}</span>
           </div>
         </div>
-        <WishlistUtilBox>
-          <CustomFormControlLabel
+        <div className={styles.wishlistUtilBox}>
+          <div
+            className={styles.customFormControlLabel}
             value="add"
             control={
-              <CustomCheckbox
+              <button
+                className={styles.CustomCheckbox}
                 checked={
                   checkboxes[course.registrationNumber] === undefined
                     ? false
@@ -55,51 +57,10 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
           >
             Remove
           </div>
-        </WishlistUtilBox>
-      </WishlistTextBox>
-    </WishlistCourseContainer>
+        </div>
+      </div>
+    </div>
   );
 }
-
-const WishlistCourseContainer = styled.div`
-  min-height: 15rem;
-  background-color: var(--grey300);
-  border-bottom: 1px solid var(--grey200);
-  border-top: 1px solid var(--grey200);
-`;
-
-const WishlistTextBox = styled.div`
-  padding: 1rem;
-`;
-
-const WishlistUtilBox = styled.div`
-  display: flex;
-  height: 4rem;
-  margin-top: 1.5rem;
-  align-items: center;
-
-  & > .removeButton {
-    cursor: pointer;
-    color: #bd2f2f;
-    font-size: 0.9rem;
-    margin-left: 1rem;
-  }
-`;
-
-const CustomFormControlLabel = styled.div`
-  margin: 0;
-  color: black;
-  background-color: var(--grey400);
-  border-radius: 5px;
-  padding: 0 8px;
-  font-weight: bold;
-`;
-
-const CustomCheckbox = styled.div`
-  color: var(--purpleMain);
-  &.Mui-checked {
-    color: var(--purpleMain);
-  }
-`;
 
 export default WishlistCourse;

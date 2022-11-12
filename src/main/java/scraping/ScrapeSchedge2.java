@@ -20,12 +20,17 @@ public final class ScrapeSchedge2 {
       "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
+  public static final class ScrapeTermResult {
+    public ArrayList<School> schools;
+    public ArrayList<Course> courses;
+  }
+
   static final class ScrapeResult {
     String text;
     String subject;
   }
 
-  public static List<Course> scrapeFromSchedge(Term term) {
+  public static ScrapeTermResult scrapeFromSchedge(Term term) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
@@ -36,6 +41,9 @@ public final class ScrapeSchedge2 {
     var data = resp.body();
 
     var info = fromJson(data, SchoolInfoEndpoint.Info.class);
+
+    var out = new ScrapeTermResult();
+    out.schools = info.schools;
 
     var subjectList = new ArrayList<String>();
 
@@ -54,7 +62,7 @@ public final class ScrapeSchedge2 {
       }
     }
 
-    var output = new ArrayList<Course>();
+    out.courses = new ArrayList<Course>();
     for (var result : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
@@ -68,10 +76,11 @@ public final class ScrapeSchedge2 {
       for (var course : courses) {
         course.subjectCode = result.subject;
       }
-      output.addAll(courses);
+
+      out.courses.addAll(courses);
     }
 
-    return output;
+    return out;
   }
 
   private static Future<ScrapeResult> getData(HttpClient client, Term term,

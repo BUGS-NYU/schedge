@@ -46,7 +46,7 @@ dependencies {
     "org.jsoup:jsoup:1.15.3",
 
     // Command line arg parsing and progress bar
-    "info.picocli:picocli:4.1.4",
+    "info.picocli:picocli:4.7.0",
     "me.tongfei:progressbar:0.8.1",
 
     // JSON

@@ -27,7 +27,9 @@ public final class Nyu {
     public final String code;
     public final String name;
 
-    public Subject(String code, String name) {
+    @JsonCreator
+    public Subject(@JsonProperty("code") String code,
+                   @JsonProperty("name") String name) {
       this.code = code;
       this.name = name;
     }
@@ -56,6 +58,13 @@ public final class Nyu {
   public static final class School {
     public final String name;
     public final ArrayList<Subject> subjects;
+
+    @JsonCreator
+    public School(@JsonProperty("name") String name,
+                  @JsonProperty("subjects") ArrayList<Subject> subjects) {
+      this.name = name;
+      this.subjects = subjects;
+    }
 
     public School(String name) {
       this.name = name;
@@ -109,11 +118,23 @@ public final class Nyu {
              @JsonProperty("minutesDuration") int minutesDuration,
              @JsonProperty("endDate") String endDate) {
       var meeting = new Meeting();
-      meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
-      meeting.minutesDuration = minutesDuration;
-      meeting.endDate = LocalDateTime.parse(endDate, formatter);
+      try {
+        meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
+        meeting.minutesDuration = minutesDuration;
+        meeting.endDate = LocalDateTime.parse(endDate, formatter);
+      } catch (java.time.format.DateTimeParseException e) {
+        meeting.beginDate = parseTime(beginDate);
+        meeting.minutesDuration = minutesDuration;
+        meeting.endDate = parseTime(endDate);
+      }
 
       return meeting;
+    }
+
+    static LocalDateTime parseTime(String timeString) {
+      var parsed = DateTimeFormatter.ISO_INSTANT.parse(timeString);
+      var instant = Instant.from(parsed);
+      return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     public int getMinutesDuration() { return minutesDuration; }
@@ -324,6 +345,19 @@ public final class Nyu {
       return new Term(semester, id / 10 + 1900);
     }
 
+    public static Term fromString(String termString) {
+      if (termString.contentEquals("current")) {
+        return getCurrentTerm();
+      }
+
+      if (termString.contentEquals("next")) {
+        return getCurrentTerm().nextTerm();
+      }
+
+      int year = Integer.parseInt(termString.substring(2));
+      return new Term(termString.substring(0, 2), year);
+    }
+
     // @TODO Make this more accurate
     public static Nyu.Semester getSemester(LocalDateTime time) {
       switch (time.getMonth()) {
@@ -521,6 +555,7 @@ public final class Nyu {
           new Campus("Medical Center Long Island", nyc),
           new Campus("NYU New York (Global)", nyc),
           new Campus("Wallkill Correctional Facility", nyc),
+          new Campus("Mount Sinai Hospital", nyc),
 
           new Campus("Woolworth Bldg.-15 Barclay St", nyc),
           new Campus("Grad Stern at Purchase", nyc),

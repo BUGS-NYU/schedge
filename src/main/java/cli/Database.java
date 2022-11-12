@@ -4,14 +4,10 @@ import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
-import database.GetConnection;
-import database.InsertCourses;
-import database.UpdateSchools;
-import java.io.*;
+import database.*;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.PeopleSoftClassSearch;
-import scraping.ScrapeSchedge;
+import scraping.*;
 
 @Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
@@ -33,7 +29,7 @@ public class Database implements Runnable {
   public void scrapeSchools(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
-    var term = termMixin.getTerm();
+    var term = termMixin.term;
 
     var schools = PeopleSoftClassSearch.scrapeSchools(term);
 
@@ -46,12 +42,16 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-term", description = "Scrape all data for a term")
-  public void scrapeTerm(@Mixin Mixins.Term termMixin) {
+  public void scrapeTerm(@Parameters(
+      paramLabel = "TERMS",
+      description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020",
+      converter = Mixins.TermConverter.class) Term[] terms) {
     long start = System.nanoTime();
 
-    var term = termMixin.getTerm();
+    for (var term : terms) {
+      ScrapeTerm.scrapeTerm(term, true);
+    }
 
-    ScrapeTerm.scrapeTerm(term, true);
     GetConnection.close();
 
     long end = System.nanoTime();
@@ -63,19 +63,28 @@ public class Database implements Runnable {
       description = "Populate the database by scraping the existing production "
                     + "Schedge instance.\n")
   public void
-  populate(@Mixin Mixins.Term termMixin) {
+  populate(@Mixin Mixins.Term termMixin,
+           @Option(names = {"--v2"},
+                   description = "scrape v2 instead of v1") boolean useV2) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
+    if (!useV2) {
+      throw new RuntimeException("Unimplemented operation for right now");
+    }
+
+    Term term = termMixin.term;
     GetConnection.withConnection(conn -> {
-      var courses = ScrapeSchedge.scrapeFromSchedge(term);
+      var result = ScrapeSchedge2.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching took {} seconds", duration);
+      if (result == null)
+        return;
 
+      UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
       InsertCourses.clearPrevious(conn, term);
-      InsertCourses.insertCourses(conn, term, courses);
+      InsertCourses.insertCourses(conn, term, result.courses);
     });
 
     GetConnection.close();

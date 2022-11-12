@@ -45,7 +45,7 @@ public final class CoursesEndpoint extends App.Endpoint {
   public Object
   handleEndpoint(Context ctx) {
     String termString = ctx.pathParam("term");
-    var term = SchoolInfoEndpoint.parseTerm(termString);
+    var term = Term.fromString(termString);
 
     var subject = ctx.pathParam("subject").toUpperCase();
 

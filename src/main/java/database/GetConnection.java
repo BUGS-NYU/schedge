@@ -25,10 +25,10 @@ public class GetConnection {
 
     static {
       HikariConfig config = new HikariConfig();
-      config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
-      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
+      config.setUsername(getEnvDefault("DB_USERNAME", "postgres"));
+      config.setPassword(getEnvDefault("DB_PASSWORD", "postgres"));
       config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/schedge"));
+          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/postgres"));
 
       // We retry a few times so that schedge doesn't hard-crash when
       // running in docker-compose

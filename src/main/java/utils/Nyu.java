@@ -131,7 +131,7 @@ public final class Nyu {
       return meeting;
     }
 
-    static LocalDateTime parseTime(String timeString) {
+    public static LocalDateTime parseTime(String timeString) {
       var parsed = DateTimeFormatter.ISO_INSTANT.parse(timeString);
       var instant = Instant.from(parsed);
       return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);

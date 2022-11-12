@@ -1,14 +1,16 @@
 package database.models;
 
+import com.fasterxml.jackson.annotation.*;
+import io.javalin.openapi.*;
 import java.sql.*;
 import java.time.*;
-import io.javalin.openapi.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
 import utils.Nyu;
 
 // A meeting plus section information
+@JsonIgnoreProperties(value={ "minutesInDay" }, allowGetters=true)
 public class AugmentedMeeting {
   public final String subject;
   public final String deptCourseId;
@@ -40,6 +42,33 @@ public class AugmentedMeeting {
     minutesDuration = rs.getInt("duration");
   }
 
+  @JsonCreator()
+  public AugmentedMeeting(
+      @JsonProperty("subject") String subject,
+      @JsonProperty("deptCourseId") String deptCourseId,
+      @JsonProperty("sectionCode") String sectionCode,
+      @JsonProperty("registrationNumber") int registrationNumber,
+      @JsonProperty("sectionType") String sectionType,
+      @JsonProperty("sectionStatus") Nyu.SectionStatus sectionStatus,
+      @JsonProperty("instructionMode") String instructionMode,
+      @JsonProperty("location") String location,
+      @JsonProperty("beginDate") String beginDate,
+      @JsonProperty("minutesDuration") int minutesDuration,
+      @JsonProperty("endDate") String endDate) {
+    this.subject = subject;
+    this.deptCourseId = deptCourseId;
+    this.sectionCode = sectionCode;
+    this.registrationNumber = registrationNumber;
+    this.sectionType = sectionType;
+    this.sectionStatus = sectionStatus;
+    this.instructionMode = instructionMode;
+    this.location = location;
+
+    this.beginDate = Nyu.Meeting.parseTime(beginDate);
+    this.minutesDuration = minutesDuration;
+    this.endDate = Nyu.Meeting.parseTime(endDate);
+  }
+
   public String getSubject() { return subject; }
   public String getDeptCourseId() { return deptCourseId; }
 
@@ -48,7 +77,9 @@ public class AugmentedMeeting {
   public String getSectionType() { return sectionType; }
 
   @OpenApiPropertyType(definedBy = String.class)
-  public Nyu.SectionStatus getSectionStatus() { return sectionStatus; }
+  public Nyu.SectionStatus getSectionStatus() {
+    return sectionStatus;
+  }
   public String getInstructionMode() { return instructionMode; }
   public String getLocation() { return location; }
 

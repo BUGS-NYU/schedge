@@ -35,8 +35,9 @@ public final class Migrations {
 
       for (String path : paths) {
         // /migrations/V01_blah_blah.sql
-        String name = path.substring(directory.length() + 2);
-        int fileVersion = Integer.parseInt(name.split("_")[0]);
+        var parts = path.split("/");
+        var name = parts[parts.length - 1];
+        int fileVersion = Integer.parseInt(name.substring(1).split("_")[0]);
 
         if (fileVersion > version) {
           for (String sql : parseMigration(path)) {
@@ -50,7 +51,7 @@ public final class Migrations {
 
           conn.commit();
 
-          logger.info("Finished migration for V{}", name);
+          logger.info("Finished migration for {}", name);
           ranMigration = true;
         }
       }

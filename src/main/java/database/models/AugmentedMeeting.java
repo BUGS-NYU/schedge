@@ -1,22 +1,23 @@
 package database.models;
 
+import com.fasterxml.jackson.annotation.*;
+import io.javalin.openapi.*;
 import java.sql.*;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.util.Locale;
-
+import java.util.*;
 import utils.Nyu;
 
 // A meeting plus section information
+@JsonIgnoreProperties(value = {"minutesInDay"}, allowGetters = true)
 public class AugmentedMeeting {
-  public final String sectionName;
   public final String subject;
   public final String deptCourseId;
 
   public final String sectionCode;
   public final int registrationNumber;
-  public final Nyu.SectionType sectionType;
+  public final String sectionType;
   public final Nyu.SectionStatus sectionStatus;
   public final String instructionMode;
   public final String location;
@@ -32,9 +33,8 @@ public class AugmentedMeeting {
     deptCourseId = rs.getString("dept_course_id");
     registrationNumber = rs.getInt("registration_number");
     sectionCode = rs.getString("section_code");
-    sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
+    sectionType = rs.getString("section_type");
     sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
-    sectionName = rs.getString("section_name");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");
     beginDate = rs.getTimestamp("begin_date").toLocalDateTime();
@@ -42,7 +42,56 @@ public class AugmentedMeeting {
     minutesDuration = rs.getInt("duration");
   }
 
-  public String getBeginDate() { return beginDate.format(formatter); }
+  @JsonCreator()
+  public AugmentedMeeting(
+      @JsonProperty("subject") String subject,
+      @JsonProperty("deptCourseId") String deptCourseId,
+      @JsonProperty("sectionCode") String sectionCode,
+      @JsonProperty("registrationNumber") int registrationNumber,
+      @JsonProperty("sectionType") String sectionType,
+      @JsonProperty("sectionStatus") Nyu.SectionStatus sectionStatus,
+      @JsonProperty("instructionMode") String instructionMode,
+      @JsonProperty("location") String location,
+      @JsonProperty("beginDate") String beginDate,
+      @JsonProperty("minutesDuration") int minutesDuration,
+      @JsonProperty("endDate") String endDate) {
+    this.subject = subject;
+    this.deptCourseId = deptCourseId;
+    this.sectionCode = sectionCode;
+    this.registrationNumber = registrationNumber;
+    this.sectionType = sectionType;
+    this.sectionStatus = sectionStatus;
+    this.instructionMode = instructionMode;
+    this.location = location;
+
+    this.beginDate = Nyu.Meeting.parseTime(beginDate);
+    this.minutesDuration = minutesDuration;
+    this.endDate = Nyu.Meeting.parseTime(endDate);
+  }
+
+  public String getSubject() { return subject; }
+  public String getDeptCourseId() { return deptCourseId; }
+
+  public String getSectionCode() { return sectionCode; }
+  public int getRegistrationNumber() { return registrationNumber; }
+  public String getSectionType() { return sectionType; }
+
+  @OpenApiPropertyType(definedBy = String.class)
+  public Nyu.SectionStatus getSectionStatus() {
+    return sectionStatus;
+  }
+  public String getInstructionMode() { return instructionMode; }
+  public String getLocation() { return location; }
+
+  public String getBeginDate() {
+    var zoned = beginDate.atZone(ZoneOffset.UTC);
+    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+  }
+
+  public String getEndDate() {
+    var zoned = endDate.atZone(ZoneOffset.UTC);
+    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+  }
 
   public int getMinutesDuration() { return minutesDuration; }
 
@@ -50,14 +99,12 @@ public class AugmentedMeeting {
     return beginDate.get(ChronoField.MINUTE_OF_DAY);
   }
 
-  public String getEndDate() { return endDate.format(formatter); }
-
   @Override
   public String toString() {
     return "AugmentedMeeting{"
-        + "sectionName='" + sectionName + '\'' + ", subject=" + subject +
-        ", deptCourseId='" + deptCourseId + '\'' + ", sectionCode='" +
-        sectionCode + '\'' + ", registrationNumber=" + registrationNumber +
+        + "subject=" + subject + ", deptCourseId='" + deptCourseId + '\'' +
+        ", sectionCode='" + sectionCode + '\'' +
+        ", registrationNumber=" + registrationNumber +
         ", sectionType=" + sectionType + ", sectionStatus=" + sectionStatus +
         ", instructionMode='" + instructionMode + '\'' + ", location='" +
         location + '\'' + ", beginDate=" + beginDate +

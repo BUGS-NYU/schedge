@@ -1,21 +1,15 @@
-package database.courses;
+package database;
 
 import database.models.*;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Stream;
-import org.slf4j.*;
 import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-
-  private static Logger logger =
-      LoggerFactory.getLogger("database.courses.SearchCourses");
-
-  public static Stream<FullRow> searchFullRows(Connection conn, Nyu.Term term,
-                                               String query)
-      throws SQLException {
+  public static Stream<Row> searchRows(Connection conn, Nyu.Term term,
+                                       String query) throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
     fields.add(
         "to_tsvector(courses.name || ' ' || courses.description || ' ' || sections.notes) @@ q.query");
@@ -40,10 +34,9 @@ public final class SearchRows {
         + "sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "
         + "sections.associated_with, sections.waitlist_total, "
-        + "sections.name AS section_name, "
         + "sections.min_units, sections.max_units, sections.location, "
         + "sections.campus, sections.instruction_mode, "
-        + "sections.grading, sections.notes, sections.prerequisites, "
+        + "sections.grading, sections.notes, "
         + "sections.instructors "
         + "FROM q, courses LEFT JOIN sections "
         + "ON courses.id = sections.course_id "
@@ -54,10 +47,10 @@ public final class SearchRows {
         conn, " courses.id = ANY (?) ",
         conn.createArrayOf("integer", result.toArray()));
 
-    ArrayList<FullRow> rows = new ArrayList<>();
+    ArrayList<Row> rows = new ArrayList<>();
     rs = rowStmt.executeQuery();
     while (rs.next()) {
-      rows.add(new FullRow(rs, meetingsList.get(rs.getInt("section_id"))));
+      rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
     rs.close();

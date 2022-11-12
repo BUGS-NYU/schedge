@@ -1,4 +1,4 @@
-package database.courses;
+package database;
 
 import static utils.Nyu.*;
 
@@ -11,9 +11,9 @@ import utils.Utils;
  * This class insert courses into the Postgresql database based on
  * the data scraped from Albert Mobile
  */
-public final class InsertFullCourses {
+public final class InsertCourses {
   private static Logger logger =
-      LoggerFactory.getLogger("database.courses.InsertCourses");
+      LoggerFactory.getLogger("database.InsertCourses");
 
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement courses;
@@ -106,6 +106,8 @@ public final class InsertFullCourses {
     PreparedStatement stmt = p.courses;
 
     for (Course c : courses) {
+      // System.out.println(c.name + " " + c.subjectCode + " " +
+      // c.deptCourseId);
       Utils.setArray(stmt, term.json(), c.name, c.subjectCode, c.deptCourseId,
                      c.description);
       stmt.execute();

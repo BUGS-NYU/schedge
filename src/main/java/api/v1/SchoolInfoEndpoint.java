@@ -12,7 +12,7 @@ import java.util.*;
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
 
-  public final class Info {
+  public final static class Info {
     public Term term;
     public ArrayList<School> schools;
   }
@@ -21,19 +21,6 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       "Must be a valid term code, either 'current', 'next', or something "
       + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
       + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
-
-  public static Term parseTerm(String termString) {
-    if (termString.contentEquals("current")) {
-      return Term.getCurrentTerm();
-    }
-
-    if (termString.contentEquals("next")) {
-      return Term.getCurrentTerm().nextTerm();
-    }
-
-    int year = Integer.parseInt(termString.substring(2));
-    return new Term(termString.substring(0, 2), year);
-  }
 
   @OpenApi(
       path = "/api/schools/{term}", methods = HttpMethod.GET,
@@ -44,7 +31,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022",required = true)
+                      example = "fa2022", required = true)
       },
       responses =
       {
@@ -60,7 +47,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       })
   public Object
   handleEndpoint(Context ctx) {
-    Term term = parseTerm(ctx.pathParam("term"));
+    Term term = Term.fromString(ctx.pathParam("term"));
 
     Info info = new Info();
     info.term = term;

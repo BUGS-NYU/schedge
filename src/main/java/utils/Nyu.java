@@ -2,17 +2,11 @@ package utils;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import database.models.FullRow;
-import database.models.Row;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.annotation.*;
+import database.models.*;
+import io.javalin.openapi.*;
+import java.time.*;
+import java.time.format.*;
 import java.util.*;
 
 public final class Nyu {
@@ -33,7 +27,9 @@ public final class Nyu {
     public final String code;
     public final String name;
 
-    public Subject(String code, String name) {
+    @JsonCreator
+    public Subject(@JsonProperty("code") String code,
+                   @JsonProperty("name") String name) {
       this.code = code;
       this.name = name;
     }
@@ -55,16 +51,27 @@ public final class Nyu {
     public static ArrayList<String> allSubjects() {
       return new ArrayList<>(allSubjects);
     }
+
+    public String toString() { return "Subject(" + code + "," + name + ")"; }
   }
 
   public static final class School {
     public final String name;
     public final ArrayList<Subject> subjects;
 
+    @JsonCreator
+    public School(@JsonProperty("name") String name,
+                  @JsonProperty("subjects") ArrayList<Subject> subjects) {
+      this.name = name;
+      this.subjects = subjects;
+    }
+
     public School(String name) {
       this.name = name;
       this.subjects = new ArrayList<>();
     }
+
+    public String toString() { return "School(" + name + ")"; }
   }
 
   public static final class Course {
@@ -80,6 +87,13 @@ public final class Nyu {
     //
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     @JsonIgnore() public String subjectCode;
+
+    // @NOTE: these are required for the Javalin OpenAPI integration
+    // to pick up fields on the output data
+    public String getName() { return name; }
+    public String getDeptCourseId() { return deptCourseId; }
+    public String getDescription() { return description; }
+    public List<Section> getSections() { return sections; }
 
     public String toString() {
       return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";
@@ -103,23 +117,35 @@ public final class Nyu {
     fromJson(@JsonProperty("beginDate") String beginDate,
              @JsonProperty("minutesDuration") int minutesDuration,
              @JsonProperty("endDate") String endDate) {
-      Meeting meeting = new Meeting();
-      meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
-      meeting.minutesDuration = minutesDuration;
-      meeting.endDate = LocalDateTime.parse(endDate, formatter);
+      var meeting = new Meeting();
+      try {
+        meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
+        meeting.minutesDuration = minutesDuration;
+        meeting.endDate = LocalDateTime.parse(endDate, formatter);
+      } catch (java.time.format.DateTimeParseException e) {
+        meeting.beginDate = parseTime(beginDate);
+        meeting.minutesDuration = minutesDuration;
+        meeting.endDate = parseTime(endDate);
+      }
 
       return meeting;
     }
 
-    public String getBeginDate() {
-      ZonedDateTime zoned = beginDate.atZone(ZoneOffset.UTC);
+    public static LocalDateTime parseTime(String timeString) {
+      var parsed = DateTimeFormatter.ISO_INSTANT.parse(timeString);
+      var instant = Instant.from(parsed);
+      return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+    }
 
+    public int getMinutesDuration() { return minutesDuration; }
+
+    public String getBeginDate() {
+      var zoned = beginDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
     }
 
     public String getEndDate() {
-      ZonedDateTime zoned = endDate.atZone(ZoneOffset.UTC);
-
+      var zoned = endDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
     }
   }
@@ -131,16 +157,15 @@ public final class Nyu {
     public String type;
     public SectionStatus status;
     public List<Meeting> meetings;
-
-    @JsonInclude(NON_NULL) public List<Section> recitations;
-    @JsonInclude(NON_NULL) public Integer waitlistTotal;
-    @JsonInclude(NON_NULL) public String instructionMode;
-    @JsonInclude(NON_NULL) public String campus;
-    @JsonInclude(NON_NULL) public Double minUnits;
-    @JsonInclude(NON_NULL) public Double maxUnits;
-    @JsonInclude(NON_NULL) public String grading;
-    @JsonInclude(NON_NULL) public String location;
-    @JsonInclude(NON_NULL) public String notes;
+    public List<Section> recitations;
+    public Integer waitlistTotal;
+    public String instructionMode;
+    public String campus;
+    public Double minUnits;
+    public Double maxUnits;
+    public String grading;
+    public String location;
+    public String notes;
 
     public static Section fromRow(Row row) {
       Section s = new Section();
@@ -148,24 +173,7 @@ public final class Nyu {
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
       s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
-      s.status = row.sectionStatus;
-      s.meetings = row.meetings;
-      s.minUnits = row.minUnits;
-      s.maxUnits = row.maxUnits;
-      s.instructionMode = row.instructionMode;
-      s.location = row.location;
-
-      return s;
-    }
-
-    public static Section fromFullRow(FullRow row) {
-      Section s = new Section();
-      s.waitlistTotal = row.waitlistTotal;
-      s.registrationNumber = row.registrationNumber;
-      s.code = row.sectionCode;
-      s.instructors = row.instructors;
-      s.type = row.sectionType.getName();
+      s.type = row.sectionType;
       s.status = row.sectionStatus;
       s.meetings = row.meetings;
       s.campus = row.campus;
@@ -177,6 +185,34 @@ public final class Nyu {
       s.location = row.location;
 
       return s;
+    }
+
+    public int getRegistrationNumber() { return registrationNumber; }
+    public String getCode() { return code; }
+    public String[] getInstructors() { return instructors; }
+    public String getType() { return type; }
+
+    @OpenApiPropertyType(definedBy = String.class)
+    public SectionStatus getStatus() {
+      return status;
+    }
+
+    public String getCampus() { return campus; }
+    public List<Meeting> getMeetings() { return meetings; }
+    public String getInstructionMode() { return instructionMode; }
+    public Double getMinUnits() { return minUnits; }
+    public Double getMaxUnits() { return maxUnits; }
+    public String getGrading() { return grading; }
+    public String getLocation() { return location; }
+    public String getNotes() { return notes; }
+
+    @JsonInclude(NON_NULL)
+    public List<Section> getRecitations() {
+      return recitations;
+    }
+    @JsonInclude(NON_NULL)
+    public Integer getWaitlistTotal() {
+      return waitlistTotal;
     }
 
     public String toString() { return JsonMapper.toJson(this); }
@@ -309,6 +345,19 @@ public final class Nyu {
       return new Term(semester, id / 10 + 1900);
     }
 
+    public static Term fromString(String termString) {
+      if (termString.contentEquals("current")) {
+        return getCurrentTerm();
+      }
+
+      if (termString.contentEquals("next")) {
+        return getCurrentTerm().nextTerm();
+      }
+
+      int year = Integer.parseInt(termString.substring(2));
+      return new Term(termString.substring(0, 2), year);
+    }
+
     // @TODO Make this more accurate
     public static Nyu.Semester getSemester(LocalDateTime time) {
       switch (time.getMonth()) {
@@ -427,5 +476,128 @@ public final class Nyu {
     public int hashCode() {
       return Objects.hash(semester, year);
     }
+  }
+
+  public static final class Campus {
+    public final String name;
+    public final String timezoneId;
+    public final String timezoneName;
+
+    @JsonIgnore() public final ZoneId timezone;
+
+    public Campus(String name, ZoneId zone) {
+      this.name = name;
+      this.timezone = zone;
+      this.timezoneId = zone.getId();
+      this.timezoneName =
+          zone.getDisplayName(TextStyle.FULL_STANDALONE, Locale.US);
+    }
+
+    public static final HashMap<String, Campus> campuses;
+
+    static {
+      var map = new HashMap<String, Campus>();
+
+      var nyc = ZoneId.of("America/New_York");
+      var buenosAires = ZoneId.of("America/Argentina/Buenos_Aires");
+      var berlin = ZoneId.of("Europe/Berlin");
+      var losAngeles = ZoneId.of("America/Los_Angeles");
+      var dubai = ZoneId.of("Asia/Dubai");
+
+      var campusList = new Campus[] {
+          new Campus("Dublin", ZoneId.of("Europe/Dublin")),
+          new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
+          new Campus("London", ZoneId.of("Europe/London")),
+          new Campus("Ireland", ZoneId.of("Europe/Dublin")),
+          new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
+          new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
+          new Campus("NYU Berlin (Global)", berlin),
+          new Campus("Berlin", berlin),
+          new Campus("Germany", berlin),
+          new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
+          new Campus("Madrid", ZoneId.of("Europe/Madrid")),
+          new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
+          new Campus("Prague", ZoneId.of("Europe/Prague")),
+          new Campus("Athens", ZoneId.of("Europe/Athens")),
+          new Campus("Greece", ZoneId.of("Europe/Athens")),
+          new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
+
+          new Campus("NYU Abu Dhabi (Global)", dubai),
+          new Campus("Abu Dhabi", dubai),
+          new Campus("Abu Dhabi - Other", dubai),
+          new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
+          new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
+          new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),
+
+          new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
+
+          new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+          new Campus("Zambia", ZoneId.of("Africa/Lusaka")),
+
+          new Campus("NYU Buenos Aires (Global)", buenosAires),
+          new Campus("Buenos Aires", buenosAires),
+          new Campus("Dominican Republic", ZoneId.of("America/Santo_Domingo")),
+          new Campus("NYU Los Angeles (Global)", losAngeles),
+          new Campus("Colombia", ZoneId.of("America/Bogota")),
+          new Campus("Cuba", ZoneId.of("America/Havana")),
+
+          // @Note: Brazil has 3 time zones; I have no idea which one is the
+          // right one, but the primary time zone of Brazil is Brazil/East so
+          // this is a best-effort choice.
+          //
+          //                              - Albert Liu, Nov 10, 2022 Thu 22:09
+          new Campus("Brazil", ZoneId.of("Brazil/East")),
+
+          new Campus("Off Campus", nyc),
+          new Campus("Online", nyc),
+          new Campus("Distance Learning/Asynchronous", nyc),
+          new Campus("Distance Learning / Blended", nyc),
+          new Campus("Distance Learning/Synchronous", nyc),
+          new Campus("Distance Ed (Learning Space)", nyc),
+          new Campus("Distance Education", nyc),
+
+          new Campus("St. Thomas Aquinas College", nyc),
+          new Campus("Sarah Lawrence", nyc),
+          new Campus("ePoly", nyc),
+          new Campus("Medical Center Long Island", nyc),
+          new Campus("NYU New York (Global)", nyc),
+          new Campus("Wallkill Correctional Facility", nyc),
+          new Campus("Mount Sinai Hospital", nyc),
+
+          new Campus("Woolworth Bldg.-15 Barclay St", nyc),
+          new Campus("Grad Stern at Purchase", nyc),
+          new Campus("Dental Center", nyc),
+          new Campus("Midtown Center", nyc),
+          new Campus("Hosp. for Joint Diseases", nyc),
+          new Campus("2 Broadway, Manhattan", nyc),
+          new Campus("Inst. of Fine Arts", nyc),
+          new Campus("Medical Center", nyc),
+          new Campus("NYU Washington DC (Global)", nyc),
+          new Campus("Washington, DC", nyc),
+          new Campus("Brooklyn Campus", nyc),
+          new Campus("Washington Square", nyc),
+      };
+
+      for (var campus : campusList) {
+        map.put(campus.name, campus);
+      }
+
+      campuses = map;
+    }
+
+    public static ZoneId timezoneForCampus(String name) {
+      var campus = campuses.get(name);
+      if (campus == null) {
+        // throw new IllegalArgumentException("Bad campus: " + campus);
+        System.err.println("\nBad campus: " + name);
+        return ZoneId.of("America/New_York");
+      }
+
+      return campus.timezone;
+    }
+
+    public String getName() { return name; }
+    public String getTimezoneId() { return timezoneId; }
+    public String getTimezoneName() { return timezoneName; }
   }
 }

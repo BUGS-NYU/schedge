@@ -10,6 +10,7 @@
     "exec": "docker-compose exec",
 
     "build": "node src/gradlew.js composeBuild",
+    "test": "node src/gradlew.js test",
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",
     "compile": "node src/gradlew.js check",

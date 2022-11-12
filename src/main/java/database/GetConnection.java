@@ -1,6 +1,6 @@
 package database;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import com.zaxxer.hikari.*;
 import java.sql.*;
@@ -25,10 +25,10 @@ public class GetConnection {
 
     static {
       HikariConfig config = new HikariConfig();
-      config.setUsername(getEnvDefault("DB_USERNAME", "schedge"));
-      config.setPassword(getEnvDefault("DB_PASSWORD", ""));
+      config.setUsername(getEnvDefault("DB_USERNAME", "postgres"));
+      config.setPassword(getEnvDefault("DB_PASSWORD", "postgres"));
       config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/schedge"));
+          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/postgres"));
 
       // We retry a few times so that schedge doesn't hard-crash when
       // running in docker-compose
@@ -55,25 +55,14 @@ public class GetConnection {
   }
 
   public static void withConnection(SQLConsumer f) {
-    Connection conn = tcPass(() -> getConnection());
-
-    try {
-      conn.setAutoCommit(false);
-
+    withConnectionReturning(conn -> {
       f.accept(conn);
-
-      conn.commit();
-    } catch (SQLException e) {
-      tcIgnore(() -> conn.rollback());
-
-      throw new RuntimeException(e);
-    } finally {
-      tcIgnore(() -> conn.close());
-    }
+      return null;
+    });
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
-    Connection conn = tcPass(() -> getConnection());
+    Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
 
     try {
       conn.setAutoCommit(false);
@@ -92,9 +81,7 @@ public class GetConnection {
     }
   }
 
-  private static Connection getConnection() throws SQLException {
-    return HolderClass.dataSource.getConnection();
+  public static void close() {
+    tcPass(() -> HolderClass.dataSource.close());
   }
-
-  public static void close() { tcFatal(() -> HolderClass.dataSource.close()); }
 }

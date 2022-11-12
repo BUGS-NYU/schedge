@@ -15,17 +15,20 @@ public class Row {
   public final int registrationNumber;
   public final String sectionCode;
   public final String[] instructors;
-  public final Nyu.SectionType sectionType;
+  public final String sectionType;
   public final Nyu.SectionStatus sectionStatus;
   public final Integer associatedWith;
   public final Integer waitlistTotal;
   public final List<Nyu.Meeting> meetings;
 
-  public final String sectionName;
   public final Double minUnits;
   public final Double maxUnits;
   public final String location;
   public final String instructionMode;
+
+  public String campus;
+  public String grading;
+  public String notes;
 
   public Row(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
@@ -36,6 +39,10 @@ public class Row {
     this.sectionId = rs.getInt("section_id");
     this.registrationNumber = rs.getInt("registration_number");
     this.sectionCode = rs.getString("section_code");
+
+    this.campus = rs.getString("campus");
+    this.grading = rs.getString("grading");
+    this.notes = rs.getString("notes");
 
     Array instructorArray = rs.getArray("instructors");
     String[] instructors = null;
@@ -49,7 +56,7 @@ public class Row {
 
     this.instructors = instructors;
 
-    this.sectionType = Nyu.SectionType.valueOf(rs.getString("section_type"));
+    this.sectionType = rs.getString("section_type");
     this.sectionStatus =
         Nyu.SectionStatus.valueOf(rs.getString("section_status"));
 
@@ -61,7 +68,6 @@ public class Row {
     int waitListTotal = rs.getInt("waitlist_total");
     this.waitlistTotal = rs.wasNull() ? null : waitListTotal;
 
-    this.sectionName = rs.getString("section_name");
     this.minUnits = rs.getDouble("min_units");
     this.maxUnits = rs.getDouble("max_units");
     this.location = rs.getString("location");

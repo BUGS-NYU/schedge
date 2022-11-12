@@ -50,8 +50,8 @@ You'll need to install a few applications to contribute to this project:
 
 ### Build with Command Line/Terminal
 - `yarn compile`: Check the application for compile-time errors
-- `yarn start`: Start up the development servers; Schedge will start
-  on port `4358`
+- `yarn test`: Test the code for regressions
+- `yarn start`: Start up development servers; Schedge will start on port `4358`
 - `yarn build`: Build the application, and update the development server
 - `yarn stop`: Close the servers when development is done
 

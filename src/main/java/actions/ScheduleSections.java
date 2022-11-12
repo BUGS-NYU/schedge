@@ -1,6 +1,6 @@
 package actions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import database.models.AugmentedMeeting;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -22,6 +22,28 @@ public final class ScheduleSections {
     public final ArrayList<AugmentedMeeting> su;
     public final AugmentedMeeting conflictA;
     public final AugmentedMeeting conflictB;
+
+    public Schedule(@JsonProperty("valid") boolean valid,
+                    @JsonProperty("mo") ArrayList<AugmentedMeeting> mo,
+                    @JsonProperty("tu") ArrayList<AugmentedMeeting> tu,
+                    @JsonProperty("we") ArrayList<AugmentedMeeting> we,
+                    @JsonProperty("th") ArrayList<AugmentedMeeting> th,
+                    @JsonProperty("fr") ArrayList<AugmentedMeeting> fr,
+                    @JsonProperty("sa") ArrayList<AugmentedMeeting> sa,
+                    @JsonProperty("su") ArrayList<AugmentedMeeting> su,
+                    @JsonProperty("conflictA") AugmentedMeeting conflictA,
+                    @JsonProperty("conflictB") AugmentedMeeting conflictB) {
+      this.valid = valid;
+      this.mo = mo;
+      this.tu = tu;
+      this.we = we;
+      this.th = th;
+      this.fr = fr;
+      this.sa = sa;
+      this.su = su;
+      this.conflictA = conflictA;
+      this.conflictB = conflictB;
+    }
 
     public Schedule() {
       valid = false;
@@ -116,7 +138,7 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
-    if (meetings.size() == 0 || meetings == null) {
+    if (meetings == null || meetings.size() == 0) {
       return new Schedule();
     }
 
@@ -134,19 +156,17 @@ public final class ScheduleSections {
     if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate))
       return false;
 
+    int aDay = a.beginDate.get(ChronoField.DAY_OF_WEEK);
+    int bDay = b.beginDate.get(ChronoField.DAY_OF_WEEK);
+    if (aDay != bDay)
+      return false;
+
     for (LocalDateTime aDate = a.beginDate, bDate = b.beginDate;
          aDate.isBefore(a.endDate) && bDate.isBefore(b.endDate);) {
-
-      int aDay = aDate.get(ChronoField.DAY_OF_WEEK);
-      int bDay = bDate.get(ChronoField.DAY_OF_WEEK);
-
-      if (aDay != bDay)
-        return false;
-
       int aBegin = aDate.get(ChronoField.SECOND_OF_DAY);
       int bBegin = bDate.get(ChronoField.SECOND_OF_DAY);
-      int aEnd = a.minutesDuration + aBegin;
-      int bEnd = b.minutesDuration + bBegin;
+      int aEnd = a.minutesDuration * 60 + aBegin;
+      int bEnd = b.minutesDuration * 60 + bBegin;
 
       if (aBegin < bEnd && bBegin < aEnd) {
         return true;

@@ -554,6 +554,7 @@ public final class Nyu {
           new Campus("Medical Center Long Island", nyc),
           new Campus("NYU New York (Global)", nyc),
           new Campus("Wallkill Correctional Facility", nyc),
+          new Campus("Mount Sinai Hospital", nyc),
 
           new Campus("Woolworth Bldg.-15 Barclay St", nyc),
           new Campus("Grad Stern at Purchase", nyc),

@@ -63,12 +63,18 @@ public class Database implements Runnable {
       description = "Populate the database by scraping the existing production "
                     + "Schedge instance.\n")
   public void
-  populate(@Mixin Mixins.Term termMixin) {
+  populate(@Mixin Mixins.Term termMixin,
+           @Option(names = {"--v2"},
+                   description = "scrape v2 instead of v1") boolean useV2) {
     long start = System.nanoTime();
+
+    if (!useV2) {
+      throw new RuntimeException("Unimplemented operation for right now");
+    }
 
     Term term = termMixin.term;
     GetConnection.withConnection(conn -> {
-      var result = ScrapeSchedge.scrapeFromSchedge(term);
+      var result = ScrapeSchedge2.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

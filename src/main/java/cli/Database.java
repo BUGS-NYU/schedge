@@ -68,7 +68,7 @@ public class Database implements Runnable {
 
     Term term = termMixin.term;
     GetConnection.withConnection(conn -> {
-      var result = ScrapeSchedge2.scrapeFromSchedge(term);
+      var result = ScrapeSchedge.scrapeFromSchedge(term);
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

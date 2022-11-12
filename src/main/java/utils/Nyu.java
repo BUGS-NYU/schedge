@@ -507,6 +507,8 @@ public final class Nyu {
       var campusList = new Campus[] {
           new Campus("Dublin", ZoneId.of("Europe/Dublin")),
           new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
+          new Campus("London", ZoneId.of("Europe/London")),
+          new Campus("Ireland", ZoneId.of("Europe/Dublin")),
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
           new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
           new Campus("NYU Berlin (Global)", berlin),
@@ -530,10 +532,14 @@ public final class Nyu {
           new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
 
           new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+          new Campus("Zambia", ZoneId.of("Africa/Lusaka")),
 
           new Campus("NYU Buenos Aires (Global)", buenosAires),
+          new Campus("Buenos Aires", buenosAires),
+          new Campus("Dominican Republic", ZoneId.of("America/Santo_Domingo")),
           new Campus("NYU Los Angeles (Global)", losAngeles),
           new Campus("Colombia", ZoneId.of("America/Bogota")),
+          new Campus("Cuba", ZoneId.of("America/Havana")),
 
           // @Note: Brazil has 3 time zones; I have no idea which one is the
           // right one, but the primary time zone of Brazil is Brazil/East so

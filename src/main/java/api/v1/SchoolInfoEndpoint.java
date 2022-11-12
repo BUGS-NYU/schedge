@@ -12,7 +12,7 @@ import java.util.*;
 public final class SchoolInfoEndpoint extends App.Endpoint {
   public String getPath() { return "/schools/{term}"; }
 
-  public final class Info {
+  public final static class Info {
     public Term term;
     public ArrayList<School> schools;
   }
@@ -31,7 +31,7 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
       {
         @OpenApiParam(name = "term",
                       description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022",required = true)
+                      example = "fa2022", required = true)
       },
       responses =
       {

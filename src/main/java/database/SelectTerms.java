@@ -7,7 +7,8 @@ import java.util.*;
 import org.slf4j.*;
 
 public final class SelectTerms {
-  static final String SELECT_TERMS = "SELECT DISTINCT term from schools";
+  static final String SELECT_TERMS =
+      "SELECT DISTINCT term from schools ORDER BY term";
   public static ArrayList<String> selectTerms(Connection conn)
       throws SQLException {
     try (Statement stmt = conn.createStatement()) {

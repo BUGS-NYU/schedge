@@ -53,20 +53,21 @@ public class App {
     public String getMessage() { return message; }
   }
 
-  public static void run() {
-    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
+  public static final int PORT = 4358;
 
+  public static Javalin makeApp() {
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
         cors.add(it -> { it.anyHost(); });
       });
 
-      var description = "Schedge is an API to NYU's course catalog. "
-                        + "Please note that <b>this API is a beta build currently under "
-                        + "active development and is subject to change</b>."
-                        + "<br/><br/>If you'd like to contribute, "
-                        + "<a href=\"https://github.com/A1Liu/schedge\">"
-                        + "check out the repository</a>.";
+      var description =
+          "Schedge is an API to NYU's course catalog. "
+          + "Please note that <b>this API is a beta build currently under "
+          + "active development and is subject to change</b>."
+          + "<br/><br/>If you'd like to contribute, "
+          + "<a href=\"https://github.com/A1Liu/schedge\">"
+          + "check out the repository</a>.";
 
       var info = new OpenApiInfo();
       info.setVersion("2.0.0 beta");
@@ -94,8 +95,6 @@ public class App {
       });
     });
 
-    app.start(4358);
-
     app.exception(Exception.class, (e, ctx) -> {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
@@ -115,5 +114,15 @@ public class App {
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
+
+    return app;
+  }
+
+  public static void run() {
+    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
+
+    var app = makeApp();
+
+    app.start(PORT);
   }
 }

@@ -1,6 +1,6 @@
 package actions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import database.models.AugmentedMeeting;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -22,6 +22,28 @@ public final class ScheduleSections {
     public final ArrayList<AugmentedMeeting> su;
     public final AugmentedMeeting conflictA;
     public final AugmentedMeeting conflictB;
+
+    public Schedule(@JsonProperty("valid") boolean valid,
+                    @JsonProperty("mo") ArrayList<AugmentedMeeting> mo,
+                    @JsonProperty("tu") ArrayList<AugmentedMeeting> tu,
+                    @JsonProperty("we") ArrayList<AugmentedMeeting> we,
+                    @JsonProperty("th") ArrayList<AugmentedMeeting> th,
+                    @JsonProperty("fr") ArrayList<AugmentedMeeting> fr,
+                    @JsonProperty("sa") ArrayList<AugmentedMeeting> sa,
+                    @JsonProperty("su") ArrayList<AugmentedMeeting> su,
+                    @JsonProperty("conflictA") AugmentedMeeting conflictA,
+                    @JsonProperty("conflictB") AugmentedMeeting conflictB) {
+      this.valid = valid;
+      this.mo = mo;
+      this.tu = tu;
+      this.we = we;
+      this.th = th;
+      this.fr = fr;
+      this.sa = sa;
+      this.su = su;
+      this.conflictA = conflictA;
+      this.conflictB = conflictB;
+    }
 
     public Schedule() {
       valid = false;

@@ -33,6 +33,11 @@ dependencies {
     "io.javalin.community.openapi:openapi-annotation-processor:5.1.0"
   )
 
+  testImplementation(
+    'junit:junit:4.13.2',
+    'io.javalin:javalin-testtools:5.1.3',
+  )
+
   implementation(
     // Logging
     "org.slf4j:slf4j-api:2.0.3",
@@ -59,6 +64,33 @@ dependencies {
   )
 }
 
+sourceSets {
+  migrations {
+    resources {
+      srcDirs "src"
+      includes = ["migrations/*.sql"]
+    }
+  }
+
+  main {
+    resources {
+      source migrations.resources
+    }
+  }
+
+  test {
+    resources {
+      source migrations.resources
+    }
+  }
+}
+
+test {
+    useJUnit()
+
+    maxHeapSize = '1G'
+}
+
 // The build directory should not begin with the same name as the script
 allprojects {
   buildDir = ".build"
@@ -74,17 +106,18 @@ jar {
 
   dependsOn configurations.runtimeClasspath
 
-  from('src/main') {
-    include 'migrations/*.sql'
-  }
-
   from {
     configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
   }
 }
 
-composeBuild.dependsOn build
+composeBuild.dependsOn jar
 composeUp.dependsOn composeBuild
+
+/*
+I cannot for the fucking life of me figure out a reliable way to remove the dependency between
+building and testing. Whatever I guess, I just need the jar I think.
+ */
 
 dockerCompose {
   buildBeforeUp = false

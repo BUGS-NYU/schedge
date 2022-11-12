@@ -38,15 +38,27 @@ public final class Utils {
       throws IOException, URISyntaxException {
     URI uri = Utils.class.getResource(path).toURI();
 
-    try (FileSystem fileSystem = FileSystems.newFileSystem(
-             uri, Collections.<String, Object>emptyMap())) {
-      Path myPath = fileSystem.getPath(path);
+    if (uri.getScheme().equals("jar")) {
+      try (FileSystem fileSystem = FileSystems.newFileSystem(
+              uri, Collections.<String, Object>emptyMap())) {
+        var myPath = fileSystem.getPath(path);
+
+        return Files.walk(myPath)
+                .filter(Files::isRegularFile)
+                .map(p -> p.toString())
+                .collect(Collectors.toList());
+      }
+    } else {
+      var myPath = Paths.get(uri);
 
       return Files.walk(myPath)
-          .filter(Files::isRegularFile)
-          .map(p -> p.toString())
-          .collect(Collectors.toList());
+              .filter(Files::isRegularFile)
+              .map(p -> p.toUri().toString())
+              .collect(Collectors.toList());
+
     }
+
+
   }
 
   public static void writeToFileOrStdout(String file, Object value) {

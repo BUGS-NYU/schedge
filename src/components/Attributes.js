@@ -1,6 +1,5 @@
 import React from "react";
-
-import styled from "styled-components";
+import styles from "./Attributes.module.css";
 import Instructor from "./Instructor";
 
 export default function Attributes({
@@ -14,49 +13,36 @@ export default function Attributes({
 }) {
   return (
     <div className="attributes">
-      <AttributeContainer>
-        <div className="attributeLabel">
+      <div className={styles.attributeContainer}>
+        <div className={styles.attributeLabel}>
           Instructor{instructors.length > 1 ? "s" : ""}
         </div>
         {instructors.map((instructor) => {
           return <Instructor key={instructor} instructor={instructor} />;
         })}
-      </AttributeContainer>
-      <AttributeContainer>
-        <div className="attributeLabel">Building</div>
+      </div>
+      <div className={styles.attributeContainer}>
+        <div className={styles.attributeLabel}>Building</div>
         {building}
-      </AttributeContainer>
+      </div>
       {room && (
-        <AttributeContainer>
-          <div className="attributeLabel">Room</div>
+        <div className={styles.attributeContainer}>
+          <div className={styles.attributeLabel}>Room</div>
           {room}
-        </AttributeContainer>
+        </div>
       )}
-      <AttributeContainer>
-        <div className="attributeLabel">Units</div>
+      <div className={styles.attributeContainer}>
+        <div className={styles.attributeLabel}>Units</div>
         {units}
-      </AttributeContainer>
-      <AttributeContainer>
-        <div className="attributeLabel">Type</div>
+      </div>
+      <div className={styles.attributeContainer}>
+        <div className={styles.attributeLabel}>Type</div>
         {type}
-      </AttributeContainer>
-      <AttributeContainer>
-        <div className="attributeLabel">Registration #</div>
+      </div>
+      <div className={styles.attributeContainer}>
+        <div className={styles.attributeLabel}>Registration #</div>
         {registrationNumber}
-      </AttributeContainer>
+      </div>
     </div>
   );
 }
-
-const AttributeContainer = styled.div`
-  padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.5rem;
-  color: var(--grey800);
-  font-weight: bold;
-
-  & > .attributeLabel {
-    font-size: 1rem;
-    font-family: var(--condensedFont);
-    color: var(--grey700);
-  }
-`;

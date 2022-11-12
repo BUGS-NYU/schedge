@@ -6,13 +6,12 @@ import styles from "./schedule.module.css";
 import Calendar from "components/Calendar";
 import ScheduleCourse from "components/ScheduleCourse";
 import { dayToStr } from "components/constants";
-import localStorageContainer from "components/localStorage";
-import create from 'zustand';
+import create from "zustand";
 
 const useSchedule = create((set, get) => {
   const addToScheduled = (course) => {
-    const { scheduled } = get();
-    set({ scheduled: [...scheduled, course.registrationNumber] });
+    const { schedule } = get();
+    set({ schedule: [...schedule, course.registrationNumber] });
   };
 
   const addToWishlist = (course) => {
@@ -21,7 +20,7 @@ const useSchedule = create((set, get) => {
   };
 
   return {
-    scheduled: [],
+    schedule: [],
     wishlist: [],
 
     addToScheduled,
@@ -32,22 +31,14 @@ const useSchedule = create((set, get) => {
 function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
   const { year, semester } = usePageState();
 
-  const [schedule, setSchedule] = React.useState({});
+  const { schedule } = useSchedule();
   const [checkboxes, setCheckboxes] = React.useState(
     //JSON.parse(window.localStorage.getItem(`${year}-${semester}-checkbox-state`)) || {}
     {}
   );
   const [wishlist, setWishlist] = React.useState([]);
-  const [localStorage, setLocalStorage] = React.useState(null);
-  const [_Toast, setToast] = React.useState({
-    open: false,
-    message: "",
-    horizontal: "center",
-    vertical: "top",
-  });
 
-  // const { open, message, horizontal, vertical } = _Toast;
-
+  /*
   React.useEffect(() => {
     (async () => {
       try {
@@ -71,12 +62,12 @@ function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
             .join(",")}`
         );
 
-        //handle invalid data
+//handle invalid data
         if (!response.ok) {
           return;
         }
         const data = await response.json();
-        //if not valid, make toast visible and clear checkboxes
+//if not valid, make toast visible and clear checkboxes
         if (!data.valid) {
           setToast({
             open: true,
@@ -84,7 +75,7 @@ function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
             horizontal: "center",
             vertical: "top",
           });
-          //Remove both conflicted course
+//Remove both conflicted course
           let newCheckboxes = { ...checkboxes };
           newCheckboxes[data.conflictA.registrationNumber] = false;
           newCheckboxes[data.conflictB.registrationNumber] = false;
@@ -104,7 +95,7 @@ function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
         } else {
           setSchedule(data);
         }
-        //handle layout data from schedge
+//handle layout data from schedge
       } catch (error) {
         console.error(error);
       }
@@ -117,6 +108,7 @@ function SchedulePage({ scheduled, toggleCourseSelect, clearSchedule }) {
     toggleCourseSelect,
     wishlist.length,
   ]);
+  */
 
   const handleClearSchedule = () => {
     setCheckboxes({});

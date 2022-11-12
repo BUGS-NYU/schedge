@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "react-query";
 import { usePageState } from "components/state";
 import styles from "./school.module.css";

@@ -1,0 +1,12 @@
+.attributeContainer {
+  padding: calc(0.8vmin + 0.8rem);
+  font-size: 1.5rem;
+  color: var(--grey800);
+  font-weight: bold;
+
+  & > .attributeLabel {
+    font-size: 1rem;
+    font-family: var(--condensedFont);
+    color: var(--grey700);
+  }
+}

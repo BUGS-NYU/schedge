@@ -10,7 +10,7 @@ import java.util.*;
 import utils.Nyu;
 
 // A meeting plus section information
-@JsonIgnoreProperties(value={ "minutesInDay" }, allowGetters=true)
+@JsonIgnoreProperties(value = {"minutesInDay"}, allowGetters = true)
 public class AugmentedMeeting {
   public final String subject;
   public final String deptCourseId;

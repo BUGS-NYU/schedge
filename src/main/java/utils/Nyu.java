@@ -123,7 +123,6 @@ public final class Nyu {
         meeting.minutesDuration = minutesDuration;
         meeting.endDate = LocalDateTime.parse(endDate, formatter);
       } catch (java.time.format.DateTimeParseException e) {
-
         meeting.beginDate = parseTime(beginDate);
         meeting.minutesDuration = minutesDuration;
         meeting.endDate = parseTime(endDate);

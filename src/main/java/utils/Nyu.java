@@ -561,6 +561,7 @@ public final class Nyu {
           new Campus("Dental Center", nyc),
           new Campus("Midtown Center", nyc),
           new Campus("Hosp. for Joint Diseases", nyc),
+          new Campus("2 Broadway, Manhattan", nyc),
           new Campus("Inst. of Fine Arts", nyc),
           new Campus("Medical Center", nyc),
           new Campus("NYU Washington DC (Global)", nyc),

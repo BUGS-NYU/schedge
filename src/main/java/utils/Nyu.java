@@ -504,7 +504,6 @@ public final class Nyu {
       var losAngeles = ZoneId.of("America/Los_Angeles");
 
       var campusList = new Campus[] {
-
           new Campus("Dublin", ZoneId.of("Europe/Dublin")),
           new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
           new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),

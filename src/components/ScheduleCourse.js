@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styles from "./schedule-course.module.css";
 import { parseDate, addMinutes } from "components/util";
 
 export default function ScheduleCourse({ course }) {
@@ -14,17 +14,18 @@ export default function ScheduleCourse({ course }) {
   };
 
   return (
-    <CourseBlock
+    <div
+      className={styles.courseBlock}
       style={{
         minHeight: `${(course.minutesDuration / 60) * 4}rem`,
         marginTop: `${computeMargin(course.beginDate)}rem`,
       }}
     >
-      <TextContainer>
+      <div className={styles.textContainer}>
         <div className="courseCode">
           {`${course.subject.code}-${course.subject.school} ${course.deptCourseId}-${course.sectionCode}`}
         </div>
-      </TextContainer>
+      </div>
       <div className="time">
         {`${parseDate(course.beginDate).toLocaleTimeString([], {
           hour: "2-digit",
@@ -39,48 +40,6 @@ export default function ScheduleCourse({ course }) {
               })}`}
       </div>
       <div className="location">{course.location}</div>
-    </CourseBlock>
+    </div>
   );
 }
-
-const CourseBlock = styled.div`
-  background-color: var(--grey400);
-  width: 10rem;
-  min-height: 4rem;
-  padding: 5px 5px 5px 10px;
-  border-radius: 10px;
-  position: absolute;
-
-  & > .time {
-    font-size: 0.8rem;
-    text-align: center;
-    padding: 0 2px;
-    width: 100%;
-  }
-
-  & > .location {
-    font-size: 0.8rem;
-    text-align: center;
-    padding: 0 2px;
-    width: 100%;
-  }
-`;
-
-const TextContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-
-  & > .courseCode {
-    font-size: 0.9rem;
-    text-align: center;
-    padding: 0 2px;
-    width: 100%;
-  }
-
-  & > .closeButton {
-    cursor: pointer;
-    &:hover {
-      color: var(--grey100);
-    }
-  }
-`;

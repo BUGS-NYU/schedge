@@ -1,4 +1,5 @@
 import React from "react";
+import { useQuery } from "react-query";
 import { usePageState } from "components/state";
 import css from "./index.module.css";
 import SearchBar from "components/SearchBar";
@@ -6,66 +7,36 @@ import School from "components/School";
 
 function Home() {
   const { year, semester } = usePageState();
-  const [departments, setDepartments] = React.useState({
-    loading: true,
-    data: {},
-  });
-  const [schools, setSchools] = React.useState({
-    loading: true,
-    data: {
-      undergraduate: {},
-      graduate: {},
-      others: {},
-    },
+
+  const schools = useQuery(["schools", year, semester], async () => {
+    const response = await fetch("https://schedge.a1liu.com/schools");
+    if (!response.ok) return;
+
+    const data = await response.json();
+
+    const undergraduate = {};
+    const graduate = {};
+    const others = {};
+
+    Object.keys(data).forEach((schoolCode) => {
+      if (schoolCode.startsWith("G")) {
+        graduate[schoolCode] = data[schoolCode];
+      } else if (schoolCode.startsWith("U") || data[schoolCode].name !== "") {
+        undergraduate[schoolCode] = data[schoolCode];
+      } else {
+        others[schoolCode] = data[schoolCode];
+      }
+    });
+
+    return { undergraduate, graduate, others };
   });
 
-  React.useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch("https://schedge.a1liu.com/subjects");
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-        setDepartments(() => ({ loading: false, data }));
-      } catch (error) {
-        console.error(error);
-      }
-    })();
+  const departments = useQuery(["subjects", year, semester], async () => {
+    const response = await fetch("https://schedge.a1liu.com/subjects");
+    if (!response.ok) return;
 
-    (async () => {
-      try {
-        const response = await fetch("https://schedge.a1liu.com/schools");
-        if (!response.ok) {
-          // handle invalid search parameters
-          return;
-        }
-        const data = await response.json();
-        const undergraduate = {},
-          graduate = {},
-          others = {};
-        Object.keys(data).forEach((schoolCode) => {
-          if (schoolCode.startsWith("G")) {
-            graduate[schoolCode] = data[schoolCode];
-          } else if (
-            schoolCode.startsWith("U") ||
-            data[schoolCode].name !== ""
-          ) {
-            undergraduate[schoolCode] = data[schoolCode];
-          } else {
-            others[schoolCode] = data[schoolCode];
-          }
-        });
-        setSchools(() => ({
-          loading: false,
-          data: { undergraduate, graduate, others },
-        }));
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, []);
+    return await response.json();
+  });
 
   return (
     <div id="pageContainer">
@@ -74,7 +45,7 @@ function Home() {
       </div>
       <div className={css.schoolsContainer}>
         <div id="departmentTitle">Schools</div>
-        {!schools.loading && !departments.loading && (
+        {!!schools.data && !!departments.data && (
           <div className={css.schools}>
             <div>
               <div className={css.schoolType}>Undergraduate</div>

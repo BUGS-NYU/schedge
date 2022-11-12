@@ -1,0 +1,8 @@
+.dateContainer {
+  margin: -0.2rem 0 1rem 1rem;
+  font-size: 1.25rem;
+}
+
+.boldedDate {
+  font-weight: bold;
+}

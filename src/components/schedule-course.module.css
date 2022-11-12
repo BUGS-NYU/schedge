@@ -1,0 +1,43 @@
+
+.courseBlock {
+  background-color: var(--grey400);
+  width: 10rem;
+  min-height: 4rem;
+  padding: 5px 5px 5px 10px;
+  border-radius: 10px;
+  position: absolute;
+
+  & > .time {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .location {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+}
+
+
+.textContainer {
+  display: flex;
+  justify-content: space-between;
+
+  & > .courseCode {
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .closeButton {
+    cursor: pointer;
+    &:hover {
+      color: var(--grey100);
+    }
+  }
+}

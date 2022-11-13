@@ -6,4 +6,6 @@
 *.sh -text
 *.js -text
 *.jsx -text
+*.ts -text
+*.tsx -text
 *.java text

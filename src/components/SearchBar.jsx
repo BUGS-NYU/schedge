@@ -44,7 +44,6 @@ export default function SearchBar({ year, semester }) {
   return (
     <>
       <img
-        Loader
         className={cx(styles.loader, !!searchResults.loading && styles.loading)}
         src="./loading.svg"
         alt="loading symbol"

@@ -1,17 +1,28 @@
 import React from "react";
-import { usePageState } from "components/state";
+import { Term, usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
 import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
 
-const SubjectSchema = z.string();
+export const useCourses = (term: Term, subject: string) => {
+  return useQuery(
+    ["courses", term.code, subject],
+    async () => {
+      const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
+      const data = resp.data;
+
+      const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+      return sortedData;
+    },
+  );
+};
+
+export const SubjectSchema = z.string();
 export default function SubjectPage() {
-  const router = useRouter();
   const { term } = usePageState();
 
   const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
@@ -20,16 +31,8 @@ export default function SubjectPage() {
   const school = schools?.schools?.[schoolIndex];
   const subject = school?.subjects?.find(subject => subject.code === subjectCode);
 
-  const { data: courseList } = useQuery(
-    ["courses", term.code, schoolIndex, subjectCode],
-    async () => {
-      const resp = await axios.get(`/api/courses/${term.code}/${subjectCode}`);
-      const data = resp.data;
 
-      const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-      return sortedData;
-    },
-  );
+  const { data: courseList } = useCourses(term, subjectCode);
 
   return (
     <div className={styles.pageContainer}>

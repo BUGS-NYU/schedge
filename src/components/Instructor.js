@@ -55,7 +55,6 @@ export default function Instructor({ instructor }) {
     <>
       <button
         className={styles.instructorName}
-        clickable={true}
         onClick={() => setDrawer(true)}
       >
         {instructor}

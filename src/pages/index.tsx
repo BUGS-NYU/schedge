@@ -15,7 +15,6 @@ export const SchoolInfoSchema = z.object({
 export const useSchools = (term: Term) => {
   return useQuery(["schools", term.code], async () => {
     const resp = await axios.get(`/api/schools/${term.code}`);
-    console.log(resp.data);
     return SchoolInfoSchema.parse(resp.data);
   });
 };

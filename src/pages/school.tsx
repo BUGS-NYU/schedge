@@ -11,7 +11,6 @@ export default function SchoolPage() {
   const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
   const { data: schools, isLoading } = useSchools(term);
   const school = schools?.schools?.[schoolIndex];
-  console.log(school, schools, schoolIndex)
 
   return (
     <div className={styles.pageContainer}>

@@ -14,7 +14,7 @@
 .searchBox {
   font-family: var(--primaryFont);
   position: absolute;
-  top: 7vmax;
+  top: 4vmax;
   left: 10vmin;
   width: 80vmin;
   height: 4rem;

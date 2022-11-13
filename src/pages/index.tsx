@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { SchoolSchema, usePageState } from "components/state";
+import { SchoolSchema, Term, usePageState } from "components/state";
 import css from "./index.module.css";
 import SearchBar from "components/SearchBar";
 import axios from "axios";
@@ -12,13 +12,17 @@ export const SchoolInfoSchema = z.object({
   schools: z.array(SchoolSchema),
 });
 
-function Home() {
-  const { term } = usePageState();
-
-  const { data: schools } = useQuery(["schools", term.code], async () => {
+export const useSchools = (term: Term) => {
+  return useQuery(["schools", term.code], async () => {
     const resp = await axios.get(`/api/schools/${term.code}`);
     return SchoolInfoSchema.parse(resp.data);
   });
+};
+
+function Home() {
+  const { term } = usePageState();
+
+  const { data: schools } = useSchools(term);
 
   return (
     <div id="pageContainer">
@@ -29,28 +33,26 @@ function Home() {
         <div id="departmentTitle">Schools</div>
         {!!schools && (
           <div className={css.schools}>
-            <div>
-              <div className={css.schoolType}>Undergraduate</div>
-              {schools.schools.map((school, i) => (
-                <div className={css.schoolContainer}>
-                  <Link
-                    className={css.schoolLink}
+            {schools.schools.map((school, i) => (
+              <div key={school.name} className={css.schoolContainer}>
+                <Link
+                  href={{
+                    pathname: "/school",
+                    query: { schoolIndex: i },
+                  }}
+                >
+                  <a
+                    className={css.schoolTitle}
                     style={{ textDecoration: "none" }}
-                    href={{
-                      pathname: "/school",
-                      query: `schoolIndex=${i}`,
-                    }}
                   >
-                    <div className={css.schoolTitle}>
-                      <span className={css.schoolCode}>
-                        {school.subjects[0]?.code?.split("-")?.[1]}
-                      </span>
-                      <span className={css.schoolName}>{school.name}</span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
+                    <span className={css.schoolCode}>
+                      {school.subjects[0]?.code?.split("-")?.[1]}
+                    </span>
+                    <span className={css.schoolName}>{school.name}</span>
+                  </a>
+                </Link>
+              </div>
+            ))}
           </div>
         )}
       </div>

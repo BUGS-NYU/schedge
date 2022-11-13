@@ -117,11 +117,14 @@ export function styleStatus(_status) {
 }
 
 export function parseDate(date) {
+  return new Date(date);
+  /*
   const datePattern = /^(\d{4})-(\d{2})-(\d{2})\s(\d{1,2}):(\d{2}):(\d{2})$/;
   const [, year, month, day, rawHour, min, sec] = datePattern.exec(date);
   return new Date(
     `${year}-${month}-${day}T${("0" + rawHour).slice(-2)}:${min}:${sec}`
   );
+   */
 }
 
 export function addMinutes(date, minutes) {

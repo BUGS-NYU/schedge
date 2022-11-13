@@ -2,35 +2,33 @@ import { useRouter, NextRouter } from "next/router";
 import React from "react";
 import { z, ZodTypeDef } from "zod";
 
-export const QueryNumberSchema = z
-  .preprocess((obj): number | undefined => {
-    if (typeof obj === "string") {
-      const parsed = Number.parseInt(obj, 10);
+export const QueryNumberSchema = z.preprocess((obj): number | undefined => {
+  if (typeof obj === "string") {
+    const parsed = Number.parseInt(obj, 10);
 
-      // Number.parseInt returns NaN when it fails to parse.
-      // This *should* never happen, but designers have started editing
-      // the URL parameters manually, so we need to check this value
-      // somewhat carefully to avoid propagating a NaN.
-      if (Number.isNaN(parsed)) {
-        return undefined;
-      }
-
-      return parsed;
+    // Number.parseInt returns NaN when it fails to parse.
+    // This *should* never happen, but designers have started editing
+    // the URL parameters manually, so we need to check this value
+    // somewhat carefully to avoid propagating a NaN.
+    if (Number.isNaN(parsed)) {
+      return undefined;
     }
 
-    if (typeof obj === "number") {
-      return obj;
-    }
+    return parsed;
+  }
 
-    return undefined;
-  }, z.number())
-  .transform((value) => Math.max(1, value));
+  if (typeof obj === "number") {
+    return obj;
+  }
+
+  return undefined;
+}, z.number());
 
 function unwrapValue<T>(
   schema: z.Schema<T, ZodTypeDef, unknown>,
   value?: string
 ): T | undefined {
-  if (value) {
+  if (value !== undefined) {
     const result = schema.safeParse(value);
     if (result.success) {
       return result.data;
@@ -85,9 +83,10 @@ export function useQueryParam<T extends QueryInputField>(
     [name, pathname, router]
   );
   React.useEffect(() => {
-    if (router.isReady && !paramValue && defaultValue) {
+    if (router.isReady && paramValue === undefined && defaultValue) {
       setParamValue(defaultValue);
     }
   }, [defaultValue, paramValue, router.isReady, setParamValue]);
-  return [paramValue || defaultValue, setParamValue];
+
+  return [paramValue ?? defaultValue, setParamValue];
 }

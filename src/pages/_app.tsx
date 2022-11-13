@@ -2,10 +2,10 @@ import "./App.css";
 import React from "react";
 import headerStyles from "./header.module.css";
 import Link from "next/link";
-import { usePageState } from "components/state";
+import { SemesterSchema, usePageState } from "components/state";
 import { useRouter } from "next/router";
 import { QueryClient, QueryClientProvider } from "react-query";
-// import Head from "next/head";
+import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
 
 const queryClient = new QueryClient();
 
@@ -20,16 +20,18 @@ function App({ Component, pageProps }) {
   /* eslint-disable no-unused-vars */
   const update = usePageState((s) => s.update);
   const router = useRouter();
+  const [year] = useQueryParam("year", QueryNumberSchema);
+  const [semester] = useQueryParam("semester", SemesterSchema);
 
   React.useEffect(() => {
     if (!router.isReady) return;
 
     if (router.query.year) {
-      update({ year: router.query.year });
+      update({ year });
     }
 
     if (router.query.semester) {
-      update({ semester: router.query.semester });
+      update({ semester });
     }
   }, [router, update]);
   /* eslint-enable no-unused-vars */

@@ -24,4 +24,3 @@ export default function School({ schoolCode, schoolName, year, semester }) {
     </div>
   );
 }
-

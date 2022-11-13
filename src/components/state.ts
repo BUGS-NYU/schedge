@@ -1,5 +1,16 @@
 import create from "zustand";
 import { z } from "zod";
+import { QueryNumberSchema } from "./useQueryParam";
+
+const SubjectSchema = z.object({
+  code: z.string(),
+  name: z.string(),
+});
+
+export const SchoolSchema = z.object({
+  name: z.string(),
+  subjects: z.array(SubjectSchema),
+});
 
 export const SemesterSchema = z.union([
   z.literal("sp"),
@@ -10,19 +21,53 @@ export const SemesterSchema = z.union([
 
 export type Semester = z.infer<typeof SemesterSchema>;
 
-interface PageState {
+export const parseTerm = (term: string): Term => {
+  return {
+    semester: SemesterSchema.parse(term.substring(0, 2)),
+    year: QueryNumberSchema.parse(term.substring(2)),
+    code: term,
+  };
+};
+
+export const semName = (sem: Semester) => {
+  switch (sem) {
+    case "ja":
+      return "January";
+    case "sp":
+      return "Spring";
+    case "su":
+      return "Summer";
+    case "fa":
+      return "Fall";
+  }
+};
+
+export interface Term {
   year: number;
   semester: Semester;
-  update: (partial: Partial<{ semester: Semester; year: number }>) => void;
+  code: string;
+}
+
+interface PageState {
+  term: Term;
+  update: (partial: Partial<Term>) => void;
 }
 
 export const usePageState = create<PageState>((set) => {
   return {
-    update: (part) => {
-      set({ ...part });
+    update: (term) => {
+      set((prev) => ({
+        term: {
+          ...prev.term,
+          ...term,
+        },
+      }));
     },
 
-    year: 2021,
-    semester: "sp",
+    term: {
+      year: 2021,
+      semester: "sp",
+      code: "sp2021",
+    },
   };
 });

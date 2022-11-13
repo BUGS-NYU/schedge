@@ -1,83 +1,54 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { usePageState } from "components/state";
+import { SchoolSchema, usePageState } from "components/state";
 import css from "./index.module.css";
 import SearchBar from "components/SearchBar";
-import School from "components/School";
+import axios from "axios";
+import { z } from "zod";
+import Link from "next/link";
+
+export const SchoolInfoSchema = z.object({
+  term: z.string(),
+  schools: z.array(SchoolSchema),
+});
 
 function Home() {
-  const { year, semester } = usePageState();
+  const { term } = usePageState();
 
-  const schools = useQuery(["schools", year, semester], async () => {
-    const response = await fetch("https://schedge.a1liu.com/schools");
-    if (!response.ok) return;
-
-    const data = await response.json();
-
-    const undergraduate = {};
-    const graduate = {};
-    const others = {};
-
-    Object.keys(data).forEach((schoolCode) => {
-      if (schoolCode.startsWith("G")) {
-        graduate[schoolCode] = data[schoolCode];
-      } else if (schoolCode.startsWith("U") || data[schoolCode].name !== "") {
-        undergraduate[schoolCode] = data[schoolCode];
-      } else {
-        others[schoolCode] = data[schoolCode];
-      }
-    });
-
-    return { undergraduate, graduate, others };
-  });
-
-  const departments = useQuery(["subjects", year, semester], async () => {
-    const response = await fetch("https://schedge.a1liu.com/subjects");
-    if (!response.ok) return;
-
-    return await response.json();
+  const { data: schools } = useQuery(["schools", term.code], async () => {
+    const resp = await axios.get(`/api/schools/${term.code}`);
+    return SchoolInfoSchema.parse(resp.data);
   });
 
   return (
     <div id="pageContainer">
       <div className={css.searchContainer}>
-        <SearchBar year={year} semester={semester} />
+        <SearchBar year={term.year} semester={term.semester} />
       </div>
       <div className={css.schoolsContainer}>
         <div id="departmentTitle">Schools</div>
-        {!!schools.data && !!departments.data && (
+        {!!schools && (
           <div className={css.schools}>
             <div>
               <div className={css.schoolType}>Undergraduate</div>
-              {Object.keys(schools.data.undergraduate).map((schoolCode, i) => (
-                <School
-                  key={i}
-                  schoolCode={schoolCode}
-                  schoolName={schools.data.undergraduate[schoolCode].name}
-                  year={year}
-                  semester={semester}
-                />
-              ))}
-              {Object.keys(schools.data.others).map((schoolCode, i) => (
-                <School
-                  key={i}
-                  schoolCode={schoolCode}
-                  schoolName={schools.data.others[schoolCode].name}
-                  year={year}
-                  semester={semester}
-                />
-              ))}
-            </div>
-            <div>
-              <div className={css.schoolType}>Graduate</div>
-              {Object.keys(schools.data.graduate).map((schoolCode, i) => (
-                <School
-                  key={i}
-                  schoolCode={schoolCode}
-                  schoolName={schools.data.graduate[schoolCode].name}
-                  year={year}
-                  semester={semester}
-                />
+              {schools.schools.map((school, i) => (
+                <div className={css.schoolContainer}>
+                  <Link
+                    className={css.schoolLink}
+                    style={{ textDecoration: "none" }}
+                    href={{
+                      pathname: "/school",
+                      query: `schoolIndex=${i}`,
+                    }}
+                  >
+                    <div className={css.schoolTitle}>
+                      <span className={css.schoolCode}>
+                        {school.subjects[0]?.code?.split("-")?.[1]}
+                      </span>
+                      <span className={css.schoolName}>{school.name}</span>
+                    </div>
+                  </Link>
+                </div>
               ))}
             </div>
           </div>

@@ -2,12 +2,107 @@ import "./App.css";
 import React from "react";
 import headerStyles from "./header.module.css";
 import Link from "next/link";
-import { SemesterSchema, usePageState } from "components/state";
-import { useRouter } from "next/router";
-import { QueryClient, QueryClientProvider } from "react-query";
+import {
+  parseTerm,
+  Semester,
+  SemesterSchema,
+  semName,
+  Term,
+  usePageState,
+} from "components/state";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import axios from "axios";
+import { z } from "zod";
 
 const queryClient = new QueryClient();
+
+async function fetchTerms(): Promise<Term[]> {
+  const resp = await axios.get("/api/terms");
+  const data = z.array(z.string()).parse(resp.data);
+  const terms = data.map(parseTerm);
+
+  const semNum = (sem: Semester): number => {
+    switch (sem) {
+      case "ja":
+        return 0;
+      case "sp":
+        return 1;
+      case "su":
+        return 2;
+      case "fa":
+        return 3;
+    }
+  };
+
+  terms.sort((t1, t2) => {
+    if (t1.year !== t2.year) return t1.year - t2.year;
+    return semNum(t1.semester) - semNum(t2.semester);
+  });
+
+  terms.reverse();
+
+  return terms;
+}
+
+const Inner: React.FC = ({ children }) => {
+  const { data: termData } = useQuery(["terms"], fetchTerms);
+
+  const term = usePageState((s) => s.term);
+  const update = usePageState((s) => s.update);
+
+  const selectRef = React.useRef<HTMLSelectElement>();
+
+  return (
+    <>
+      <div className={headerStyles.headerBox}>
+        <div className={headerStyles.titleBox}>
+          <Link href="/">
+            <a className={headerStyles.title}>Bobcat Search</a>
+          </Link>
+
+          <div className={headerStyles.selectWrapper}>
+            <select
+              ref={selectRef}
+              className={headerStyles.selectBox}
+              value={term.code}
+              onChange={(evt) => {
+                update(parseTerm(evt.target.value));
+              }}
+            >
+              {termData?.map((term) => {
+                return (
+                  <option key={term.code} value={term.code}>
+                    {semName(term.semester)} {term.year}
+                  </option>
+                );
+              })}
+            </select>
+
+            <svg
+              className={headerStyles.selectArrow}
+              focusable="false"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M7 10l5 5 5-5z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <button className={headerStyles.scheduleButton} onClick={() => {}}>
+          <img
+            className={headerStyles.scheduleIcon}
+            src="/edit-calendar.svg"
+            alt="Edit Calendar"
+          />
+        </button>
+      </div>
+
+      {children}
+    </>
+  );
+};
 
 function App({ Component, pageProps }) {
   //const initialState = loadState();
@@ -19,21 +114,19 @@ function App({ Component, pageProps }) {
 
   /* eslint-disable no-unused-vars */
   const update = usePageState((s) => s.update);
-  const router = useRouter();
+
   const [year] = useQueryParam("year", QueryNumberSchema);
   const [semester] = useQueryParam("semester", SemesterSchema);
 
   React.useEffect(() => {
-    if (!router.isReady) return;
-
-    if (router.query.year) {
+    if (year) {
       update({ year });
     }
 
-    if (router.query.semester) {
+    if (semester) {
       update({ semester });
     }
-  }, [router, update]);
+  }, [update, year, semester]);
   /* eslint-enable no-unused-vars */
 
   // if we start on schedule page, the first toggle brings us to home
@@ -57,43 +150,9 @@ function App({ Component, pageProps }) {
   // https://github.com/A1Liu/a1liu/blob/94d576634459ce9b954307b4fc7fad37c624c5bb/pages/dev/card-cutter.tsx#L78
   return (
     <QueryClientProvider client={queryClient}>
-      <div className={headerStyles.headerBox}>
-        <div className={headerStyles.titleBox}>
-          <Link href="/">
-            <a className={headerStyles.title}>Bobcat Search</a>
-          </Link>
-
-          <div>
-            <div className={headerStyles.selectBox}>
-              <div>Spring 2021</div>
-
-              <svg
-                className={headerStyles.selectArrow}
-                focusable="false"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M7 10l5 5 5-5z"></path>
-              </svg>
-            </div>
-
-            <div></div>
-          </div>
-        </div>
-
-        <button
-          className={headerStyles.scheduleButton}
-          onClick={() => setShowSchedule(!showSchedule)}
-        >
-          <img
-            className={headerStyles.scheduleIcon}
-            src="/edit-calendar.svg"
-            alt="Edit Calendar"
-          />
-        </button>
-      </div>
-
-      <Component {...pageProps} />
+      <Inner>
+        <Component {...pageProps} />
+      </Inner>
     </QueryClientProvider>
   );
 }

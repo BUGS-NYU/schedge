@@ -5,7 +5,6 @@ import styles from "./course.module.css";
 import { parseDate } from "components/util";
 import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { useSchools } from "./index";
 import { SubjectSchema, useCourses } from "./subject";
 import { z } from "zod";
 
@@ -17,9 +16,6 @@ function CoursePage() {
   const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const [courseid] = useQueryParam("courseid", IdSchema);
-  const { data: schools } = useSchools(term);
-  const school = schools?.schools?.[schoolIndex];
-  const subject = school?.subjects?.find(subject => subject.code === subjectCode);
 
   const { isLoading, data: courseData } = useCourses(term, subjectCode);
 

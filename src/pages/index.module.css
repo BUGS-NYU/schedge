@@ -20,7 +20,7 @@
 
 .searchContainer {
   position: relative;
-  min-height: 60vh;
+  min-height: 38vh;
 }
 
 .schoolsContainer {
@@ -68,7 +68,7 @@
   padding: 0.25rem 0;
   cursor: pointer;
 
-  & > .schoolLink > .schoolTitle {
+  & > .schoolTitle {
     font-size: 1.2rem;
     font-family: var(--condensedFont);
     text-align: left;

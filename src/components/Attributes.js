@@ -21,10 +21,12 @@ export default function Attributes({
           return <Instructor key={instructor} instructor={instructor} />;
         })}
       </div>
-      <div className={styles.attributeContainer}>
-        <div className={styles.attributeLabel}>Building</div>
-        {building}
-      </div>
+      {building && (
+        <div className={styles.attributeContainer}>
+          <div className={styles.attributeLabel}>Building</div>
+          {building}
+        </div>
+      )}
       {room && (
         <div className={styles.attributeContainer}>
           <div className={styles.attributeLabel}>Room</div>

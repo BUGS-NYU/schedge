@@ -19,7 +19,7 @@ function CoursePage() {
 
   const { isLoading, data: courseData } = useCourses(term, subjectCode);
 
-  const course = courseData?.find(course => course.deptCourseId === courseid);
+  const course = courseData?.find((course) => course.deptCourseId === courseid);
 
   const header = (
     <div className={styles.colorHeader}>
@@ -36,9 +36,7 @@ function CoursePage() {
         </Link>
 
         <div>
-          <div id={styles.titleDepartment}>
-            {subjectCode}
-          </div>
+          <div id={styles.titleDepartment}>{subjectCode}</div>
           <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
         </div>
       </div>
@@ -50,7 +48,7 @@ function CoursePage() {
   }
 
   const pullNotesToTop = course?.sections?.every(
-    (section) => section.notes === course.sections[0].notes,
+    (section) => section.notes === course.sections[0].notes
   );
 
   return (
@@ -77,7 +75,7 @@ function CoursePage() {
         {course?.sections?.map((section, i) => {
           const sortedSectionMeetings = (section.meetings ?? []).sort(
             (a, b) =>
-              parseDate(a.beginDate).getDay() - parseDate(b.beginDate).getDay(),
+              parseDate(a.beginDate).getDay() - parseDate(b.beginDate).getDay()
           );
 
           return (

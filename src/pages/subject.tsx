@@ -9,16 +9,13 @@ import { z } from "zod";
 import axios from "axios";
 
 export const useCourses = (term: Term, subject: string) => {
-  return useQuery(
-    ["courses", term.code, subject],
-    async () => {
-      const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
-      const data = resp.data;
+  return useQuery(["courses", term.code, subject], async () => {
+    const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
+    const data = resp.data;
 
-      const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-      return sortedData;
-    },
-  );
+    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+    return sortedData;
+  });
 };
 
 export const SubjectSchema = z.string();
@@ -29,8 +26,9 @@ export default function SubjectPage() {
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const { data: schools } = useSchools(term);
   const school = schools?.schools?.[schoolIndex];
-  const subject = school?.subjects?.find(subject => subject.code === subjectCode);
-
+  const subject = school?.subjects?.find(
+    (subject) => subject.code === subjectCode
+  );
 
   const { data: courseList } = useCourses(term, subjectCode);
 
@@ -46,14 +44,10 @@ export default function SubjectPage() {
               query: { schoolIndex },
             }}
           >
-            <a className={styles.schoolName}>
-              {school?.name}
-            </a>
+            <a className={styles.schoolName}>{school?.name}</a>
           </Link>
 
-          <div className={styles.departmentName}>
-            {subject?.name}
-          </div>
+          <div className={styles.departmentName}>{subject?.name}</div>
         </div>
 
         <div className={styles.courseContainer}>

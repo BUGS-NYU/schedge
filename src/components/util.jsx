@@ -88,6 +88,10 @@ export function convertUnits(minUnit, maxUnit) {
 }
 
 export function splitLocation(location) {
+  if (!location) {
+    return {};
+  }
+
   if (location.includes("-") && location.includes("Room")) {
     let locations = location.split("-");
     let roomNumber = locations[1].split(":");

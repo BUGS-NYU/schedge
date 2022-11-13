@@ -53,13 +53,7 @@ export default function Instructor({ instructor }) {
 
   return (
     <>
-      <button
-        className={styles.instructorName}
-        clickable={true}
-        onClick={() => setDrawer(true)}
-      >
-        {instructor}
-      </button>
+    <React.Fragment>
       {drawer && (
         <div>
           {data.rmpId !== "" ? (

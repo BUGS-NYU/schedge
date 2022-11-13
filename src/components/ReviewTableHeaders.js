@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styles from "./review-table-headers.module.css";
 
 export default function ReviewTableHeaders({
   name,
@@ -7,37 +7,12 @@ export default function ReviewTableHeaders({
   overallRating,
 }) {
   return (
-    <MetaContainer>
-      <div className="instructorName">{name}</div>
+    <div className={styles.metaContainer}>
+      <div className={styles.instructorName}>{name}</div>
       <div>{`${totalRatings} review${totalRatings >= 1 ? "s" : ""}`}</div>
       <div>
         {overallRating > -1 ? `Overall ${overallRating}` : "No Overall Rating"}
       </div>
-    </MetaContainer>
+    </div>
   );
 }
-
-const MetaContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: calc(0.8vmin + 0.8rem);
-  font-size: 1.4rem;
-  color: var(--grey200);
-  font-weight: bold;
-  background: linear-gradient(
-    167deg,
-    var(--purpleMain) 21%,
-    #712991 60%,
-    rgba(135, 37, 144, 1) 82%
-  );
-
-  > div {
-    padding: 0.2rem 0;
-  }
-
-  & > .instructorName {
-    font-size: 2rem;
-  }
-`;

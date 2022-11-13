@@ -53,13 +53,20 @@ export default function Instructor({ instructor }) {
 
   return (
     <>
-    <React.Fragment>
+      <button
+        className={styles.instructorName}
+        clickable={true}
+        onClick={() => setDrawer(true)}
+      >
+        {instructor}
+      </button>
+
       {drawer && (
         <div>
           {data.rmpId !== "" ? (
             <ReviewsBuilder currentInstructor={data} />
           ) : (
-            <React.Fragment>
+            <>
               <ReviewTableHeaders
                 name={instructor}
                 totalRatings={data.totalRatings}
@@ -73,7 +80,7 @@ export default function Instructor({ instructor }) {
                 setPage={() => {}}
                 isPreviousData={true}
               />
-            </React.Fragment>
+            </>
           )}
         </div>
       )}

@@ -4,37 +4,32 @@ import styles from "./subject.module.css";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
+import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { useSchools } from "./index";
+import { z } from "zod";
+import axios from "axios";
 
+const SubjectSchema = z.string();
 export default function SubjectPage() {
   const router = useRouter();
-  const { year, semester } = usePageState();
-  const { school, subject } = router.query;
+  const { term } = usePageState();
 
-  const courseList = useQuery(
-    ["courses", year, semester, school, subject],
+  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [subjectCode] = useQueryParam("subject", SubjectSchema);
+  const { data: schools } = useSchools(term);
+  const school = schools?.schools?.[schoolIndex];
+  const subject = school?.subjects?.find(subject => subject.code === subjectCode);
+
+  const { data: courseList } = useQuery(
+    ["courses", term.code, schoolIndex, subjectCode],
     async () => {
-      if (!year || !semester || !school || !subject) {
-        return null;
-      }
-
-      const url = `https://schedge.a1liu.com/${year}/${semester}/${school}/${subject}`;
-      const response = await fetch(url);
-      const data = await response.json();
+      const resp = await axios.get(`/api/courses/${term.code}/${subjectCode}`);
+      const data = resp.data;
 
       const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
       return sortedData;
-    }
+    },
   );
-
-  const departmentList = useQuery("subjects", async () => {
-    const response = await fetch("https://schedge.a1liu.com/subjects");
-    return response.json();
-  });
-
-  const schoolList = useQuery("schools", async () => {
-    const response = await fetch("https://schedge.a1liu.com/schools");
-    return response.json();
-  });
 
   return (
     <div className={styles.pageContainer}>
@@ -45,38 +40,35 @@ export default function SubjectPage() {
           <Link
             href={{
               pathname: "/school",
-              query: { school, year, semester },
+              query: { schoolIndex },
             }}
           >
             <a className={styles.schoolName}>
-              {schoolList.data?.[school]?.name ?? school}
+              {school?.name}
             </a>
           </Link>
 
           <div className={styles.departmentName}>
-            {departmentList.data?.[school]?.[subject]?.name}
+            {subject?.name}
           </div>
         </div>
 
         <div className={styles.courseContainer}>
-          {courseList.data?.map((course, i) => (
+          {courseList?.map((course, i) => (
             <Link
               href={{
                 pathname: "/course",
                 query: {
-                  year,
-                  semester,
                   courseid: course.deptCourseId,
-                  school: course.subjectCode.school,
-                  subject: course.subjectCode.code,
+                  schoolIndex,
+                  subject: subjectCode,
                 },
               }}
               key={i}
             >
               <a className={styles.course}>
                 <h4>
-                  {course.subjectCode.code}-{course.subjectCode.school}{" "}
-                  {course.deptCourseId}
+                  {course.subject} {course.deptCourseId}
                 </h4>
                 <h3>{course.name}</h3>
                 <p>{course.sections.length} Sections</p>

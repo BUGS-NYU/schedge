@@ -24,6 +24,7 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+          cache: 'gradle'
 
       - run: yarn install --frozen-lockfile
       - run: yarn export

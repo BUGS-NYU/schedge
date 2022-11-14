@@ -32,8 +32,8 @@ public final class SearchEndpoint extends App.Endpoint {
             @OpenApiParam(
                 name = "limit", type = Integer.class,
                 description =
-                    "Maximum number of courses in the result. Defaults to 20.",
-                example = "30")
+                    "Maximum number of courses in the result. Defaults to 20, and is capped at 50.",
+                example = "20")
       },
       responses =
       {
@@ -68,7 +68,7 @@ public final class SearchEndpoint extends App.Endpoint {
     }
 
     Object output = GetConnection.withConnectionReturning(conn -> {
-      var rows = SearchRows.searchRows(conn, term, args);
+      var rows = SearchRows.searchRows(conn, term, args, resultSize);
       return RowsToCourses.rowsToCourses(rows)
           .limit(resultSize)
           .collect(Collectors.toList());

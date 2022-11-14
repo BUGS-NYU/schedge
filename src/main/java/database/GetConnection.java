@@ -29,6 +29,7 @@ public class GetConnection {
       config.setPassword(getEnvDefault("DB_PASSWORD", "postgres"));
       config.setJdbcUrl(getEnvDefault(
           "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/postgres"));
+      config.setMaximumPoolSize(4);
 
       // We retry a few times so that schedge doesn't hard-crash when
       // running in docker-compose

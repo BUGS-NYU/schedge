@@ -11,6 +11,7 @@ The service that Schedge v1 depended on was removed by NYU, and uses an entirely
 so Schedge v2 contains breaking changes.
 
 **V1 API DOCS:** https://schedge.a1liu.com
+
 **V2 API DOCS (beta):** https://nyu.a1liu.com/api/
 
 ## Contributing

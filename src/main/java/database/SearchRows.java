@@ -8,39 +8,48 @@ import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-  public static Stream<Row> searchRows(Connection conn, Nyu.Term term,
-                                       String query) throws SQLException {
+  public static ArrayList<Row> searchRows(Connection conn, Nyu.Term term,
+                                          String query) throws SQLException {
     ArrayList<String> fields = new ArrayList<>();
-    fields.add(
-        "to_tsvector(courses.name || ' ' || courses.description || ' ' || sections.notes) @@ q.query");
+    fields.add("course_vec @@ q.query");
+    fields.add("section_vec @@ q.query");
 
-    String begin = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
-                   + "SELECT DISTINCT courses.id FROM q, "
-                   + "courses JOIN sections ON courses.id = sections.course_id "
-                   + "WHERE (" + String.join(" OR ", fields) + ") AND ";
-    PreparedStatement idStmt = conn.prepareStatement(begin + "term = ?");
+    System.err.println("what the fuck");
+
+    var rankWeights = "'{1.0, 0.00000001, 1.0, 1.0}'";
+    var ranking =
+        "ts_rank_cd(" + rankWeights + ", course_vec || section_vec, q.query)";
+
+    var stmtText =
+        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+        + "SELECT courses.id cid FROM "
+        + "q, courses JOIN sections ON courses.id = sections.course_id "
+        + "WHERE term = ? AND ((" + String.join(") OR (", fields) + ")) ";
+    var idStmt = conn.prepareStatement(stmtText);
     Utils.setArray(idStmt, query, term.json());
 
-    ArrayList<Integer> result = new ArrayList<>();
-    ResultSet rs = idStmt.executeQuery();
+    var result = new ArrayList<Integer>();
+    var rs = idStmt.executeQuery();
     while (rs.next()) {
-      result.add(rs.getInt(1));
+      result.add(rs.getInt("cid"));
     }
-    rs.close();
+    idStmt.close();
 
-    PreparedStatement rowStmt = conn.prepareStatement(
-        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
-        + "SELECT courses.*, sections.id AS section_id, "
-        + "sections.registration_number, sections.section_code, "
-        + "sections.section_type, sections.section_status, "
-        + "sections.associated_with, sections.waitlist_total, "
-        + "sections.min_units, sections.max_units, sections.location, "
-        + "sections.campus, sections.instruction_mode, "
-        + "sections.grading, sections.notes, "
-        + "sections.instructors "
-        + "FROM q, courses LEFT JOIN sections "
-        + "ON courses.id = sections.course_id "
-        + "WHERE courses.id = ANY (?)");
+    var dataSql = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+            + "SELECT courses.*, sections.id AS section_id, "
+            + "sections.registration_number, sections.section_code, "
+            + "sections.section_type, sections.section_status, "
+            + "sections.associated_with, sections.waitlist_total, "
+            + "sections.min_units, sections.max_units, sections.location, "
+            + "sections.campus, sections.instruction_mode, "
+            + "sections.grading, sections.notes, "
+            + "sections.instructors "
+            + "FROM q, courses LEFT JOIN sections "
+            + "ON courses.id = sections.course_id "
+            + "WHERE courses.id = ANY (?) "
+            + "ORDER BY " + ranking + " DESC";
+
+    var rowStmt = conn.prepareStatement(dataSql);
     Utils.setArray(rowStmt, query,
                    conn.createArrayOf("INTEGER", result.toArray()));
     Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(
@@ -53,7 +62,7 @@ public final class SearchRows {
       rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
     }
 
-    rs.close();
-    return rows.stream();
+    rowStmt.close();
+    return rows;
   }
 }

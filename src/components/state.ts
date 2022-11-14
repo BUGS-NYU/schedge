@@ -65,9 +65,9 @@ export const usePageState = create<PageState>((set) => {
     },
 
     term: {
-      year: 2021,
+      year: 2023,
       semester: "sp",
-      code: "sp2021",
+      code: "sp2023",
     },
   };
 });

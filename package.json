@@ -12,7 +12,8 @@
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",
     "compile": "node src/gradlew.js check",
-    "schedge": "docker-compose exec schedge schedge"
+    "schedge": "docker-compose exec schedge schedge",
+    "psql": "docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres"
   },
   "dependencies": {
     "axios": "^1.1.3",

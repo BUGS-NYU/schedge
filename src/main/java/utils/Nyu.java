@@ -94,6 +94,7 @@ public final class Nyu {
     public String getDeptCourseId() { return deptCourseId; }
     public String getDescription() { return description; }
     public List<Section> getSections() { return sections; }
+    public String getSubjectCode() { return subjectCode; }
 
     public String toString() {
       return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";

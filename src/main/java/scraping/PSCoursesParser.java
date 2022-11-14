@@ -108,6 +108,8 @@ class PSCoursesParser {
       }
     }
 
+    course.subjectCode = subjectCode;
+
     Nyu.Section lecture = null;
     for (var sectionHtml : sections.subList(1, sections.size())) {
       var section = parseSection(ctx, sectionHtml);

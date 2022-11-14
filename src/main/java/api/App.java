@@ -13,6 +13,10 @@ import org.slf4j.*;
 public class App {
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
+  static {
+    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
+  }
+
   public abstract static class Endpoint implements Handler {
     public abstract String getPath();
 
@@ -119,10 +123,7 @@ public class App {
   }
 
   public static void run() {
-    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
-
     var app = makeApp();
-
     app.start(PORT);
   }
 }

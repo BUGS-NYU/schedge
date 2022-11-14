@@ -16,6 +16,8 @@ jobs:
           lfs: true
 
       - uses: actions/setup-node@v2
+        with:
+          cache: 'yarn'
 
       - name: Set up Java
         uses: actions/setup-java@v2

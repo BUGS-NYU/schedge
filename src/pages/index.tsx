@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import { SchoolSchema, Term, usePageState } from "components/state";
 import css from "./index.module.css";
-import SearchBar from "components/SearchBar";
+import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
@@ -27,7 +27,7 @@ function Home() {
   return (
     <div id="pageContainer">
       <div className={css.searchContainer}>
-        <SearchBar year={term.year} semester={term.semester} />
+        <SearchBar term={term} />
       </div>
       <div className={css.schoolsContainer}>
         <div id="departmentTitle">Schools</div>

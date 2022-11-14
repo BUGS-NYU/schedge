@@ -10,13 +10,13 @@ import java.util.stream.Stream;
 import utils.Utils;
 
 public class SelectRows {
-  public static Stream<Row> selectRows(Connection conn, Term term, String code)
+  public static ArrayList<Row> selectRows(Connection conn, Term term, String code)
       throws SQLException {
     return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
                       term.json(), code);
   }
 
-  public static Stream<Row> selectRow(Connection conn, Term term,
+  public static ArrayList<Row> selectRow(Connection conn, Term term,
                                       int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
@@ -27,7 +27,7 @@ public class SelectRows {
     ResultSet rs = sectionIdStmt.executeQuery();
     if (!rs.next()) {
       rs.close();
-      return Stream.empty();
+      return new ArrayList<>();
     }
 
     int sectionId = rs.getInt(1);
@@ -39,12 +39,12 @@ public class SelectRows {
                       sectionId, sectionId);
   }
 
-  public static Stream<Row> selectRows(Connection conn, String conditions,
+  public static ArrayList<Row> selectRows(Connection conn, String conditions,
                                        Object... objects) throws SQLException {
     Map<Integer, List<Meeting>> meetingsList =
         selectMeetings(conn, conditions, objects);
 
-    PreparedStatement stmt = conn.prepareStatement(
+    var stmt = conn.prepareStatement(
         "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
         + "sections.section_type, sections.section_status, "
         + "sections.instructors, sections.associated_with, "
@@ -67,10 +67,9 @@ public class SelectRows {
       rows.add(row);
     }
 
-    rs.close();
     stmt.close();
 
-    return rows.stream();
+    return rows;
   }
 
   public static Map<Integer, List<Meeting>>

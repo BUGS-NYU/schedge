@@ -7,35 +7,35 @@ import java.util.*;
 import java.util.stream.*;
 
 public class RowsToCourses {
-  public static Stream<Course> rowsToCourses(Stream<Row> rows) {
+  public static Stream<Course> rowsToCourses(ArrayList<Row> rows) {
     HashMap<Integer, Section> sections = new HashMap<>();
     HashMap<Integer, Course> courses = new HashMap<>();
+    var out = new ArrayList<Course>();
 
-    List<Row> recitationRecords =
-        rows.map(row -> {
-              if (!courses.containsKey(row.courseId)) {
-                Course c = new Course();
-                c.name = row.name;
-                c.deptCourseId = row.deptCourseId;
-                c.description = row.description;
-                c.subjectCode = row.subject;
-                c.sections = new ArrayList<>();
+    var recitationRecords = new ArrayList<Row>();
+    for (var row : rows) {
+      if (!courses.containsKey(row.courseId)) {
+        Course c = new Course();
+        c.name = row.name;
+        c.deptCourseId = row.deptCourseId;
+        c.description = row.description;
+        c.subjectCode = row.subject;
+        c.sections = new ArrayList<>();
 
-                courses.put(row.courseId, c);
-              }
+        courses.put(row.courseId, c);
+        out.add(c);
+      }
 
-              if (row.associatedWith == null) {
-                Section s = Section.fromRow(row);
-                sections.put(row.sectionId, s);
-                courses.get(row.courseId).sections.add(s);
-              }
+      if (row.associatedWith == null) {
+        Section s = Section.fromRow(row);
+        sections.put(row.sectionId, s);
+        courses.get(row.courseId).sections.add(s);
+      } else {
+        recitationRecords.add(row);
+      }
+    }
 
-              return row;
-            })
-            .filter(i -> i.associatedWith != null)
-            .collect(Collectors.toList());
-
-    recitationRecords.stream().forEach(row -> {
+    for (var row : recitationRecords) {
       Section s = sections.get(row.associatedWith);
 
       if (s != null) {
@@ -44,13 +44,13 @@ public class RowsToCourses {
         }
 
         s.recitations.add(Section.fromRow(row));
-        return;
+        continue;
       }
 
       // Orphans get added to course regardless
       courses.get(row.courseId).sections.add(Section.fromRow(row));
-    });
+    }
 
-    return courses.entrySet().stream().map(entry -> entry.getValue());
+    return out.stream();
   }
 }

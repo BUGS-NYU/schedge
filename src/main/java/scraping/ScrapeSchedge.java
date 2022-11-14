@@ -39,8 +39,11 @@ public final class ScrapeSchedge {
         continue;
       }
 
-      List<Course> courses = JsonMapper.fromJsonArray(text, Course.class);
-      output.addAll(courses);
+      var courses = JsonMapper.fromJson(text, Course[].class);
+      output.ensureCapacity(output.size() + courses.length);
+      for (var course : courses) {
+        output.add(course);
+      }
     }
 
     return output;

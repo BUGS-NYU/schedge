@@ -86,7 +86,7 @@ public final class Nyu {
     // right now.
     //
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
-    @JsonIgnore() public String subjectCode;
+    public String subjectCode;
 
     // @NOTE: these are required for the Javalin OpenAPI integration
     // to pick up fields on the output data

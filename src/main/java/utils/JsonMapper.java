@@ -19,15 +19,6 @@ public class JsonMapper {
 
     return ctx.log(() -> objMapper.readValue(json, clazz));
   }
-  public static <E> List<E> fromJsonArray(String json, Class<E> clazz) {
-    CollectionType type =
-        objMapper.getTypeFactory().constructCollectionType(List.class, clazz);
-
-    var ctx = Ctx();
-    ctx.put("json", json);
-
-    return ctx.log(() -> objMapper.readValue(json, type));
-  }
 
   public static String toJson(Object o) { return toJson(o, false); }
 

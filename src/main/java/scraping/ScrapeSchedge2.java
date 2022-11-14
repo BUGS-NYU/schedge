@@ -72,12 +72,11 @@ public final class ScrapeSchedge2 {
         continue;
       }
 
-      List<Course> courses = fromJsonArray(result.text, Course.class);
+      var courses = fromJson(result.text, Course[].class);
+      out.courses.ensureCapacity(out.courses.size() + courses.length);
       for (var course : courses) {
-        course.subjectCode = result.subject;
+        out.courses.add(course);
       }
-
-      out.courses.addAll(courses);
     }
 
     return out;

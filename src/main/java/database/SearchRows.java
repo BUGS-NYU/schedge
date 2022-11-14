@@ -7,7 +7,6 @@ import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-
   public static ArrayList<Row> searchRows(Connection conn, Nyu.Term term,
                                           String query, int limit)
       throws SQLException {
@@ -25,20 +24,22 @@ public final class SearchRows {
 
     ArrayList<String> fields = new ArrayList<>();
     fields.add("course_vec @@ q.query");
-    fields.add("section_vec @@ q.query");
 
     var rankWeights = "'{1.0, 0.00000001, 1.0, 1.0}'";
-    var ranking =
-        "ts_rank_cd(" + rankWeights + ", course_vec, q.query)";
+    var ranking = "ts_rank_cd(" + rankWeights + ", course_vec, q.query)";
 
-    var subquery =
-        "SELECT DISTINCT ON (cid) courses.id cid, " + ranking + " rank FROM "
-        + "q, courses JOIN sections ON courses.id = sections.course_id "
-        + "WHERE courses.term = ? AND ((" + String.join(") OR (", fields) + "))";
-
+    /*
+     * @Note: We don't scrape from section notes because it slows things down
+     * a shit ton to do the JOIN while also doing the rest of the stuff.  Can
+     * add it back later, but it seems less useful than title and description
+     * searching.
+     *                        - Albert Liu, Nov 14, 2022 Mon 00:52
+     */
     var stmtText = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
-                   + "SELECT cid FROM (" + subquery +
-                   ") course_ids ORDER BY rank DESC LIMIT " + limit;
+                   + "SELECT courses.id cid, " + ranking + " rank FROM "
+                   + "q, courses "
+                   + "WHERE term = ? AND ((" + String.join(") OR (", fields) +
+                   ")) ORDER BY rank DESC LIMIT " + limit;
     var idStmt = conn.prepareStatement(stmtText);
     Utils.setArray(idStmt, query, term.json());
 

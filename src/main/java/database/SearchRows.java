@@ -3,16 +3,19 @@ package database;
 import database.models.*;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Stream;
 import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-  public static final class RankedId {}
 
   public static ArrayList<Row> searchRows(Connection conn, Nyu.Term term,
                                           String query, int limit)
       throws SQLException {
+    query = query.trim();
+    if (query.isEmpty()) {
+      return new ArrayList<>();
+    }
+
     if (limit > 50) {
       limit = 50;
     }

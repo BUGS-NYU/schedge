@@ -40,7 +40,7 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
   }, [error]);
 
   return (
-    <>
+    <div>
       <img
         className={cx(styles.loader, !!isLoading && styles.loading)}
         src="./loading.svg"
@@ -68,16 +68,14 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
               >
                 <a className={styles.course} style={{ textDecoration: "none" }}>
                 <span className={styles.courseSchoolCode}>
-                  {course.subjectCode.school}-{course.subjectCode.code}
+                  {course.subjectCode} {course.deptCourseId}
                 </span>
-
-                  <span className={styles.courseId}>{course.deptCourseId}</span>
                   <span className={styles.courseName}>{course.name}</span>
                 </a>
               </Link>
             );
           })}
       </div>
-    </>
+    </div>
   );
 };

@@ -12,7 +12,7 @@ public class SelectSubjects {
       LoggerFactory.getLogger("database.SelectSubjects");
 
   private static final String SELECT_SCHOOLS =
-      "SELECT id, name FROM schools WHERE term = ?";
+      "SELECT id, name, code FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
       "SELECT school, code, name FROM subjects WHERE term = ?";
@@ -29,8 +29,9 @@ public class SelectSubjects {
         while (rs.next()) {
           var id = rs.getInt("id");
           var name = rs.getString("name");
+          var code = rs.getString("code");
 
-          School school = new School(name);
+          School school = new School(name, code);
 
           schools.put(id, school);
         }

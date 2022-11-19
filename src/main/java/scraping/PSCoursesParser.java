@@ -22,7 +22,7 @@ class PSCoursesParser {
 
     for (var subject : raw) {
       if (school == null || !school.name.equals(subject.schoolName)) {
-        school = new Nyu.School(subject.schoolName);
+        school = new Nyu.School(subject.schoolName, subject.schoolCode);
         schools.add(school);
       }
 

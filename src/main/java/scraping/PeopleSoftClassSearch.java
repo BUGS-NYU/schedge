@@ -19,12 +19,15 @@ public final class PeopleSoftClassSearch {
 
   public static final class SubjectElem {
     public final String schoolName;
+    public final String schoolCode;
     public final String code;
     public final String name;
     public final String action;
 
-    SubjectElem(String school, String code, String name, String action) {
+    SubjectElem(String school, String schoolCode, String code, String name,
+                String action) {
       this.schoolName = school;
+      this.schoolCode = schoolCode;
       this.code = code;
       this.name = name;
       this.action = action;
@@ -32,8 +35,9 @@ public final class PeopleSoftClassSearch {
 
     @Override
     public String toString() {
-      return "SubjectElem(schoolName=" + schoolName + ",code=" + code +
-          ",name=" + name + ",action=" + action + ")";
+      return "SubjectElem(schoolName=" + schoolName +
+          ",schoolCode=" + schoolCode + ",code=" + code + ",name=" + name +
+          ",action=" + action + ")";
     }
   }
 
@@ -203,7 +207,8 @@ public final class PeopleSoftClassSearch {
 
     var out = new ArrayList<SubjectElem>();
     for (var child : group.children()) {
-      var school = child.expectFirst("h2").text();
+      var schoolH2 = child.expectFirst("h2");
+      var school = schoolH2.text();
 
       var schoolTags = child.select("div.ps_box-link");
       for (var schoolTag : schoolTags) {
@@ -214,9 +219,12 @@ public final class PeopleSoftClassSearch {
         var codePart = parts[1];
         codePart = codePart.substring(0, codePart.length() - 1);
 
+        var schoolCode = codePart.split("_")[0].split("-")[1];
+
         var action = schoolTag.id().substring(7);
 
-        out.add(new SubjectElem(school, codePart, titlePart, action));
+        out.add(
+            new SubjectElem(school, schoolCode, codePart, titlePart, action));
       }
     }
 

@@ -57,19 +57,35 @@ public final class Nyu {
 
   public static final class School {
     public final String name;
+    public final String code;
     public final ArrayList<Subject> subjects;
 
     @JsonCreator
     public School(@JsonProperty("name") String name,
+                  @JsonProperty("code") String code,
                   @JsonProperty("subjects") ArrayList<Subject> subjects) {
       this.name = name;
+      this.code = code;
       this.subjects = subjects;
     }
 
-    public School(String name) {
+    public School(String name, String code) {
       this.name = name;
+      this.code = code;
       this.subjects = new ArrayList<>();
     }
+
+    @OpenApiExample(value = "College of Arts and Sciences")
+    public String getName() {
+      return name;
+    }
+
+    @OpenApiExample(value = "UA")
+    public String getCode() {
+      return code;
+    }
+
+    public final ArrayList<Subject> getSubjects() { return subjects; }
 
     public String toString() { return "School(" + name + ")"; }
   }
@@ -95,7 +111,9 @@ public final class Nyu {
     public String getDescription() { return description; }
     public List<Section> getSections() { return sections; }
     @OpenApiExample(value = "CSCI-UA")
-    public String getSubjectCode() { return subjectCode; }
+    public String getSubjectCode() {
+      return subjectCode;
+    }
 
     public String toString() {
       return "Course(name=" + name + ",deptCourseId=" + deptCourseId + ")";

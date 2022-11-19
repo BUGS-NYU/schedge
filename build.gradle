@@ -58,7 +58,7 @@ dependencies {
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 
     // Web server framework and documentation
-    "io.javalin:javalin:5.1.1",
+    "io.javalin:javalin:5.1.4",
     // for /openapi route with JSON scheme
     "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
   )

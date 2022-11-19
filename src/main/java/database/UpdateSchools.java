@@ -10,7 +10,7 @@ public final class UpdateSchools {
   private static final String DELETE_TERM =
       "DELETE FROM schools WHERE term = ?";
   private static final String INSERT_SCHOOL =
-      "INSERT INTO schools (term, name) VALUES (?, ?) RETURNING id";
+      "INSERT INTO schools (term, name, code) VALUES (?, ?, ?) RETURNING id";
   private static final String INSERT_SUBJECT =
       "INSERT INTO subjects (code, name, school, term) VALUES (?, ?, ?, ?)";
 
@@ -25,7 +25,10 @@ public final class UpdateSchools {
       delete.execute();
 
       for (var school : schools) {
-        Utils.setArray(schoolInsert, termString, school.name);
+        // @TODO: Remove this call to `Utils.nullable` once the field is no
+        // longer nullable
+        Utils.setArray(schoolInsert, termString, school.name,
+                       Utils.nullable(Types.VARCHAR, school.code));
         schoolInsert.execute();
 
         int id;

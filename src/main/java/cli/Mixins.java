@@ -56,8 +56,11 @@ public final class Mixins {
   public static final class Term {
     @Spec private CommandLine.Model.CommandSpec spec;
 
-    @Option(names = "--term",
-            description = "example: fa2020, where: fa=Fall, ja=January, sp=Spring, su=Summer", converter = TermConverter.class)
+    @Option(
+        names = "--term",
+        description =
+            "example: fa2020, where: fa=Fall, ja=January, sp=Spring, su=Summer",
+        required = true, converter = TermConverter.class)
     public Nyu.Term term;
   }
 

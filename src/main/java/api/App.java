@@ -88,7 +88,7 @@ public class App {
         staticFiles.hostedPath = "/";
         staticFiles.directory = "/next";
         staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = false;
+        staticFiles.precompress = true;
       });
 
       config.staticFiles.add(staticFiles -> { // ReDoc API Docs

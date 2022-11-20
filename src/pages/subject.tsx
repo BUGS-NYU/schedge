@@ -20,6 +20,7 @@ export const MeetingSchema = z.object({
 
 export type Recitation = z.infer<typeof RecitationSchema>;
 export const RecitationSchema = z.object({
+  name: z.string().nullish(),
   registrationNumber: z.number(),
   code: z.string(),
   notes: z.string(),

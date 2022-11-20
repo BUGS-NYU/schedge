@@ -10,15 +10,16 @@ import {
 } from "components/util";
 import { Term, usePageState } from "./state";
 import { useSchedule } from "../pages/schedule";
+import { Recitation } from "../pages/subject";
 
 interface Props {
-  recitation: any;
+  recitation: Recitation;
   sortedRecitationsMeetings: any;
   courseName: string;
   lastRecitation: boolean;
 }
 
-export const Recitation: React.VFC<Props> = ({
+export const RecitationInfo: React.VFC<Props> = ({
   recitation,
   sortedRecitationsMeetings,
   courseName,
@@ -31,7 +32,7 @@ export const Recitation: React.VFC<Props> = ({
       className={styles.recitationContainer}
       style={{ borderBottom: !lastRecitation && "1px solid" }}
     >
-      {courseName !== recitation.name && (
+      {recitation.name && (
         <h3 className="sectionName">{recitation.name}</h3>
       )}
       <h4 className="sectionNum">{recitation.code}</h4>

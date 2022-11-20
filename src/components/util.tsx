@@ -134,11 +134,11 @@ export function parseDate(date): Date {
    */
 }
 
-export function addMinutes(date, minutes): Date {
+export function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.getTime() + minutes * 60000);
 }
 
-export function isEqualTime(timeA, timeB): boolean {
+export function isEqualTime(timeA: Date, timeB: Date): boolean {
   return (
     timeA.getHours() === timeB.getHours() &&
     timeA.getMinutes() === timeB.getMinutes() &&
@@ -146,7 +146,7 @@ export function isEqualTime(timeA, timeB): boolean {
   );
 }
 
-export function convertToLocaleTimeStr(parsedDate): string {
+export function convertToLocaleTimeStr(parsedDate: Date): string {
   return parsedDate.toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",

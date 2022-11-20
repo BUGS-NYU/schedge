@@ -102,7 +102,7 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
           registrationNumbers: registrationNumbers.join(","),
         },
       });
-      console.log(resp.data);
+
       const parsed = ScheduleSchema.parse(resp.data);
       return parsed;
     }

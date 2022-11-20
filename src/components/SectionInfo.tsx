@@ -1,62 +1,76 @@
 import React, { useState } from "react";
 import Attributes from "./Attributes";
-import DateSection from "./DateSection";
 import styles from "./section.module.css";
-import { RecitationInfo } from "components/RecitationInfo";
 import {
   convertUnits,
   splitLocation,
   changeStatus,
   styleStatus,
-  parseDate,
+  addMinutes,
+  convertToLocaleTimeStr,
 } from "components/util";
-import localStorageContainer from "components/localStorage";
-import { useSchedule } from "../pages/schedule";
-import type { Meeting, Section } from "../pages/subject";
+import { AugmentedSection, useSchedule } from "../pages/schedule";
+import { days, daysToStr } from "./constants";
 
-interface Props {
-  section: Section;
-  sortedSectionMeetings: Meeting[];
-  courseData: any;
-  lastSection: any;
+interface DateProps {
+  section: AugmentedSection;
 }
 
-export const SectionInfo: React.VFC<Props> = ({
-  section,
-  sortedSectionMeetings,
-  courseData,
-  lastSection,
-}) => {
-  const [expandedList, setExpandedList] = useState({});
+const DateSection: React.VFC<DateProps> = ({ section }) => {
+  const meetings = React.useMemo(() => {
+    const sortedSectionMeetings = [...(section.meetings ?? [])].sort(
+      (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
+    );
+    const parsedMeetings = sortedSectionMeetings.map((meeting) => {
+      return {
+        startTime: meeting.beginDate,
+        minutesDuration: meeting.minutesDuration,
+        endTime: addMinutes(meeting.beginDate, meeting.minutesDuration),
+      };
+    });
+    return parsedMeetings;
+  }, [section.meetings]);
+
+  return (
+    <div>
+      {meetings.map((meeting, index) => {
+        return (
+          <div key={index} className={styles.dateContainer}>
+            <div className={styles.boldedDate}>
+              {daysToStr[days[meeting.startTime.getDay()]]}
+            </div>{" "}
+            from{" "}
+            <div className={styles.boldedDate}>
+              {convertToLocaleTimeStr(meeting.startTime)}
+            </div>{" "}
+            to{" "}
+            <div className={styles.boldedDate}>
+              {convertToLocaleTimeStr(meeting.endTime)}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+interface Props {
+  section: AugmentedSection;
+  lastSection: boolean;
+}
+
+export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
+  const [expanded, setExpanded] = useState(false);
   const { addToWishlist } = useSchedule();
-
-  const handleExpandList = (event, registrationNumber) => {
-    event.preventDefault();
-    let newLs = { ...expandedList };
-    if (registrationNumber in expandedList) {
-      newLs[registrationNumber] = !expandedList[registrationNumber];
-    } else {
-      newLs[registrationNumber] = true;
-    }
-    setExpandedList(newLs);
-  };
-
-  const handleOnClick = (course) => {
-    const localStorage = new localStorageContainer();
-    const courses = localStorage.getState("wishlist");
-    courses.push(course);
-    localStorage.saveState({ wishlist: courses });
-  };
 
   return (
     <div
       className={styles.sectionContainer}
       style={{ borderBottom: !lastSection && "1px solid" }}
     >
-      {section.name && <h3 className="sectionName">{section.name}</h3>}
-      {courseData.sections.length > 1 && (
-        <h4 className="sectionNum">{section.code}</h4>
-      )}
+      {section.sectionName && <h3 className="sectionName">{section.name}</h3>}
+      <h4 className="sectionNum">{section.code}</h4>
+
       <Attributes
         instructors={section.instructors}
         building={splitLocation(section.location).Building}
@@ -66,38 +80,28 @@ export const SectionInfo: React.VFC<Props> = ({
         type={section.type}
         registrationNumber={section.registrationNumber}
       />
-      {!courseData.sections.every(
-        (section) => section.notes === courseData.sections[0].notes
-      ) && <div className={styles.sectionDescription}>{section.notes}</div>}
 
-      {sortedSectionMeetings && (
-        <DateSection sortedSectionMeetings={sortedSectionMeetings} />
-      )}
+      <div className={styles.statusContainer}>
+        <div style={{ color: styleStatus(section.status) }} />
+        <span style={{ color: styleStatus(section.status) }}>
+          {changeStatus(section)}
+        </span>
+      </div>
+
+      <div className={styles.sectionDescription}>{section.notes}</div>
+
+      {section.meetings && <DateSection section={section} />}
+
       <div className={styles.utilBar}>
-        {section.recitations !== undefined && section.recitations.length !== 0 && (
+        {!!section.recitations?.length && (
           <button
             className={styles.expandButton}
-            onClick={(e) => handleExpandList(e, section.registrationNumber)}
-            onKeyPress={(e) => handleExpandList(e, section.registrationNumber)}
-            tabIndex={0}
+            onClick={(e) => setExpanded((prev) => !prev)}
           >
-            <span style={{}}>Show Recitations</span>
+            Show Recitations
           </button>
         )}
-        <div className={styles.statusContainer}>
-          <div
-            style={{
-              color: styleStatus(section.status),
-            }}
-          />
-          <span
-            style={{
-              color: styleStatus(section.status),
-            }}
-          >
-            {changeStatus(section)}
-          </span>
-        </div>
+
         <button
           className={styles.wishlistButton}
           onClick={() => addToWishlist(section)}
@@ -106,23 +110,22 @@ export const SectionInfo: React.VFC<Props> = ({
           <span style={{}}>Add to Wishlist</span>
         </button>
       </div>
+
       <div>
-        {section.recitations &&
+        {!!section.recitations?.length &&
+          expanded &&
           section.recitations.map((recitation, i) => {
-            const sortedRecitationsMeetings = recitation.meetings
-              ? recitation.meetings.sort(
-                  (a, b) =>
-                    parseDate(a.beginDate).getDay() -
-                    parseDate(b.beginDate).getDay()
-                )
-              : [];
             return (
-              <RecitationInfo
+              <SectionInfo
                 key={i}
-                recitation={recitation}
-                sortedRecitationsMeetings={sortedRecitationsMeetings}
-                courseName={courseData.name}
-                lastRecitation={i === section.recitations.length - 1}
+                lastSection={i === section.recitations.length - 1}
+                section={{
+                  ...recitation,
+                  name: recitation.name ?? section.name,
+                  sectionName: recitation.name,
+                  deptCourseId: section.deptCourseId,
+                  subjectCode: section.subjectCode,
+                }}
               />
             );
           })}

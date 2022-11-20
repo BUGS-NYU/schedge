@@ -75,17 +75,17 @@ function CoursePage() {
 
       <div>
         {course?.sections?.map((section, i) => {
-          const sortedSectionMeetings = (section.meetings ?? []).sort(
-            (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
-          );
-
           return (
             <SectionInfo
               key={i}
-              section={section}
-              sortedSectionMeetings={sortedSectionMeetings}
-              courseData={course}
               lastSection={i === course.sections.length - 1}
+              section={{
+                ...section,
+                sectionName: section.name,
+                name: section.name ?? course.name,
+                deptCourseId: course.deptCourseId,
+                subjectCode: course.subjectCode,
+              }}
             />
           );
         })}

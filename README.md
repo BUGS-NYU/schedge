@@ -10,7 +10,7 @@ out their schedules, and eventually to also do some of that for them.
 The service that Schedge v1 depended on was removed by NYU, and uses an entirely different data model,
 so Schedge v2 contains breaking changes.
 
-**V1 API DOCS:** https://schedge.a1liu.com  
+**V1 API DOCS (deprecated):** https://schedge.a1liu.com  
 **V2 API DOCS (beta):** https://nyu.a1liu.com/api/  
 
 ## Contributing

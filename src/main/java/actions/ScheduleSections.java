@@ -56,12 +56,30 @@ public final class ScheduleSections {
 
     public boolean getValid() { return valid; }
 
-    public ArrayList<AugmentedMeeting> getMo() { return mo; }
-    public ArrayList<AugmentedMeeting> getTu() { return tu; }
-    public ArrayList<AugmentedMeeting> getWe() { return we; }
-    public ArrayList<AugmentedMeeting> getTh() { return th; }
-    public ArrayList<AugmentedMeeting> getFr() { return fr; }
-    public ArrayList<AugmentedMeeting> getSa() { return sa; }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getMo() {
+      return mo;
+    }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getTu() {
+      return tu;
+    }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getWe() {
+      return we;
+    }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getTh() {
+      return th;
+    }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getFr() {
+      return fr;
+    }
+    @NotNull
+    public ArrayList<AugmentedMeeting> getSa() {
+      return sa;
+    }
     @NotNull
     public ArrayList<AugmentedMeeting> getSu() {
       return su;

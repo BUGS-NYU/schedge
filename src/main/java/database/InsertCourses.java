@@ -24,6 +24,7 @@ public final class InsertCourses {
 
     static {
       String[] sectionFields = new String[] {"registration_number",
+                                             "name",
                                              "campus",
                                              "min_units",
                                              "max_units",
@@ -133,6 +134,7 @@ public final class InsertCourses {
     for (Section s : sections) {
       Object[] fieldValues =
           new Object[] {s.registrationNumber,
+                        Utils.nullable(Types.VARCHAR, s.name),
                         s.campus,
                         s.minUnits,
                         s.maxUnits,

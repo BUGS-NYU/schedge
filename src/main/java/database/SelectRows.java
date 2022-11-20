@@ -10,14 +10,14 @@ import java.util.stream.Stream;
 import utils.Utils;
 
 public class SelectRows {
-  public static ArrayList<Row> selectRows(Connection conn, Term term, String code)
-      throws SQLException {
+  public static ArrayList<Row> selectRows(Connection conn, Term term,
+                                          String code) throws SQLException {
     return selectRows(conn, "courses.term = ? AND courses.subject_code = ?",
                       term.json(), code);
   }
 
   public static ArrayList<Row> selectRow(Connection conn, Term term,
-                                      int registrationNumber)
+                                         int registrationNumber)
       throws SQLException {
     PreparedStatement sectionIdStmt = conn.prepareStatement(
         "SELECT sections.id FROM courses JOIN sections ON courses.id = sections.course_id "
@@ -40,12 +40,14 @@ public class SelectRows {
   }
 
   public static ArrayList<Row> selectRows(Connection conn, String conditions,
-                                       Object... objects) throws SQLException {
+                                          Object... objects)
+      throws SQLException {
     Map<Integer, List<Meeting>> meetingsList =
         selectMeetings(conn, conditions, objects);
 
     var stmt = conn.prepareStatement(
-        "SELECT courses.*, sections.id AS section_id, sections.registration_number, sections.section_code, "
+        "SELECT courses.*, sections.id AS section_id, sections.registration_number, "
+        + "sections.section_code, sections.name AS section_name, "
         + "sections.section_type, sections.section_status, "
         + "sections.instructors, sections.associated_with, "
         + "sections.waitlist_total, "

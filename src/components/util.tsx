@@ -2,6 +2,7 @@ import React from "react";
 import cx from "classnames";
 import { daysToStr } from "./constants";
 import css from "./util.module.css";
+import { Section } from "../pages/subject";
 
 export const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -105,7 +106,7 @@ export function splitLocation(location) {
   };
 }
 
-export function changeStatus(section: any): string {
+export function changeStatus(section: Section): string {
   if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;
   } else {

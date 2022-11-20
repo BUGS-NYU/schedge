@@ -29,6 +29,7 @@ export const RecitationSchema = z.object({
   maxUnits: z.number(),
   status: z.string(),
   meetings: z.array(MeetingSchema),
+  waitlistTotal: z.number().optional(),
 });
 
 export type Section = z.infer<typeof SectionSchema>;
@@ -39,7 +40,7 @@ export const SectionSchema = RecitationSchema.extend({
 export type Course = z.infer<typeof CourseSchema>;
 export const CourseSchema = z.object({
   deptCourseId: z.string(),
-  subject: z.string(),
+  subjectCode: z.string(),
   name: z.string(),
   description: z.string(),
   sections: z.array(SectionSchema),
@@ -108,7 +109,7 @@ export default function SubjectPage() {
             >
               <a className={styles.course}>
                 <h4>
-                  {course.subject} {course.deptCourseId}
+                  {course.subjectCode} {course.deptCourseId}
                 </h4>
                 <h3>{course.name}</h3>
                 <p>{course.sections.length} Sections</p>

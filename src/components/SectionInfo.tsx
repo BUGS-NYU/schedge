@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
 import styles from "./section.module.css";
-import Recitation from "components/Recitation";
+import { RecitationInfo } from "components/RecitationInfo";
 import {
   convertUnits,
   splitLocation,
@@ -11,16 +11,24 @@ import {
   parseDate,
 } from "components/util";
 import localStorageContainer from "components/localStorage";
+import { useSchedule } from "../pages/schedule";
+import type { Meeting, Section } from "../pages/subject";
 
-function Section({
-  year,
-  semester,
+interface Props {
+  section: Section;
+  sortedSectionMeetings: Meeting[];
+  courseData: any;
+  lastSection: any;
+}
+
+export const SectionInfo: React.VFC<Props> = ({
   section,
   sortedSectionMeetings,
   courseData,
   lastSection,
-}) {
+}) => {
   const [expandedList, setExpandedList] = useState({});
+  const { addToWishlist } = useSchedule();
 
   const handleExpandList = (event, registrationNumber) => {
     event.preventDefault();
@@ -45,9 +53,7 @@ function Section({
       className={styles.sectionContainer}
       style={{ borderBottom: !lastSection && "1px solid" }}
     >
-      {courseData.name !== section.name && (
-        <h3 className="sectionName">{section.name}</h3>
-      )}
+      {section.name && <h3 className="sectionName">{section.name}</h3>}
       {courseData.sections.length > 1 && (
         <h4 className="sectionNum">{section.code}</h4>
       )}
@@ -84,13 +90,17 @@ function Section({
               color: styleStatus(section.status),
             }}
           />
-          <span style={{ color: styleStatus(section.status) }}>
+          <span
+            style={{
+              color: styleStatus(section.status),
+            }}
+          >
             {changeStatus(section)}
           </span>
         </div>
         <button
           className={styles.wishlistButton}
-          onClick={() => handleOnClick(section)}
+          onClick={() => addToWishlist(section)}
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>
@@ -107,13 +117,11 @@ function Section({
                 )
               : [];
             return (
-              <Recitation
+              <RecitationInfo
                 key={i}
                 recitation={recitation}
                 sortedRecitationsMeetings={sortedRecitationsMeetings}
                 courseName={courseData.name}
-                year={year}
-                semester={semester}
                 lastRecitation={i === section.recitations.length - 1}
               />
             );
@@ -121,6 +129,4 @@ function Section({
       </div>
     </div>
   );
-}
-
-export default Section;
+};

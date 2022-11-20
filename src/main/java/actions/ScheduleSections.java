@@ -2,17 +2,16 @@ package actions;
 
 import com.fasterxml.jackson.annotation.*;
 import database.models.AugmentedMeeting;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
+import java.time.temporal.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 public final class ScheduleSections {
   private ScheduleSections() {}
 
   public static final class Schedule {
-    public final boolean valid;
+    public boolean valid = true;
     public final ArrayList<AugmentedMeeting> mo;
     public final ArrayList<AugmentedMeeting> tu;
     public final ArrayList<AugmentedMeeting> we;
@@ -20,8 +19,8 @@ public final class ScheduleSections {
     public final ArrayList<AugmentedMeeting> fr;
     public final ArrayList<AugmentedMeeting> sa;
     public final ArrayList<AugmentedMeeting> su;
-    public final AugmentedMeeting conflictA;
-    public final AugmentedMeeting conflictB;
+    public AugmentedMeeting conflictA;
+    public AugmentedMeeting conflictB;
 
     public Schedule(@JsonProperty("valid") boolean valid,
                     @JsonProperty("mo") ArrayList<AugmentedMeeting> mo,
@@ -46,21 +45,6 @@ public final class ScheduleSections {
     }
 
     public Schedule() {
-      valid = false;
-      mo = tu = we = th = fr = sa = su = null;
-      conflictA = conflictB = null;
-    }
-
-    public Schedule(AugmentedMeeting a, AugmentedMeeting b) {
-      mo = tu = we = th = fr = sa = su = null;
-      valid = false;
-      conflictA = a;
-      conflictB = b;
-    }
-
-    public Schedule(ArrayList<AugmentedMeeting> meetings) {
-      meetings.sort(Comparator.comparingInt(AugmentedMeeting::getMinutesInDay));
-      valid = true;
       mo = new ArrayList<>();
       tu = new ArrayList<>();
       we = new ArrayList<>();
@@ -68,64 +52,39 @@ public final class ScheduleSections {
       fr = new ArrayList<>();
       sa = new ArrayList<>();
       su = new ArrayList<>();
-      conflictA = conflictB = null;
-
-      for (AugmentedMeeting meeting : meetings) {
-        switch (meeting.beginDate.get(ChronoField.DAY_OF_WEEK)) {
-        case 1:
-          mo.add(meeting);
-          break;
-        case 2:
-          tu.add(meeting);
-          break;
-        case 3:
-          we.add(meeting);
-          break;
-        case 4:
-          th.add(meeting);
-          break;
-        case 5:
-          fr.add(meeting);
-          break;
-        case 6:
-          sa.add(meeting);
-          break;
-        case 7:
-          su.add(meeting);
-          break;
-        }
-      }
     }
 
     public boolean getValid() { return valid; }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+
+    @NotNull
     public ArrayList<AugmentedMeeting> getMo() {
       return mo;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getTu() {
       return tu;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getWe() {
       return we;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getTh() {
       return th;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getFr() {
       return fr;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getSa() {
       return sa;
     }
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NotNull
     public ArrayList<AugmentedMeeting> getSu() {
       return su;
     }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public AugmentedMeeting getConflictA() {
       return conflictA;
@@ -138,17 +97,53 @@ public final class ScheduleSections {
 
   public static Schedule
   generateSchedule(ArrayList<AugmentedMeeting> meetings) {
-    if (meetings == null || meetings.size() == 0) {
-      return new Schedule();
+    var schedule = new Schedule();
+    if (meetings == null) {
+      return schedule;
+    }
+
+    meetings.sort(Comparator.comparingInt(AugmentedMeeting::getMinutesInDay));
+    for (AugmentedMeeting meeting : meetings) {
+      switch (meeting.beginDate.get(ChronoField.DAY_OF_WEEK)) {
+      case 1:
+        schedule.mo.add(meeting);
+        break;
+      case 2:
+        schedule.tu.add(meeting);
+        break;
+      case 3:
+        schedule.we.add(meeting);
+        break;
+      case 4:
+        schedule.th.add(meeting);
+        break;
+      case 5:
+        schedule.fr.add(meeting);
+        break;
+      case 6:
+        schedule.sa.add(meeting);
+        break;
+      case 7:
+        schedule.su.add(meeting);
+        break;
+      }
     }
 
     for (int i = 0; i < meetings.size(); i++) {
+      var a = meetings.get(i);
       for (int j = i + 1; j < meetings.size(); j++) {
-        if (meetingsCollide(meetings.get(i), meetings.get(j)))
-          return new Schedule(meetings.get(i), meetings.get(j));
+        var b = meetings.get(j);
+        if (meetingsCollide(a, b)) {
+          schedule.conflictA = a;
+          schedule.conflictB = b;
+          schedule.valid = false;
+
+          return schedule;
+        }
       }
     }
-    return new Schedule(meetings);
+
+    return schedule;
   }
 
   private static boolean meetingsCollide(AugmentedMeeting a,

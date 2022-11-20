@@ -2,6 +2,7 @@ import "./App.css";
 import React from "react";
 import headerStyles from "./header.module.css";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   parseTerm,
   Semester,
@@ -47,12 +48,17 @@ async function fetchTerms(): Promise<Term[]> {
 
 const Inner: React.FC = ({ children }) => {
   const { data: termData } = useQuery(["terms"], fetchTerms);
+  const router = useRouter();
 
   const term = usePageState((s) => s.term);
   const update = usePageState((s) => s.update);
 
   const selectRef = React.useRef<HTMLSelectElement>();
 
+  // Copy from this for now; we can decide on MUI or whatever later, but it's
+  // basically just used for this one component.
+  //
+  // https://github.com/A1Liu/a1liu/blob/94d576634459ce9b954307b4fc7fad37c624c5bb/pages/dev/card-cutter.tsx#L78
   return (
     <>
       <div className={headerStyles.headerBox}>
@@ -90,7 +96,14 @@ const Inner: React.FC = ({ children }) => {
           </div>
         </div>
 
-        <button className={headerStyles.scheduleButton} onClick={() => {}}>
+        <button
+          className={headerStyles.scheduleButton}
+          onClick={() =>
+            router.pathname === "/schedule"
+              ? router.back()
+              : router.push("/schedule")
+          }
+        >
           <img
             className={headerStyles.scheduleIcon}
             src="/edit-calendar.svg"
@@ -105,14 +118,6 @@ const Inner: React.FC = ({ children }) => {
 };
 
 function App({ Component, pageProps }) {
-  //const initialState = loadState();
-  //const store = createStore(initialState);
-  //store.subscribe(() => saveState(store.getState()));
-
-  // window.location.pathname + window.location.search;
-  const getPath = () => "";
-
-  /* eslint-disable no-unused-vars */
   const update = usePageState((s) => s.update);
 
   const [year] = useQueryParam("year", QueryNumberSchema);
@@ -127,27 +132,7 @@ function App({ Component, pageProps }) {
       update({ semester });
     }
   }, [update, year, semester]);
-  /* eslint-enable no-unused-vars */
 
-  // if we start on schedule page, the first toggle brings us to home
-  // otherwise, the first toggle brings us to schedule page
-  const [showSchedule, setShowSchedule] = React.useState(
-    getPath() === "/schedule"
-  );
-
-  // const handleOnChange = (event) => {
-  //   const code = event.target.value;
-  //   const sem = code.substring(0, 2);
-  //   const currYear = code.substring(2);
-
-  //   setSemester(sem);
-  //   setYear(parseInt(currYear));
-  // };
-
-  // Copy from this for now; we can decide on MUI or whatever later, but it's
-  // basically just used for this one component.
-  //
-  // https://github.com/A1Liu/a1liu/blob/94d576634459ce9b954307b4fc7fad37c624c5bb/pages/dev/card-cutter.tsx#L78
   return (
     <QueryClientProvider client={queryClient}>
       <Inner>

@@ -8,14 +8,60 @@ import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
 
-export const useCourses = (term: Term, subject: string) => {
-  return useQuery(["courses", term.code, subject], async () => {
-    const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
-    const data = resp.data;
+export const StringDateSchema = z.preprocess(
+  (obj) => new Date(obj as any),
+  z.date()
+);
 
-    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-    return sortedData;
-  });
+export type Meeting = z.infer<typeof MeetingSchema>;
+export const MeetingSchema = z.object({
+  beginDate: StringDateSchema,
+});
+
+export type Recitation = z.infer<typeof RecitationSchema>;
+export const RecitationSchema = z.object({
+  name: z.string().nullish(),
+  registrationNumber: z.number(),
+  code: z.string(),
+  notes: z.string(),
+  type: z.string(),
+  instructors: z.array(z.string()),
+  location: z.string().nullish(),
+  minUnits: z.number(),
+  maxUnits: z.number(),
+  status: z.string(),
+  meetings: z.array(MeetingSchema),
+  waitlistTotal: z.number().nullish(),
+});
+
+export type Section = z.infer<typeof SectionSchema>;
+export const SectionSchema = RecitationSchema.extend({
+  recitations: z.array(RecitationSchema).nullish(),
+});
+
+export type Course = z.infer<typeof CourseSchema>;
+export const CourseSchema = z.object({
+  deptCourseId: z.string(),
+  subjectCode: z.string(),
+  name: z.string(),
+  description: z.string(),
+  sections: z.array(SectionSchema),
+});
+
+export const useCourses = (term: Term, subject: string) => {
+  return useQuery(
+    ["courses", term.code, subject],
+    async (): Promise<Course[]> => {
+      const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
+      const data: Course[] = z.array(CourseSchema).parse(resp.data);
+
+      const sortedData = data.sort(
+        (a, b) =>
+          Number.parseInt(a.deptCourseId) - Number.parseInt(b.deptCourseId)
+      );
+      return sortedData;
+    }
+  );
 };
 
 export const SubjectSchema = z.string();
@@ -65,7 +111,7 @@ export default function SubjectPage() {
             >
               <a className={styles.course}>
                 <h4>
-                  {course.subject} {course.deptCourseId}
+                  {course.subjectCode} {course.deptCourseId}
                 </h4>
                 <h3>{course.name}</h3>
                 <p>{course.sections.length} Sections</p>

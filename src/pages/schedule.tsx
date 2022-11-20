@@ -71,6 +71,7 @@ export const useSchedule = create<ScheduleState>((set, get) => {
 
 function SchedulePage() {
   const { schedule, wishlist, clearSchedule } = useSchedule();
+  const wishlistLength = Object.keys(wishlist).length;
 
   return (
     <div className={styles.container}>
@@ -82,13 +83,11 @@ function SchedulePage() {
         }}
       >
         <div className={styles.header}>
-          <h2 className={styles.wishlist}>{`Wishlist (${
-            Object.keys(wishlist).length
-          })`}</h2>
+          <h2 className={styles.wishlist}>{`Wishlist (${wishlistLength})`}</h2>
         </div>
 
         <div className={styles.wishlistCoursesList}>
-          {Object.keys(wishlist).length === 0 ? (
+          {wishlistLength === 0 ? (
             <div className={styles.emptyWishlistContainer}>
               Your wishlist appears empty!{" "}
               <Link

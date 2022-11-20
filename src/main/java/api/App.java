@@ -39,8 +39,6 @@ public class App {
       } catch (Exception e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
-      } catch (Throwable t) {
-        t.printStackTrace();
       }
     }
 

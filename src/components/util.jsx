@@ -1,6 +1,6 @@
 import React from "react";
 import cx from "classnames";
-import { missingPrograms, dayToStr } from "./constants";
+import { dayToStr } from "./constants";
 import css from "./util.module.css";
 
 export const timeout = (ms) => new Promise((res) => setTimeout(res, ms));
@@ -189,8 +189,4 @@ export function generateScheduleTime(meetings) {
   }
   //TODO: Handle if there are more than 2 different meeting time
   return "";
-}
-
-export function findSchool(school) {
-  return missingPrograms[school] ?? "";
 }

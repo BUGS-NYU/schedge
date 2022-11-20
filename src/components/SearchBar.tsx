@@ -57,19 +57,28 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
       <div className={styles.searchResults}>
         {!!searchResults &&
           searchResults.map((course, i) => {
-            const schoolIndex = schools?.schools.findIndex(school => school.subjects.findIndex(subject => subject.code === course.subjectCode) !== -1);
+            const schoolIndex = schools?.schools.findIndex(
+              (school) =>
+                school.subjects.findIndex(
+                  (subject) => subject.code === course.subjectCode
+                ) !== -1
+            );
             return (
               <Link
                 key={i}
                 href={{
                   pathname: "/course",
-                  query: { schoolIndex, subject: course.subjectCode, courseid: course.deptCourseId },
+                  query: {
+                    schoolIndex,
+                    subject: course.subjectCode,
+                    courseid: course.deptCourseId,
+                  },
                 }}
               >
                 <a className={styles.course} style={{ textDecoration: "none" }}>
-                <span className={styles.courseSchoolCode}>
-                  {course.subjectCode} {course.deptCourseId}
-                </span>
+                  <span className={styles.courseSchoolCode}>
+                    {course.subjectCode} {course.deptCourseId}
+                  </span>
                   <span className={styles.courseName}>{course.name}</span>
                 </a>
               </Link>

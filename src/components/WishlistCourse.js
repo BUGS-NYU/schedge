@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./wishlist-course.module.css";
 import { generateScheduleTime } from "components/util";
 
-function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
+function WishlistCourse({ course, checkboxes, removeCourse, scheduleCourse }) {
   return (
     <div className={styles.wishlistCourseContainer}>
       <div style={{ padding: "1rem" }}>
@@ -41,7 +41,7 @@ function WishlistCourse({ course, checkboxes, removeCourse, handleOnChange }) {
                     : checkboxes[course.registrationNumber]
                 }
                 onChange={(e) =>
-                  handleOnChange(e, course, course.registrationNumber)
+                  scheduleCourse(e, course, course.registrationNumber)
                 }
               />
             }

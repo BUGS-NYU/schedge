@@ -39,8 +39,10 @@ public class AugmentedMeeting {
     campus = rs.getString("campus");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");
-    beginDate = rs.getTimestamp("begin_date").toLocalDateTime().atZone(ZoneOffset.UTC);
-    endDate = rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
+    beginDate =
+        rs.getTimestamp("begin_date").toLocalDateTime().atZone(ZoneOffset.UTC);
+    endDate =
+        rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
     minutesDuration = rs.getInt("duration");
   }
 
@@ -89,13 +91,11 @@ public class AugmentedMeeting {
   public String getLocation() { return location; }
 
   public String getBeginDate() {
-    var zoned = beginDate.atZone(ZoneOffset.UTC);
-    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+    return DateTimeFormatter.ISO_INSTANT.format(beginDate);
   }
 
   public String getEndDate() {
-    var zoned = endDate.atZone(ZoneOffset.UTC);
-    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+    return DateTimeFormatter.ISO_INSTANT.format(endDate);
   }
 
   public int getMinutesDuration() { return minutesDuration; }

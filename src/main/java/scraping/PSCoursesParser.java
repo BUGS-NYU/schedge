@@ -291,21 +291,15 @@ class PSCoursesParser {
     }
 
     var tz = Nyu.Campus.timezoneForCampus(section.campus);
-
-    beginDateTime = beginDateTime.atZone(tz)
-                        .withZoneSameInstant(ZoneOffset.UTC)
-                        .toLocalDateTime();
-
-    endDateTime = endDateTime.atZone(tz)
-                      .withZoneSameInstant(ZoneOffset.UTC)
-                      .toLocalDateTime();
+    var endDate = endDateTime.atZone(tz).withZoneSameInstant(ZoneOffset.UTC);
 
     for (var day : days) {
       var meeting = new Nyu.Meeting();
       var adjuster = TemporalAdjusters.nextOrSame(day);
-      meeting.beginDate = beginDateTime.with(adjuster);
+      var zonedBeginDate = beginDateTime.with(adjuster).atZone(tz);
+      meeting.beginDate = zonedBeginDate.withZoneSameInstant(ZoneOffset.UTC);
       meeting.minutesDuration = duration;
-      meeting.endDate = endDateTime;
+      meeting.endDate = endDate;
 
       section.meetings.add(meeting);
     }

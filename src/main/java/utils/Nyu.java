@@ -8,6 +8,7 @@ import io.javalin.openapi.*;
 import java.time.*;
 import java.time.format.*;
 import java.util.*;
+import org.jetbrains.annotations.*;
 
 public final class Nyu {
   // @Note: order is important here. Order MUST be: ja, sp, su, fa
@@ -104,9 +105,10 @@ public final class Nyu {
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     public String subjectCode;
 
-    // @NOTE: these are required for the Javalin OpenAPI integration
-    // to pick up fields on the output data
     public String getName() { return name; }
+
+    // @Note: these are required for the Javalin OpenAPI integration
+    // to pick up fields on the output data
     public String getDeptCourseId() { return deptCourseId; }
     public String getDescription() { return description; }
     public List<Section> getSections() { return sections; }
@@ -159,11 +161,13 @@ public final class Nyu {
 
     public int getMinutesDuration() { return minutesDuration; }
 
+    @NotNull
     public String getBeginDate() {
       var zoned = beginDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
     }
 
+    @NotNull
     public String getEndDate() {
       var zoned = endDate.atZone(ZoneOffset.UTC);
       return DateTimeFormatter.ISO_INSTANT.format(zoned);
@@ -173,6 +177,7 @@ public final class Nyu {
   public static final class Section {
     public int registrationNumber;
     public String code;
+    public String name;
     public String[] instructors;
     public String type;
     public SectionStatus status;
@@ -189,6 +194,7 @@ public final class Nyu {
 
     public static Section fromRow(Row row) {
       Section s = new Section();
+      s.name = row.sectionName;
       s.waitlistTotal = row.waitlistTotal;
       s.registrationNumber = row.registrationNumber;
       s.code = row.sectionCode;
@@ -208,9 +214,24 @@ public final class Nyu {
     }
 
     public int getRegistrationNumber() { return registrationNumber; }
-    public String getCode() { return code; }
+
+    @JsonInclude(NON_NULL)
+    @OpenApiExample(value = "Topic: Natual Language Processing")
+    public String getName() {
+      return name;
+    }
+
+    @NotNull
+    public String getCode() {
+      return code;
+    }
+
     public String[] getInstructors() { return instructors; }
-    public String getType() { return type; }
+
+    @NotNull
+    public String getType() {
+      return type;
+    }
 
     @OpenApiPropertyType(definedBy = String.class)
     public SectionStatus getStatus() {
@@ -616,8 +637,19 @@ public final class Nyu {
       return campus.timezone;
     }
 
-    public String getName() { return name; }
-    public String getTimezoneId() { return timezoneId; }
-    public String getTimezoneName() { return timezoneName; }
+    @NotNull
+    public String getName() {
+      return name;
+    }
+
+    @NotNull
+    public String getTimezoneId() {
+      return timezoneId;
+    }
+
+    @NotNull
+    public String getTimezoneName() {
+      return timezoneName;
+    }
   }
 }

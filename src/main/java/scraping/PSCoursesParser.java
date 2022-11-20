@@ -95,7 +95,8 @@ class PSCoursesParser {
       }
     }
 
-    var matchingSubject = course.subjectCode.contentEquals(subjectCode);
+    var courseSubjectCode = course.subjectCode;
+    var matchingSubject = courseSubjectCode.contentEquals(subjectCode);
     if (!matchingSubject) {
       // This isn't an error for something like `SCA-UA`/`SCA-UA_1`, but
       // could be different than expected for other schools,
@@ -112,7 +113,7 @@ class PSCoursesParser {
 
     Nyu.Section lecture = null;
     for (var sectionHtml : sections.subList(1, sections.size())) {
-      var section = parseSection(ctx, sectionHtml);
+      var section = parseSection(ctx, courseSubjectCode, sectionHtml);
       if (section.type.equals("Lecture")) {
         course.sections.add(section);
         section.recitations = new ArrayList<>();
@@ -131,7 +132,8 @@ class PSCoursesParser {
     return course;
   }
 
-  static Nyu.Section parseSection(Try ctx, Element sectionHtml) {
+  static Nyu.Section parseSection(Try ctx, String courseSubjectCode,
+                                  Element sectionHtml) {
     var wrapper = sectionHtml.expectFirst("td");
     var data = wrapper.children();
 
@@ -141,6 +143,12 @@ class PSCoursesParser {
     {
       var title = data.get(0).text();
       var parts = title.split(" \\| ");
+
+      var nameParts = parts[0].split(courseSubjectCode);
+      var namePart = nameParts[0].trim();
+      if (nameParts.length > 1 && !namePart.isEmpty()) {
+        section.name = namePart;
+      }
 
       var unitString = parts.length < 2 ? "0 units" : parts[1];
       parts = unitString.split(" ");

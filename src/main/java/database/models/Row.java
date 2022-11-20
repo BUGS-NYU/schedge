@@ -7,6 +7,7 @@ import utils.Nyu;
 public class Row {
   public final int courseId;
   public final String name;
+  public final String sectionName;
   public final String subject;
   public final String deptCourseId;
   public final String description;
@@ -33,6 +34,7 @@ public class Row {
   public Row(ResultSet rs, List<Nyu.Meeting> meetings) throws SQLException {
     this.courseId = rs.getInt("id");
     this.name = rs.getString("name");
+    this.sectionName = rs.getString("section_name");
     this.description = rs.getString("description");
     this.subject = rs.getString("subject_code");
     this.deptCourseId = rs.getString("dept_course_id");

@@ -84,8 +84,6 @@ function CoursePage() {
               section={section}
               sortedSectionMeetings={sortedSectionMeetings}
               courseData={course}
-              year={term.year}
-              semester={term.semester}
               lastSection={i === course.sections.length - 1}
             />
           );

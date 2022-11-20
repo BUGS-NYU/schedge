@@ -13,7 +13,14 @@ import {
 import localStorageContainer from "components/localStorage";
 import { useSchedule } from "../pages/schedule";
 
-export const Section = ({
+interface Props {
+  section: any;
+  sortedSectionMeetings: any;
+  courseData: any;
+  lastSection: any;
+}
+
+export const Section: React.VFC<Props> = ({
   section,
   sortedSectionMeetings,
   courseData,

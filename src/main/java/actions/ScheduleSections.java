@@ -21,6 +21,7 @@ public final class ScheduleSections {
     public final ArrayList<AugmentedMeeting> fr;
     public final ArrayList<AugmentedMeeting> sa;
     public final ArrayList<AugmentedMeeting> su;
+
     public AugmentedMeeting conflictA;
     public AugmentedMeeting conflictB;
 

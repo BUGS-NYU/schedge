@@ -8,14 +8,34 @@ import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
 
-export const useCourses = (term: Term, subject: string) => {
-  return useQuery(["courses", term.code, subject], async () => {
-    const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
-    const data = resp.data;
+export type Section = z.infer<typeof SectionSchema>;
+export const SectionSchema = z.object({
+  registrationNumber: z.number(),
+  code: z.string(),
+});
 
-    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
-    return sortedData;
-  });
+export type Course = z.infer<typeof CourseSchema>;
+export const CourseSchema = z.object({
+  deptCourseId: z.string(),
+  subject: z.string(),
+  name: z.string(),
+  sections: z.array(SectionSchema),
+});
+
+export const useCourses = (term: Term, subject: string) => {
+  return useQuery(
+    ["courses", term.code, subject],
+    async (): Promise<Course[]> => {
+      const resp = await axios.get(`/api/courses/${term.code}/${subject}`);
+      const data: Course[] = z.array(CourseSchema).parse(resp.data);
+
+      const sortedData = data.sort(
+        (a, b) =>
+          Number.parseInt(a.deptCourseId) - Number.parseInt(b.deptCourseId)
+      );
+      return sortedData;
+    }
+  );
 };
 
 export const SubjectSchema = z.string();

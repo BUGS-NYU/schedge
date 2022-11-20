@@ -1,7 +1,8 @@
 import React from "react";
 import styles from "./wishlist-course.module.css";
 import { generateScheduleTime } from "components/util";
-import { Section, useSchedule } from "../pages/schedule";
+import { useSchedule } from "../pages/schedule";
+import { Section } from "../pages/subject";
 
 interface Props {
   section: Section;

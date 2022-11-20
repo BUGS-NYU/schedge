@@ -4,15 +4,7 @@ import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import create from "zustand";
-import { z } from "zod";
-
-export type Section = z.infer<typeof SectionSchema>;
-export const SectionSchema = z.object({
-  registrationNumber: z.number(),
-  code: z.string(),
-  name: z.string(),
-  deptCourseId: z.string(),
-});
+import { Section } from "./subject";
 
 interface ScheduleState {
   schedule: Record<number, Section>;

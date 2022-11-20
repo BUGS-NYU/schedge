@@ -193,18 +193,26 @@ public final class Nyu {
     public String notes;
 
     public static class MeetingOutput {
-      public LocalDateTime beginDate;
+      public ZonedDateTime beginDate;
       public ZonedDateTime beginDateLocal;
       public int minutesDuration;
-      public LocalDateTime endDate;
+      public ZonedDateTime endDate;
       public ZonedDateTime endDateLocal;
+
+      MeetingOutput(Meeting meeting, ZoneId tz) {
+        beginDate = meeting.beginDate.atZone(ZoneOffset.UTC);
+        minutesDuration = meeting.minutesDuration;
+        endDate = meeting.endDate.atZone(ZoneOffset.UTC);
+
+        beginDateLocal = beginDate.withZoneSameInstant(tz);
+        endDateLocal = endDate.withZoneSameInstant(tz);
+      }
 
       public int getMinutesDuration() { return minutesDuration; }
 
       @NotNull
       public String getBeginDate() {
-        var zoned = beginDate.atZone(ZoneOffset.UTC);
-        return DateTimeFormatter.ISO_INSTANT.format(zoned);
+        return DateTimeFormatter.ISO_INSTANT.format(beginDate);
       }
 
       @NotNull
@@ -214,8 +222,7 @@ public final class Nyu {
 
       @NotNull
       public String getEndDate() {
-        var zoned = endDate.atZone(ZoneOffset.UTC);
-        return DateTimeFormatter.ISO_INSTANT.format(zoned);
+        return DateTimeFormatter.ISO_INSTANT.format(endDate);
       }
 
       @NotNull
@@ -274,21 +281,11 @@ public final class Nyu {
 
     public List<MeetingOutput> getMeetings() {
       var output = new ArrayList<MeetingOutput>();
+      var tz = Campus.timezoneForCampus(campus);
 
       for (var meeting : meetings) {
-        var out = new MeetingOutput();
+        var out = new MeetingOutput(meeting, tz);
         output.add(out);
-
-        var tz = Campus.timezoneForCampus(campus);
-
-        out.beginDate = meeting.beginDate;
-        out.minutesDuration = meeting.minutesDuration;
-        out.endDate = meeting.endDate;
-
-        out.beginDateLocal =
-            meeting.beginDate.atZone(ZoneOffset.UTC).withZoneSameInstant(tz);
-        out.endDateLocal =
-            meeting.endDate.atZone(ZoneOffset.UTC).withZoneSameInstant(tz);
       }
 
       return output;

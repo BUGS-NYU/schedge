@@ -194,18 +194,15 @@ public final class Nyu {
 
     public static class MeetingOutput {
       public ZonedDateTime beginDate;
-      public ZonedDateTime beginDateLocal;
       public int minutesDuration;
       public ZonedDateTime endDate;
-      public ZonedDateTime endDateLocal;
+      private ZoneId tz;
 
       MeetingOutput(Meeting meeting, ZoneId tz) {
-        beginDate = meeting.beginDate.atZone(ZoneOffset.UTC);
-        minutesDuration = meeting.minutesDuration;
-        endDate = meeting.endDate.atZone(ZoneOffset.UTC);
-
-        beginDateLocal = beginDate.withZoneSameInstant(tz);
-        endDateLocal = endDate.withZoneSameInstant(tz);
+        this.beginDate = meeting.beginDate.atZone(ZoneOffset.UTC);
+        this.minutesDuration = meeting.minutesDuration;
+        this.endDate = meeting.endDate.atZone(ZoneOffset.UTC);
+        this.tz = tz;
       }
 
       public int getMinutesDuration() { return minutesDuration; }
@@ -217,6 +214,7 @@ public final class Nyu {
 
       @NotNull
       public String getBeginDateLocal() {
+        var beginDateLocal = beginDate.withZoneSameInstant(tz);
         return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(beginDateLocal);
       }
 
@@ -227,6 +225,7 @@ public final class Nyu {
 
       @NotNull
       public String getEndDateLocal() {
+        var endDateLocal = endDate.withZoneSameInstant(tz);
         return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(endDateLocal);
       }
     }

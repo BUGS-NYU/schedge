@@ -57,7 +57,7 @@ export const Recitation: React.VFC<Props> = ({
         </div>
         <button
           className={styles.wishlistButton}
-          onClick={() => addToWishlist(recitation.registrationNumber)}
+          onClick={() => addToWishlist(recitation)}
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>

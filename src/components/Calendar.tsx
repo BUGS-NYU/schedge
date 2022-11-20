@@ -5,13 +5,17 @@ import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
 import { addMinutes, parseDate } from "./util";
+import { usePageState } from "./state";
 
 const MeetingSchema = z.object({
-  name: z.string(),
   minutesDuration: z.number(),
   subject: z.string(),
   deptCourseId: z.string(),
   sectionCode: z.string(),
+  registrationNumber: z.number(),
+  sectionType: z.string(),
+  minutesInDay: z.number(),
+  instructionMode: z.string(),
   beginDate: z.preprocess((obj) => new Date(obj as any), z.date()),
   location: z.string(),
 });
@@ -83,13 +87,21 @@ interface Props {
   registrationNumbers: string[];
 }
 
-const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
+export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
+  const { term } = usePageState();
   const { data: schedule, isLoading } = useQuery(
-    ["schedule", ...registrationNumbers],
+    ["schedule", term.code, ...registrationNumbers],
     async () => {
-      const resp = await axios.get(
-        `/api/schedule/registrationNumbers=${registrationNumbers.join(",")}`
-      );
+      console.log(registrationNumbers);
+      if (registrationNumbers.length === 0) {
+        return undefined;
+      }
+      const resp = await axios.get(`/api/generateSchedule/${term.code}`, {
+        params: {
+          registrationNumbers: registrationNumbers.join(","),
+        },
+      });
+      console.log(resp.data);
       const parsed = ScheduleSchema.parse(resp.data);
       return parsed;
     }
@@ -135,5 +147,3 @@ const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
     </div>
   );
 };
-
-export default Calendar;

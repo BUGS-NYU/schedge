@@ -94,7 +94,7 @@ export const Section = ({
         </div>
         <button
           className={styles.wishlistButton}
-          onClick={() => addToWishlist(section.registrationNumber)}
+          onClick={() => addToWishlist(section)}
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>

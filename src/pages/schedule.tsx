@@ -2,17 +2,26 @@ import React from "react";
 import Link from "next/link";
 import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
-import Calendar from "components/Calendar";
+import { Calendar } from "components/Calendar";
 import create from "zustand";
+import { z } from "zod";
+
+export type Section = z.infer<typeof SectionSchema>;
+export const SectionSchema = z.object({
+  registrationNumber: z.number(),
+  code: z.string(),
+  name: z.string(),
+  deptCourseId: z.string(),
+});
 
 interface ScheduleState {
-  schedule: Record<number, true>;
-  wishlist: Record<number, true>;
+  schedule: Record<number, Section>;
+  wishlist: Record<number, Section>;
 
-  addToWishlist: (courseNum: number) => void;
-  removeFromWishlist: (courseNum: number) => void;
-  scheduleFromWishlist: (courseNum: number) => void;
-  removeFromSchedule: (courseNum: number) => void;
+  addToWishlist: (section: Section) => void;
+  removeFromWishlist: (regNum: number) => void;
+  scheduleFromWishlist: (regNum: number) => void;
+  removeFromSchedule: (regNum: number) => void;
   clearSchedule: () => void;
 }
 
@@ -36,9 +45,10 @@ export const useSchedule = create<ScheduleState>((set, get) => {
     });
   };
 
-  const addToWishlist = (regNum: number) => {
+  const addToWishlist = (section: Section) => {
+    const regNum = section.registrationNumber;
     const { wishlist } = get();
-    set({ wishlist: { ...wishlist, [regNum]: true } });
+    set({ wishlist: { ...wishlist, [regNum]: section } });
   };
 
   const removeFromWishlist = (regNum: number) => {
@@ -107,16 +117,8 @@ function SchedulePage() {
               for courses to add to your wishlist
             </div>
           ) : (
-            Object.keys(wishlist).map((course, i) => {
-              return null;
-              // return (
-              //   <WishlistCourse
-              //     key={i}
-              //     course={course}
-              //     removeCourse={removeFromWishlist}
-              //     scheduleCourse={scheduleFromWishlist}
-              //   />
-              // );
+            Object.values(wishlist).map((section, i) => {
+              return <WishlistCourse key={i} section={section} />;
             })
           )}
         </div>

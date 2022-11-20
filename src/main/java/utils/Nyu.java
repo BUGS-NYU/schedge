@@ -175,22 +175,63 @@ public final class Nyu {
   }
 
   public static final class Section {
-    public int registrationNumber;
-    public String code;
-    public String name;
-    public String[] instructors;
-    public String type;
-    public SectionStatus status;
+    @JsonProperty public int registrationNumber;
+    @JsonProperty public String code;
+    @JsonProperty public String name;
+    @JsonProperty public String[] instructors;
+    @JsonProperty public String type;
+    @JsonProperty public SectionStatus status;
     public List<Meeting> meetings;
-    public List<Section> recitations;
-    public Integer waitlistTotal;
-    public String instructionMode;
-    public String campus;
-    public Double minUnits;
-    public Double maxUnits;
-    public String grading;
-    public String location;
-    public String notes;
+    @JsonProperty public List<Section> recitations;
+    @JsonProperty public Integer waitlistTotal;
+    @JsonProperty public String instructionMode;
+    @JsonProperty public String campus;
+    @JsonProperty public Double minUnits;
+    @JsonProperty public Double maxUnits;
+    @JsonProperty public String grading;
+    @JsonProperty public String location;
+    @JsonProperty public String notes;
+
+    public static class PreMeeting {
+      public LocalDateTime beginDate; // contains date and time of first event.
+      public int minutesDuration;     // Duration of meeting
+      public LocalDateTime endDate;   // When the meeting stops repeating
+
+      @JsonCreator
+      public static PreMeeting
+      fromJson(@JsonProperty("beginDate") String beginDate,
+               @JsonProperty("minutesDuration") int minutesDuration,
+               @JsonProperty("endDate") String endDate) {
+        var meeting = new PreMeeting();
+        try {
+          meeting.beginDate = LocalDateTime.parse(beginDate, Meeting.formatter);
+          meeting.minutesDuration = minutesDuration;
+          meeting.endDate = LocalDateTime.parse(endDate, Meeting.formatter);
+        } catch (java.time.format.DateTimeParseException e) {
+          meeting.beginDate = Meeting.parseTime(beginDate);
+          meeting.minutesDuration = minutesDuration;
+          meeting.endDate = Meeting.parseTime(endDate);
+        }
+
+        return meeting;
+      }
+    }
+
+    public Section() {}
+
+    @JsonCreator
+    public Section(@JsonProperty("meetings")
+                   ArrayList<PreMeeting> preMeetings) {
+      meetings = new ArrayList<Meeting>();
+      for (var meeting : preMeetings) {
+        var m = new Meeting();
+        meetings.add(m);
+
+        m.beginDate = meeting.beginDate;
+        m.minutesDuration = meeting.minutesDuration;
+        m.endDate = meeting.endDate;
+      }
+    }
 
     public static Section fromRow(Row row) {
       Section s = new Section();

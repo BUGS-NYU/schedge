@@ -175,61 +175,52 @@ public final class Nyu {
   }
 
   public static final class Section {
-    @JsonProperty public int registrationNumber;
-    @JsonProperty public String code;
-    @JsonProperty public String name;
-    @JsonProperty public String[] instructors;
-    @JsonProperty public String type;
-    @JsonProperty public SectionStatus status;
+    public int registrationNumber;
+    public String code;
+    public String name;
+    public String[] instructors;
+    public String type;
+    public SectionStatus status;
     public List<Meeting> meetings;
-    @JsonProperty public List<Section> recitations;
-    @JsonProperty public Integer waitlistTotal;
-    @JsonProperty public String instructionMode;
-    @JsonProperty public String campus;
-    @JsonProperty public Double minUnits;
-    @JsonProperty public Double maxUnits;
-    @JsonProperty public String grading;
-    @JsonProperty public String location;
-    @JsonProperty public String notes;
+    public List<Section> recitations;
+    public Integer waitlistTotal;
+    public String instructionMode;
+    public String campus;
+    public Double minUnits;
+    public Double maxUnits;
+    public String grading;
+    public String location;
+    public String notes;
 
-    public static class PreMeeting {
-      public LocalDateTime beginDate; // contains date and time of first event.
-      public int minutesDuration;     // Duration of meeting
-      public LocalDateTime endDate;   // When the meeting stops repeating
+    public static class MeetingOutput {
+      public LocalDateTime beginDate;
+      public ZonedDateTime beginDateLocal;
+      public int minutesDuration;
+      public LocalDateTime endDate;
+      public ZonedDateTime endDateLocal;
 
-      @JsonCreator
-      public static PreMeeting
-      fromJson(@JsonProperty("beginDate") String beginDate,
-               @JsonProperty("minutesDuration") int minutesDuration,
-               @JsonProperty("endDate") String endDate) {
-        var meeting = new PreMeeting();
-        try {
-          meeting.beginDate = LocalDateTime.parse(beginDate, Meeting.formatter);
-          meeting.minutesDuration = minutesDuration;
-          meeting.endDate = LocalDateTime.parse(endDate, Meeting.formatter);
-        } catch (java.time.format.DateTimeParseException e) {
-          meeting.beginDate = Meeting.parseTime(beginDate);
-          meeting.minutesDuration = minutesDuration;
-          meeting.endDate = Meeting.parseTime(endDate);
-        }
+      public int getMinutesDuration() { return minutesDuration; }
 
-        return meeting;
+      @NotNull
+      public String getBeginDate() {
+        var zoned = beginDate.atZone(ZoneOffset.UTC);
+        return DateTimeFormatter.ISO_INSTANT.format(zoned);
       }
-    }
 
-    public Section() {}
+      @NotNull
+      public String getBeginDateLocal() {
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(beginDateLocal);
+      }
 
-    @JsonCreator
-    public Section(@JsonProperty("meetings")
-                   ArrayList<PreMeeting> preMeetings) {
-      meetings = new ArrayList<Meeting>();
-      for (var meeting : preMeetings) {
-        var m = new Meeting();
-        meetings.add(m);
+      @NotNull
+      public String getEndDate() {
+        var zoned = endDate.atZone(ZoneOffset.UTC);
+        return DateTimeFormatter.ISO_INSTANT.format(zoned);
+      }
 
-        m.beginDate = meeting.beginDate;
-        m.minutesDuration = meeting.minutesDuration;
-        m.endDate = meeting.endDate;
+      @NotNull
+      public String getEndDateLocal() {
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(endDateLocal);
       }
     }
 
@@ -280,7 +271,29 @@ public final class Nyu {
     }
 
     public String getCampus() { return campus; }
-    public List<Meeting> getMeetings() { return meetings; }
+
+    public List<MeetingOutput> getMeetings() {
+      var output = new ArrayList<MeetingOutput>();
+
+      for (var meeting : meetings) {
+        var out = new MeetingOutput();
+        output.add(out);
+
+        var tz = Campus.timezoneForCampus(campus);
+
+        out.beginDate = meeting.beginDate;
+        out.minutesDuration = meeting.minutesDuration;
+        out.endDate = meeting.endDate;
+
+        out.beginDateLocal =
+            meeting.beginDate.atZone(ZoneOffset.UTC).withZoneSameInstant(tz);
+        out.endDateLocal =
+            meeting.endDate.atZone(ZoneOffset.UTC).withZoneSameInstant(tz);
+      }
+
+      return output;
+    }
+
     public String getInstructionMode() { return instructionMode; }
     public Double getMinUnits() { return minUnits; }
     public Double getMaxUnits() { return maxUnits; }

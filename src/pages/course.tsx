@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Section from "components/Section";
+import { Section } from "components/Section";
 import styles from "./course.module.css";
 import { parseDate } from "components/util";
 import { usePageState } from "components/state";

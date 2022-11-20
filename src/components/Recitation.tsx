@@ -8,16 +8,24 @@ import {
   changeStatus,
   styleStatus,
 } from "components/util";
+import { Term, usePageState } from "./state";
+import { useSchedule } from "../pages/schedule";
 
-function Recitation({
-  year,
-  semester,
-  wishlistCourse,
+interface Props {
+  recitation: any;
+  sortedRecitationsMeetings: any;
+  courseName: string;
+  lastRecitation: boolean;
+}
+
+export const Recitation: React.VFC<Props> = ({
   recitation,
   sortedRecitationsMeetings,
   courseName,
   lastRecitation,
-}) {
+}) => {
+  const { addToWishlist } = useSchedule();
+
   return (
     <div
       className={styles.recitationContainer}
@@ -34,6 +42,7 @@ function Recitation({
         status={recitation.status}
         type={recitation.type}
         registrationNumber={recitation.registrationNumber}
+        room={undefined}
       />
       <div className={styles.recitationDescription}>{recitation.notes}</div>
 
@@ -41,24 +50,14 @@ function Recitation({
         <DateSection sortedSectionMeetings={sortedRecitationsMeetings} />
       )}
       <div className={styles.utilBar}>
-        <div classNames={styles.statusContainer}>
-          <span
-            style={{
-              color: styleStatus(recitation.status),
-            }}
-          >
+        <div className={styles.statusContainer}>
+          <span style={{ color: styleStatus(recitation.status) }}>
             {changeStatus(recitation)}
           </span>
         </div>
         <button
           className={styles.wishlistButton}
-          onClick={() =>
-            wishlistCourse({
-              year,
-              semester,
-              course: recitation,
-            })
-          }
+          onClick={() => addToWishlist(recitation.registrationNumber)}
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>
@@ -66,6 +65,4 @@ function Recitation({
       </div>
     </div>
   );
-}
-
-export default Recitation;
+};

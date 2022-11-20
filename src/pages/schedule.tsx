@@ -1,11 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import WishlistCourse from "components/WishlistCourse";
-import { usePageState } from "components/state";
 import styles from "./schedule.module.css";
 import Calendar from "components/Calendar";
-import ScheduleCourse from "components/ScheduleCourse";
-import { dayToStr } from "components/constants";
 import create from "zustand";
 
 interface ScheduleState {
@@ -19,7 +16,7 @@ interface ScheduleState {
   clearSchedule: () => void;
 }
 
-const useSchedule = create<ScheduleState>((set, get) => {
+export const useSchedule = create<ScheduleState>((set, get) => {
   const scheduleFromWishlist = (regNum: number) => {
     const { schedule, wishlist } = get();
     const wishlistEntry = wishlist[regNum];
@@ -82,6 +79,7 @@ function SchedulePage() {
   return (
     <div className={styles.container}>
       <Calendar registrationNumbers={Object.keys(schedule)} />
+
       <div
         style={{
           marginTop: "2rem",
@@ -110,15 +108,15 @@ function SchedulePage() {
             </div>
           ) : (
             Object.keys(wishlist).map((course, i) => {
-              return (
-                <WishlistCourse
-                  key={i}
-                  course={course}
-                  checkboxes={checkboxes}
-                  removeCourse={removeFromWishlist}
-                  scheduleCourse={scheduleFromWishlist}
-                />
-              );
+              return null;
+              // return (
+              //   <WishlistCourse
+              //     key={i}
+              //     course={course}
+              //     removeCourse={removeFromWishlist}
+              //     scheduleCourse={scheduleFromWishlist}
+              //   />
+              // );
             })
           )}
         </div>

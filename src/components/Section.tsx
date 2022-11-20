@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Attributes from "./Attributes";
 import DateSection from "./DateSection";
 import styles from "./section.module.css";
-import Recitation from "components/Recitation";
+import { Recitation } from "components/Recitation";
 import {
   convertUnits,
   splitLocation,
@@ -11,16 +11,16 @@ import {
   parseDate,
 } from "components/util";
 import localStorageContainer from "components/localStorage";
+import { useSchedule } from "../pages/schedule";
 
-function Section({
-  year,
-  semester,
+export const Section = ({
   section,
   sortedSectionMeetings,
   courseData,
   lastSection,
-}) {
+}) => {
   const [expandedList, setExpandedList] = useState({});
+  const { addToWishlist } = useSchedule();
 
   const handleExpandList = (event, registrationNumber) => {
     event.preventDefault();
@@ -84,13 +84,17 @@ function Section({
               color: styleStatus(section.status),
             }}
           />
-          <span style={{ color: styleStatus(section.status) }}>
+          <span
+            style={{
+              color: styleStatus(section.status),
+            }}
+          >
             {changeStatus(section)}
           </span>
         </div>
         <button
           className={styles.wishlistButton}
-          onClick={() => handleOnClick(section)}
+          onClick={() => addToWishlist(section.registrationNumber)}
         >
           <div style={{}} />
           <span style={{}}>Add to Wishlist</span>
@@ -112,8 +116,6 @@ function Section({
                 recitation={recitation}
                 sortedRecitationsMeetings={sortedRecitationsMeetings}
                 courseName={courseData.name}
-                year={year}
-                semester={semester}
                 lastRecitation={i === section.recitations.length - 1}
               />
             );
@@ -121,6 +123,4 @@ function Section({
       </div>
     </div>
   );
-}
-
-export default Section;
+};

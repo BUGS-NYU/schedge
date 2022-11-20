@@ -18,23 +18,24 @@ export const MeetingSchema = z.object({
   beginDate: StringDateSchema,
 });
 
+export type Recitation = z.infer<typeof RecitationSchema>;
 export const RecitationSchema = z.object({
   registrationNumber: z.number(),
   code: z.string(),
   notes: z.string(),
   type: z.string(),
   instructors: z.array(z.string()),
-  location: z.string(),
+  location: z.string().nullish(),
   minUnits: z.number(),
   maxUnits: z.number(),
   status: z.string(),
   meetings: z.array(MeetingSchema),
-  waitlistTotal: z.number().optional(),
+  waitlistTotal: z.number().nullish(),
 });
 
 export type Section = z.infer<typeof SectionSchema>;
 export const SectionSchema = RecitationSchema.extend({
-  recitations: z.array(RecitationSchema).optional(),
+  recitations: z.array(RecitationSchema).nullish(),
 });
 
 export type Course = z.infer<typeof CourseSchema>;

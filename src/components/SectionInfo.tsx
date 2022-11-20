@@ -12,15 +12,16 @@ import {
 } from "components/util";
 import localStorageContainer from "components/localStorage";
 import { useSchedule } from "../pages/schedule";
+import type { Meeting, Section } from "../pages/subject";
 
 interface Props {
-  section: any;
-  sortedSectionMeetings: any;
+  section: Section;
+  sortedSectionMeetings: Meeting[];
   courseData: any;
   lastSection: any;
 }
 
-export const Section: React.VFC<Props> = ({
+export const SectionInfo: React.VFC<Props> = ({
   section,
   sortedSectionMeetings,
   courseData,
@@ -52,9 +53,6 @@ export const Section: React.VFC<Props> = ({
       className={styles.sectionContainer}
       style={{ borderBottom: !lastSection && "1px solid" }}
     >
-      {courseData.name !== section.name && (
-        <h3 className="sectionName">{section.name}</h3>
-      )}
       {courseData.sections.length > 1 && (
         <h4 className="sectionNum">{section.code}</h4>
       )}

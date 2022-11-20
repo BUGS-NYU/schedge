@@ -8,10 +8,32 @@ import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
 
-export type Section = z.infer<typeof SectionSchema>;
-export const SectionSchema = z.object({
+export const StringDateSchema = z.preprocess(
+  (obj) => new Date(obj as any),
+  z.date()
+);
+
+export type Meeting = z.infer<typeof MeetingSchema>;
+export const MeetingSchema = z.object({
+  beginDate: StringDateSchema,
+});
+
+export const RecitationSchema = z.object({
   registrationNumber: z.number(),
   code: z.string(),
+  notes: z.string(),
+  type: z.string(),
+  instructors: z.array(z.string()),
+  location: z.string(),
+  minUnits: z.number(),
+  maxUnits: z.number(),
+  status: z.string(),
+  meetings: z.array(MeetingSchema),
+});
+
+export type Section = z.infer<typeof SectionSchema>;
+export const SectionSchema = RecitationSchema.extend({
+  recitations: z.array(RecitationSchema).optional(),
 });
 
 export type Course = z.infer<typeof CourseSchema>;
@@ -19,6 +41,7 @@ export const CourseSchema = z.object({
   deptCourseId: z.string(),
   subject: z.string(),
   name: z.string(),
+  description: z.string(),
   sections: z.array(SectionSchema),
 });
 

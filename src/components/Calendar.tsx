@@ -6,8 +6,9 @@ import { z } from "zod";
 import axios from "axios";
 import { addMinutes, parseDate } from "./util";
 import { usePageState } from "./state";
+import { StringDateSchema } from "../pages/subject";
 
-const MeetingSchema = z.object({
+const CalendarMeetingSchema = z.object({
   minutesDuration: z.number(),
   subject: z.string(),
   deptCourseId: z.string(),
@@ -16,30 +17,30 @@ const MeetingSchema = z.object({
   sectionType: z.string(),
   minutesInDay: z.number(),
   instructionMode: z.string(),
-  beginDate: z.preprocess((obj) => new Date(obj as any), z.date()),
+  beginDate: StringDateSchema,
   location: z.string(),
 });
 
-type Meeting = z.infer<typeof MeetingSchema>;
+type CalendarMeeting = z.infer<typeof CalendarMeetingSchema>;
 
 const CalendarSchema = z.object({
-  mo: z.array(MeetingSchema),
-  tu: z.array(MeetingSchema),
-  we: z.array(MeetingSchema),
-  th: z.array(MeetingSchema),
-  fr: z.array(MeetingSchema),
-  sa: z.array(MeetingSchema),
-  su: z.array(MeetingSchema),
+  mo: z.array(CalendarMeetingSchema),
+  tu: z.array(CalendarMeetingSchema),
+  we: z.array(CalendarMeetingSchema),
+  th: z.array(CalendarMeetingSchema),
+  fr: z.array(CalendarMeetingSchema),
+  sa: z.array(CalendarMeetingSchema),
+  su: z.array(CalendarMeetingSchema),
 });
 
 const ScheduleSchema = CalendarSchema.extend({
   valid: z.boolean(),
-  conflictA: MeetingSchema.optional(),
-  conflictB: MeetingSchema.optional(),
+  conflictA: CalendarMeetingSchema.optional(),
+  conflictB: CalendarMeetingSchema.optional(),
 });
 
 interface MeetingProps {
-  meeting: Meeting;
+  meeting: CalendarMeeting;
 }
 
 export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
@@ -124,7 +125,7 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
               return null;
             }
 
-            const meetings: Meeting[] = schedule[day];
+            const meetings: CalendarMeeting[] = schedule[day];
             //ignoring Saturday and Sunday for now
             return (
               <div className={styles.calendarDay} key={day}>

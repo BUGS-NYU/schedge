@@ -1,11 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import { Section } from "components/Section";
+import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { parseDate } from "components/util";
 import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { SubjectSchema, useCourses } from "./subject";
+import { Course, SubjectSchema, useCourses } from "./subject";
 import { z } from "zod";
 
 const IdSchema = z.string();
@@ -19,7 +19,9 @@ function CoursePage() {
 
   const { isLoading, data: courseData } = useCourses(term, subjectCode);
 
-  const course = courseData?.find((course) => course.deptCourseId === courseid);
+  const course: Course = courseData?.find(
+    (course) => course.deptCourseId === courseid
+  );
 
   const header = (
     <div className={styles.colorHeader}>
@@ -74,12 +76,11 @@ function CoursePage() {
       <div>
         {course?.sections?.map((section, i) => {
           const sortedSectionMeetings = (section.meetings ?? []).sort(
-            (a, b) =>
-              parseDate(a.beginDate).getDay() - parseDate(b.beginDate).getDay()
+            (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
           );
 
           return (
-            <Section
+            <SectionInfo
               key={i}
               section={section}
               sortedSectionMeetings={sortedSectionMeetings}

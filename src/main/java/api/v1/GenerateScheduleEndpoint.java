@@ -68,7 +68,6 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
       return generateSchedule(meetings);
     });
 
-    System.err.println(JsonMapper.toJson(output));
     return output;
   }
 }

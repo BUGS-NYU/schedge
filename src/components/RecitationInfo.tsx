@@ -32,9 +32,7 @@ export const RecitationInfo: React.VFC<Props> = ({
       className={styles.recitationContainer}
       style={{ borderBottom: !lastRecitation && "1px solid" }}
     >
-      {recitation.name && (
-        <h3 className="sectionName">{recitation.name}</h3>
-      )}
+      {recitation.name && <h3 className="sectionName">{recitation.name}</h3>}
       <h4 className="sectionNum">{recitation.code}</h4>
       <Attributes
         instructors={recitation.instructors}

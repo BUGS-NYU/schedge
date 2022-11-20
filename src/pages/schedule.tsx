@@ -70,13 +70,7 @@ export const useSchedule = create<ScheduleState>((set, get) => {
 });
 
 function SchedulePage() {
-  const {
-    schedule,
-    wishlist,
-    scheduleFromWishlist,
-    removeFromWishlist,
-    clearSchedule,
-  } = useSchedule();
+  const { schedule, wishlist, clearSchedule } = useSchedule();
 
   return (
     <div className={styles.container}>

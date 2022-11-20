@@ -53,9 +53,7 @@ export const SectionInfo: React.VFC<Props> = ({
       className={styles.sectionContainer}
       style={{ borderBottom: !lastSection && "1px solid" }}
     >
-      {section.name && (
-        <h3 className="sectionName">{section.name}</h3>
-      )}
+      {section.name && <h3 className="sectionName">{section.name}</h3>}
       {courseData.sections.length > 1 && (
         <h4 className="sectionNum">{section.code}</h4>
       )}

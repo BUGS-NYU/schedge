@@ -30,6 +30,8 @@ public class App {
           var e = (ApiError)output;
           ctx.status(e.status);
           ctx.json(e);
+
+          return;
         }
 
         ctx.status(200);
@@ -37,6 +39,8 @@ public class App {
       } catch (Exception e) {
         ctx.status(400);
         ctx.json(new ApiError(e.getMessage()));
+      } catch (Throwable t) {
+        t.printStackTrace();
       }
     }
 

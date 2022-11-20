@@ -122,6 +122,8 @@ public final class Nyu {
     }
   }
 
+  @JsonIgnoreProperties(value = {"endDateLocal", "beginDateLocal"},
+                        allowGetters = true)
   public static final class Meeting {
     private static DateTimeFormatter formatter =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

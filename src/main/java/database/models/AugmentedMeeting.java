@@ -7,10 +7,13 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 import utils.Nyu;
 
 // A meeting plus section information
-@JsonIgnoreProperties(value = {"minutesInDay"}, allowGetters = true)
+@JsonIgnoreProperties(
+    value = {"minutesInDay", "endDateLocal", "beginDateLocal"},
+    allowGetters = true)
 public class AugmentedMeeting {
   public final String subject;
   public final String deptCourseId;
@@ -24,6 +27,9 @@ public class AugmentedMeeting {
   public final ZonedDateTime beginDate;
   public final int minutesDuration;
   public final String campus;
+
+  @JsonIgnore
+  public final ZoneId tz;
   public final ZonedDateTime endDate;
 
   public static DateTimeFormatter formatter =
@@ -44,6 +50,8 @@ public class AugmentedMeeting {
     endDate =
         rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
     minutesDuration = rs.getInt("duration");
+
+    tz = Nyu.Campus.timezoneForCampus(campus);
   }
 
   @JsonCreator()
@@ -73,6 +81,8 @@ public class AugmentedMeeting {
     this.beginDate = Nyu.Meeting.parseTime(beginDate);
     this.minutesDuration = minutesDuration;
     this.endDate = Nyu.Meeting.parseTime(endDate);
+
+    tz = Nyu.Campus.timezoneForCampus(campus);
   }
 
   public String getSubject() { return subject; }
@@ -90,12 +100,26 @@ public class AugmentedMeeting {
   public String getInstructionMode() { return instructionMode; }
   public String getLocation() { return location; }
 
+  @NotNull
   public String getBeginDate() {
     return DateTimeFormatter.ISO_INSTANT.format(beginDate);
   }
 
+  @NotNull
   public String getEndDate() {
     return DateTimeFormatter.ISO_INSTANT.format(endDate);
+  }
+
+  @NotNull
+  public String getBeginDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+        beginDate.withZoneSameInstant(tz));
+  }
+
+  @NotNull
+  public String getEndDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+        endDate.withZoneSameInstant(tz));
   }
 
   public int getMinutesDuration() { return minutesDuration; }

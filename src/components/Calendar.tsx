@@ -4,7 +4,6 @@ import { times, days, daysToStr } from "components/constants";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
-import { addMinutes, parseDate } from "./util";
 import { usePageState } from "./state";
 import { StringDateSchema } from "../pages/subject";
 
@@ -43,6 +42,10 @@ interface MeetingProps {
   meeting: CalendarMeeting;
 }
 
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60000);
+}
+
 export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
   const computeMargin = (parsedDate: Date) => {
     // The start time is 8:00. The size of each grid block is 4rem. We need a margin
@@ -67,12 +70,12 @@ export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
         </div>
       </div>
       <div className="time">
-        {`${parseDate(meeting.beginDate).toLocaleTimeString([], {
+        {`${meeting.beginDate.toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         })}
               - ${addMinutes(
-                parseDate(meeting.beginDate),
+                meeting.beginDate,
                 meeting.minutesDuration
               ).toLocaleTimeString([], {
                 hour: "2-digit",

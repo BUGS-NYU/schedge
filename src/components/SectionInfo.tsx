@@ -1,32 +1,31 @@
 import React, { useState } from "react";
 import styles from "./section.module.css";
 import cx from "classnames";
-import { sectionStatusText, styleStatus } from "components/util";
 import { AugmentedSection, useSchedule } from "../pages/schedule";
 import { DateTime } from "luxon";
 import { usePageState } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
+import { Section } from "../pages/subject";
 
 interface DateProps {
   section: AugmentedSection;
 }
 
 const formatTime = (dt: DateTime): string => {
-  const localZone = DateTime.local().zone;
-  const localZoneAbbrev = DateTime.local().offsetNameShort;
+  const local = DateTime.local();
   const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
 
-  if (localZone.equals(dt.zone)) {
+  if (local.offset === dt.offset) {
     return formatted;
   }
 
   const convertedTime = dt
-    .setZone(localZone)
+    .setZone(local.zone)
     .toLocaleString(DateTime.TIME_SIMPLE);
 
-  return `${formatted} ${dt.offsetNameShort} (${convertedTime} ${localZoneAbbrev})`;
+  return `${formatted} ${dt.offsetNameShort} (${convertedTime} ${local.offsetNameShort})`;
 };
 
 const CampusSchema = z.object({
@@ -110,6 +109,23 @@ const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
     </div>
   );
 };
+
+function sectionStatusText(section: Section): string {
+  if (section.status === "WaitList") {
+    return `Waitlist (${section.waitlistTotal})`;
+  } else {
+    return section.status;
+  }
+}
+
+function styleStatus(_status): React.CSSProperties["color"] {
+  // if (status === "Open") {
+  // } else if (status === "Closed") {
+  // } else {
+  // }
+
+  return "unset";
+}
 
 export const SectionInfo: React.VFC<Props> = ({
   section,

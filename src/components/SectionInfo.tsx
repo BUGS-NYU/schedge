@@ -145,7 +145,10 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
 
         <SectionAttribute label="Location">
-          {section.location ?? "TBA"} <small>at</small>{" "}
+          {section.location ?? "TBA"}
+        </SectionAttribute>
+
+        <SectionAttribute label="Campus">
           {section.campus.replace("(Global)", "")}
         </SectionAttribute>
 

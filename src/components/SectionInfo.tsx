@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import styles from "./section.module.css";
 import cx from "classnames";
-import { changeStatus, styleStatus } from "components/util";
+import { sectionStatusText, styleStatus } from "components/util";
 import { AugmentedSection, useSchedule } from "../pages/schedule";
 import { DateTime } from "luxon";
+import { usePageState } from "./state";
+import { useQuery } from "react-query";
+import { z } from "zod";
+import axios from "axios";
 
 interface DateProps {
   section: AugmentedSection;
@@ -25,15 +29,41 @@ const formatTime = (dt: DateTime): string => {
   return `${formatted} ${dt.offsetNameShort} (${convertedTime} ${localZoneAbbrev})`;
 };
 
+const CampusSchema = z.object({
+  name: z.string(),
+  timezoneId: z.string(),
+  timezoneName: z.string(),
+});
+
+const CampusesSchema = z.object({
+  campuses: z.record(z.string(), CampusSchema),
+});
+
 const DateSection: React.VFC<DateProps> = ({ section }) => {
+  const { term } = usePageState();
+  const { data: { campuses } = {} } = useQuery(
+    ["campuses", term.code],
+    async () => {
+      const resp = await axios.get("/api/campus");
+      console.log(resp.data);
+      const parsed = CampusesSchema.parse(resp.data);
+      return parsed;
+    }
+  );
+
+  const timezone = campuses?.[section.campus]?.timezoneId;
   const meetings = React.useMemo(() => {
     const sortedSectionMeetings = [...(section.meetings ?? [])].sort(
       (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
     );
     const parsedMeetings = sortedSectionMeetings.map((meeting) => {
-      const startTime = DateTime.fromISO(meeting.beginDateLocal, {
+      let startTime = DateTime.fromISO(meeting.beginDateLocal, {
         setZone: true,
       });
+      if (timezone) {
+        startTime = startTime.setZone(timezone);
+      }
+
       return {
         startTime,
         minutesDuration: meeting.minutesDuration,
@@ -41,10 +71,7 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
       };
     });
     return parsedMeetings;
-  }, [section.meetings]);
-
-  const localZone = DateTime.local().zone;
-  const localZoneAbbrev = DateTime.local().offsetNameShort;
+  }, [section.meetings, timezone]);
 
   return (
     <div>
@@ -113,12 +140,13 @@ export const SectionInfo: React.VFC<Props> = ({
 
         <SectionAttribute label="Status">
           <span style={{ color: styleStatus(section.status) }}>
-            {changeStatus(section)}
+            {sectionStatusText(section)}
           </span>
         </SectionAttribute>
 
         <SectionAttribute label="Location">
-          {section.location ?? "TBA"}
+          {section.location ?? "TBA"} <small>at</small>{" "}
+          {section.campus.replace("(Global)", "")}
         </SectionAttribute>
 
         <SectionAttribute label="Credits">

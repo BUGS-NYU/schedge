@@ -27,6 +27,7 @@ export type Recitation = z.infer<typeof RecitationSchema>;
 export const RecitationSchema = z.object({
   name: z.string().nullish(),
   registrationNumber: z.number(),
+  campus: z.string(),
   code: z.string(),
   notes: z.string(),
   type: z.string(),

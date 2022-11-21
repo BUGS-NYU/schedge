@@ -106,7 +106,7 @@ export function splitLocation(location) {
   };
 }
 
-export function changeStatus(section: Section): string {
+export function sectionStatusText(section: Section): string {
   if (section.status === "WaitList") {
     return `Waitlist (${section.waitlistTotal})`;
   } else {

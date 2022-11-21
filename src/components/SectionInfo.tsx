@@ -80,12 +80,12 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
           <div key={index} className={styles.dateContainer}>
             <span className={styles.boldedDate}>
               {meeting.startTime.weekdayLong}
-            </span>{" "}
-            from{" "}
+            </span>
+            {", "}
             <span className={styles.boldedDate}>
               {formatTime(meeting.startTime)}
-            </span>{" "}
-            to{" "}
+            </span>
+            {" - "}
             <span className={styles.boldedDate}>
               {formatTime(meeting.endTime)}
             </span>

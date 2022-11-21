@@ -45,7 +45,16 @@ export const MainLayout: React.FC = ({ children }) => {
   const selectRef = React.useRef<HTMLSelectElement>();
 
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        width: "100%",
+        padding: "0px 32px",
+        gap: "16px",
+      }}
+    >
       <div className={headerStyles.headerBox}>
         <div className={headerStyles.titleBox}>
           <Link href="/">

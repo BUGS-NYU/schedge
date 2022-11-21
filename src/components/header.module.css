@@ -4,8 +4,6 @@
   flex-wrap: nowrap;
   justify-content: space-between;
   height: 6em;
-  padding-left: 32px;
-  padding-right: 32px;
 }
 
 .titleBox {
@@ -76,6 +74,6 @@
 .scheduleIcon {
   height: 50px;
   width: 50px;
-  padding: 0.5em;
+  padding: 0.1em;
   border-radius: 100%;
 }

@@ -3,7 +3,6 @@ import React from "react";
 import { SemesterSchema, usePageState } from "components/state";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { MainLayout } from "../components/Layout";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +24,16 @@ function App({ Component, pageProps }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <Component {...pageProps} />
+      </div>
     </QueryClientProvider>
   );
 }

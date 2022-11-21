@@ -1,8 +1,5 @@
 .colorHeader {
-  width: 100vw;
-  /* height: calc(14vmin + 8rem); */
-  padding-top: 6rem;
-  margin-top: -6rem;
+  height: calc(14vmin + 10rem);
 
   background: linear-gradient(
     167deg,
@@ -21,15 +18,14 @@
 }
 
 .courseHeader {
-  width: 90vw;
+  width: 90%;
   margin-left: 5vw;
   background-color: var(--grey100);
   color: var(--grey800);
-  padding: 3vmin 4vmin 10vmin 4%;
+  padding: 3vmin 4vmin 1vmin 4%;
   border-top-left-radius: 0.8rem;
   border-top-right-radius: 0.8rem;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
-  margin-bottom: calc(-3vh - 5vmin);
 
   & #backButton {
     color: white;
@@ -58,25 +54,29 @@
   }
 }
 
+.courseBody {
+  width: 90%;
+  margin-left: 5vw;
+  background-color: var(--grey100);
+  color: var(--grey800);
+  padding: 0px 4vmin 64px 4%;
+  box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .sectionsDescription {
-  padding: 1.8vmin 2.8vmin;
   font-size: 1.2rem;
   line-height: 1.65rem;
   width: 73%;
-  margin-left: 9%;
   color: var(--grey800);
   position: relative;
-
-  @media (max-width: 1000px) {
-    margin-top: calc(12vmin);
-  }
 }
 
 .sectionsHeader {
   font-weight: bold;
-  text-align: center;
-  font-size: calc(1.2vmin + 1rem);
-  padding: 2vmin;
+  font-size: calc(1.2vmin + 1.5rem);
   color: var(--grey800);
-  margin-top: calc(2vmin + 1rem);
 }

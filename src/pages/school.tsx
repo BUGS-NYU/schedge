@@ -15,39 +15,31 @@ export default function SchoolPage() {
 
   return (
     <MainLayout>
-      <div className={styles.pageContainer}>
-        <div className={styles.departmentHeader}>
-          <div id="departmentTitle">{school?.name}</div>
+      <div className={styles.departmentHeader}>{school?.name}</div>
+
+      {isLoading && <span>Loading...</span>}
+
+      {!!school && (
+        <div className={styles.departments}>
+          {school.subjects.map((subject, i) => {
+            return (
+              <Link
+                key={subject.code}
+                href={{
+                  pathname: "/subject",
+                  query: { schoolIndex, subject: subject.code },
+                }}
+              >
+                <a className={styles.department}>
+                  <span className={styles.departmentCode}>{subject.code}</span>
+
+                  <span className="departmentName">&nbsp; {subject.name}</span>
+                </a>
+              </Link>
+            );
+          })}
         </div>
-
-        {isLoading && <span>Loading...</span>}
-
-        {!!school && (
-          <div className={styles.departments}>
-            {school.subjects.map((subject, i) => {
-              return (
-                <Link
-                  key={subject.code}
-                  href={{
-                    pathname: "/subject",
-                    query: { schoolIndex, subject: subject.code },
-                  }}
-                >
-                  <a className={styles.department}>
-                    <span className={styles.departmentCode}>
-                      {subject.code}
-                    </span>
-
-                    <span className="departmentName">
-                      &nbsp; {subject.name}
-                    </span>
-                  </a>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </div>
+      )}
     </MainLayout>
   );
 }

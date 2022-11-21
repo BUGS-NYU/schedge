@@ -83,47 +83,41 @@ export default function SubjectPage() {
 
   return (
     <MainLayout>
-      <div className={styles.pageContainer}>
-        <div className={styles.headerBackground}></div>
+      <div className={styles.departmentHeader}>
+        <Link
+          href={{
+            pathname: "/school",
+            query: { schoolIndex },
+          }}
+        >
+          <a className={styles.schoolName}>{school?.name}</a>
+        </Link>
 
-        <div>
-          <div className={styles.departmentHeader}>
-            <Link
-              href={{
-                pathname: "/school",
-                query: { schoolIndex },
-              }}
-            >
-              <a className={styles.schoolName}>{school?.name}</a>
-            </Link>
+        <div className={styles.departmentName}>{subject?.name}</div>
+      </div>
 
-            <div className={styles.departmentName}>{subject?.name}</div>
-          </div>
-
-          <div className={styles.courseContainer}>
-            {courseList?.map((course, i) => (
-              <Link
-                href={{
-                  pathname: "/course",
-                  query: {
-                    courseid: course.deptCourseId,
-                    schoolIndex,
-                    subject: subjectCode,
-                  },
-                }}
-                key={i}
-              >
-                <a className={styles.course}>
-                  <h4>
-                    {course.subjectCode} {course.deptCourseId}
-                  </h4>
-                  <h3>{course.name}</h3>
-                  <p>{course.sections.length} Sections</p>
-                </a>
-              </Link>
-            ))}
-          </div>
-        </div>
+      <div className={styles.courseContainer}>
+        {courseList?.map((course, i) => (
+          <Link
+            href={{
+              pathname: "/course",
+              query: {
+                courseid: course.deptCourseId,
+                schoolIndex,
+                subject: subjectCode,
+              },
+            }}
+            key={i}
+          >
+            <a className={styles.course}>
+              <h4>
+                {course.subjectCode} {course.deptCourseId}
+              </h4>
+              <h3>{course.name}</h3>
+              <p>{course.sections.length} Sections</p>
+            </a>
+          </Link>
+        ))}
       </div>
     </MainLayout>
   );

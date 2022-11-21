@@ -33,7 +33,7 @@ function CoursePage() {
           }}
         >
           <a>
-            <img src="./img/go-back.svg" alt="Go back" id={styles.backButton} />
+            <img src="/img/go-back.svg" alt="Go back" id={styles.backButton} />
           </a>
         </Link>
 
@@ -54,26 +54,26 @@ function CoursePage() {
   );
 
   return (
-    <div>
+    <>
       {header}
-      <div className={styles.sectionsDescription}>
-        {course?.description}
+      <div className={styles.courseBody}>
+        <div className={styles.sectionsDescription}>
+          {course?.description}
 
-        {pullNotesToTop && (
-          <>
-            {/* Handle course description here if all sections have the same one */}
-            <br />
-            <br />
-            {course.sections[0].notes}
-          </>
+          {pullNotesToTop && (
+            <>
+              {/* Handle course description here if all sections have the same one */}
+              <br />
+              <br />
+              {course.sections[0].notes}
+            </>
+          )}
+        </div>
+
+        {!!course?.sections?.length && (
+          <div className={styles.sectionsHeader}>Sections</div>
         )}
-      </div>
 
-      {course?.sections?.length > 1 && (
-        <div className={styles.sectionsHeader}>Sections</div>
-      )}
-
-      <div>
         {course?.sections?.map((section, i) => {
           return (
             <SectionInfo
@@ -90,7 +90,7 @@ function CoursePage() {
           );
         })}
       </div>
-    </div>
+    </>
   );
 }
 

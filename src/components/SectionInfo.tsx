@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import Attributes from "./Attributes";
 import styles from "./section.module.css";
+import cx from "classnames";
 import {
-  convertUnits,
-  splitLocation,
   changeStatus,
   styleStatus,
   addMinutes,
@@ -36,17 +34,17 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
       {meetings.map((meeting, index) => {
         return (
           <div key={index} className={styles.dateContainer}>
-            <div className={styles.boldedDate}>
+            <span className={styles.boldedDate}>
               {daysToStr[days[meeting.startTime.getDay()]]}
-            </div>{" "}
+            </span>{" "}
             from{" "}
-            <div className={styles.boldedDate}>
+            <span className={styles.boldedDate}>
               {convertToLocaleTimeStr(meeting.startTime)}
-            </div>{" "}
+            </span>{" "}
             to{" "}
-            <div className={styles.boldedDate}>
+            <span className={styles.boldedDate}>
               {convertToLocaleTimeStr(meeting.endTime)}
-            </div>
+            </span>
           </div>
         );
       })}
@@ -59,36 +57,64 @@ interface Props {
   lastSection: boolean;
 }
 
+const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
+  return (
+    <div className={styles.sectionAttribute}>
+      <h5>{label}</h5>
+      <div className={styles.sectionAttrValue}>{children}</div>
+    </div>
+  );
+};
+
 export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
   const [expanded, setExpanded] = useState(false);
   const { addToWishlist } = useSchedule();
 
   return (
     <div
-      className={styles.sectionContainer}
-      style={{ borderBottom: !lastSection && "1px solid" }}
+      className={cx(
+        styles.sectionContainer,
+        !lastSection && styles.sectionBorder
+      )}
     >
-      {section.sectionName && <h3 className="sectionName">{section.name}</h3>}
-      <h4 className="sectionNum">{section.code}</h4>
+      {section.sectionName && (
+        <h3 className={styles.sectionName}>{section.name}</h3>
+      )}
+      <h4 className={styles.sectionNum}>
+        {section.type} {section.code}
+      </h4>
 
-      <Attributes
-        instructors={section.instructors}
-        building={splitLocation(section.location).Building}
-        room={splitLocation(section.location).Room}
-        units={convertUnits(section.minUnits, section.maxUnits)}
-        status={section.status}
-        type={section.type}
-        registrationNumber={section.registrationNumber}
-      />
+      <div className={styles.attributeContainer}>
+        <SectionAttribute label="Registration Number">
+          #{section.registrationNumber}
+        </SectionAttribute>
 
-      <div className={styles.statusContainer}>
-        <div style={{ color: styleStatus(section.status) }} />
-        <span style={{ color: styleStatus(section.status) }}>
-          {changeStatus(section)}
-        </span>
+        <SectionAttribute label="Status">
+          <span style={{ color: styleStatus(section.status) }}>
+            {changeStatus(section)}
+          </span>
+        </SectionAttribute>
+
+        <SectionAttribute label="Location">
+          {section.location ?? "TBA"}
+        </SectionAttribute>
+
+        <SectionAttribute label="Credits">
+          {section.minUnits === section.maxUnits
+            ? `${section.minUnits}`
+            : `${section.minUnits} - ${section.maxUnits}`}
+        </SectionAttribute>
       </div>
 
-      <div className={styles.sectionDescription}>{section.notes}</div>
+      <SectionAttribute label="instructors">
+        {section.instructors.map((instructor) => (
+          <span key={instructor}>{instructor}</span>
+        ))}
+      </SectionAttribute>
+
+      {section.notes && (
+        <div className={styles.sectionDescription}>{section.notes}</div>
+      )}
 
       {section.meetings && <DateSection section={section} />}
 
@@ -98,7 +124,7 @@ export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
             className={styles.expandButton}
             onClick={(e) => setExpanded((prev) => !prev)}
           >
-            Show Recitations
+            {expanded ? "Hide" : "Show"} Recitations
           </button>
         )}
 
@@ -106,12 +132,11 @@ export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
           className={styles.wishlistButton}
           onClick={() => addToWishlist(section)}
         >
-          <div style={{}} />
-          <span style={{}}>Add to Wishlist</span>
+          Add to Wishlist
         </button>
       </div>
 
-      <div>
+      <div className={styles.recitationBox}>
         {!!section.recitations?.length &&
           expanded &&
           section.recitations.map((recitation, i) => {

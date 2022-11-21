@@ -34,7 +34,11 @@ function CoursePage() {
           }}
         >
           <a className={styles.svgButton}>
-            <img src="/img/go-back.svg" alt="Go back" className={styles.svgButton}/>
+            <img
+              src="/img/go-back.svg"
+              alt="Go back"
+              className={styles.svgButton}
+            />
           </a>
         </Link>
 
@@ -42,11 +46,8 @@ function CoursePage() {
       </div>
 
       <div className={styles.courseHeader}>
-
-        <div>
-          <div id={styles.titleDepartment}>{subjectCode}</div>
-          <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
-        </div>
+        <div id={styles.titleDepartment}>{subjectCode}</div>
+        <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
       </div>
     </div>
   );

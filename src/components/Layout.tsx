@@ -9,7 +9,10 @@ import { z } from "zod";
 import EditCalendarSVG from "./edit-calendar.svg";
 import cx from "classnames";
 
-export const ScheduleButton: React.VFC<{ className?: string; style?: React.CSSProperties}> = ({ className, style }) => {
+export const ScheduleButton: React.VFC<{
+  className?: string;
+  style?: React.CSSProperties;
+}> = ({ className, style }) => {
   const router = useRouter();
 
   return (

@@ -1,0 +1,83 @@
+.calendar {
+  min-height: 100vh;
+  padding: 1rem;
+  display: flex;
+}
+
+.course {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 12rem);
+  grid-template-rows: 48px repeat(13, 4rem);
+  @media (max-width: 1000px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calendarDay {
+  width: 100%;
+  min-height: 2vh;
+  padding: 15px;
+  border-bottom: 1px dashed var(--grey400);
+  text-align: center;
+  align-items: center;
+
+  @media (max-width: 1000px) {
+    min-height: 150px;
+  }
+}
+
+.timeGrid {
+  width: 5%;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 40px repeat(13, 4rem);
+}
+
+.time {
+  text-align: right;
+  font-size: 1rem;
+  padding: 0 5px 0 0;
+}
+
+.courseBlock {
+  background-color: var(--grey400);
+  width: 10rem;
+  min-height: 4rem;
+  padding: 5px 5px 5px 10px;
+  border-radius: 10px;
+  position: absolute;
+
+  & > .time {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .location {
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+}
+
+.textContainer {
+  display: flex;
+  justify-content: space-between;
+
+  & > .courseCode {
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0 2px;
+    width: 100%;
+  }
+
+  & > .closeButton {
+    cursor: pointer;
+    &:hover {
+      color: var(--grey100);
+    }
+  }
+}

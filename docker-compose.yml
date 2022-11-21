@@ -11,8 +11,8 @@ services:
       options:
         max-size: 10m
         max-file: "3"
-    expose:
-      - "5432"
+    ports: # database port is exposed in development, but closed off in production
+      - "5432:5432"
     volumes:
       - "./.build/postgres:/var/lib/postgresql/data"
 
@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: ./src/build/docker/Dockerfile
-    restart: always
+    restart: "no"
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -28,6 +28,9 @@ services:
 
     ports:
       - "4358:4358"
+
+    volumes:
+      - "./:/home/user"
 
     labels:
       - "com.centurylinklabs.watchtower.enable=true"

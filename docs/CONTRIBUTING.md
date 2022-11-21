@@ -19,9 +19,21 @@ You'll need to install a few applications to contribute to this project:
   This is used to run the application in both production and development. Ideally
   it would not be necessary, but for now it is, to reduce the need to download
   an infinite number of dependencies all the time.
-- [Java Development Kit 8 or later](https://www.oracle.com/java/technologies/downloads/) -
+- [Java Development Kit](https://www.oracle.com/java/technologies/downloads/) -
   The project is written in Java, so you'll probably need to install a Java
   Development Kit (JDK) in order to build and run it.
+
+  **NOTE:** Please use at least version 11 and at most version 18. This project
+  uses Java 11 features, so at least JDK 11 is required, but Gradle doesn't
+  seem to support anything later than 18 right now, so you will not be able
+  to build code if you install JDK 19.
+
+> NOTE: If you're on MacOS, you may need to do additional work to set up
+> your computer. Open the Terminal App and run the following command:
+>
+> ```
+> xcode-select --install
+> ```
 
 ## Development
 
@@ -37,19 +49,16 @@ You'll need to install a few applications to contribute to this project:
   if you would like feedback on your changes.
 
 ### Build with Command Line/Terminal
-- `./gradlew check`: Check the application for compile-time errors
-- `./gradlew composeUp`: Start up the development servers; Schedge will start
-  on port `4358`
-- `./gradlew composeBuild`: Build the application, and update the development server
-- `./gradlew build`: Just build the application
-- `docker-compose build`: Build the Docker image (the dev server will restart with
-  new changes automatically)
-- `docker-compose down`: Close the servers when development is done
+- `yarn compile`: Check the application for compile-time errors
+- `yarn test`: Test the code for regressions
+- `yarn start`: Start up development servers; Schedge will start on port `4358`
+- `yarn build`: Build the application, and update the development server
+- `yarn stop`: Close the servers when development is done
 
 ## Useful Commands
-- `docker-compose exec schedge schedge db populate --semester=sp --year=2022` -
+- `yarn schedge db populate --semester=sp --year=2022` -
   Populate your database with data from production
-- `docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
+- `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database
 
 
@@ -63,6 +72,6 @@ The codebase uses the following annotations in the comments:
 - `@Organize` - We should reorganize this code
 
 ### Before Creating a PR
-- Making sure that the code compiles and test your code.
+- Make sure that the code compiles and test your code.
 - Format your code with [clang-format](https://github.com/mprobst/ClangFormatIJ/).
 

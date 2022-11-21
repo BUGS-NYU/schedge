@@ -1,21 +1,14 @@
 package cli;
 
+import static actions.CopyTermFromProduction.*;
 import static picocli.CommandLine.*;
-import static utils.TryCatch.*;
-import static utils.Utils.*;
+import static utils.Nyu.*;
 
-import actions.*;
-import api.App;
-import api.SelectCourses;
-import database.GetConnection;
-import database.courses.InsertFullCourses;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import actions.ScrapeTerm;
+import database.*;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.ScrapeSchedge;
-import types.*;
-import utils.Client;
+import scraping.*;
 
 @Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
@@ -33,56 +26,37 @@ public class Database implements Runnable {
                                              "Missing required subcommand.\n");
   }
 
-  @Command(
-      name = "scrape",
-      description = "Scrape section based on term and registration number, "
-                    + "OR school and subject from db.\n")
-  public void
-  scrape(@Mixin Mixins.Term termMixin, @Mixin Mixins.BatchSize batchSize,
-         @Option(names = "--service",
-                 description = "turns scraping into a service; if set, "
-                               + "--year, --semester, and --term are ignored.")
-         boolean service) {
-    while (service) {
-      UpdateData.updateData(batchSize.catalog, batchSize.sections);
-
-      tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    }
-
+  @Command(name = "scrape-schools", description = "Scrape schools for a term")
+  public void scrapeSchools(@Mixin Mixins.Term termMixin) {
     long start = System.nanoTime();
 
-    int catalogBatch = batchSize.catalog;
-    int sectionsBatch = batchSize.sections;
-    Term term = termMixin.getTerm();
+    var term = termMixin.term;
 
-    ScrapeTerm.scrapeTerm(term, catalogBatch, sectionsBatch, true);
+    var schools = PeopleSoftClassSearch.scrapeSchools(term);
 
+    GetConnection.withConnection(
+        conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
     GetConnection.close();
-    Client.close();
+
     long end = System.nanoTime();
     logger.info((end - start) / 1000000000 + " seconds");
   }
 
-  @Command(name = "query",
-           description = "Query section based on term and registration number, "
-                         + "OR school and subject from db.\n")
-  public void
-  query(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectCodeMixin,
-        @Mixin Mixins.OutputFile outputFile) {
+  @Command(name = "scrape-term", description = "Scrape all data for a term")
+  public void scrapeTerm(@Parameters(
+      paramLabel = "TERMS",
+      description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020",
+      converter = Mixins.TermConverter.class) Term[] terms) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
-    List<Subject> codes = subjectCodeMixin.getSubjects();
-    GetConnection.withConnection(conn -> {
-      Object o = SelectCourses.selectCourses(conn, term, codes);
-      outputFile.writeOutput(o);
-    });
+    for (var term : terms) {
+      ScrapeTerm.scrapeTerm(term, true);
+    }
 
     GetConnection.close();
 
     long end = System.nanoTime();
-    double duration = (end - start) / 1000000000.0;
-    logger.info(duration + " seconds");
+    logger.info((end - start) / 1000000000 + " seconds");
   }
 
   @Command(
@@ -91,30 +65,13 @@ public class Database implements Runnable {
                     + "Schedge instance.\n")
   public void
   populate(@Mixin Mixins.Term termMixin,
-           @Option(names = "--domain", defaultValue = "schedge.a1liu.com",
-                   description =
-                       "domain to scrape as if it's an instance of schedge")
-           String domain) {
+           @Option(names = {"--v2"},
+                   description = "scrape v2 instead of v1") boolean useV2) {
     long start = System.nanoTime();
 
-    Term term = termMixin.getTerm();
-
-    GetConnection.withConnection(conn -> {
-      List<List<Course>> data = ScrapeSchedge.scrapeFromSchedge(term);
-
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching took {} seconds", duration);
-
-      InsertFullCourses.clearPrevious(conn, term);
-
-      for (List<Course> courses : data) {
-        tcFatal(() -> InsertFullCourses.insertCourses(conn, term, courses));
-      }
-    });
-
+    Term term = termMixin.term;
+    copyTermFromProduction(useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1, term);
     GetConnection.close();
-    Client.close();
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

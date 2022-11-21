@@ -1,6 +1,6 @@
 package database;
 
-import static utils.TryCatch.*;
+import static utils.Try.*;
 
 import java.sql.*;
 import java.util.*;
@@ -23,7 +23,6 @@ public final class Migrations {
 
   public static void runMigrations(Connection conn) throws SQLException {
     int version = schemaVersion(conn);
-    System.err.println("version: " + version);
 
     String directory = "/migrations";
     List<String> paths = tcPass(() -> Utils.resourcePaths(directory));
@@ -36,8 +35,9 @@ public final class Migrations {
 
       for (String path : paths) {
         // /migrations/V01_blah_blah.sql
-        String name = path.substring(directory.length() + 2);
-        int fileVersion = Integer.parseInt(name.split("_")[0]);
+        var parts = path.split("/");
+        var name = parts[parts.length - 1];
+        int fileVersion = Integer.parseInt(name.substring(1).split("_")[0]);
 
         if (fileVersion > version) {
           for (String sql : parseMigration(path)) {
@@ -51,7 +51,7 @@ public final class Migrations {
 
           conn.commit();
 
-          logger.info("Finished migration for V{}", name);
+          logger.info("Finished migration for {}", name);
           ranMigration = true;
         }
       }
@@ -140,6 +140,7 @@ public final class Migrations {
 
       if (shouldAdd) {
         builder.append(line.substring(begin));
+        builder.append(' ');
       }
     }
 

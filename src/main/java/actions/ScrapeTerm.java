@@ -1,48 +1,40 @@
 package actions;
 
-import static database.courses.InsertCourses.*;
-import static database.courses.UpdateSections.*;
-import static scraping.ScrapeCatalog.*;
-import static utils.Utils.*;
+import static database.InsertCourses.*;
+import static database.UpdateSchools.*;
+import static utils.Nyu.*;
 
-import cli.ConsoleProgressBarConsumer;
 import database.GetConnection;
-import database.models.SectionID;
-import java.util.List;
-import java.util.function.Function;
-import me.tongfei.progressbar.*;
-import scraping.models.Course;
-import types.*;
+import java.sql.*;
+import me.tongfei.progressbar.ProgressBar;
+import scraping.PeopleSoftClassSearch;
 
 public class ScrapeTerm {
 
-  public static void scrapeTerm(Term term, int batchSize,
-                                int batchSizeSections) {
-    scrapeTerm(term, batchSize, batchSizeSections, false);
+  public static void scrapeTerm(Term term, boolean display) {
+    GetConnection.withConnection(conn -> {
+      if (!display) {
+        scrapeTerm(conn, term, null);
+        return;
+      }
+
+      try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
+        scrapeTerm(conn, term, bar);
+      }
+    });
   }
 
-  public static void scrapeTerm(Term term, int batchSize, int batchSizeSections,
-                                boolean display) {
-    ProgressBarBuilder bar =
-        new ProgressBarBuilder()
-            .setStyle(ProgressBarStyle.ASCII)
-            .setConsumer(new ConsoleProgressBarConsumer(System.out));
+  // @Note: bar is nullable
+  static void scrapeTerm(Connection conn, Term term, ProgressBar bar)
+      throws SQLException {
+    clearPrevious(conn, term);
 
-    List<Subject> subjectData = Subject.allSubjects();
-    Iterable<Subject> subjects =
-        display ? ProgressBar.wrap(subjectData, bar) : subjectData;
+    var termData = PeopleSoftClassSearch.scrapeTerm(term, bar);
+    updateSchoolsForTerm(conn, term, termData.getSchools());
 
-    List<Course> courses = scrapeCatalog(term, subjects, batchSize);
-
-    GetConnection.withConnection(conn -> {
-      clearPrevious(conn, term);
-
-      List<SectionID> idData = insertCourses(conn, term, courses);
-
-      Iterable<SectionID> ids =
-          display ? ProgressBar.wrap(idData, bar) : idData;
-
-      updateSections(conn, term, ids.iterator(), batchSizeSections);
-    });
+    while (termData.hasNext()) {
+      var coursesBatch = termData.next();
+      insertCourses(conn, term, coursesBatch);
+    }
   }
 }

@@ -1,89 +1,60 @@
 package api.v1;
 
-import static utils.TryCatch.*;
+import static utils.Nyu.*;
 
 import api.*;
 import database.GetConnection;
-import io.javalin.http.Handler;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import io.javalin.http.Context;
+import io.javalin.openapi.*;
 import java.util.*;
-import types.*;
-import utils.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
-
   public String getPath() { return "/courses/{term}/{subject}"; }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint returns a list of courses for a specific semester and subject.");
-          openApiOperation.summary("Courses Endpoint");
-        })
-        .pathParam("term", String.class,
-                   openApiParam -> {
-                     openApiParam.description(
-                         SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION);
-                   })
-        .pathParam(
-            "subject", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid subject code. Take a look at the docs for the schools endpoint for more information.");
-            })
-        .queryParam(
-            "full", Boolean.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "Whether to return campus, description, grading, nodes, "
-                  + "and prerequisites.");
-            })
-        .jsonArray("200", Course.class,
-                   openApiParam -> { openApiParam.description("OK."); })
-        .json("400", App.ApiError.class, openApiParam -> {
-          openApiParam.description(
-              "One of the values in the path parameter was not valid.");
-        });
-  }
+  @OpenApi(
+      path = "/api/courses/{term}/{subject}", methods = HttpMethod.GET,
+      summary = "Courses",
+      description = "Lists all courses for a specific semester and subject.",
+      pathParams =
+      {
+        @OpenApiParam(
+            name = "subject",
+            description =
+                "Must be a valid subject code. Take a look at the docs for "
+                + "the schools endpoint for more information.",
+            example = "MATH-UA", required = true)
+        ,
+            @OpenApiParam(name = "term",
+                          description =
+                              SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                          example = "fa2022", required = true)
+      },
+      responses =
+      {
+        @OpenApiResponse(status = "200",
+                         description = "Status of the executed command",
+                         content = @OpenApiContent(from = Course[].class))
+        ,
+            @OpenApiResponse(status = "400",
+                             description = "One of the values in the path "
+                                           + "parameter was "
+                                           + "not valid.",
+                             content =
+                                 @OpenApiContent(from = App.ApiError.class))
+      })
+  public Object
+  handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = Term.fromString(termString);
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+    var subject = ctx.pathParam("subject").toUpperCase();
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        return SchoolInfoEndpoint.parseTerm(termString);
-      });
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      List<String> subjects = Collections.singletonList(subject);
 
-      if (term == null)
-        return;
+      return SelectCourses.selectCourses(conn, term, subjects);
+    });
 
-      Subject subject = tc.log(() -> {
-        String subjectString = ctx.pathParam("subject").toUpperCase();
-        return Subject.fromCode(subjectString);
-      });
-
-      if (subject == null)
-        return;
-
-      String fullData = ctx.queryParam("full");
-
-      Object output = GetConnection.withConnectionReturning(conn -> {
-        List<Subject> subjects = Collections.singletonList(subject);
-
-        if (fullData != null && fullData.toLowerCase().contentEquals("true")) {
-          return SelectCourses.selectFullCourses(conn, term, subjects);
-        }
-
-        return SelectCourses.selectCourses(conn, term, subjects);
-      });
-
-      ctx.status(200);
-      ctx.json(output);
-    };
+    return output;
   }
 }

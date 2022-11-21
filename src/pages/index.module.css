@@ -20,7 +20,7 @@
 
 .searchContainer {
   position: relative;
-  min-height: 60vh;
+  min-height: 38vh;
 }
 
 .schoolsContainer {
@@ -49,6 +49,7 @@
   grid-gap: 0.5rem;
   padding: 6rem 2rem 2rem 2rem;
   animation: deptFadeIn 0.8s ease forwards;
+
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;
   }
@@ -61,4 +62,30 @@
   color: var(--grey700);
   top: 0.3rem;
   animation: fadeIn 1.2s ease forwards;
+}
+
+.schoolContainer {
+  padding: 0.25rem 0;
+  cursor: pointer;
+
+  & > .schoolTitle {
+    font-size: 1.2rem;
+    font-family: var(--condensedFont);
+    text-align: left;
+    margin: 0.2rem 0;
+    position: sticky;
+
+    & > .schoolCode {
+      padding: 0.5rem;
+      color: var(--grey600);
+      font-weight: 800;
+    }
+
+    & > .schoolName {
+      color: var(--grey900);
+    }
+  }
+
+  &:hover {
+  }
 }

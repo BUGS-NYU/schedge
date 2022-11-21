@@ -10,34 +10,76 @@ jobs:
       contents: read
       packages: write
 
+    # Service containers to run with `container-job`
+    # services:
+    #   # Label used to access the service container
+    #   postgres:
+    #     # Docker Hub image
+    #     image: postgres:14.1-alpine
+
+    #     # Provide the password for postgres
+    #     env:
+    #       POSTGRES_USER: postgres
+    #       POSTGRES_PASSWORD: postgres
+
+    #     # Set health checks to wait until postgres has started
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         with:
           lfs: true
 
-      - uses: actions/setup-node@v2
+      - name: Set up Node + Yarn
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      # https://nextjs.org/docs/advanced-features/ci-build-caching
+      - name: Cache NextJS Files
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
 
       - name: Set up Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           java-version: '11'
           distribution: 'adopt'
+          cache: 'gradle'
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn export
+      - name: Install JS Dependencies
+        run: yarn install --frozen-lockfile
 
-      - name: Build with Gradle
-        run: yarn build
+      - name: Compile Frontend
+        run: yarn export
+
+      - name: Compile Backend
+        run: yarn gradle jar
+
+          # - name: Run Tests
+          #   run: JDBC_URL=jdbc:postgresql://postgres/postgres yarn test
 
       - name: Log in to the Container registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: src/build/docker/Dockerfile

@@ -14,7 +14,7 @@
 .searchBox {
   font-family: var(--primaryFont);
   position: absolute;
-  top: 7vmax;
+  top: 4vmax;
   left: 10vmin;
   width: 80vmin;
   height: 4rem;
@@ -39,7 +39,8 @@
 
 .searchResults {
   position: absolute;
-  top: calc(7vmax + 5rem);
+  z-index: 20;
+  top: calc(4vmax + 5rem);
   left: 10vmin;
   width: 80vmin;
 }
@@ -52,14 +53,15 @@
   color: var(--grey900);
   transition: background-color 0.15s;
   cursor: pointer;
+  display: flex;
+  box-sizing: border-box;
 
   &:hover {
     background-color: var(--grey200);
   }
 }
 
-.courseSchoolCode,
-.courseId {
+.courseSchoolCode {
   font-family: var(--extraCondensedFont);
   font-weight: 500;
   color: var(--grey700);

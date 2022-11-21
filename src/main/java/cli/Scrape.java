@@ -2,21 +2,18 @@ package cli;
 
 import static picocli.CommandLine.*;
 
-import java.util.List;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.ScrapeCatalog;
-import scraping.parse.ParseSchoolSubjects;
-import scraping.query.QuerySchool;
-import utils.Client;
+import scraping.PeopleSoftClassSearch;
+import utils.Nyu;
 
 /*
    @Todo: Add annotation for parameter.
 */
-@Command(name = "scrape",
-         description =
-             "Query then parse NYU Albert data based on different catagories")
+@Command(name = "scrape", description = "Scrape course data")
 public class Scrape implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
 
@@ -31,43 +28,64 @@ public class Scrape implements Runnable {
                                              "\nMissing required subcommand.");
   }
 
-  @Command(name = "catalog",
-           description = "Scrape catalog based on term, subject codes, "
-                         + "or school for one or multiple subjects/schools")
+  @Command(name = "term", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  catalog(@Mixin Mixins.Term termMixin, @Mixin Mixins.Subject subjectMixin,
-          @Option(names = "--batch-size", defaultValue = "20",
-                  description = "batch size if query more than one catalog")
-          int batchSize,
-          @Mixin Mixins.OutputFile outputFileMixin) {
+  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
-    List<scraping.models.Course> courses = ScrapeCatalog.scrapeCatalog(
-        termMixin.getTerm(), subjectMixin.getSubjects(), batchSize);
-
-    outputFileMixin.writeOutput(courses);
-
-    Client.close();
+    Nyu.Term term = termMixin.term;
+    try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
+      var courses = PeopleSoftClassSearch.scrapeTerm(term, bar);
+      outputFileMixin.writeOutput(courses);
+    }
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;
-    logger.info("{} seconds for {} courses", duration, courses.size());
+    logger.info(duration + " seconds");
   }
 
-  @Command(name = "school", sortOptions = false,
+  @Command(name = "subject", sortOptions = false,
            headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
            parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n", header = "Scrape school/subject",
-           description = "Scrape school/subject based on term")
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  school(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin)
-      throws ExecutionException, InterruptedException {
+  subject(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.OutputFile outputFileMixin,
+          @Parameters(index = "0", paramLabel = "SUBJECT",
+                      description = "A subject code like MATH-UA")
+          String subject) {
     long start = System.nanoTime();
 
-    outputFileMixin.writeOutput(ParseSchoolSubjects.parseSchool(
-        QuerySchool.querySchool(termMixin.getTerm())));
+    Nyu.Term term = termMixin.term;
+    var courses = PeopleSoftClassSearch.scrapeSubject(term, subject);
+    outputFileMixin.writeOutput(courses);
 
-    Client.close();
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info(duration + " seconds");
+  }
+
+  @Command(name = "schools", sortOptions = false,
+           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
+           parameterListHeading = "%nParameters:%n",
+           optionListHeading = "%nOptions:%n",
+           header = "Scrape the PeopleSoft Class Search",
+           description = "Scrape the PeopleSoft Class Search for a term")
+  public void
+  schools(@Mixin Mixins.Term termMixin,
+          @Mixin Mixins.OutputFile outputFileMixin) {
+    long start = System.nanoTime();
+
+    Nyu.Term term = termMixin.term;
+    var schools = PeopleSoftClassSearch.scrapeSchools(term);
+    outputFileMixin.writeOutput(schools);
 
     long end = System.nanoTime();
     double duration = (end - start) / 1000000000.0;

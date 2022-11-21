@@ -1,13 +1,11 @@
 package utils;
 
 import java.io.*;
-import java.lang.Runnable;
 import java.net.*;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.*;
 
 public final class Utils {
@@ -40,15 +38,27 @@ public final class Utils {
       throws IOException, URISyntaxException {
     URI uri = Utils.class.getResource(path).toURI();
 
-    try (FileSystem fileSystem = FileSystems.newFileSystem(
-             uri, Collections.<String, Object>emptyMap())) {
-      Path myPath = fileSystem.getPath(path);
+    if (uri.getScheme().equals("jar")) {
+      try (FileSystem fileSystem = FileSystems.newFileSystem(
+              uri, Collections.<String, Object>emptyMap())) {
+        var myPath = fileSystem.getPath(path);
+
+        return Files.walk(myPath)
+                .filter(Files::isRegularFile)
+                .map(p -> p.toString())
+                .collect(Collectors.toList());
+      }
+    } else {
+      var myPath = Paths.get(uri);
 
       return Files.walk(myPath)
-          .filter(Files::isRegularFile)
-          .map(p -> p.toString())
-          .collect(Collectors.toList());
+              .filter(Files::isRegularFile)
+              .map(p -> p.toUri().toString())
+              .collect(Collectors.toList());
+
     }
+
+
   }
 
   public static void writeToFileOrStdout(String file, Object value) {
@@ -76,25 +86,28 @@ public final class Utils {
     return new Scanner(inReader).useDelimiter("\\A").next();
   }
 
-  public static <T, E> E map(T t, Function<T, E> f) {
-    return t != null ? f.apply(t) : null;
-  }
-
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
     switch (dayOfWeek) {
     case "Mo":
+    case "Mon":
       return DayOfWeek.MONDAY;
     case "Tu":
+    case "Tue":
       return DayOfWeek.TUESDAY;
     case "We":
+    case "Wed":
       return DayOfWeek.WEDNESDAY;
     case "Th":
+    case "Thu":
       return DayOfWeek.THURSDAY;
     case "Fr":
+    case "Fri":
       return DayOfWeek.FRIDAY;
     case "Sa":
+    case "Sat":
       return DayOfWeek.SATURDAY;
     case "Su":
+    case "Sun":
       return DayOfWeek.SUNDAY;
     default:
       return DayOfWeek.valueOf(dayOfWeek);
@@ -112,7 +125,8 @@ public final class Utils {
   public static void setObject(PreparedStatement stmt, int index, Object obj)
       throws SQLException {
     if (obj == null) {
-      throw new IllegalArgumentException("object is null");
+      throw new IllegalArgumentException("object at index " + index +
+                                         " is null");
     }
 
     if (obj instanceof NullWrapper) {

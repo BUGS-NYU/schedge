@@ -1,183 +1,79 @@
 package api.v1;
 
-import static utils.TryCatch.*;
-
 import api.*;
 import database.GetConnection;
-import database.courses.SearchRows;
-import io.javalin.http.Handler;
-import io.javalin.plugin.openapi.dsl.OpenApiDocumentation;
+import database.SearchRows;
+import io.javalin.http.Context;
+import io.javalin.openapi.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import types.*;
-import types.Term;
-import utils.*;
+import utils.Nyu;
 
 public final class SearchEndpoint extends App.Endpoint {
 
   public String getPath() { return "/search/{term}"; }
 
-  public OpenApiDocumentation configureDocs(OpenApiDocumentation docs) {
-    return docs
-        .operation(openApiOperation -> {
-          openApiOperation.description(
-              "This endpoint returns a list of courses for a year and semester, given search terms.");
-          openApiOperation.summary("Search Endpoint");
-        })
-        .pathParam(
-            "term", String.class,
-            openApiParam -> {
-              openApiParam.description(
-                  "Must be a valid term code, either 'current', 'next', or something "
-                  + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-                  + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm");
-            })
-        .queryParam(
-            "full", Boolean.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "if present and equal to 'true', then you'll get full output");
-            })
-        .queryParam("query", String.class, false,
-                    openApiParam -> {
-                      openApiParam.description(
-                          "A query string to pass to the search engine.");
-                    })
-        .queryParam(
-            "limit", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The maximum number of top-level sections to return. Capped at 50.");
-            })
-        .queryParam("school", String.class, false,
-                    openApiParam -> {
-                      openApiParam.description("The school to search within.");
-                    })
-        .queryParam(
-            "subject", String.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The subject to search within. Can work cross school.");
-            })
-        .queryParam(
-            "titleWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course titles in search. Default is 2.");
-            })
-        .queryParam(
-            "descriptionWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course descriptions in search. Default is 1.");
-            })
-        .queryParam(
-            "notesWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course notes in search. Default is 0.");
-            })
-        .queryParam(
-            "prereqsWeight", Integer.class, false,
-            openApiParam -> {
-              openApiParam.description(
-                  "The weight given to course prerequisites in search. Default is 0.");
-            })
-        .json("400", App.ApiError.class,
-              openApiParam -> {
-                openApiParam.description(
-                    "One of the values in the path parameter was not valid.");
-              })
-        .jsonArray("200", Course.class,
-                   openApiParam -> { openApiParam.description("OK."); });
-  }
+  @OpenApi(
+      path = "/api/search/{term}", methods = HttpMethod.GET, summary = "Search",
+      description =
+          "This endpoint returns a list of courses for a year and semester, given search terms.",
+      pathParams =
+      {
+        @OpenApiParam(name = "term",
+                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+                      example = "fa2022", required = true)
+      },
+      queryParams =
+      {
+        @OpenApiParam(name = "query",
+                      description = "Query string created by the user",
+                      example = "Linear algebra", required = true)
+        ,
+            @OpenApiParam(
+                name = "limit", type = Integer.class,
+                description =
+                    "Maximum number of courses in the result. Defaults to 20, and is capped at 50.",
+                example = "20")
+      },
+      responses =
+      {
+        @OpenApiResponse(status = "200", description = "Search results",
+                         content = @OpenApiContent(from = Nyu.Course[].class))
+        ,
+            @OpenApiResponse(
+                status = "400",
+                description =
+                    "Didn't provide a query, or the path param was an invalid term.",
+                content = @OpenApiContent(from = App.ApiError.class))
+      })
+  public Object
+  handleEndpoint(Context ctx) {
+    String termString = ctx.pathParam("term");
+    var term = Nyu.Term.fromString(termString);
 
-  public Handler getHandler() {
-    return ctx -> {
-      TryCatch tc = tcNew(e -> {
-        ctx.status(400);
-        ctx.json(new App.ApiError(e.getMessage()));
-      });
+    String args = ctx.queryParam("query");
+    if (args == null) {
+      throw new RuntimeException("Need to provide a query.");
+    } else if (args.length() > 50) {
+      throw new RuntimeException("Query can be at most 50 characters long.");
+    }
 
-      Term term = tc.log(() -> {
-        String termString = ctx.pathParam("term");
-        if (termString.contentEquals("current")) {
-          return Term.getCurrentTerm();
-        }
+    int resultSize;
+    try {
+      resultSize = Optional.ofNullable(ctx.queryParam("limit"))
+                       .map(Integer::parseInt)
+                       .orElse(20);
+    } catch (NumberFormatException e) {
+      throw new RuntimeException("Limit needs to be a positive integer.");
+    }
 
-        if (termString.contentEquals("next")) {
-          return Term.getCurrentTerm().nextTerm();
-        }
+    Object output = GetConnection.withConnectionReturning(conn -> {
+      var rows = SearchRows.searchRows(conn, term, args, resultSize);
+      return RowsToCourses.rowsToCourses(rows)
+          .limit(resultSize)
+          .collect(Collectors.toList());
+    });
 
-        int year = Integer.parseInt(termString.substring(2));
-        return new Term(termString.substring(0, 2), year);
-      });
-
-      if (term == null)
-        return;
-
-      String args = ctx.queryParam("query");
-      if (args == null) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Need to provide a query."));
-        return;
-      } else if (args.length() > 50) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Query can be at most 50 characters long."));
-      }
-
-      String school = ctx.queryParam("school"), subject =
-                                                    ctx.queryParam("subject");
-
-      int resultSize, titleWeight, descriptionWeight, notesWeight,
-          prereqsWeight;
-      try {
-        resultSize = Optional.ofNullable(ctx.queryParam("limit"))
-                         .map(Integer::parseInt)
-                         .orElse(50);
-
-        titleWeight = Optional.ofNullable(ctx.queryParam("titleWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(2);
-
-        descriptionWeight =
-            Optional.ofNullable(ctx.queryParam("descriptionWeight"))
-                .map(Integer::parseInt)
-                .orElse(1);
-
-        notesWeight = Optional.ofNullable(ctx.queryParam("notesWeight"))
-                          .map(Integer::parseInt)
-                          .orElse(0);
-
-        prereqsWeight = Optional.ofNullable(ctx.queryParam("prereqsWeight"))
-                            .map(Integer::parseInt)
-                            .orElse(0);
-      } catch (NumberFormatException e) {
-        ctx.status(400);
-        ctx.json(new App.ApiError("Limit needs to be a positive integer."));
-        return;
-      }
-
-      GetConnection.withConnection(conn -> {
-        String fullData = ctx.queryParam("full");
-        if (fullData != null && fullData.toLowerCase().equals("true")) {
-          ctx.json(RowsToCourses
-                       .fullRowsToCourses(SearchRows.searchFullRows(
-                           conn, term, subject, school, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
-                       .limit(resultSize)
-                       .collect(Collectors.toList()));
-        } else {
-          ctx.json(RowsToCourses
-                       .rowsToCourses(SearchRows.searchRows(
-                           conn, term, subject, school, args, titleWeight,
-                           descriptionWeight, notesWeight, prereqsWeight))
-                       .limit(resultSize)
-                       .collect(Collectors.toList()));
-        }
-
-        ctx.status(200);
-      });
-    };
+    return output;
   }
 }

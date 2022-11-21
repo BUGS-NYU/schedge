@@ -7,10 +7,13 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import org.jetbrains.annotations.NotNull;
 import utils.Nyu;
 
 // A meeting plus section information
-@JsonIgnoreProperties(value = {"minutesInDay"}, allowGetters = true)
+@JsonIgnoreProperties(
+    value = {"minutesInDay", "endDateLocal", "beginDateLocal"},
+    allowGetters = true)
 public class AugmentedMeeting {
   public final String subject;
   public final String deptCourseId;
@@ -21,9 +24,13 @@ public class AugmentedMeeting {
   public final Nyu.SectionStatus sectionStatus;
   public final String instructionMode;
   public final String location;
-  public final LocalDateTime beginDate;
+  public final ZonedDateTime beginDate;
   public final int minutesDuration;
-  public final LocalDateTime endDate;
+  public final String campus;
+
+  @JsonIgnore
+  public final ZoneId tz;
+  public final ZonedDateTime endDate;
 
   public static DateTimeFormatter formatter =
       DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
@@ -35,17 +42,23 @@ public class AugmentedMeeting {
     sectionCode = rs.getString("section_code");
     sectionType = rs.getString("section_type");
     sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
+    campus = rs.getString("campus");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");
-    beginDate = rs.getTimestamp("begin_date").toLocalDateTime();
-    endDate = rs.getTimestamp("end_date").toLocalDateTime();
+    beginDate =
+        rs.getTimestamp("begin_date").toLocalDateTime().atZone(ZoneOffset.UTC);
+    endDate =
+        rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
     minutesDuration = rs.getInt("duration");
+
+    tz = Nyu.Campus.timezoneForCampus(campus);
   }
 
   @JsonCreator()
   public AugmentedMeeting(
       @JsonProperty("subject") String subject,
       @JsonProperty("deptCourseId") String deptCourseId,
+      @JsonProperty("campus") String campus,
       @JsonProperty("sectionCode") String sectionCode,
       @JsonProperty("registrationNumber") int registrationNumber,
       @JsonProperty("sectionType") String sectionType,
@@ -56,6 +69,7 @@ public class AugmentedMeeting {
       @JsonProperty("minutesDuration") int minutesDuration,
       @JsonProperty("endDate") String endDate) {
     this.subject = subject;
+    this.campus = campus;
     this.deptCourseId = deptCourseId;
     this.sectionCode = sectionCode;
     this.registrationNumber = registrationNumber;
@@ -67,10 +81,13 @@ public class AugmentedMeeting {
     this.beginDate = Nyu.Meeting.parseTime(beginDate);
     this.minutesDuration = minutesDuration;
     this.endDate = Nyu.Meeting.parseTime(endDate);
+
+    tz = Nyu.Campus.timezoneForCampus(campus);
   }
 
   public String getSubject() { return subject; }
   public String getDeptCourseId() { return deptCourseId; }
+  public String getCampus() { return campus; }
 
   public String getSectionCode() { return sectionCode; }
   public int getRegistrationNumber() { return registrationNumber; }
@@ -83,14 +100,26 @@ public class AugmentedMeeting {
   public String getInstructionMode() { return instructionMode; }
   public String getLocation() { return location; }
 
+  @NotNull
   public String getBeginDate() {
-    var zoned = beginDate.atZone(ZoneOffset.UTC);
-    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+    return DateTimeFormatter.ISO_INSTANT.format(beginDate);
   }
 
+  @NotNull
   public String getEndDate() {
-    var zoned = endDate.atZone(ZoneOffset.UTC);
-    return DateTimeFormatter.ISO_INSTANT.format(zoned);
+    return DateTimeFormatter.ISO_INSTANT.format(endDate);
+  }
+
+  @NotNull
+  public String getBeginDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+        beginDate.withZoneSameInstant(tz));
+  }
+
+  @NotNull
+  public String getEndDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
+        endDate.withZoneSameInstant(tz));
   }
 
   public int getMinutesDuration() { return minutesDuration; }

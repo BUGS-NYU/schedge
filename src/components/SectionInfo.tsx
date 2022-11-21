@@ -1,128 +1,226 @@
 import React, { useState } from "react";
-import Attributes from "./Attributes";
-import DateSection from "./DateSection";
 import styles from "./section.module.css";
-import { RecitationInfo } from "components/RecitationInfo";
-import {
-  convertUnits,
-  splitLocation,
-  changeStatus,
-  styleStatus,
-  parseDate,
-} from "components/util";
-import localStorageContainer from "components/localStorage";
-import { useSchedule } from "../pages/schedule";
-import type { Meeting, Section } from "../pages/subject";
+import cx from "classnames";
+import { AugmentedSection, useSchedule } from "../pages/schedule";
+import { DateTime } from "luxon";
+import { usePageState } from "./state";
+import { useQuery } from "react-query";
+import { z } from "zod";
+import axios from "axios";
+import { Section } from "../pages/subject";
+
+interface DateProps {
+  section: AugmentedSection;
+}
+
+const formatTime = (dt: DateTime): string => {
+  const local = DateTime.local();
+  const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
+
+  if (local.offset === dt.offset) {
+    return formatted;
+  }
+
+  const convertedTime = dt
+    .setZone(local.zone)
+    .toLocaleString(DateTime.TIME_SIMPLE);
+
+  return `${formatted} ${dt.offsetNameShort} (${convertedTime} ${local.offsetNameShort})`;
+};
+
+const CampusSchema = z.object({
+  name: z.string(),
+  timezoneId: z.string(),
+  timezoneName: z.string(),
+});
+
+const CampusesSchema = z.object({
+  campuses: z.record(z.string(), CampusSchema),
+});
+
+const DateSection: React.VFC<DateProps> = ({ section }) => {
+  const { term } = usePageState();
+  const { data: { campuses } = {} } = useQuery(
+    ["campuses", term.code],
+    async () => {
+      const resp = await axios.get("/api/campus");
+      console.log(resp.data);
+      const parsed = CampusesSchema.parse(resp.data);
+      return parsed;
+    }
+  );
+
+  const timezone = campuses?.[section.campus]?.timezoneId;
+  const meetings = React.useMemo(() => {
+    const sortedSectionMeetings = [...(section.meetings ?? [])].sort(
+      (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
+    );
+    const parsedMeetings = sortedSectionMeetings.map((meeting) => {
+      let startTime = DateTime.fromISO(meeting.beginDateLocal, {
+        setZone: true,
+      });
+      if (timezone) {
+        startTime = startTime.setZone(timezone);
+      }
+
+      return {
+        startTime,
+        minutesDuration: meeting.minutesDuration,
+        endTime: startTime.plus({ minutes: meeting.minutesDuration }),
+      };
+    });
+    return parsedMeetings;
+  }, [section.meetings, timezone]);
+
+  return (
+    <div>
+      {meetings.map((meeting, index) => {
+        return (
+          <div key={index} className={styles.dateContainer}>
+            <span className={styles.boldedDate}>
+              {meeting.startTime.weekdayLong}
+            </span>
+            {", "}
+            <span className={styles.boldedDate}>
+              {formatTime(meeting.startTime)}
+            </span>
+            {" - "}
+            <span className={styles.boldedDate}>
+              {formatTime(meeting.endTime)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 interface Props {
-  section: Section;
-  sortedSectionMeetings: Meeting[];
-  courseData: any;
-  lastSection: any;
+  section: AugmentedSection;
+  ignoreNotes: boolean;
+  lastSection: boolean;
+}
+
+const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
+  return (
+    <div className={styles.sectionAttribute}>
+      <h5>{label}</h5>
+      <div className={styles.sectionAttrValue}>{children}</div>
+    </div>
+  );
+};
+
+function sectionStatusText(section: Section): string {
+  if (section.status === "WaitList") {
+    return `Waitlist (${section.waitlistTotal})`;
+  } else {
+    return section.status;
+  }
+}
+
+function styleStatus(_status): React.CSSProperties["color"] {
+  // if (status === "Open") {
+  // } else if (status === "Closed") {
+  // } else {
+  // }
+
+  return "unset";
 }
 
 export const SectionInfo: React.VFC<Props> = ({
   section,
-  sortedSectionMeetings,
-  courseData,
+  ignoreNotes,
   lastSection,
 }) => {
-  const [expandedList, setExpandedList] = useState({});
+  const [expanded, setExpanded] = useState(false);
   const { addToWishlist } = useSchedule();
-
-  const handleExpandList = (event, registrationNumber) => {
-    event.preventDefault();
-    let newLs = { ...expandedList };
-    if (registrationNumber in expandedList) {
-      newLs[registrationNumber] = !expandedList[registrationNumber];
-    } else {
-      newLs[registrationNumber] = true;
-    }
-    setExpandedList(newLs);
-  };
-
-  const handleOnClick = (course) => {
-    const localStorage = new localStorageContainer();
-    const courses = localStorage.getState("wishlist");
-    courses.push(course);
-    localStorage.saveState({ wishlist: courses });
-  };
 
   return (
     <div
-      className={styles.sectionContainer}
-      style={{ borderBottom: !lastSection && "1px solid" }}
+      className={cx(
+        styles.sectionContainer,
+        !lastSection && styles.sectionBorder
+      )}
     >
-      {section.name && <h3 className="sectionName">{section.name}</h3>}
-      {courseData.sections.length > 1 && (
-        <h4 className="sectionNum">{section.code}</h4>
+      {section.sectionName && (
+        <h3 className={styles.sectionName}>{section.name}</h3>
       )}
-      <Attributes
-        instructors={section.instructors}
-        building={splitLocation(section.location).Building}
-        room={splitLocation(section.location).Room}
-        units={convertUnits(section.minUnits, section.maxUnits)}
-        status={section.status}
-        type={section.type}
-        registrationNumber={section.registrationNumber}
-      />
-      {!courseData.sections.every(
-        (section) => section.notes === courseData.sections[0].notes
-      ) && <div className={styles.sectionDescription}>{section.notes}</div>}
+      <h4 className={styles.sectionNum}>
+        {section.type} {section.code}
+      </h4>
 
-      {sortedSectionMeetings && (
-        <DateSection sortedSectionMeetings={sortedSectionMeetings} />
+      <div className={styles.attributeContainer}>
+        <SectionAttribute label="Registration Number">
+          #{section.registrationNumber}
+        </SectionAttribute>
+
+        <SectionAttribute label="Status">
+          <span style={{ color: styleStatus(section.status) }}>
+            {sectionStatusText(section)}
+          </span>
+        </SectionAttribute>
+
+        <SectionAttribute label="Location">
+          {section.location ?? "TBA"}
+        </SectionAttribute>
+
+        <SectionAttribute label="Campus">
+          {section.campus.replace("(Global)", "")}
+        </SectionAttribute>
+
+        <SectionAttribute label="Credits">
+          {section.minUnits === section.maxUnits
+            ? `${section.minUnits}`
+            : `${section.minUnits} - ${section.maxUnits}`}
+        </SectionAttribute>
+      </div>
+
+      <SectionAttribute label="instructors">
+        {section.instructors.map((instructor) => (
+          <span key={instructor}>{instructor}</span>
+        ))}
+      </SectionAttribute>
+
+      {section.notes && !ignoreNotes && (
+        <div className={styles.sectionDescription}>{section.notes}</div>
       )}
+
+      {section.meetings && <DateSection section={section} />}
+
       <div className={styles.utilBar}>
-        {section.recitations !== undefined && section.recitations.length !== 0 && (
+        {!!section.recitations?.length && (
           <button
             className={styles.expandButton}
-            onClick={(e) => handleExpandList(e, section.registrationNumber)}
-            onKeyPress={(e) => handleExpandList(e, section.registrationNumber)}
-            tabIndex={0}
+            onClick={(e) => setExpanded((prev) => !prev)}
           >
-            <span style={{}}>Show Recitations</span>
+            {expanded ? "Hide" : "Show"} Recitations
           </button>
         )}
-        <div className={styles.statusContainer}>
-          <div
-            style={{
-              color: styleStatus(section.status),
-            }}
-          />
-          <span
-            style={{
-              color: styleStatus(section.status),
-            }}
-          >
-            {changeStatus(section)}
-          </span>
-        </div>
+
         <button
           className={styles.wishlistButton}
           onClick={() => addToWishlist(section)}
         >
-          <div style={{}} />
-          <span style={{}}>Add to Wishlist</span>
+          Add to Wishlist
         </button>
       </div>
-      <div>
-        {section.recitations &&
+
+      <div className={styles.recitationBox}>
+        {!!section.recitations?.length &&
+          expanded &&
           section.recitations.map((recitation, i) => {
-            const sortedRecitationsMeetings = recitation.meetings
-              ? recitation.meetings.sort(
-                  (a, b) =>
-                    parseDate(a.beginDate).getDay() -
-                    parseDate(b.beginDate).getDay()
-                )
-              : [];
             return (
-              <RecitationInfo
+              <SectionInfo
                 key={i}
-                recitation={recitation}
-                sortedRecitationsMeetings={sortedRecitationsMeetings}
-                courseName={courseData.name}
-                lastRecitation={i === section.recitations.length - 1}
+                ignoreNotes={false}
+                lastSection={i === section.recitations.length - 1}
+                section={{
+                  ...recitation,
+                  name: recitation.name ?? section.name,
+                  sectionName: recitation.name,
+                  deptCourseId: section.deptCourseId,
+                  subjectCode: section.subjectCode,
+                }}
               />
             );
           })}

@@ -4,6 +4,7 @@ import styles from "./school.module.css";
 import Link from "next/link";
 import { useSchools } from "./index";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { MainLayout } from "../components/Layout";
 
 export default function SchoolPage() {
   const { term } = usePageState();
@@ -13,10 +14,8 @@ export default function SchoolPage() {
   const school = schools?.schools?.[schoolIndex];
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.departmentHeader}>
-        <div id="departmentTitle">{school?.name}</div>
-      </div>
+    <MainLayout>
+      <div className={styles.departmentHeader}>{school?.name}</div>
 
       {isLoading && <span>Loading...</span>}
 
@@ -41,6 +40,6 @@ export default function SchoolPage() {
           })}
         </div>
       )}
-    </div>
+    </MainLayout>
   );
 }

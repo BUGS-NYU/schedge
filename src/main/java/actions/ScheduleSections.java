@@ -2,7 +2,7 @@ package actions;
 
 import com.fasterxml.jackson.annotation.*;
 import database.models.AugmentedMeeting;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.temporal.*;
 import java.util.*;
 import org.jetbrains.annotations.*;
@@ -19,6 +19,7 @@ public final class ScheduleSections {
     public final ArrayList<AugmentedMeeting> fr;
     public final ArrayList<AugmentedMeeting> sa;
     public final ArrayList<AugmentedMeeting> su;
+
     public AugmentedMeeting conflictA;
     public AugmentedMeeting conflictB;
 
@@ -156,14 +157,18 @@ public final class ScheduleSections {
     if (aDay != bDay)
       return false;
 
-    for (LocalDateTime aDate = a.beginDate, bDate = b.beginDate;
-         aDate.isBefore(a.endDate) && bDate.isBefore(b.endDate);) {
-      int aBegin = aDate.get(ChronoField.SECOND_OF_DAY);
-      int bBegin = bDate.get(ChronoField.SECOND_OF_DAY);
-      int aEnd = a.minutesDuration * 60 + aBegin;
-      int bEnd = b.minutesDuration * 60 + bBegin;
+    var aBeginLocal = a.beginDate.withZoneSameInstant(a.tz).toLocalDateTime();
+    var bBeginLocal = b.beginDate.withZoneSameInstant(b.tz).toLocalDateTime();
+    var aEndLocal = a.endDate.withZoneSameInstant(a.tz).toLocalDateTime();
+    var bEndLocal = b.endDate.withZoneSameInstant(b.tz).toLocalDateTime();
 
-      if (aBegin < bEnd && bBegin < aEnd) {
+    for (LocalDateTime aDate = aBeginLocal, bDate = bBeginLocal;
+         aDate.isBefore(aEndLocal) && bDate.isBefore(bEndLocal);) {
+      var aDateEnd = aDate.plus(Duration.ofMinutes(a.minutesDuration));
+      var bDateEnd = bDate.plus(Duration.ofMinutes(b.minutesDuration));
+
+      if (bDateEnd.atZone(b.tz).isAfter(aDate.atZone(a.tz)) &&
+          aDateEnd.atZone(a.tz).isAfter(bDate.atZone(b.tz))) {
         return true;
       }
 

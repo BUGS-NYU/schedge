@@ -6,6 +6,7 @@ import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
+import { MainLayout } from "../components/Layout";
 
 export const SchoolInfoSchema = z.object({
   term: z.string(),
@@ -25,7 +26,7 @@ function Home() {
   const { data: schools } = useSchools(term);
 
   return (
-    <div id="pageContainer">
+    <MainLayout>
       <div className={css.searchContainer}>
         <SearchBar term={term} />
       </div>
@@ -56,7 +57,7 @@ function Home() {
           </div>
         )}
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

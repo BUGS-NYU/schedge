@@ -13,6 +13,7 @@ const formatTime = (dt: DateTime): string => {
   const localZone = DateTime.local().zone;
   const localZoneAbbrev = DateTime.local().offsetNameShort;
   const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
+
   if (localZone.equals(dt.zone)) {
     return formatted;
   }
@@ -21,7 +22,7 @@ const formatTime = (dt: DateTime): string => {
     .setZone(localZone)
     .toLocaleString(DateTime.TIME_SIMPLE);
 
-  return `${formatted} (${convertedTime} ${localZoneAbbrev})`;
+  return `${formatted} ${dt.offsetNameShort} (${convertedTime} ${localZoneAbbrev})`;
 };
 
 const DateSection: React.VFC<DateProps> = ({ section }) => {
@@ -33,7 +34,6 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
       const startTime = DateTime.fromISO(meeting.beginDateLocal, {
         setZone: true,
       });
-      console.log(startTime, meeting.beginDateLocal);
       return {
         startTime,
         minutesDuration: meeting.minutesDuration,

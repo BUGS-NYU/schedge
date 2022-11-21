@@ -1,5 +1,6 @@
 package cli;
 
+import static actions.CopyTermFromProduction.*;
 import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
@@ -68,25 +69,8 @@ public class Database implements Runnable {
                    description = "scrape v2 instead of v1") boolean useV2) {
     long start = System.nanoTime();
 
-    if (!useV2) {
-      throw new RuntimeException("Unimplemented operation for right now");
-    }
-
     Term term = termMixin.term;
-    GetConnection.withConnection(conn -> {
-      var result = ScrapeSchedge2.scrapeFromSchedge(term);
-
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching took {} seconds", duration);
-      if (result == null)
-        return;
-
-      UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
-      InsertCourses.clearPrevious(conn, term);
-      InsertCourses.insertCourses(conn, term, result.courses);
-    });
-
+    copyTermFromProduction(useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1, term);
     GetConnection.close();
 
     long end = System.nanoTime();

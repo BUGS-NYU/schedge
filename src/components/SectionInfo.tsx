@@ -1,18 +1,28 @@
 import React, { useState } from "react";
 import styles from "./section.module.css";
 import cx from "classnames";
-import {
-  changeStatus,
-  styleStatus,
-  addMinutes,
-  convertToLocaleTimeStr,
-} from "components/util";
+import { changeStatus, styleStatus } from "components/util";
 import { AugmentedSection, useSchedule } from "../pages/schedule";
-import { days, daysToStr } from "./constants";
+import { DateTime } from "luxon";
 
 interface DateProps {
   section: AugmentedSection;
 }
+
+const formatTime = (dt: DateTime): string => {
+  const localZone = DateTime.local().zone;
+  const localZoneAbbrev = DateTime.local().offsetNameShort;
+  const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
+  if (localZone.equals(dt.zone)) {
+    return formatted;
+  }
+
+  const convertedTime = dt
+    .setZone(localZone)
+    .toLocaleString(DateTime.TIME_SIMPLE);
+
+  return `${formatted} (${convertedTime} ${localZoneAbbrev})`;
+};
 
 const DateSection: React.VFC<DateProps> = ({ section }) => {
   const meetings = React.useMemo(() => {
@@ -20,14 +30,21 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
       (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
     );
     const parsedMeetings = sortedSectionMeetings.map((meeting) => {
+      const startTime = DateTime.fromISO(meeting.beginDateLocal, {
+        setZone: true,
+      });
+      console.log(startTime, meeting.beginDateLocal);
       return {
-        startTime: meeting.beginDate,
+        startTime,
         minutesDuration: meeting.minutesDuration,
-        endTime: addMinutes(meeting.beginDate, meeting.minutesDuration),
+        endTime: startTime.plus({ minutes: meeting.minutesDuration }),
       };
     });
     return parsedMeetings;
   }, [section.meetings]);
+
+  const localZone = DateTime.local().zone;
+  const localZoneAbbrev = DateTime.local().offsetNameShort;
 
   return (
     <div>
@@ -35,15 +52,15 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
         return (
           <div key={index} className={styles.dateContainer}>
             <span className={styles.boldedDate}>
-              {daysToStr[days[meeting.startTime.getDay()]]}
+              {meeting.startTime.weekdayLong}
             </span>{" "}
             from{" "}
             <span className={styles.boldedDate}>
-              {convertToLocaleTimeStr(meeting.startTime)}
+              {formatTime(meeting.startTime)}
             </span>{" "}
             to{" "}
             <span className={styles.boldedDate}>
-              {convertToLocaleTimeStr(meeting.endTime)}
+              {formatTime(meeting.endTime)}
             </span>
           </div>
         );
@@ -54,6 +71,7 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
 
 interface Props {
   section: AugmentedSection;
+  ignoreNotes: boolean;
   lastSection: boolean;
 }
 
@@ -66,7 +84,11 @@ const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
   );
 };
 
-export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
+export const SectionInfo: React.VFC<Props> = ({
+  section,
+  ignoreNotes,
+  lastSection,
+}) => {
   const [expanded, setExpanded] = useState(false);
   const { addToWishlist } = useSchedule();
 
@@ -112,7 +134,7 @@ export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
         ))}
       </SectionAttribute>
 
-      {section.notes && (
+      {section.notes && !ignoreNotes && (
         <div className={styles.sectionDescription}>{section.notes}</div>
       )}
 
@@ -143,6 +165,7 @@ export const SectionInfo: React.VFC<Props> = ({ section, lastSection }) => {
             return (
               <SectionInfo
                 key={i}
+                ignoreNotes={false}
                 lastSection={i === section.recitations.length - 1}
                 section={{
                   ...recitation,

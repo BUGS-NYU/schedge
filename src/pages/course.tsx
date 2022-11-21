@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
-import { parseDate } from "components/util";
 import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
 import { Course, SubjectSchema, useCourses } from "./subject";
@@ -56,18 +55,13 @@ function CoursePage() {
   return (
     <>
       {header}
+
       <div className={styles.courseBody}>
         <div className={styles.sectionsDescription}>
-          {course?.description}
+          <p>{course?.description}</p>
 
-          {pullNotesToTop && (
-            <>
-              {/* Handle course description here if all sections have the same one */}
-              <br />
-              <br />
-              {course.sections[0].notes}
-            </>
-          )}
+          {/* Handle course description here if all sections have the same one */}
+          {pullNotesToTop && <p>{course.sections[0]?.notes}</p>}
         </div>
 
         {!!course?.sections?.length && (
@@ -79,6 +73,7 @@ function CoursePage() {
             <SectionInfo
               key={i}
               lastSection={i === course.sections.length - 1}
+              ignoreNotes={pullNotesToTop}
               section={{
                 ...section,
                 sectionName: section.name,

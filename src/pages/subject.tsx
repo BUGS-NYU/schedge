@@ -17,7 +17,9 @@ export const StringDateSchema = z.preprocess(
 export type Meeting = z.infer<typeof MeetingSchema>;
 export const MeetingSchema = z.object({
   beginDate: StringDateSchema,
+  beginDateLocal: z.string(),
   endDate: StringDateSchema,
+  endDateLocal: z.string(),
   minutesDuration: z.number(),
 });
 

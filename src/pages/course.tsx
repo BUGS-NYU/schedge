@@ -6,6 +6,8 @@ import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
 import { Course, SubjectSchema, useCourses } from "./subject";
 import { z } from "zod";
+import EditCalendarSVG from "components/edit-calendar.svg";
+import { ScheduleButton } from "../components/Layout";
 
 const IdSchema = z.string();
 
@@ -24,17 +26,22 @@ function CoursePage() {
 
   const header = (
     <div className={styles.colorHeader}>
-      <div className={styles.courseHeader}>
+      <div className={styles.iconBar}>
         <Link
           href={{
             pathname: "/subject",
             query: { schoolIndex, subject: subjectCode },
           }}
         >
-          <a>
-            <img src="/img/go-back.svg" alt="Go back" id={styles.backButton} />
+          <a className={styles.svgButton}>
+            <img src="/img/go-back.svg" alt="Go back" className={styles.svgButton}/>
           </a>
         </Link>
+
+        <ScheduleButton className={styles.svgButton} />
+      </div>
+
+      <div className={styles.courseHeader}>
 
         <div>
           <div id={styles.titleDepartment}>{subjectCode}</div>

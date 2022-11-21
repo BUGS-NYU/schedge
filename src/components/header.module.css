@@ -3,6 +3,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
+  align-items: center;
   height: 6em;
 }
 
@@ -67,13 +68,20 @@
 }
 
 .scheduleButton {
+  opacity: 0.7;
+  transition: 0.15s;
   border: none;
   background: none;
+  transition: 0.15s;
+  height: 2.5rem;
+  width: 2.5rem;
+
+  & :hover {
+    opacity: 1;
+  }
 }
 
 .scheduleIcon {
-  height: 50px;
-  width: 50px;
-  padding: 0.1em;
+  color: #212121;
   border-radius: 100%;
 }

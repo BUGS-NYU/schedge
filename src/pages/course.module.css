@@ -10,10 +10,33 @@
 
   position: relative;
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
+  justify-content: space-between;
 
   @media (max-width: 1000px) {
     padding-top: 5rem;
+  }
+}
+
+.iconBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 8px 5%;
+  height: 6rem;
+}
+
+.svgButton {
+  color: white;
+  background: none;
+  height: 2.5rem;
+  opacity: 0.7;
+  transition: 0.15s;
+
+  & :hover {
+    opacity: 1;
   }
 }
 
@@ -26,21 +49,6 @@
   border-top-left-radius: 0.8rem;
   border-top-right-radius: 0.8rem;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
-
-  & #backButton {
-    color: white;
-    position: absolute;
-    z-index: 2;
-    top: 2.5vmin;
-    left: 5vw;
-    height: 2.5rem;
-    opacity: 0.7;
-    transition: 0.15s;
-  }
-
-  & #backButton:hover {
-    opacity: 1;
-  }
 
   & #titleDepartment {
     font-size: calc(1vmin + 0.7rem);

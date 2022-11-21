@@ -6,6 +6,29 @@ import headerStyles from "./header.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { z } from "zod";
+import EditCalendarSVG from "./edit-calendar.svg";
+import cx from "classnames";
+
+export const ScheduleButton: React.VFC<{ className?: string; style?: React.CSSProperties}> = ({ className, style }) => {
+  const router = useRouter();
+
+  return (
+    <button
+      className={cx(headerStyles.scheduleButton, className)}
+      style={style}
+      onClick={() =>
+        router.pathname === "/schedule"
+          ? router.back()
+          : router.push("/schedule")
+      }
+    >
+      <EditCalendarSVG
+        className={cx(headerStyles.scheduleIcon, className)}
+        alt="Edit Calendar"
+      />
+    </button>
+  );
+};
 
 async function fetchTerms(): Promise<Term[]> {
   const resp = await axios.get("/api/terms");
@@ -51,7 +74,7 @@ export const MainLayout: React.FC = ({ children }) => {
         flexDirection: "column",
         height: "100%",
         width: "100%",
-        padding: "0px 32px",
+        padding: "0px 5%",
         gap: "16px",
       }}
     >
@@ -90,20 +113,7 @@ export const MainLayout: React.FC = ({ children }) => {
           </div>
         </div>
 
-        <button
-          className={headerStyles.scheduleButton}
-          onClick={() =>
-            router.pathname === "/schedule"
-              ? router.back()
-              : router.push("/schedule")
-          }
-        >
-          <img
-            className={headerStyles.scheduleIcon}
-            src="/edit-calendar.svg"
-            alt="Edit Calendar"
-          />
-        </button>
+        <ScheduleButton />
       </div>
 
       {children}

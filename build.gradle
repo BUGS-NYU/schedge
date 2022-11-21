@@ -4,7 +4,7 @@ plugins {
   id 'com.avast.gradle.docker-compose' version '0.15.0'
 }
 
-mainClassName = 'Main'
+mainClassName = 'cli.Main'
 sourceCompatibility = '11'
 targetCompatibility = '11'
 
@@ -101,7 +101,7 @@ allprojects {
 // the distribution plugin likely won't, because it has less work to do.
 //                   - Albert Liu, Jan 31, 2022 Mon 01:34 EST
 jar {
-  manifest { attributes ('Main-Class': 'Main') }
+  manifest { attributes ('Main-Class': 'cli.Main') }
   duplicatesStrategy = "include"
 
   dependsOn configurations.runtimeClasspath

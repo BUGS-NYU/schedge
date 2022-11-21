@@ -3,6 +3,7 @@ package database;
 import static utils.Nyu.*;
 
 import java.sql.*;
+import java.time.ZoneOffset;
 import java.util.List;
 import org.slf4j.*;
 import utils.Utils;
@@ -186,8 +187,11 @@ public final class InsertCourses {
     PreparedStatement stmt = p.meetings;
 
     for (Meeting m : meetings) {
-      Utils.setArray(stmt, sectionId, m.beginDate, m.minutesDuration,
-                     m.endDate);
+      Utils.setArray(
+          stmt, sectionId,
+          m.beginDate.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime(),
+          m.minutesDuration,
+          m.endDate.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());
 
       if (stmt.executeUpdate() != 1) {
         throw new RuntimeException("Why did this fail?");

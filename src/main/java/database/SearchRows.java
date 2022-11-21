@@ -55,8 +55,8 @@ public final class SearchRows {
                   + "sections.registration_number, sections.section_code, "
                   + "sections.section_type, sections.section_status, "
                   + "sections.associated_with, sections.waitlist_total, "
-                  +
-                  "sections.min_units, sections.max_units, sections.location, "
+                  + "sections.name section_name, sections.min_units, "
+                  + "sections.max_units, sections.location, "
                   + "sections.campus, sections.instruction_mode, "
                   + "sections.grading, sections.notes, "
                   + "sections.instructors "
@@ -75,7 +75,9 @@ public final class SearchRows {
     ArrayList<Row> rows = new ArrayList<>();
     rs = rowStmt.executeQuery();
     while (rs.next()) {
-      rows.add(new Row(rs, meetingsList.get(rs.getInt("section_id"))));
+      var sectionId = rs.getInt("section_id");
+      var meetings = meetingsList.getOrDefault(sectionId, new ArrayList<>());
+      rows.add(new Row(rs, meetings));
     }
 
     rowStmt.close();

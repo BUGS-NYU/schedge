@@ -1,23 +1,17 @@
 @keyframes deptFadeIn {
   from {
     opacity: 0;
-    padding-top: 6rem;
+    padding-top: 2rem;
   }
 
   to {
     opacity: 1;
-    padding-top: 4rem;
+    padding-top: 0rem;
   }
 }
 
-.pageContainer {
-  width: 100vw;
-  min-height: 100vh;
-}
-
 .departmentHeader {
-  width: 100vw;
-  padding: 2vmin 2vmin 0vmin 4vmin;
+  width: 100%;
   font-size: 2rem;
 }
 
@@ -26,7 +20,6 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(22rem, 1fr));
   grid-gap: 0.5rem;
-  padding: 0 2rem;
   animation: deptFadeIn 0.8s ease forwards;
 
   @media (max-width: 1000px) {

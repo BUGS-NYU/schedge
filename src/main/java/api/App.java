@@ -30,6 +30,8 @@ public class App {
           var e = (ApiError)output;
           ctx.status(e.status);
           ctx.json(e);
+
+          return;
         }
 
         ctx.status(200);

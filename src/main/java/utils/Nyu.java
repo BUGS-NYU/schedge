@@ -122,13 +122,15 @@ public final class Nyu {
     }
   }
 
+  @JsonIgnoreProperties(value = {"endDateLocal", "beginDateLocal"},
+                        allowGetters = true)
   public static final class Meeting {
     private static DateTimeFormatter formatter =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public LocalDateTime beginDate; // contains date and time of first event.
+    public ZonedDateTime beginDate; // contains date and time of first event.
     public int minutesDuration;     // Duration of meeting
-    public LocalDateTime endDate;   // When the meeting stops repeating
+    public ZonedDateTime endDate;   // When the meeting stops repeating
 
     // we eventually want to switch to using the `fromCode(String code)` version
     // for the JSON creator. It will happen when we fully move away from
@@ -141,9 +143,11 @@ public final class Nyu {
              @JsonProperty("endDate") String endDate) {
       var meeting = new Meeting();
       try {
-        meeting.beginDate = LocalDateTime.parse(beginDate, formatter);
+        meeting.beginDate =
+            LocalDateTime.parse(beginDate, formatter).atZone(ZoneOffset.UTC);
         meeting.minutesDuration = minutesDuration;
-        meeting.endDate = LocalDateTime.parse(endDate, formatter);
+        meeting.endDate =
+            LocalDateTime.parse(endDate, formatter).atZone(ZoneOffset.UTC);
       } catch (java.time.format.DateTimeParseException e) {
         meeting.beginDate = parseTime(beginDate);
         meeting.minutesDuration = minutesDuration;
@@ -153,24 +157,60 @@ public final class Nyu {
       return meeting;
     }
 
-    public static LocalDateTime parseTime(String timeString) {
+    public static ZonedDateTime parseTime(String timeString) {
       var parsed = DateTimeFormatter.ISO_INSTANT.parse(timeString);
       var instant = Instant.from(parsed);
-      return LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+      return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     public int getMinutesDuration() { return minutesDuration; }
 
     @NotNull
     public String getBeginDate() {
-      var zoned = beginDate.atZone(ZoneOffset.UTC);
-      return DateTimeFormatter.ISO_INSTANT.format(zoned);
+      return DateTimeFormatter.ISO_INSTANT.format(beginDate);
     }
 
     @NotNull
     public String getEndDate() {
-      var zoned = endDate.atZone(ZoneOffset.UTC);
-      return DateTimeFormatter.ISO_INSTANT.format(zoned);
+      return DateTimeFormatter.ISO_INSTANT.format(endDate);
+    }
+  }
+
+  public static class ZonedMeeting {
+    public ZonedDateTime beginDate;
+    public int minutesDuration;
+    public ZonedDateTime endDate;
+    private ZoneId tz;
+
+    ZonedMeeting(Meeting meeting, ZoneId tz) {
+      this.beginDate = meeting.beginDate;
+      this.minutesDuration = meeting.minutesDuration;
+      this.endDate = meeting.endDate;
+      this.tz = tz;
+    }
+
+    public int getMinutesDuration() { return minutesDuration; }
+
+    @NotNull
+    public String getBeginDate() {
+      return DateTimeFormatter.ISO_INSTANT.format(beginDate);
+    }
+
+    @NotNull
+    public String getBeginDateLocal() {
+      var beginDateLocal = beginDate.withZoneSameInstant(tz);
+      return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(beginDateLocal);
+    }
+
+    @NotNull
+    public String getEndDate() {
+      return DateTimeFormatter.ISO_INSTANT.format(endDate);
+    }
+
+    @NotNull
+    public String getEndDateLocal() {
+      var endDateLocal = endDate.withZoneSameInstant(tz);
+      return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(endDateLocal);
     }
   }
 
@@ -239,7 +279,19 @@ public final class Nyu {
     }
 
     public String getCampus() { return campus; }
-    public List<Meeting> getMeetings() { return meetings; }
+
+    public List<ZonedMeeting> getMeetings() {
+      var output = new ArrayList<ZonedMeeting>();
+      var tz = Campus.timezoneForCampus(campus);
+
+      for (var meeting : meetings) {
+        var out = new ZonedMeeting(meeting, tz);
+        output.add(out);
+      }
+
+      return output;
+    }
+
     public String getInstructionMode() { return instructionMode; }
     public Double getMinUnits() { return minUnits; }
     public Double getMaxUnits() { return maxUnits; }

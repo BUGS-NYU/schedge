@@ -1,11 +1,9 @@
 import React from "react";
 import styles from "./wishlist-course.module.css";
-import { generateScheduleTime } from "components/util";
-import { useSchedule } from "../pages/schedule";
-import { Section } from "../pages/subject";
+import { AugmentedSection, useSchedule } from "../pages/schedule";
 
 interface Props {
-  section: Section;
+  section: AugmentedSection;
 }
 
 export const WishlistCourse: React.VFC<Props> = ({ section }) => {
@@ -19,7 +17,9 @@ export const WishlistCourse: React.VFC<Props> = ({ section }) => {
   return (
     <div className={styles.wishlistCourseContainer}>
       <div style={{ padding: "1rem" }}>
-        <div>{section.name}</div>
+        <div>
+          {section.subjectCode} {section.deptCourseId}: {section.name}
+        </div>
         <div>
           Section: <span>{section.code}</span>
         </div>
@@ -32,6 +32,7 @@ export const WishlistCourse: React.VFC<Props> = ({ section }) => {
           <input
             type="checkbox"
             className={styles.CustomCheckbox}
+            checked={!!schedule[section.registrationNumber]}
             onChange={(e) =>
               schedule[section.registrationNumber]
                 ? removeFromSchedule(section.registrationNumber)

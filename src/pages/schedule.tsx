@@ -5,12 +5,20 @@ import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import create from "zustand";
 import { Section } from "./subject";
+import { MainLayout } from "../components/Layout";
+
+export interface AugmentedSection extends Section {
+  name: string;
+  sectionName?: string | null;
+  deptCourseId: string;
+  subjectCode: string;
+}
 
 interface ScheduleState {
-  schedule: Record<number, Section>;
-  wishlist: Record<number, Section>;
+  schedule: Record<number, AugmentedSection>;
+  wishlist: Record<number, AugmentedSection>;
 
-  addToWishlist: (section: Section) => void;
+  addToWishlist: (section: AugmentedSection) => void;
   removeFromWishlist: (regNum: number) => void;
   scheduleFromWishlist: (regNum: number) => void;
   removeFromSchedule: (regNum: number) => void;
@@ -37,7 +45,7 @@ export const useSchedule = create<ScheduleState>((set, get) => {
     });
   };
 
-  const addToWishlist = (section: Section) => {
+  const addToWishlist = (section: AugmentedSection) => {
     const regNum = section.registrationNumber;
     const { wishlist } = get();
     set({ wishlist: { ...wishlist, [regNum]: section } });
@@ -74,49 +82,53 @@ function SchedulePage() {
   const wishlistLength = Object.keys(wishlist).length;
 
   return (
-    <div className={styles.container}>
-      <Calendar registrationNumbers={Object.keys(schedule)} />
+    <MainLayout>
+      <div className={styles.container}>
+        <Calendar registrationNumbers={Object.keys(schedule)} />
 
-      <div
-        style={{
-          marginTop: "2rem",
-        }}
-      >
-        <div className={styles.header}>
-          <h2 className={styles.wishlist}>{`Wishlist (${wishlistLength})`}</h2>
-        </div>
-
-        <div className={styles.wishlistCoursesList}>
-          {wishlistLength === 0 ? (
-            <div className={styles.emptyWishlistContainer}>
-              Your wishlist appears empty!{" "}
-              <Link
-                href={{
-                  pathname: "/",
-                }}
-              >
-                <a style={{ textDecoration: "none", color: "purpleLight" }}>
-                  Search
-                </a>
-              </Link>{" "}
-              for courses to add to your wishlist
-            </div>
-          ) : (
-            Object.values(wishlist).map((section, i) => {
-              return <WishlistCourse key={i} section={section} />;
-            })
-          )}
-        </div>
-
-        <button
-          onClick={clearSchedule}
-          className={styles.clearScheduleButton}
-          tabIndex={0}
+        <div
+          style={{
+            marginTop: "2rem",
+          }}
         >
-          Clear Schedule
-        </button>
+          <div className={styles.header}>
+            <h2
+              className={styles.wishlist}
+            >{`Wishlist (${wishlistLength})`}</h2>
+          </div>
+
+          <div className={styles.wishlistCoursesList}>
+            {wishlistLength === 0 ? (
+              <div className={styles.emptyWishlistContainer}>
+                Your wishlist appears empty!{" "}
+                <Link
+                  href={{
+                    pathname: "/",
+                  }}
+                >
+                  <a style={{ textDecoration: "none", color: "purpleLight" }}>
+                    Search
+                  </a>
+                </Link>{" "}
+                for courses to add to your wishlist
+              </div>
+            ) : (
+              Object.values(wishlist).map((section, i) => {
+                return <WishlistCourse key={i} section={section} />;
+              })
+            )}
+          </div>
+
+          <button
+            onClick={clearSchedule}
+            className={styles.clearScheduleButton}
+            tabIndex={0}
+          >
+            Clear Schedule
+          </button>
+        </div>
       </div>
-    </div>
+    </MainLayout>
   );
 }
 

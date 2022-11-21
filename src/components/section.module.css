@@ -1,27 +1,42 @@
 .sectionContainer {
-  padding: 1.8vmin 2.8vmin;
   background-color: var(--grey100);
-  width: 84%;
-  margin-left: 8%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   & > .sectionName {
     font-size: 1.8rem;
     font-family: var(--condensedFont);
     color: var(--grey800);
-    margin-bottom: 0.25rem;
   }
 
   & > .sectionNum {
     font-size: 1.6rem;
     font-family: var(--condensedFont);
     color: var(--grey700);
-    margin: 0 0 -1rem 1rem;
   }
 
   & > .attributes {
     display: flex;
     flex-wrap: wrap;
+  }
+}
+
+.sectionBorder {
+  border-bottom: 1px solid;
+}
+
+.attributeContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sectionAttribute {
+  & > .sectionAttrValue {
+    font-size: 1.5rem;
   }
 }
 
@@ -44,7 +59,6 @@
 }
 
 .sectionDescription {
-  padding: 0 1.5rem 1.5rem 0.5rem;
   max-width: 68%;
   color: var(--grey700);
 }
@@ -57,19 +71,19 @@
   align-items: center;
 }
 
-.statusContainer {
-  font-size: 1.1rem;
-  height: 100%;
-  width: 12rem;
-  border-radius: 0.6rem;
-  padding: 0.8rem 0.5rem;
+.recitationBox {
+  padding-left: 16px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 2rem;
+  flex-direction: row;
+  gap: 32px;
 
-  & > svg {
-    margin-right: 0.65rem;
+  & > .sectionContainer {
+    width: 33%;
+  }
+
+  & > .sectionBorder {
+    border-bottom: none;
+    border-right: 1px solid black;
   }
 }
 
@@ -89,4 +103,12 @@
   & > svg {
     margin-right: 0.65rem;
   }
+}
+
+.dateContainer {
+  font-size: 1.25rem;
+}
+
+.boldedDate {
+  font-weight: bold;
 }

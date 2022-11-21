@@ -99,9 +99,11 @@ public class SelectRows {
       }
 
       Meeting meeting = new Meeting();
-      meeting.beginDate = rs.getObject(2, LocalDateTime.class);
+      meeting.beginDate =
+          rs.getObject(2, LocalDateTime.class).atZone(ZoneOffset.UTC);
       meeting.minutesDuration = rs.getInt(3);
-      meeting.endDate = rs.getObject(4, LocalDateTime.class);
+      meeting.endDate =
+          rs.getObject(4, LocalDateTime.class).atZone(ZoneOffset.UTC);
 
       meetings.add(meeting);
     }

@@ -16,7 +16,7 @@ public final class SelectAugmentedMeetings {
         "SELECT courses.subject_code, courses.dept_course_id,"
         + "sections.registration_number,sections.instruction_mode, "
         + "sections.section_code,sections.section_type,"
-        + "sections.section_status,"
+        + "sections.section_status, sections.campus, "
         + "sections.location,meetings.begin_date,"
         + "meetings.end_date,meetings.duration "
         + "FROM courses JOIN sections ON courses.id = sections.course_id "

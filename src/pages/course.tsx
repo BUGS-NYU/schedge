@@ -2,11 +2,12 @@ import React from "react";
 import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
-import { parseDate } from "components/util";
 import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
 import { Course, SubjectSchema, useCourses } from "./subject";
 import { z } from "zod";
+import EditCalendarSVG from "components/edit-calendar.svg";
+import { ScheduleButton } from "../components/Layout";
 
 const IdSchema = z.string();
 
@@ -25,22 +26,28 @@ function CoursePage() {
 
   const header = (
     <div className={styles.colorHeader}>
-      <div className={styles.courseHeader}>
+      <div className={styles.iconBar}>
         <Link
           href={{
             pathname: "/subject",
             query: { schoolIndex, subject: subjectCode },
           }}
         >
-          <a>
-            <img src="./img/go-back.svg" alt="Go back" id={styles.backButton} />
+          <a className={styles.svgButton}>
+            <img
+              src="/img/go-back.svg"
+              alt="Go back"
+              className={styles.svgButton}
+            />
           </a>
         </Link>
 
-        <div>
-          <div id={styles.titleDepartment}>{subjectCode}</div>
-          <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
-        </div>
+        <ScheduleButton className={styles.svgButton} />
+      </div>
+
+      <div className={styles.courseHeader}>
+        <div id={styles.titleDepartment}>{subjectCode}</div>
+        <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
       </div>
     </div>
   );
@@ -54,43 +61,39 @@ function CoursePage() {
   );
 
   return (
-    <div>
+    <>
       {header}
-      <div className={styles.sectionsDescription}>
-        {course?.description}
 
-        {pullNotesToTop && (
-          <>
-            {/* Handle course description here if all sections have the same one */}
-            <br />
-            <br />
-            {course.sections[0].notes}
-          </>
+      <div className={styles.courseBody}>
+        <div className={styles.sectionsDescription}>
+          <p>{course?.description}</p>
+
+          {/* Handle course description here if all sections have the same one */}
+          {pullNotesToTop && <p>{course.sections[0]?.notes}</p>}
+        </div>
+
+        {!!course?.sections?.length && (
+          <div className={styles.sectionsHeader}>Sections</div>
         )}
-      </div>
 
-      {course?.sections?.length > 1 && (
-        <div className={styles.sectionsHeader}>Sections</div>
-      )}
-
-      <div>
         {course?.sections?.map((section, i) => {
-          const sortedSectionMeetings = (section.meetings ?? []).sort(
-            (a, b) => a.beginDate.getDay() - b.beginDate.getDay()
-          );
-
           return (
             <SectionInfo
               key={i}
-              section={section}
-              sortedSectionMeetings={sortedSectionMeetings}
-              courseData={course}
               lastSection={i === course.sections.length - 1}
+              ignoreNotes={pullNotesToTop}
+              section={{
+                ...section,
+                sectionName: section.name,
+                name: section.name ?? course.name,
+                deptCourseId: course.deptCourseId,
+                subjectCode: course.subjectCode,
+              }}
             />
           );
         })}
       </div>
-    </div>
+    </>
   );
 }
 

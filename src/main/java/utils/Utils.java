@@ -142,7 +142,15 @@ public final class Utils {
     stmt.setObject(index, obj);
   }
 
-  static class NullWrapper {
+    public static String getEnvDefault(String name, String defaultValue) {
+    String value = System.getenv(name);
+    if (value == null) {
+      return defaultValue;
+    } else
+      return value;
+  }
+
+    static class NullWrapper {
     int type;
     Object value;
 

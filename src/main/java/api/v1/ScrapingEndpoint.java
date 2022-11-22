@@ -8,8 +8,7 @@ import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import me.tongfei.progressbar.*;
 import utils.Utils;
@@ -19,40 +18,40 @@ import utils.Utils;
  * because it's a private API endpoint.
  */
 public final class ScrapingEndpoint {
-  private static final AtomicReference<Future<String>> MUTEX = new AtomicReference<>(null);
+  private static final AtomicBoolean MUTEX = new AtomicBoolean(false);
   private static final String PASSWORD =
       Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", "");
 
   private static String scrape(WsContext ctx) {
-      try {
-        var term = Term.fromString(ctx.pathParam("term"));
+    try {
+      var term = Term.fromString(ctx.pathParam("term"));
 
-        var consumer = new DelegatingProgressBarConsumer(ctx::send);
-        var builder = new ProgressBarBuilder()
-                .setConsumer(consumer)
-                .setStyle(ProgressBarStyle.ASCII)
-                .setUpdateIntervalMillis(15_000)
-                .setEtaFunction(state -> Optional.empty())
-                .setTaskName("Scrape " + term.json());
+      var consumer = new DelegatingProgressBarConsumer(ctx::send);
+      var builder = new ProgressBarBuilder()
+                        .setConsumer(consumer)
+                        .setStyle(ProgressBarStyle.ASCII)
+                        .setUpdateIntervalMillis(15_000)
+                        .setEtaFunction(state -> Optional.empty())
+                        .setTaskName("Scrape " + term.json());
 
-        GetConnection.withConnection(conn -> {
-          try (var bar = builder.build()) {
-            ScrapeTerm.scrapeTerm(conn, term, bar);
-          }
-        });
+      GetConnection.withConnection(conn -> {
+        try (var bar = builder.build()) {
+          ScrapeTerm.scrapeTerm(conn, term, bar);
+        }
+      });
 
-        return "Done!";
-      } catch (Exception e) {
-        var sw = new StringWriter();
-        var pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        var stackTrace = sw.toString();
+      return "Done!";
+    } catch (Exception e) {
+      var sw = new StringWriter();
+      var pw = new PrintWriter(sw);
+      e.printStackTrace(pw);
+      var stackTrace = sw.toString();
 
-        ctx.send(e.getMessage());
-        ctx.send(stackTrace);
+      ctx.send(e.getMessage());
+      ctx.send(stackTrace);
 
-        return "Failed: " + e.getMessage();
-      }
+      return "Failed: " + e.getMessage();
+    }
   }
 
   public static void add(Javalin app) {
@@ -73,12 +72,14 @@ public final class ScrapingEndpoint {
           return;
         }
 
-
-        if (!MUTEX.compareAndSet(null)) {
-          return "Already running a scraping job!";
+        if (!MUTEX.compareAndSet(false, true)) {
+          ctx.closeSession(1000, "Already running a scraping job!");
+          return;
         }
 
         var closeReason = scrape(ctx);
+
+        MUTEX.compareAndSet(true, false);
         ctx.closeSession(1000, closeReason);
       });
     });

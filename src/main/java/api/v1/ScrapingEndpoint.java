@@ -72,6 +72,7 @@ public final class ScrapingEndpoint {
         }
 
         // TODO: correctly handle websocket closing, password checking, etc.
+        // Also, do a hash-compare before doing the equality check
         try {
           var closeReason = scrape(ctx);
           ctx.closeSession(1000, closeReason);

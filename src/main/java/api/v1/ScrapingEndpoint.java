@@ -19,8 +19,11 @@ import utils.Utils;
  */
 public final class ScrapingEndpoint {
   private static final AtomicBoolean MUTEX = new AtomicBoolean(false);
-  private static final String PASSWORD =
-      Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", "");
+
+  // Base-64 of "schedge:admin"
+  private static final String AUTH =
+      Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", "c2NoZWRnZTphZG1pbg==");
+  private static final String AUTH_STRING = "Basic " + AUTH;
 
   private static String scrape(WsContext ctx) {
     try {
@@ -56,18 +59,9 @@ public final class ScrapingEndpoint {
 
   public static void add(Javalin app) {
     app.ws("/api/scrape/{term}", ws -> {
-      ws.onConnect(
-          ctx -> { ctx.attribute("messageCount", new AtomicInteger(0)); });
-
-      ws.onMessage(ctx -> {
-        var wsMutex = (AtomicInteger)ctx.attribute("messageCount");
-        if (wsMutex.incrementAndGet() > 1) {
-          ctx.closeSession(1000, "Failed: Sent too many messages");
-          return;
-        }
-
-        var message = ctx.message();
-        if (!message.equals(PASSWORD)) {
+      ws.onConnect(ctx -> {
+        var authString = ctx.header("Authorization");
+        if (authString == null || !authString.equals(AUTH_STRING)) {
           ctx.closeSession(1000, "Failed: Unauthorized");
           return;
         }
@@ -77,11 +71,16 @@ public final class ScrapingEndpoint {
           return;
         }
 
-        var closeReason = scrape(ctx);
-
-        MUTEX.compareAndSet(true, false);
-        ctx.closeSession(1000, closeReason);
+        // TODO: correctly handle websocket closing
+        try {
+          var closeReason = scrape(ctx);
+          ctx.closeSession(1000, closeReason);
+        } finally {
+          MUTEX.compareAndSet(true, false);
+        }
       });
+
+      ws.onMessage(ctx -> {});
     });
   }
 }

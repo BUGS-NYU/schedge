@@ -1,0 +1,19 @@
+name: Scrape Term
+
+on:
+  workflow_dispatch:
+    inputs:
+      term:
+        required: true
+        description: Term to scrape (e.g. sp2021)
+
+jobs:
+  Scrape:
+    runs-on: ubuntu-latest
+    environment: admin
+    permissions:
+      contents: read
+
+    steps:
+        - name: Run
+          run: echo "Hello, World"

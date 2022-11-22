@@ -80,11 +80,12 @@ class PSCoursesParser {
       var section = sections.get(0);
       var titleText = section.expectFirst("b").text().trim();
       var titleSections = run(() -> {
-        //HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and Technology
+        // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
+        // Technology
         var subjectSections = titleText.split(" \\| ");
         var titleTextFiltered = subjectSections[subjectSections.length - 1];
 
-        //STS-UY 2144 Ethics and Technology
+        // STS-UY 2144 Ethics and Technology
         return titleTextFiltered.split(" ", 3);
       });
 

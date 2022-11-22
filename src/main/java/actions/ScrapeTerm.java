@@ -10,22 +10,8 @@ import me.tongfei.progressbar.ProgressBar;
 import scraping.PeopleSoftClassSearch;
 
 public class ScrapeTerm {
-
-  public static void scrapeTerm(Term term, boolean display) {
-    GetConnection.withConnection(conn -> {
-      if (!display) {
-        scrapeTerm(conn, term, null);
-        return;
-      }
-
-      try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-        scrapeTerm(conn, term, bar);
-      }
-    });
-  }
-
   // @Note: bar is nullable
-  static void scrapeTerm(Connection conn, Term term, ProgressBar bar)
+  public static void scrapeTerm(Connection conn, Term term, ProgressBar bar)
       throws SQLException {
     clearPrevious(conn, term);
 

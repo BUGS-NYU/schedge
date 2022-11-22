@@ -121,6 +121,8 @@ public class App {
     new GenerateScheduleEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
 
+    ScrapingEndpoint.add(app);
+
     return app;
   }
 

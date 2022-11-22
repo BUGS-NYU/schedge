@@ -71,7 +71,7 @@ public final class ScrapingEndpoint {
           return;
         }
 
-        // TODO: correctly handle websocket closing
+        // TODO: correctly handle websocket closing, password checking, etc.
         try {
           var closeReason = scrape(ctx);
           ctx.closeSession(1000, closeReason);

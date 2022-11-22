@@ -8,11 +8,12 @@ import io.javalin.Javalin;
 import io.javalin.websocket.WsConnectContext;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
+import org.eclipse.jetty.websocket.api.CloseStatus;
 
 /**
  * Scraping endpoint; this intentionally doesn't have API documentation,
@@ -28,6 +29,7 @@ public final class ScrapingEndpoint {
                       .setConsumer(consumer)
                       .setStyle(ProgressBarStyle.ASCII)
                       .setUpdateIntervalMillis(15_000)
+                      .setEtaFunction(state -> Optional.empty())
                       .setTaskName("Scrape " + term.json());
 
     GetConnection.withConnection(conn -> {
@@ -43,12 +45,13 @@ public final class ScrapingEndpoint {
       ws.onConnect(ctx -> {
         try {
           if (!MUTEX.compareAndSet(false, true)) {
-            ctx.send("Already running a scraping job!");
-            ctx.closeSession();
+            ctx.closeSession(1000, "Already running a scraping job!");
             return;
           }
 
           onConnect(ctx);
+
+          ctx.closeSession(1000, "Done!");
         } catch (Exception e) {
           var sw = new StringWriter();
           var pw = new PrintWriter(sw);
@@ -57,9 +60,10 @@ public final class ScrapingEndpoint {
 
           ctx.send(e.getMessage());
           ctx.send(stackTrace);
+
+          ctx.closeSession(1000, "Failed: " + e.getMessage());
         } finally {
           MUTEX.compareAndSet(true, false);
-          ctx.closeSession();
         }
       });
     });

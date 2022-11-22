@@ -35,7 +35,6 @@ public final class ScrapingEndpoint {
     GetConnection.withConnection(conn -> {
       try (var bar = builder.build()) {
         ScrapeTerm.scrapeTerm(conn, term, bar);
-        ctx.send("Done!");
       }
     });
   }

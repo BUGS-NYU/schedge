@@ -125,6 +125,12 @@ public final class PeopleSoftClassSearch {
 
       consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
       consumer.accept(ScrapeEvent.progress(1));
+
+      /*
+      while (!this.subjects.get(this.index).code.contains("FINH")) {
+        this.index += 1;
+      }
+       */
     }
 
     @Override
@@ -160,11 +166,13 @@ public final class PeopleSoftClassSearch {
             // Catch other types of exceptions because scraping is nowhere near
             // stable and likely never will be
 
-            Thread.sleep(10_000);
             consumer.accept(
                 ScrapeEvent.warning(subject.code, "ERROR: " + e.getMessage()));
             consumer.accept(
                 ScrapeEvent.warning(subject.code, Utils.stackTrace(e)));
+
+            Thread.sleep(10_000);
+
             ps = new PSClient();
             ps.navigateToTerm(term).get();
           }

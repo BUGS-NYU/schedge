@@ -13,6 +13,10 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import javax.xml.crypto.dsig.DigestMethod;
+
+import me.tongfei.progressbar.DelegatingProgressBarConsumer;
+import me.tongfei.progressbar.ProgressBarBuilder;
+import me.tongfei.progressbar.ProgressBarStyle;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -56,9 +60,8 @@ public final class ScrapingEndpoint {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
-      var subject = new Ref<String>();
-      var count = new Ref<>(0);
-      var total = new Ref<>("?");
+      var bar = new ProgressBarBuilder().setTaskName("Scraping " + term.json()).setStyle(ProgressBarStyle.ASCII).setUpdateIntervalMillis(10_000)
+              .setConsumer(new DelegatingProgressBarConsumer(ctx::send)).build();
 
       GetConnection.withConnection(conn -> {
         ScrapeTerm.scrapeTerm(conn, term, e -> {
@@ -68,7 +71,6 @@ public final class ScrapingEndpoint {
             logger.info(e.message);
             break;
           case SUBJECT_START:
-            subject.current = e.currentSubject;
             ctx.send(e.message);
             logger.info(e.message);
             break;
@@ -77,18 +79,10 @@ public final class ScrapingEndpoint {
             logger.warn(e.message);
             break;
           case PROGRESS:
-            count.current += e.value;
-            if (subject.current != null) {
-              ctx.send("Finished " + subject.current + " fetch (Completed " +
-                       count.current + "/" + total.current + ")");
-            }
+            bar.stepBy(e.value);
             break;
           case HINT_CHANGE:
-            if (e.value < 0) {
-              total.current = "?";
-            } else {
-              total.current = "" + e.value;
-            }
+            bar.maxHint(e.value);
             break;
           }
         });

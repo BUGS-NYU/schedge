@@ -127,10 +127,10 @@ public final class PeopleSoftClassSearch {
       consumer.accept(ScrapeEvent.progress(1));
 
       /*
-       */
       while (!this.subjects.get(this.index).code.contains("FINH")) {
         this.index += 1;
       }
+       */
     }
 
     @Override

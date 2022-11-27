@@ -1,4 +1,4 @@
-name: Scrape Term
+name: Scrape Term ${{ github.event.inputs.term }}
 
 on:
   workflow_dispatch:

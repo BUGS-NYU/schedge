@@ -6,15 +6,11 @@ import actions.ScrapeTerm;
 import database.GetConnection;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
-import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import me.tongfei.progressbar.*;
 import org.slf4j.*;
-import scraping.PeopleSoftClassSearch;
-import utils.ArrayJS;
 import utils.Utils;
 
 /**

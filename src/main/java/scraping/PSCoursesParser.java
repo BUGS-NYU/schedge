@@ -8,9 +8,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
 import java.util.function.*;
+import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
-import org.slf4j.*;
 import utils.*;
 
 class PSCoursesParser {
@@ -80,11 +80,11 @@ class PSCoursesParser {
     var titleText = sectionElement.expectFirst("b").text().trim();
 
     {
+      // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
+      // Technology
       var titleSections = run(() -> {
-        // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
-        // Technology
-        var subjectSections = titleText.split(" \\| ");
-        var titleTextFiltered = subjectSections[subjectSections.length - 1];
+        var subjectSections = titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
+        var titleTextFiltered = subjectSections[subjectSections.length - 1].trim();
 
         // STS-UY 2144 Ethics and Technology
         return titleTextFiltered.split(" ", 3);
@@ -191,20 +191,19 @@ class PSCoursesParser {
         fields.put(key, parts[1].trim());
       }
 
-      var s = section;
-      s.registrationNumber = Integer.parseInt(fields.get("Class#"));
-      s.code = fields.get("Section");
-      s.type = fields.get("Component");
-      s.instructionMode = fields.get("Instruction Mode");
-      s.campus = fields.get("Course Location");
-      s.grading = fields.get("Grading");
+      section.registrationNumber = Integer.parseInt(fields.get("Class#"));
+      section.code = fields.get("Section");
+      section.type = fields.get("Component");
+      section.instructionMode = fields.get("Instruction Mode");
+      section.campus = fields.get("Course Location");
+      section.grading = fields.get("Grading");
 
       var status = fields.get("Class Status");
-      s.status = Nyu.SectionStatus.parseStatus(status);
+      section.status = Nyu.SectionStatus.parseStatus(status);
 
-      if (s.status == Nyu.SectionStatus.WaitList) {
+      if (section.status == Nyu.SectionStatus.WaitList) {
         var waitlistString = status.replaceAll("[^0-9]", "");
-        s.waitlistTotal = Integer.parseInt(waitlistString);
+        section.waitlistTotal = Integer.parseInt(waitlistString);
       }
     }
 

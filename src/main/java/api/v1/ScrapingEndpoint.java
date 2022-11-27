@@ -62,6 +62,7 @@ public final class ScrapingEndpoint {
                     .setTaskName("Scraping " + term.json())
                     .setStyle(ProgressBarStyle.ASCII)
                     .setUpdateIntervalMillis(5_000)
+                    .setMaxRenderedLength(160)
                     .setConsumer(new DelegatingProgressBarConsumer(ctx::send))
                     .build();
 

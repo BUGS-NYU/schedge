@@ -1,19 +1,19 @@
 package scraping;
 
+import static scraping.PeopleSoftClassSearch.*;
 import static utils.ArrayJS.*;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
+import java.util.function.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;
 import utils.*;
 
 class PSCoursesParser {
-  static Logger logger = PeopleSoftClassSearch.logger;
-
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
@@ -35,7 +35,8 @@ class PSCoursesParser {
   }
 
   static ArrayList<Nyu.Course> parseSubject(Try ctx, String html,
-                                            String subjectCode) {
+                                            String subjectCode,
+                                            Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {
@@ -62,15 +63,15 @@ class PSCoursesParser {
 
     var courses = new ArrayList<Nyu.Course>();
     for (var courseHtml : coursesContainer.children()) {
-      var course = parseCourse(ctx, courseHtml, subjectCode);
+      var course = parseCourse(ctx, courseHtml, subjectCode, consumer);
       courses.add(course);
     }
 
     return courses;
   }
 
-  static Nyu.Course parseCourse(Try ctx, Element courseHtml,
-                                String subjectCode) {
+  static Nyu.Course parseCourse(Try ctx, Element courseHtml, String subjectCode,
+                                Consumer<ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
@@ -114,8 +115,10 @@ class PSCoursesParser {
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
       var isSCA = subjectCode.startsWith("SCA-UA");
       if (!isSCA) {
-        logger.warn(course.name + " - course.subjectCode=" +
-                    course.subjectCode + ", but subject=" + subjectCode);
+        var message = course.name +
+                      " - course.subjectCode=" + course.subjectCode +
+                      ", but subject=" + subjectCode;
+        consumer.accept(ScrapeEvent.warning(subjectCode, message));
       }
     }
 

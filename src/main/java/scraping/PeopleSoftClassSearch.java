@@ -4,9 +4,9 @@ import static scraping.PSCoursesParser.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
@@ -16,6 +16,53 @@ import utils.*;
 public final class PeopleSoftClassSearch {
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
+
+  /* Real fucking stupid implementation of whatever you desire
+   * to call this. Event listening, observer pattern, whatever.
+   */
+  public static final class ScrapeEvent {
+    public enum Kind {
+      WARNING,
+      MESSAGE,
+      SUBJECT_START,
+      PROGRESS,
+      HINT_CHANGE;
+    }
+
+    public final Kind kind;
+    public final String currentSubject;
+    public final String message;
+    public final int value;
+
+    private ScrapeEvent(Kind kind, String currentSubject, String message,
+                        int value) {
+      this.kind = kind;
+      this.currentSubject = currentSubject;
+      this.message = message;
+      this.value = value;
+    }
+
+    static ScrapeEvent warning(String subject, String message) {
+      return new ScrapeEvent(Kind.WARNING, subject, message, 0);
+    }
+
+    static ScrapeEvent message(String subject, String message) {
+      return new ScrapeEvent(Kind.MESSAGE, subject, message, 0);
+    }
+
+    static ScrapeEvent subject(String subject) {
+      return new ScrapeEvent(Kind.SUBJECT_START, subject, "Fetching " + subject,
+                             0);
+    }
+
+    static ScrapeEvent progress(int progress) {
+      return new ScrapeEvent(Kind.PROGRESS, null, null, progress);
+    }
+
+    static ScrapeEvent hintChange(int hint) {
+      return new ScrapeEvent(Kind.HINT_CHANGE, null, null, hint);
+    }
+  }
 
   public static final class SubjectElem {
     public final String schoolName;
@@ -44,24 +91,27 @@ public final class PeopleSoftClassSearch {
   public static final class CoursesForTerm
       implements Iterator<ArrayList<Course>> {
     private final ArrayList<SubjectElem> subjects;
-    private final ProgressBar bar;
+    private final Consumer<ScrapeEvent> consumer;
     private final Try ctx;
     private final Term term;
 
     private PSClient ps;
     private int index = 0;
 
-    private CoursesForTerm(Term term, ProgressBar bar, Try ctx) {
+    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
+      if (consumer == null) {
+        this.consumer = e -> {};
+      } else {
+        this.consumer = consumer;
+      }
+
       this.term = term;
-      this.bar = bar;
       this.ctx = ctx;
 
       this.ps = new PSClient();
 
-      if (bar != null) {
-        bar.setExtraMessage("fetching subject list...");
-        bar.maxHint(-1);
-      }
+      consumer.accept(ScrapeEvent.message(null, "fetching subject list..."));
+      consumer.accept(ScrapeEvent.hintChange(-1));
 
       var resp = ctx.log(() -> {
         ctx.put("term", term);
@@ -71,10 +121,8 @@ public final class PeopleSoftClassSearch {
 
       this.subjects = ctx.log(() -> parseTermPage(resp.body()));
 
-      if (bar != null) {
-        bar.maxHint(subjects.size() + 1);
-        bar.step();
-      }
+      consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
+      consumer.accept(ScrapeEvent.progress(1));
     }
 
     @Override
@@ -89,8 +137,7 @@ public final class PeopleSoftClassSearch {
 
       ctx.put("subject", subject);
 
-      if (bar != null)
-        bar.setExtraMessage("fetching " + subject.code);
+      consumer.accept(ScrapeEvent.subject(subject.code));
 
       var parsed = Try.tcPass(() -> {
         for (int i = 0; i < 10; i++) {
@@ -98,7 +145,7 @@ public final class PeopleSoftClassSearch {
             var resp = ps.fetchSubject(subject).get();
             var body = resp.body();
 
-            return parseSubject(ctx, body, subject.code);
+            return parseSubject(ctx, body, subject.code, consumer);
           } catch (Exception e) {
             Thread.sleep(10_000);
             System.out.println(e.getMessage());
@@ -111,11 +158,10 @@ public final class PeopleSoftClassSearch {
         var resp = ps.fetchSubject(subject).get();
         var body = resp.body();
 
-        return parseSubject(ctx, body, subject.code);
+        return parseSubject(ctx, body, subject.code, consumer);
       });
 
-      if (bar != null)
-        bar.step();
+      consumer.accept(ScrapeEvent.progress(1));
 
       return parsed;
     }
@@ -181,7 +227,15 @@ public final class PeopleSoftClassSearch {
         resp = ps.fetchSubject(subject).get();
         var responseBody = resp.body();
 
-        return parseSubject(ctx, responseBody, subject.code);
+        return parseSubject(ctx, responseBody, subject.code, e -> {
+          switch (e.kind) {
+          case WARNING:
+            logger.warn(e.message);
+            break;
+          default:
+            break;
+          }
+        });
       }
     });
   }
@@ -190,7 +244,8 @@ public final class PeopleSoftClassSearch {
    * @param term The term to scrape
    * @param bar Nullable progress bar to output progress to
    */
-  public static CoursesForTerm scrapeTerm(Term term, ProgressBar bar) {
+  public static CoursesForTerm scrapeTerm(Term term,
+                                          Consumer<ScrapeEvent> bar) {
     var ctx = Try.Ctx(logger);
     return new CoursesForTerm(term, bar, ctx);
   }

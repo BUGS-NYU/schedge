@@ -53,7 +53,23 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          ScrapeTerm.scrapeTerm(conn, term, bar);
+          ScrapeTerm.scrapeTerm(conn, term, e -> {
+            switch (e.kind) {
+            case MESSAGE:
+            case SUBJECT_START:
+              bar.setExtraMessage(e.message);
+              break;
+            case WARNING:
+              logger.warn(e.message);
+              break;
+            case PROGRESS:
+              bar.stepBy(e.value);
+              break;
+            case HINT_CHANGE:
+              bar.maxHint(e.value);
+              break;
+            }
+          });
         }
       }
     });

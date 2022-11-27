@@ -7,10 +7,12 @@ import database.GetConnection;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import me.tongfei.progressbar.*;
+import org.slf4j.*;
 import utils.Utils;
 
 /**
@@ -18,29 +20,69 @@ import utils.Utils;
  * because it's a private API endpoint.
  */
 public final class ScrapingEndpoint {
-  private static final AtomicBoolean MUTEX = new AtomicBoolean(false);
+  private static final Logger logger =
+      LoggerFactory.getLogger("api.v1.ScrapingEndpoint");
+  public static final class Ref<T> { // IDK if this already exists
+    public T current;
 
-  // Base-64 of "schedge:admin"
-  private static final String AUTH =
-      Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", "c2NoZWRnZTphZG1pbg==");
-  private static final String AUTH_STRING = "Basic " + AUTH;
+    public Ref(T t) { this.current = t; }
+
+    public Ref() { this.current = null; }
+  }
+
+  private static final AtomicBoolean MUTEX = new AtomicBoolean(false);
+  private static volatile Future<String> CURRENT_SCRAPE = null;
+
+  // The default is the base-64 of "schedge:admin"
+  // To run this in dev, please run `yarn wscat
+  private static final String AUTH_STRING;
+
+  static {
+    var defaultPassword = "schedge:admin";
+    var encoded = Base64.getEncoder().encodeToString(
+        defaultPassword.getBytes(StandardCharsets.UTF_8));
+    var authString = Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", encoded);
+    AUTH_STRING = "Basic " + authString;
+  }
 
   private static String scrape(WsContext ctx) {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
-      var consumer = new DelegatingProgressBarConsumer(ctx::send);
-      var builder = new ProgressBarBuilder()
-                        .setConsumer(consumer)
-                        .setStyle(ProgressBarStyle.ASCII)
-                        .setUpdateIntervalMillis(15_000)
-                        .setEtaFunction(state -> Optional.empty())
-                        .setTaskName("Scrape " + term.json());
-
+      var subject = new Ref<String>();
+      var count = new Ref<>(0);
+      var total = new Ref<>("?");
       GetConnection.withConnection(conn -> {
-        try (var bar = builder.build()) {
-          ScrapeTerm.scrapeTerm(conn, term, bar);
-        }
+        ScrapeTerm.scrapeTerm(conn, term, e -> {
+          switch (e.kind) {
+          case MESSAGE:
+            ctx.send(e.message);
+            break;
+          case SUBJECT_START:
+            subject.current = e.currentSubject;
+            ctx.send(e.message);
+            break;
+          case WARNING:
+            ctx.send(e.message);
+            logger.warn(e.message);
+            break;
+          case PROGRESS:
+            count.current += e.value;
+            if (subject.current != null) {
+              ctx.send("Finished fetch for " + subject.current +
+                       " (Completed " + count.current + "/" + total.current +
+                       ")");
+            }
+            break;
+          case HINT_CHANGE:
+            if (e.value < 0) {
+              total.current = "?";
+            } else {
+              total.current = "" + e.value;
+            }
+            break;
+          }
+        });
       });
 
       return "Done!";

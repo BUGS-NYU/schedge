@@ -40,25 +40,22 @@ public final class Utils {
 
     if (uri.getScheme().equals("jar")) {
       try (FileSystem fileSystem = FileSystems.newFileSystem(
-              uri, Collections.<String, Object>emptyMap())) {
+               uri, Collections.<String, Object>emptyMap())) {
         var myPath = fileSystem.getPath(path);
 
         return Files.walk(myPath)
-                .filter(Files::isRegularFile)
-                .map(p -> p.toString())
-                .collect(Collectors.toList());
+            .filter(Files::isRegularFile)
+            .map(p -> p.toString())
+            .collect(Collectors.toList());
       }
     } else {
       var myPath = Paths.get(uri);
 
       return Files.walk(myPath)
-              .filter(Files::isRegularFile)
-              .map(p -> p.toUri().toString())
-              .collect(Collectors.toList());
-
+          .filter(Files::isRegularFile)
+          .map(p -> p.toUri().toString())
+          .collect(Collectors.toList());
     }
-
-
   }
 
   public static void writeToFileOrStdout(String file, Object value) {
@@ -142,7 +139,7 @@ public final class Utils {
     stmt.setObject(index, obj);
   }
 
-    public static String getEnvDefault(String name, String defaultValue) {
+  public static String getEnvDefault(String name, String defaultValue) {
     String value = System.getenv(name);
     if (value == null) {
       return defaultValue;
@@ -150,7 +147,7 @@ public final class Utils {
       return value;
   }
 
-    static class NullWrapper {
+  static class NullWrapper {
     int type;
     Object value;
 

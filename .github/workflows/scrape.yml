@@ -29,5 +29,8 @@ jobs:
       - name: Install Websocat
         run: wget https://github.com/vi/websocat/releases/download/v1.11.0/websocat.x86_64-unknown-linux-musl -O ./websocat
 
+      - name: Update Permissions
+        run: chmod +x ./websocat
+
       - name: Run Scrape
         run: ./websocat "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"

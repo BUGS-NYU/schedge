@@ -1,4 +1,4 @@
-name: Scrape Term
+name: Scrape Term ${{ github.event.inputs.term }}
 
 on:
   workflow_dispatch:
@@ -14,23 +14,12 @@ jobs:
     permissions:
       contents: read
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-      - name: Set up Node + Yarn
-        uses: actions/setup-node@v3
-        with:
-          cache: 'yarn'
-
-      - name: Install JS Dependencies
-        run: yarn install --frozen-lockfile
-        
+    steps:        
       - name: Install Websocat
         run: wget https://github.com/vi/websocat/releases/download/v1.11.0/websocat.x86_64-unknown-linux-musl -O ./websocat
 
       - name: Update Permissions
         run: chmod +x ./websocat
 
-      - name: Run Scrape
+      - name: Run Scrape on ${{ github.event.inputs.term }}
         run: ./websocat "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" -n --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"

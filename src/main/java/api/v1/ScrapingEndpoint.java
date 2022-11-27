@@ -114,8 +114,10 @@ public final class ScrapingEndpoint {
         var authBytes = authString.getBytes(StandardCharsets.UTF_8);
         var authHash = digest.digest(authBytes);
 
-        if (!authHash.equals(AUTH_HASH) || !authString.equals(AUTH_STRING)) {
-          ctx.closeSession(1000, "Failed: Unauthorized");
+        if (!Arrays.equals(authHash, AUTH_HASH) ||
+            !authString.equals(AUTH_STRING)) {
+          ctx.closeSession(1000, "Failed: Unauthorized" + authString + " " +
+                                     AUTH_STRING);
           return;
         }
 

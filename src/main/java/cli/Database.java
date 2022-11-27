@@ -6,6 +6,7 @@ import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
 import database.*;
+import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.*;
@@ -49,9 +50,29 @@ public class Database implements Runnable {
       converter = Mixins.TermConverter.class) Term[] terms) {
     long start = System.nanoTime();
 
-    for (var term : terms) {
-      ScrapeTerm.scrapeTerm(term, true);
-    }
+    GetConnection.withConnection(conn -> {
+      for (var term : terms) {
+        try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
+          ScrapeTerm.scrapeTerm(conn, term, e -> {
+            switch (e.kind) {
+            case MESSAGE:
+            case SUBJECT_START:
+              bar.setExtraMessage(e.message);
+              break;
+            case WARNING:
+              logger.warn(e.message);
+              break;
+            case PROGRESS:
+              bar.stepBy(e.value);
+              break;
+            case HINT_CHANGE:
+              bar.maxHint(e.value);
+              break;
+            }
+          });
+        }
+      }
+    });
 
     GetConnection.close();
 

@@ -29,4 +29,6 @@ public final class ArrayJS {
 
     return null;
   }
+
+  public static <T> T run(Supplier<T> supplier) { return supplier.get(); }
 }

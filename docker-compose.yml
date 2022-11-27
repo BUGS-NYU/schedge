@@ -24,6 +24,7 @@ services:
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
+      - SCHEDGE_ADMIN_PASSWORD=schedge:admin
       - JDBC_URL=jdbc:postgresql://postgres/postgres
 
     ports:

@@ -8,6 +8,7 @@
     "gradle": "node src/gradlew.js",
     "exec": "docker-compose exec",
     "build": "node src/gradlew.js composeBuild",
+    "scrape-ws": "wscat -c ws://localhost:4358/api/scrape/sp2021 --auth schedge:admin",
     "test": "node src/gradlew.js test",
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",
@@ -40,7 +41,8 @@
     "postcss-flexbugs-fixes": "5.0.2",
     "postcss-preset-env": "7.0.1",
     "prettier": "2.7.1",
-    "typescript": "4.8.4"
+    "typescript": "4.8.4",
+    "wscat": "5.2.0"
   },
   "browserslist": [
     "last 2 versions",

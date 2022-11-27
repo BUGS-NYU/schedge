@@ -29,7 +29,6 @@ public final class Utils {
     if (resource == null)
       throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    // Read entire file and then get it as a list of lines
     return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
   }
 

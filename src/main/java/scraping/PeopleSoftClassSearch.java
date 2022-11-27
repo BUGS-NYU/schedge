@@ -19,6 +19,8 @@ public final class PeopleSoftClassSearch {
 
   /* Real fucking stupid implementation of whatever you desire
    * to call this. Event listening, observer pattern, whatever.
+   *
+   *                  - Albert Liu, Nov 27, 2022 Sun 02:32
    */
   public static final class ScrapeEvent {
     public enum Kind {

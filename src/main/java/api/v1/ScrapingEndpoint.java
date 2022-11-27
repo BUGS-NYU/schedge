@@ -63,6 +63,7 @@ public final class ScrapingEndpoint {
                     .setStyle(ProgressBarStyle.ASCII)
                     .setUpdateIntervalMillis(5_000)
                     .setMaxRenderedLength(160)
+                    .continuousUpdate()
                     .setConsumer(new DelegatingProgressBarConsumer(ctx::send))
                     .build();
 
@@ -70,9 +71,6 @@ public final class ScrapingEndpoint {
         ScrapeTerm.scrapeTerm(conn, term, e -> {
           switch (e.kind) {
           case MESSAGE:
-            ctx.send(e.message);
-            logger.info(e.message);
-            break;
           case SUBJECT_START:
             bar.setExtraMessage(e.message);
             logger.info(e.message);

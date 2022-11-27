@@ -110,7 +110,7 @@ public final class PeopleSoftClassSearch {
 
       this.ps = new PSClient();
 
-      consumer.accept(ScrapeEvent.message(null, "fetching subject list..."));
+      consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
       consumer.accept(ScrapeEvent.hintChange(-1));
 
       var resp = ctx.log(() -> {
@@ -146,10 +146,23 @@ public final class PeopleSoftClassSearch {
             var body = resp.body();
 
             return parseSubject(ctx, body, subject.code, consumer);
+          } catch (CancellationException e) {
+            // When this method is cancelled through task cancellation, don't
+            // keep retrying
+            //
+            // God I fucking hate exceptions
+            //
+            //                      - Albert Liu, Nov 27, 2022 Sun 00:32
+            throw e;
           } catch (Exception e) {
+            // Catch other types of exceptions because scraping is nowhere near
+            // stable and likely never will be
+
             Thread.sleep(10_000);
-            System.out.println(e.getMessage());
-            System.out.println(subject);
+            consumer.accept(
+                ScrapeEvent.warning(subject.code, "ERROR: " + e.getMessage()));
+            consumer.accept(
+                ScrapeEvent.warning(subject.code, Utils.stackTrace(e)));
             ps = new PSClient();
             ps.navigateToTerm(term).get();
           }

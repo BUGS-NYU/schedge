@@ -174,4 +174,13 @@ public final class Utils {
       throw new RuntimeException(e);
     }
   }
+
+  public static String stackTrace(Throwable t) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    String stackTrace = sw.toString();
+
+    return stackTrace;
+  }
 }

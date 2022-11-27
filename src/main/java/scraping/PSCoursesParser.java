@@ -76,10 +76,10 @@ class PSCoursesParser {
 
     // This happens to work; nothing else really works as well.
     var sections = courseHtml.select(".ps-htmlarea");
+    var sectionElement = sections.get(0);
+    var titleText = sectionElement.expectFirst("b").text().trim();
 
     {
-      var section = sections.get(0);
-      var titleText = section.expectFirst("b").text().trim();
       var titleSections = run(() -> {
         // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
         // Technology
@@ -90,7 +90,7 @@ class PSCoursesParser {
         return titleTextFiltered.split(" ", 3);
       });
 
-      var descrElements = section.select("p");
+      var descrElements = sectionElement.select("p");
       var descrP = descrElements.get(descrElements.size() - 2);
 
       course.name = titleSections[2];
@@ -119,6 +119,7 @@ class PSCoursesParser {
                       " - course.subjectCode=" + course.subjectCode +
                       ", but subject=" + subjectCode;
         consumer.accept(ScrapeEvent.warning(subjectCode, message));
+        consumer.accept(ScrapeEvent.warning(subjectCode, "Full: " + titleText));
       }
     }
 

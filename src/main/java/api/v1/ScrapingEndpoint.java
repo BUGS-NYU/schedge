@@ -73,7 +73,7 @@ public final class ScrapingEndpoint {
             logger.info(e.message);
             break;
           case SUBJECT_START:
-            ctx.send(e.message);
+            bar.setExtraMessage(e.message);
             logger.info(e.message);
             break;
           case WARNING:

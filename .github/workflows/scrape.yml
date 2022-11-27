@@ -15,5 +15,16 @@ jobs:
       contents: read
 
     steps:
-        - name: Run
-          run: echo "Hello, World"
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node + Yarn
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: Install JS Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run
+        run: yarn wscat -c "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" --auth "${SCHEDGE_PASSWORD}"

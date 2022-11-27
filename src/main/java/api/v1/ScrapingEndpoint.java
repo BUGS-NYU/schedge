@@ -163,6 +163,7 @@ public final class ScrapingEndpoint {
 
             CURRENT_SCRAPE = null;
             ctx.attribute("identity", null);
+            ctx.send(closeReason);
             ctx.closeSession(closeCode, closeReason);
 
             if (!MUTEX.compareAndSet(newLock, null)) {

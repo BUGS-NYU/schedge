@@ -33,4 +33,4 @@ jobs:
         run: chmod +x ./websocat
 
       - name: Run Scrape
-        run: ./websocat "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"
+        run: ./websocat "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" -n --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"

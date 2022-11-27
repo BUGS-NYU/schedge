@@ -3761,7 +3761,7 @@ ws@^8.0.0:
   resolved "https://registry.yarnpkg.com/ws/-/ws-8.11.0.tgz#6a0d36b8edfd9f96d8b25683db2f8d7de6e8e143"
   integrity sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg==
 
-wscat@^5.2.0:
+wscat@5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/wscat/-/wscat-5.2.0.tgz#b81c5f85689308b11c826b541e9945b6ffeebb43"
   integrity sha512-UkVzuBdv3jk1Nt0mVCTw0wt/2kGPXry9MZMMUHYE/kEIJdtz1Ez28HD2WQdapC75tM10KZVL8EHG1/WHFK9dtw==

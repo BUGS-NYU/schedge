@@ -7,7 +7,6 @@ import static utils.Nyu.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
-import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.slf4j.*;

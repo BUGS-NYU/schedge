@@ -58,22 +58,21 @@ public final class ScrapingEndpoint {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
-      var bar = new ProgressBarBuilder()
-                    .setTaskName("Scraping " + term.json())
-                    .setStyle(ProgressBarStyle.ASCII)
-                    .setUpdateIntervalMillis(5_000)
-                    .setConsumer(new DelegatingProgressBarConsumer(ctx::send))
-                    .build();
+      var builder = new ProgressBarBuilder();
+      builder.setTaskName("Scrape " + term.json())
+          .setConsumer(new DelegatingProgressBarConsumer(ctx::send, 160))
+          .setStyle(ProgressBarStyle.ASCII)
+          .setUpdateIntervalMillis(5_000)
+          .continuousUpdate();
+
+      var bar = builder.build();
 
       GetConnection.withConnection(conn -> {
         ScrapeTerm.scrapeTerm(conn, term, e -> {
           switch (e.kind) {
           case MESSAGE:
-            ctx.send(e.message);
-            logger.info(e.message);
-            break;
           case SUBJECT_START:
-            bar.setExtraMessage(e.message);
+            bar.setExtraMessage(String.format("%1$-25s", e.message));
             logger.info(e.message);
             break;
           case WARNING:
@@ -164,6 +163,7 @@ public final class ScrapingEndpoint {
 
             CURRENT_SCRAPE = null;
             ctx.attribute("identity", null);
+            ctx.send(closeReason);
             ctx.closeSession(closeCode, closeReason);
 
             if (!MUTEX.compareAndSet(newLock, null)) {

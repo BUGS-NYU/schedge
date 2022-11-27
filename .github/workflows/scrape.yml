@@ -27,4 +27,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run
-        run: yarn wscat -c "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" --auth "${SCHEDGE_PASSWORD}"
+        run: yarn wscat -c "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" --auth "${{ secrets.SCHEDGE_PASSWORD }}"

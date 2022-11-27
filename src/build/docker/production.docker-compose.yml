@@ -56,7 +56,7 @@ services:
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
-      - SCHEDGE_ADMIN_PASSWORD=schedge:admin
+      - SCHEDGE_ADMIN_PASSWORD=
       - JDBC_URL=jdbc:postgresql://postgres/postgres
 
     expose:

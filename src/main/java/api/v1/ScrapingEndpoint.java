@@ -107,6 +107,11 @@ public final class ScrapingEndpoint {
   public static void add(Javalin app) {
     app.ws("/api/scrape/{term}", ws -> {
       ws.onConnect(ctx -> {
+        if (authString.isEmpty()) {
+          ctx.closeSession(1000, "Failed: Unauthorized");
+          return;
+        }
+
         var authString = ctx.header("Authorization");
         authString = authString != null ? authString : "";
 
@@ -116,8 +121,7 @@ public final class ScrapingEndpoint {
 
         if (!Arrays.equals(authHash, AUTH_HASH) ||
             !authString.equals(AUTH_STRING)) {
-          ctx.closeSession(1000, "Failed: Unauthorized" + authString + " " +
-                                     AUTH_STRING);
+          ctx.closeSession(1000, "Failed: Unauthorized");
           return;
         }
 

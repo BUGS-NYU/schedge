@@ -1,15 +1,18 @@
 package api.v1;
 
 import static utils.Nyu.*;
+import static utils.Try.*;
 
 import actions.ScrapeTerm;
 import database.GetConnection;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import javax.xml.crypto.dsig.DigestMethod;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -35,13 +38,17 @@ public final class ScrapingEndpoint {
   // The default is the base-64 of "schedge:admin"
   // To run this in dev, please run `yarn wscat
   private static final String AUTH_STRING;
+  private static final byte[] AUTH_HASH;
 
   static {
-    var defaultPassword = "schedge:admin";
-    var encoded = Base64.getEncoder().encodeToString(
-        defaultPassword.getBytes(StandardCharsets.UTF_8));
-    var authString = Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", encoded);
-    AUTH_STRING = "Basic " + authString;
+    var defaultPass = "schedge:admin";
+    var password = Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", defaultPass);
+    var passwordBytes = password.getBytes(StandardCharsets.UTF_8);
+    var encoded = Base64.getEncoder().encodeToString(passwordBytes);
+    AUTH_STRING = "Basic " + encoded;
+
+    var digest = tcPass(() -> MessageDigest.getInstance("SHA-256"));
+    AUTH_HASH = digest.digest(AUTH_STRING.getBytes(StandardCharsets.UTF_8));
   }
 
   private static String scrape(WsContext ctx) {
@@ -51,6 +58,7 @@ public final class ScrapingEndpoint {
       var subject = new Ref<String>();
       var count = new Ref<>(0);
       var total = new Ref<>("?");
+
       GetConnection.withConnection(conn -> {
         ScrapeTerm.scrapeTerm(conn, term, e -> {
           switch (e.kind) {
@@ -100,7 +108,13 @@ public final class ScrapingEndpoint {
     app.ws("/api/scrape/{term}", ws -> {
       ws.onConnect(ctx -> {
         var authString = ctx.header("Authorization");
-        if (authString == null || !authString.equals(AUTH_STRING)) {
+        authString = authString != null ? authString : "";
+
+        var digest = tcPass(() -> MessageDigest.getInstance("SHA-256"));
+        var authBytes = authString.getBytes(StandardCharsets.UTF_8);
+        var authHash = digest.digest(authBytes);
+
+        if (!authHash.equals(AUTH_HASH) || !authString.equals(AUTH_STRING)) {
           ctx.closeSession(1000, "Failed: Unauthorized");
           return;
         }

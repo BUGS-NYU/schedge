@@ -12,7 +12,7 @@ public class ParserTest {
   static Logger logger = LoggerFactory.getLogger("test.ParserTest");
   @Test
   public void testParserBasic() {
-    var html = Utils.readResource("/csci-ua-sp2021.html");
+    var html = Utils.readResource("/csci-ua-sp2021.html.snap");
     var ctx = Ctx(logger);
     PSCoursesParser.parseSubject(ctx, html, "CSCI-UA", e -> {
       switch (e.kind) {

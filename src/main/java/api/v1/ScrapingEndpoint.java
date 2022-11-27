@@ -12,8 +12,6 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import javax.xml.crypto.dsig.DigestMethod;
-
 import me.tongfei.progressbar.DelegatingProgressBarConsumer;
 import me.tongfei.progressbar.ProgressBarBuilder;
 import me.tongfei.progressbar.ProgressBarStyle;
@@ -60,8 +58,12 @@ public final class ScrapingEndpoint {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
-      var bar = new ProgressBarBuilder().setTaskName("Scraping " + term.json()).setStyle(ProgressBarStyle.ASCII).setUpdateIntervalMillis(10_000)
-              .setConsumer(new DelegatingProgressBarConsumer(ctx::send)).build();
+      var bar = new ProgressBarBuilder()
+                    .setTaskName("Scraping " + term.json())
+                    .setStyle(ProgressBarStyle.ASCII)
+                    .setUpdateIntervalMillis(10_000)
+                    .setConsumer(new DelegatingProgressBarConsumer(ctx::send))
+                    .build();
 
       GetConnection.withConnection(conn -> {
         ScrapeTerm.scrapeTerm(conn, term, e -> {

@@ -33,9 +33,9 @@ public class PSCoursesParser {
     return schools;
   }
 
-  public static ArrayList<Nyu.Course> parseSubject(Try ctx, String html,
-                                            String subjectCode,
-                                            Consumer<ScrapeEvent> consumer) {
+  public static ArrayList<Nyu.Course>
+  parseSubject(Try ctx, String html, String subjectCode,
+               Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {

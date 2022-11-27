@@ -136,10 +136,15 @@ public final class ScrapingEndpoint {
         // TODO: correctly handle websocket closing, password checking, etc.
         // Also, do a hash-compare before doing the equality check
         CompletableFuture.runAsync(() -> {
+          var closeCode = 1011;
           var closeReason = "Unknown reason";
+
           try {
             task.run();
             closeReason = task.get();
+
+            if (closeReason.equals("Done!"))
+              closeCode = 1000;
           } catch (
               CancellationException e) { // Do nothing because job was cancelled
             closeReason = "Job was cancelled";
@@ -149,7 +154,7 @@ public final class ScrapingEndpoint {
             closeReason = "Job was interrupted";
             logger.info(closeReason);
           } catch (ExecutionException e) {
-            closeReason = "Job failed";
+            closeReason = "Job failed: " + e.getMessage();
             logger.error(closeReason, e);
           } finally {
             var newLock = new Object();
@@ -159,7 +164,7 @@ public final class ScrapingEndpoint {
 
             CURRENT_SCRAPE = null;
             ctx.attribute("identity", null);
-            ctx.closeSession(1000, closeReason);
+            ctx.closeSession(closeCode, closeReason);
 
             if (!MUTEX.compareAndSet(newLock, null)) {
               logger.warn("Failed to unlock mutex");

@@ -23,15 +23,19 @@ public final class Utils {
     scanner.nextLine();
   }
 
-  public static List<String> asResourceLines(String path) {
+  public static String readResource(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
     if (resource == null)
       throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
     // Read entire file and then get it as a list of lines
-    return Arrays.asList(
-        new Scanner(resource, "UTF-8").useDelimiter("\\A").next().split("\\n"));
+    return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
+  }
+
+  // Read entire file and then get it as a list of lines
+  public static List<String> asResourceLines(String path) {
+    return Arrays.asList(readResource(path).split("\\n"));
   }
 
   public static List<String> resourcePaths(String path)

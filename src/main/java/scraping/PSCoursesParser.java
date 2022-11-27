@@ -8,16 +8,15 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import utils.*;
 
-class PSCoursesParser {
+public class PSCoursesParser {
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
-  static ArrayList<Nyu.School>
+  public static ArrayList<Nyu.School>
   translateSubjects(ArrayList<PeopleSoftClassSearch.SubjectElem> raw) {
     var schools = new ArrayList<Nyu.School>();
     Nyu.School school = null;
@@ -34,7 +33,7 @@ class PSCoursesParser {
     return schools;
   }
 
-  static ArrayList<Nyu.Course> parseSubject(Try ctx, String html,
+  public static ArrayList<Nyu.Course> parseSubject(Try ctx, String html,
                                             String subjectCode,
                                             Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
@@ -83,8 +82,10 @@ class PSCoursesParser {
       // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
       // Technology
       var titleSections = run(() -> {
-        var subjectSections = titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
-        var titleTextFiltered = subjectSections[subjectSections.length - 1].trim();
+        var subjectSections =
+            titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
+        var titleTextFiltered =
+            subjectSections[subjectSections.length - 1].trim();
 
         // STS-UY 2144 Ethics and Technology
         return titleTextFiltered.split(" ", 3);

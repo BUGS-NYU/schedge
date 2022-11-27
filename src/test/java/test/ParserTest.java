@@ -25,7 +25,7 @@ public class ParserTest {
   // https://github.com/A1Liu/schedge/issues/216
   @Test
   public void testIssue216() {
-    var html = Utils.readResource("/sts-uy-ja2023.html");
+    var html = Utils.readResource("/sts-uy-ja2023.html.snap");
     var ctx = Ctx(logger);
     var output = PSCoursesParser.parseSubject(ctx, html, "STS-UY", e -> {
       switch (e.kind) {

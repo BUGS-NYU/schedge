@@ -23,18 +23,18 @@ public class ParserTest {
   }
 
   // https://github.com/A1Liu/schedge/issues/216
-    @Test
-    public void testIssue216() {
-        var html = Utils.readResource("/sts-uy-ja2023.html");
-        var ctx = Ctx(logger);
-        var output = PSCoursesParser.parseSubject(ctx, html, "STS-UY", e -> {
-            switch (e.kind) {
-                case WARNING:
-                    Assert.fail();
-            }
-        });
+  @Test
+  public void testIssue216() {
+    var html = Utils.readResource("/sts-uy-ja2023.html");
+    var ctx = Ctx(logger);
+    var output = PSCoursesParser.parseSubject(ctx, html, "STS-UY", e -> {
+      switch (e.kind) {
+      case WARNING:
+        Assert.fail();
+      }
+    });
 
-        var course = ArrayJS.find(output, c -> c.deptCourseId.equals("2144"));
-        Assert.assertEquals(course.name, "Ethics and Technology");
-    }
+    var course = ArrayJS.find(output, c -> c.deptCourseId.equals("2144"));
+    Assert.assertEquals(course.name, "Ethics and Technology");
+  }
 }

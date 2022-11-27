@@ -42,8 +42,7 @@ public final class ScrapingEndpoint {
   private static final byte[] AUTH_HASH;
 
   static {
-    var defaultPass = "schedge:admin";
-    var password = Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", defaultPass);
+    var password = Utils.getEnvDefault("SCHEDGE_ADMIN_PASSWORD", "");
     var passwordBytes = password.getBytes(StandardCharsets.UTF_8);
     var encoded = Base64.getEncoder().encodeToString(passwordBytes);
     AUTH_STRING = "Basic " + encoded;

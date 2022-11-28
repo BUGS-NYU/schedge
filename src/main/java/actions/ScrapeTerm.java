@@ -2,34 +2,21 @@ package actions;
 
 import static database.InsertCourses.*;
 import static database.UpdateSchools.*;
+import static scraping.PeopleSoftClassSearch.*;
 import static utils.Nyu.*;
 
-import database.GetConnection;
 import java.sql.*;
-import me.tongfei.progressbar.ProgressBar;
+import java.util.function.*;
 import scraping.PeopleSoftClassSearch;
 
 public class ScrapeTerm {
 
-  public static void scrapeTerm(Term term, boolean display) {
-    GetConnection.withConnection(conn -> {
-      if (!display) {
-        scrapeTerm(conn, term, null);
-        return;
-      }
-
-      try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-        scrapeTerm(conn, term, bar);
-      }
-    });
-  }
-
   // @Note: bar is nullable
-  static void scrapeTerm(Connection conn, Term term, ProgressBar bar)
+  public static void scrapeTerm(Connection conn, Term term,
+                                Consumer<ScrapeEvent> consumer)
       throws SQLException {
     clearPrevious(conn, term);
-
-    var termData = PeopleSoftClassSearch.scrapeTerm(term, bar);
+    var termData = PeopleSoftClassSearch.scrapeTerm(term, consumer);
     updateSchoolsForTerm(conn, term, termData.getSchools());
 
     while (termData.hasNext()) {

@@ -9,6 +9,7 @@ import io.javalin.openapi.OpenApiInfo;
 import io.javalin.openapi.plugin.*;
 import java.io.*;
 import org.slf4j.*;
+import utils.Utils;
 
 public class App {
   private static final Logger logger = LoggerFactory.getLogger("api.App");
@@ -102,10 +103,7 @@ public class App {
     });
 
     app.exception(Exception.class, (e, ctx) -> {
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      e.printStackTrace(pw);
-      String stackTrace = sw.toString();
+      String stackTrace = Utils.stackTrace(e);
 
       String message = String.format(
           "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
@@ -120,6 +118,8 @@ public class App {
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
+
+    ScrapingEndpoint.add(app);
 
     return app;
   }

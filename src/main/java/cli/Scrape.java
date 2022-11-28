@@ -40,7 +40,23 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.term;
     try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var courses = PeopleSoftClassSearch.scrapeTerm(term, bar);
+      var courses = PeopleSoftClassSearch.scrapeTerm(term, e -> {
+        switch (e.kind) {
+        case MESSAGE:
+        case SUBJECT_START:
+          bar.setExtraMessage(e.message);
+          break;
+        case WARNING:
+          logger.warn(e.message);
+          break;
+        case PROGRESS:
+          bar.stepBy(e.value);
+          break;
+        case HINT_CHANGE:
+          bar.maxHint(e.value);
+          break;
+        }
+      });
       outputFileMixin.writeOutput(courses);
     }
 

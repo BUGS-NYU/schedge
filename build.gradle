@@ -52,7 +52,7 @@ dependencies {
 
     // Command line arg parsing and progress bar
     "info.picocli:picocli:4.7.0",
-    "me.tongfei:progressbar:0.8.1",
+    "me.tongfei:progressbar:0.9.5",
 
     // JSON
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",

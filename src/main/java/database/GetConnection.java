@@ -1,6 +1,7 @@
 package database;
 
 import static utils.Try.*;
+import static utils.Utils.*;
 
 import com.zaxxer.hikari.*;
 import java.sql.*;
@@ -45,14 +46,6 @@ public class GetConnection {
 
       dataSource = source;
     }
-  }
-
-  private static String getEnvDefault(String name, String default_value) {
-    String value = System.getenv(name);
-    if (value == null) {
-      return default_value;
-    } else
-      return value;
   }
 
   public static void withConnection(SQLConsumer f) {

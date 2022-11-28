@@ -23,15 +23,18 @@ public final class Utils {
     scanner.nextLine();
   }
 
-  public static List<String> asResourceLines(String path) {
+  public static String readResource(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
     if (resource == null)
       throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    // Read entire file and then get it as a list of lines
-    return Arrays.asList(
-        new Scanner(resource, "UTF-8").useDelimiter("\\A").next().split("\\n"));
+    return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
+  }
+
+  // Read entire file and then get it as a list of lines
+  public static List<String> asResourceLines(String path) {
+    return Arrays.asList(readResource(path).split("\\n"));
   }
 
   public static List<String> resourcePaths(String path)
@@ -40,25 +43,22 @@ public final class Utils {
 
     if (uri.getScheme().equals("jar")) {
       try (FileSystem fileSystem = FileSystems.newFileSystem(
-              uri, Collections.<String, Object>emptyMap())) {
+               uri, Collections.<String, Object>emptyMap())) {
         var myPath = fileSystem.getPath(path);
 
         return Files.walk(myPath)
-                .filter(Files::isRegularFile)
-                .map(p -> p.toString())
-                .collect(Collectors.toList());
+            .filter(Files::isRegularFile)
+            .map(p -> p.toString())
+            .collect(Collectors.toList());
       }
     } else {
       var myPath = Paths.get(uri);
 
       return Files.walk(myPath)
-              .filter(Files::isRegularFile)
-              .map(p -> p.toUri().toString())
-              .collect(Collectors.toList());
-
+          .filter(Files::isRegularFile)
+          .map(p -> p.toUri().toString())
+          .collect(Collectors.toList());
     }
-
-
   }
 
   public static void writeToFileOrStdout(String file, Object value) {
@@ -142,6 +142,14 @@ public final class Utils {
     stmt.setObject(index, obj);
   }
 
+  public static String getEnvDefault(String name, String defaultValue) {
+    String value = System.getenv(name);
+    if (value == null) {
+      return defaultValue;
+    } else
+      return value;
+  }
+
   static class NullWrapper {
     int type;
     Object value;
@@ -168,5 +176,14 @@ public final class Utils {
       // System.err.println("at index " + i);
       throw new RuntimeException(e);
     }
+  }
+
+  public static String stackTrace(Throwable t) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    String stackTrace = sw.toString();
+
+    return stackTrace;
   }
 }

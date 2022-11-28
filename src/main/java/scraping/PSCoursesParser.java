@@ -1,21 +1,22 @@
 package scraping;
 
+import static scraping.PeopleSoftClassSearch.*;
+import static utils.ArrayJS.*;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.*;
 import java.util.*;
+import java.util.function.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
-import org.slf4j.*;
 import utils.*;
 
-class PSCoursesParser {
-  static Logger logger = PeopleSoftClassSearch.logger;
-
+public class PSCoursesParser {
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
-  static ArrayList<Nyu.School>
+  public static ArrayList<Nyu.School>
   translateSubjects(ArrayList<PeopleSoftClassSearch.SubjectElem> raw) {
     var schools = new ArrayList<Nyu.School>();
     Nyu.School school = null;
@@ -32,8 +33,9 @@ class PSCoursesParser {
     return schools;
   }
 
-  static ArrayList<Nyu.Course> parseSubject(Try ctx, String html,
-                                            String subjectCode) {
+  public static ArrayList<Nyu.Course>
+  parseSubject(Try ctx, String html, String subjectCode,
+               Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {
@@ -60,26 +62,36 @@ class PSCoursesParser {
 
     var courses = new ArrayList<Nyu.Course>();
     for (var courseHtml : coursesContainer.children()) {
-      var course = parseCourse(ctx, courseHtml, subjectCode);
+      var course = parseCourse(ctx, courseHtml, subjectCode, consumer);
       courses.add(course);
     }
 
     return courses;
   }
 
-  static Nyu.Course parseCourse(Try ctx, Element courseHtml,
-                                String subjectCode) {
+  static Nyu.Course parseCourse(Try ctx, Element courseHtml, String subjectCode,
+                                Consumer<ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
     var sections = courseHtml.select(".ps-htmlarea");
+    var sectionElement = sections.get(0);
+    var titleText = sectionElement.expectFirst("b").text().trim();
 
     {
-      var section = sections.get(0);
-      var titleText = section.expectFirst("b").text().trim();
-      var titleSections = titleText.split(" ", 3);
+      // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
+      // Technology
+      var titleSections = run(() -> {
+        var subjectSections =
+            titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
+        var titleTextFiltered =
+            subjectSections[subjectSections.length - 1].trim();
 
-      var descrElements = section.select("p");
+        // STS-UY 2144 Ethics and Technology
+        return titleTextFiltered.split(" ", 3);
+      });
+
+      var descrElements = sectionElement.select("p");
       var descrP = descrElements.get(descrElements.size() - 2);
 
       course.name = titleSections[2];
@@ -104,8 +116,11 @@ class PSCoursesParser {
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
       var isSCA = subjectCode.startsWith("SCA-UA");
       if (!isSCA) {
-        logger.warn(course.name + " - course.subjectCode=" +
-                    course.subjectCode + ", but subject=" + subjectCode);
+        var message = course.name +
+                      " - course.subjectCode=" + course.subjectCode +
+                      ", but subject=" + subjectCode;
+        consumer.accept(ScrapeEvent.warning(subjectCode, message));
+        consumer.accept(ScrapeEvent.warning(subjectCode, "Full: " + titleText));
       }
     }
 
@@ -177,20 +192,19 @@ class PSCoursesParser {
         fields.put(key, parts[1].trim());
       }
 
-      var s = section;
-      s.registrationNumber = Integer.parseInt(fields.get("Class#"));
-      s.code = fields.get("Section");
-      s.type = fields.get("Component");
-      s.instructionMode = fields.get("Instruction Mode");
-      s.campus = fields.get("Course Location");
-      s.grading = fields.get("Grading");
+      section.registrationNumber = Integer.parseInt(fields.get("Class#"));
+      section.code = fields.get("Section");
+      section.type = fields.get("Component");
+      section.instructionMode = fields.get("Instruction Mode");
+      section.campus = fields.get("Course Location");
+      section.grading = fields.get("Grading");
 
       var status = fields.get("Class Status");
-      s.status = Nyu.SectionStatus.parseStatus(status);
+      section.status = Nyu.SectionStatus.parseStatus(status);
 
-      if (s.status == Nyu.SectionStatus.WaitList) {
+      if (section.status == Nyu.SectionStatus.WaitList) {
         var waitlistString = status.replaceAll("[^0-9]", "");
-        s.waitlistTotal = Integer.parseInt(waitlistString);
+        section.waitlistTotal = Integer.parseInt(waitlistString);
       }
     }
 

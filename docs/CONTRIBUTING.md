@@ -27,6 +27,9 @@ You'll need to install a few applications to contribute to this project:
   uses Java 11 features, so at least JDK 11 is required, but Gradle doesn't
   seem to support anything later than 18 right now, so you will not be able
   to build code if you install JDK 19.
+- [NodeJS](https://heynode.com/tutorial/install-nodejs-locally-nvm/) and [Yarn](https://yarnpkg.com/getting-started/install) -
+  This project uses Yarn and NodeJS for compiling JavaScript and also for running
+  custom build commands.
 
 > NOTE: If you're on MacOS, you may need to do additional work to set up
 > your computer. Open the Terminal App and run the following command:

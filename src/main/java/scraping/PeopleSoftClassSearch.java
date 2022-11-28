@@ -100,14 +100,11 @@ public final class PeopleSoftClassSearch {
     private int index = 0;
 
     private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
-      if (consumer == null) {
-        this.consumer = e -> {};
-      } else {
-        this.consumer = consumer;
-      }
+      consumer = Objects.requireNonNullElse(consumer, e -> {});
 
       this.term = term;
       this.ctx = ctx;
+      this.consumer = consumer;
 
       this.ps = new PSClient();
 

@@ -689,7 +689,6 @@ public final class Nyu {
       return campus.timezone;
     }
 
-<<<<<<< Updated upstream
     @NotNull
     @OpenApiExample(value = "NYU Accra (Global)")
     public String getName() {

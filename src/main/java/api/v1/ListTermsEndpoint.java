@@ -12,11 +12,6 @@ import java.util.*;
 public final class ListTermsEndpoint extends App.Endpoint {
   public String getPath() { return "/terms"; }
 
-  public static final String TERM_PARAM_DESCRIPTION =
-      "Must be a valid term code, either 'current', 'next', or something "
-      + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-      + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
-
   public static Term parseTerm(String termString) {
     if (termString.contentEquals("current")) {
       return Term.getCurrentTerm();

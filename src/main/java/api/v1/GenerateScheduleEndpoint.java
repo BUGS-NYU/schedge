@@ -28,10 +28,18 @@ public final class GenerateScheduleEndpoint extends App.Endpoint {
                                           SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
                                   example = "fa2022", required = true)
                   },
+          queryParams = {
+                  @OpenApiParam(name = "registrationNumbers",
+                          description =
+                                  "Comma-separated registration numbers",
+                          example = "23069,7626", required = true)
+          },
           responses =
                   {
                           @OpenApiResponse(status = "200",
-                                  description = "Schedule created for the provided courses",
+                                  description = "Schedule created for the provided courses; when valid = true, "+
+                                          "shows a calendar view with the fields mo,tu,we,th,fr,sa,su. "
+                                  + "when valid = false, shows the problematic scheduling conflict: conflictA and conflictB.",
                                   content = @OpenApiContent(from = Schedule.class))
                           ,
                           @OpenApiResponse(status = "400",

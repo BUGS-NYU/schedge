@@ -59,11 +59,21 @@ You'll need to install a few applications to contribute to this project:
 - `yarn stop`: Close the servers when development is done
 
 ## Useful Commands
-- `yarn schedge db populate --semester=sp --year=2022` -
+- `yarn schedge db populate --v2 --term=sp2022` -
   Populate your database with data from production
 - `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database
 
+## Testing
+- `yarn test` will test the backend; before running tests, please scrape the
+  following terms:
+  - `sp2023`
+  - `ja2022`
+  - `sp2021`
+  - `fa2022`
+
+  You can use `yarn schedge db populate --v2 --term=INSERT_TERM_HERE` to scrape
+  a specific term from production.
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

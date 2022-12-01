@@ -74,7 +74,8 @@ public class App {
           + "active development and is subject to change</b>."
           + "<br/><br/>If you'd like to contribute, "
           + "<a href=\"https://github.com/A1Liu/schedge\">"
-          + "check out the repository</a>.";
+          + "check out the repository</a>.<br /> <br />"
+          + "<b><big>SCHEDGE DEVELOPMENT BUILD</big></b>";
 
       var info = new OpenApiInfo();
       info.setVersion("2.0.0 beta");

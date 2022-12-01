@@ -65,6 +65,9 @@ jobs:
       - name: Compile Frontend
         run: yarn export
 
+      - name: Set version
+        run: sed -i "s/SCHEDGE DEVELOPMENT BUILD/Build version: $(git log --pretty=format:\'%h\' -n 1)./g" "src/main/java/api/App.java"
+
       - name: Compile Backend
         run: yarn gradle jar
 

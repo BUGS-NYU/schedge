@@ -57,6 +57,20 @@ public final class ScheduleSections {
 
     public boolean getValid() { return valid; }
 
+    @JsonIgnore
+    public int size() {
+      var size = 0;
+      size += mo.size();
+      size += tu.size();
+      size += we.size();
+      size += th.size();
+      size += fr.size();
+      size += sa.size();
+      size += su.size();
+
+      return size;
+    }
+
     @NotNull
     public ArrayList<AugmentedMeeting> getMo() {
       return mo;

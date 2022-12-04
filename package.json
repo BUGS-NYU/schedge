@@ -4,6 +4,7 @@
     "format": "prettier --no-color --write \"src/{pages/**/,components/**/,}*.{js,jsx,ts,tsx,module.css}\"",
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
+    "ci-test": "git commit --allow-empty -m \"RUN_TEST\" && git push -u origin HEAD",
     "lint": "next lint",
     "gradle": "node src/gradlew.js",
     "exec": "docker-compose exec",

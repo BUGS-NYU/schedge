@@ -1,0 +1,33 @@
+name: Java - Typecheck
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  java-compile:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v3
+      with:
+        lfs: true
+
+    - name: Set up Node + Yarn
+      uses: actions/setup-node@v3
+      with:
+        cache: 'yarn'
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '19'
+        distribution: 'temurin'
+        cache: 'gradle'
+
+    - name: Build JAR file
+      run: |
+        yarn gradle jar

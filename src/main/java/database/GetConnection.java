@@ -45,8 +45,42 @@ public class GetConnection {
         source = new HikariDataSource(config);
 
       dataSource = source;
+
+      withConnectionReturning(conn -> {
+        Migrations.runMigrations(conn);
+        return null;
+      });
+    }
+
+    public static void forceInit() {}
+
+    public static <T> T withConnectionReturning(SQLFunction<T> f) {
+      Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
+
+      try {
+        conn.setAutoCommit(false);
+
+        T value = f.apply(conn);
+
+        conn.commit();
+
+        return value;
+      } catch (SQLException e) {
+        tcIgnore(() -> conn.rollback());
+
+        throw new RuntimeException(e);
+      } finally {
+        tcIgnore(() -> conn.close());
+      }
     }
   }
+
+  /**
+   * GetConnection's connection pool initializes lazily; this behavior isn't
+   * always desired, so this method allows the user to eagerly initialize the
+   * database connection pool.
+   */
+  public static void forceInit() { HolderClass.forceInit(); }
 
   public static void withConnection(SQLConsumer f) {
     withConnectionReturning(conn -> {
@@ -56,26 +90,8 @@ public class GetConnection {
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
-    Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
-
-    try {
-      conn.setAutoCommit(false);
-
-      T value = f.apply(conn);
-
-      conn.commit();
-
-      return value;
-    } catch (SQLException e) {
-      tcIgnore(() -> conn.rollback());
-
-      throw new RuntimeException(e);
-    } finally {
-      tcIgnore(() -> conn.close());
-    }
+    return HolderClass.withConnectionReturning(f);
   }
 
-  public static void close() {
-    tcPass(() -> HolderClass.dataSource.close());
-  }
+  public static void close() { tcPass(HolderClass.dataSource::close); }
 }

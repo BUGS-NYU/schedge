@@ -19,6 +19,7 @@ public class SearchTest {
         System.err.println(body);
         var courses = fromJson(body, Course[].class);
 
+        Assert.assertTrue(courses.length > 0);
         Assert.assertTrue(courses.length <= 50);
       }
     });

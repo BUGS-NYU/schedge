@@ -2,8 +2,6 @@ package cli;
 
 import static picocli.CommandLine.*;
 
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
@@ -35,7 +33,8 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  term(@Mixin Mixins.Term termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
+  term(@Mixin Mixins.TermOption termMixin,
+       @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;
@@ -72,7 +71,7 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  subject(@Mixin Mixins.Term termMixin,
+  subject(@Mixin Mixins.TermOption termMixin,
           @Mixin Mixins.OutputFile outputFileMixin,
           @Parameters(index = "0", paramLabel = "SUBJECT",
                       description = "A subject code like MATH-UA")
@@ -95,7 +94,7 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  schools(@Mixin Mixins.Term termMixin,
+  schools(@Mixin Mixins.TermOption termMixin,
           @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 

@@ -10,8 +10,11 @@ permissions:
   contents: read
 
 jobs:
+  enable-scraping-for-java-test:
+    use: ./.github/workflows/enable-scraping.yml
+
   java-test:
-    needs: ./.github/workflows/enable-scraping.yml
+    needs: enable-scraping-for-java-test
     runs-on: ubuntu-latest
 
     # Service containers to run with `container-job`

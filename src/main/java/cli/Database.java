@@ -84,12 +84,12 @@ public class Database implements Runnable {
                     + "Schedge instance.\n")
   public void
   populate(@Mixin Mixins.TermArgument termMixin,
-           @Option(names = {"--v2"},
-                   description = "scrape v2 instead of v1") boolean useV2) {
+           @Option(names = {"--v1"},
+                   description = "scrape v1 instead of v2") boolean useV1) {
     long start = System.nanoTime();
 
     var terms = termMixin.terms;
-    var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
+    var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
       copyTermFromProduction(version, term);
     }

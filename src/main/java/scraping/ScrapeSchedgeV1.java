@@ -82,6 +82,33 @@ public final class ScrapeSchedgeV1 {
     }
   }
 
+  class SchedgeV1Course {
+    public String name;
+    public String deptCourseId;
+    public String description;
+    public List<SchedgeV1Section> sections;
+  }
+
+  class SchedgeV1Section {
+    public int registrationNumber;
+    public String code;
+    public String name;
+    public String description;
+    public String[] instructors;
+    public String type;
+    public SectionStatus status;
+    public List<Meeting> meetings;
+    public List<SchedgeV1Section> recitations;
+    public Integer waitlistTotal;
+    public String instructionMode;
+    public String campus;
+    public Double minUnits;
+    public Double maxUnits;
+    public String grading;
+    public String location;
+    public String notes;
+  }
+
   public static ScrapeTermResult scrapeFromSchedge(Term term) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
@@ -128,35 +155,62 @@ public final class ScrapeSchedgeV1 {
     }
     var subjects = subjectsFullCodeList.listIterator();
 
-    var engine = new FutureEngine<String>();
+    var engine = new FutureEngine<ScrapeResult>();
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
     }
 
-    for (String text : engine) {
+    for (var result : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
 
-      if (text == null) {
+      if (result.text == null) {
         continue;
       }
 
-      var courses = JsonMapper.fromJson(text, Course[].class);
+      var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
       var size = out.courses.size();
       out.courses.ensureCapacity(size + courses.length);
+
       for (var course : courses) {
-        out.courses.add(course);
+        var c = new Course();
+        c.name = course.name;
+        c.deptCourseId = course.deptCourseId;
+        c.description = course.description;
+        c.subjectCode = result.subject;
+        c.sections = new ArrayList<>();
+
+        var descriptions = new HashMap<String, Integer>();
+
+        for (var section : course.sections) {
+          var s = new Section();
+
+          descriptions.compute(section.name, (k, prev) -> {
+            if (prev == null)
+              prev = 0;
+
+            return prev + 1;
+          });
+
+          if (!section.name.equals(c.name)) {
+            s.name = section.name;
+          }
+
+          c.sections.add(s);
+        }
+
+        out.courses.add(c);
       }
     }
 
     return out;
   }
 
-  private static Future<String> getData(HttpClient client, Term term,
-                                        String subject) {
+  private static Future<ScrapeResult> getData(HttpClient client, Term term,
+                                              String subject) {
     var parts = subject.split("-");
     String school = parts[1];
     String major = parts[0];
@@ -189,8 +243,11 @@ public final class ScrapeSchedgeV1 {
         return null;
       }
 
-      String text = resp.body();
-      return text;
+      var result = new ScrapeResult();
+      result.text = resp.body();
+      result.subject = subject;
+
+      return result;
     });
   }
 }

@@ -33,7 +33,8 @@ public class Scrape implements Runnable {
            header = "Scrape the PeopleSoft Class Search",
            description = "Scrape the PeopleSoft Class Search for a term")
   public void
-  term(@Mixin Mixins.TermOption termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
+  term(@Mixin Mixins.TermOption termMixin,
+       @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;

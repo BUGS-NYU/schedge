@@ -2,9 +2,6 @@ name: Test Java Code
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -48,7 +45,7 @@ jobs:
       if: >
         true
         && github.ref != 'refs/heads/main'
-        && !contains(github.event.pull_request.head.label, 'RUN_TEST')
+        && !contains(github.event.head_commit.message, 'RUN_TEST')
 
     - name: Checkout Project
       uses: actions/checkout@v3

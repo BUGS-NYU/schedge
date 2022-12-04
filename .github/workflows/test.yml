@@ -43,7 +43,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         cache: 'yarn'
-    
+
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
@@ -51,8 +51,14 @@ jobs:
         distribution: 'temurin'
         cache: 'gradle'
 
+    - name: Build JAR file
+      run: >
+        yarn jar
+        mkdir -p /app
+        mv ./.build/libs/schedge.jar /app/schedge.jar
+
     - name: Scrape terms
-      run: yarn schedge db populate --v2 --term=ja2020
+      run: ./src/build/docker/entrypoint.sh db populate --v2 ja2021
 
     - name: Test Code
       run: yarn test

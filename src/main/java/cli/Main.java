@@ -2,6 +2,7 @@ package cli;
 
 import static picocli.CommandLine.*;
 
+import utils.Nyu;
 import api.App;
 import picocli.CommandLine;
 
@@ -20,6 +21,7 @@ public class Main implements Runnable {
     new CommandLine(new Main())
         .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
         .addSubcommand("db", new CommandLine(new cli.Database()))
+        .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
         .execute(args);
   }
 

@@ -34,7 +34,8 @@ public final class ScrapeSchedgeV2 {
     return scrapeFromSchedge(term, null);
   }
 
-  public static ScrapeTermResult scrapeFromSchedge(Term term, List<String> inputSubjectList) {
+  public static ScrapeTermResult
+  scrapeFromSchedge(Term term, List<String> inputSubjectList) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
@@ -65,7 +66,8 @@ public final class ScrapeSchedgeV2 {
     return out;
   }
 
-  private static ArrayList<Course> scrapeFromSchedge(HttpClient client, Term term, List<String> subjectList) {
+  private static ArrayList<Course>
+  scrapeFromSchedge(HttpClient client, Term term, List<String> subjectList) {
     var subjects = subjectList.iterator();
     var engine = new FutureEngine<ScrapeResult>();
 

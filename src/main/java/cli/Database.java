@@ -6,11 +6,11 @@ import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
 import database.*;
+import java.util.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.*;
-import java.util.*;
 
 @Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
@@ -102,11 +102,13 @@ public class Database implements Runnable {
   }
 
   @Command(
-          name = "ci-populate",
-          description = "Populate the database for CI by scraping the existing production "
-                  + "Schedge instance.\n")
+      name = "ci-populate",
+      description =
+          "Populate the database for CI by scraping the existing production "
+          + "Schedge instance.\n")
   public void
-  ciPopulate(@Parameters(paramLabel = "SUBJECT_STRINGS") String[] subjectStrings) {
+  ciPopulate(@Parameters(paramLabel = "SUBJECT_STRINGS")
+             String[] subjectStrings) {
     var start = System.nanoTime();
 
     var map = new HashMap<String, ArrayList<String>>();

@@ -1,5 +1,6 @@
 package actions;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import database.*;
@@ -15,13 +16,19 @@ public class CopyTermFromProduction {
   }
 
   public static void copyTermFromProduction(SchedgeVersion version, Term term) {
-    if (version == SchedgeVersion.V1) {
-      throw new RuntimeException("Unimplemented operation for right now");
-    }
-
     GetConnection.withConnection(conn -> {
       long start = System.nanoTime();
-      var result = ScrapeSchedgeV2.scrapeFromSchedge(term);
+      var result = run(() -> {
+        switch (version) {
+        case V1:
+          return ScrapeSchedgeV1.scrapeFromSchedge(term);
+        case V2:
+          return ScrapeSchedgeV2.scrapeFromSchedge(term);
+
+        default:
+          return null;
+        }
+      });
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

@@ -9,13 +9,9 @@ import java.util.concurrent.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedge {
-  private static Logger logger =
-      LoggerFactory.getLogger("scraping.ScrapeSchedge");
+public final class ScrapeSchedgeV1 {
+  static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
-  // @TODO this will eventually scrape directly from the new API instead of
-  // the old one
-  //                        - Albert Liu, Jan 25, 2022 Tue 18:32 EST
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
 
   public static List<Course> scrapeFromSchedge(Term term) {

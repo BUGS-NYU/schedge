@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   enable-scraping-for-java-test:
-    use: ./.github/workflows/enable-scraping.yml
+    uses: ./.github/workflows/enable-scraping.yml
 
   java-test:
     needs: enable-scraping-for-java-test

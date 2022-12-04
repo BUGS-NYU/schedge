@@ -40,7 +40,7 @@ jobs:
       JDBC_URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
-    - name: Validate Job Run
+    - name: Validate Job Run For Scraping
       run: exit 1
       if: >
         true
@@ -73,7 +73,9 @@ jobs:
       run: >
         java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection
         -jar .build/libs/schedge.jar
-        db populate --v2 sp2021 fa2022 ja2022 sp2023
+        db populate --v2
+        sp2021/CSCI-UA sp2021/SCA-UA_1 sp2021/MATH-UA
+        sp2023
 
     - name: Test Code
       run: yarn test

@@ -10,6 +10,7 @@ import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.*;
+import java.util.*;
 
 @Command(name = "db", description = "Operate on data in the database.\n")
 public class Database implements Runnable {
@@ -91,6 +92,62 @@ public class Database implements Runnable {
     var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
     for (var term : terms) {
       copyTermFromProduction(version, term);
+    }
+
+    GetConnection.close();
+
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info("{} seconds", duration);
+  }
+
+  @Command(
+          name = "ci-populate",
+          description = "Populate the database for CI by scraping the existing production "
+                  + "Schedge instance.\n")
+  public void
+  ciPopulate(@Parameters(paramLabel = "SUBJECT_STRINGS") String[] subjectStrings) {
+    var start = System.nanoTime();
+
+    var map = new HashMap<String, ArrayList<String>>();
+
+    for (var subjectAndTermString : subjectStrings) {
+      var parts = subjectAndTermString.split("/", 2);
+      var termString = parts[0];
+
+      if (parts.length == 0) {
+        map.put(termString, null);
+        continue;
+      }
+
+      var subjectString = parts[1];
+
+      var subjects = map.getOrDefault(termString, new ArrayList<>());
+      subjects.add(subjectString);
+    }
+
+    for (var pair : map.entrySet()) {
+      var term = Term.fromString(pair.getKey());
+      var subjects = pair.getValue();
+
+      GetConnection.withConnection(conn -> {
+        var termStart = System.nanoTime();
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
+
+        var fetchEnd = System.nanoTime();
+        var duration = (fetchEnd - termStart) / 1000000000.0;
+        logger.info("Fetching took {} seconds", duration);
+        if (result == null)
+          return;
+
+        UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
+        InsertCourses.insertCourses(conn, term, result.courses);
+
+        var dbEnd = System.nanoTime();
+        duration = (dbEnd - fetchEnd) / 1000000000.0;
+
+        logger.info("Insertion took {} seconds", duration);
+      });
     }
 
     GetConnection.close();

@@ -52,6 +52,8 @@ public class GetConnection {
       });
     }
 
+    public static void forceInit() {}
+
     public static <T> T withConnectionReturning(SQLFunction<T> f) {
       Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
 
@@ -72,6 +74,13 @@ public class GetConnection {
       }
     }
   }
+
+  /**
+   * GetConnection's connection pool initializes lazily; this behavior isn't
+   * always desired, so this method allows the user to eagerly initialize the
+   * database connection pool.
+   */
+  public static void forceInit() { HolderClass.forceInit(); }
 
   public static void withConnection(SQLConsumer f) {
     withConnectionReturning(conn -> {

@@ -6,6 +6,7 @@ import static utils.Nyu.*;
 
 import actions.ScrapeTerm;
 import database.*;
+import java.util.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
@@ -91,6 +92,78 @@ public class Database implements Runnable {
     var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
     for (var term : terms) {
       copyTermFromProduction(version, term);
+    }
+
+    GetConnection.close();
+
+    long end = System.nanoTime();
+    double duration = (end - start) / 1000000000.0;
+    logger.info("{} seconds", duration);
+  }
+
+  @Command(
+      name = "ci-populate",
+      description =
+          "Populate the database for CI by scraping the existing production "
+          + "Schedge instance.\n")
+  public void
+  ciPopulate(@Parameters(paramLabel = "SUBJECT_STRINGS")
+             String[] subjectStrings) {
+    var start = System.nanoTime();
+
+    var FULL_TERM = new ArrayList<String>();
+    var map = new HashMap<String, ArrayList<String>>();
+
+    for (var subjectAndTermString : subjectStrings) {
+      var parts = subjectAndTermString.split("/", 2);
+      var termString = parts[0];
+
+      if (parts.length == 1) {
+        map.put(termString, FULL_TERM);
+        logger.info("Adding full term for {}", termString);
+        continue;
+      }
+
+      var subjectString = parts[1];
+      logger.info("Adding term={}, subjectString={}", termString,
+                  subjectString);
+
+      var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
+      if (subjects != FULL_TERM)
+        subjects.add(subjectString);
+    }
+
+    for (var pair : map.entrySet()) {
+      var term = Term.fromString(pair.getKey());
+      var subjectsValue = pair.getValue();
+      if (subjectsValue == FULL_TERM) {
+        subjectsValue = null;
+      }
+
+      var subjects = subjectsValue;
+
+      logger.info("Fetching term={}", term.json());
+
+      GetConnection.withConnection(conn -> {
+        var termStart = System.nanoTime();
+
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
+
+        var fetchEnd = System.nanoTime();
+        var duration = (fetchEnd - termStart) / 1000000000.0;
+        logger.info("Fetching took {} seconds", duration);
+        if (result == null)
+          return;
+
+        UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
+        InsertCourses.clearPrevious(conn, term);
+        InsertCourses.insertCourses(conn, term, result.courses);
+
+        var dbEnd = System.nanoTime();
+        duration = (dbEnd - fetchEnd) / 1000000000.0;
+
+        logger.info("Insertion took {} seconds", duration);
+      });
     }
 
     GetConnection.close();

@@ -73,7 +73,7 @@ jobs:
       run: >
         java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection
         -jar .build/libs/schedge.jar
-        db populate --v2
+        db ci-populate
         sp2021/CSCI-UA sp2021/SCA-UA_1 sp2021/MATH-UA sp2021/DS-UA
         fa2022/CSCI-UA
         sp2023

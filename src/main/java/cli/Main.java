@@ -18,11 +18,12 @@ public class Main implements Runnable {
   boolean displayHelp;
 
   public static void main(String[] args) {
-    int exitCode = new CommandLine(new Main())
-        .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
-        .addSubcommand("db", new CommandLine(new cli.Database()))
-        .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
-        .execute(args);
+    int exitCode =
+        new CommandLine(new Main())
+            .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
+            .addSubcommand("db", new CommandLine(new cli.Database()))
+            .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
+            .execute(args);
 
     System.exit(exitCode);
   }

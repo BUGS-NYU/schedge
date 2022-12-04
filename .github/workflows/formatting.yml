@@ -46,10 +46,10 @@ jobs:
       - name: Run Java Formatter
         uses: DoozyX/clang-format-lint-action@v0.14
         with:
-        source: './src/main/java ./src/test/java'
-        extensions: 'java'
-        clangFormatVersion: 15
-        inplace: True
+          source: './src/main/java ./src/test/java'
+          extensions: 'java'
+          clangFormatVersion: 15
+          inplace: True
 
       - name: Check for Changes
         run: git diff --exit-code

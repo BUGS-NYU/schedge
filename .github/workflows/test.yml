@@ -32,6 +32,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    env:
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      JDBC_URL: jdbc:postgresql://postgres/postgres
 
     steps:
     - name: Checkout Project

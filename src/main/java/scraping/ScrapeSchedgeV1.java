@@ -1,5 +1,6 @@
 package scraping;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import com.fasterxml.jackson.annotation.*;
@@ -14,6 +15,17 @@ public final class ScrapeSchedgeV1 {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
+  private static final HashMap<String, String> missingPrograms;
+
+  static {
+    var programs = new HashMap<String, String>();
+    programs.put("NT", "Non-Credit Tisch School of the Arts");
+    programs.put("GH", "NYU Abu Dhabi - Graduate");
+    programs.put("CD", "College of Dentistry Continuing Education");
+    programs.put("DN", "College of Dentistry - Graduate");
+
+    missingPrograms = programs;
+  }
 
   class SchedgeV1Subject {
     String name;
@@ -22,6 +34,7 @@ public final class ScrapeSchedgeV1 {
 
   class Subjects {
     final Map<String, SchedgeV1Subject> subjects;
+
     @JsonCreator
     Subjects(final Map<String, SchedgeV1Subject> subjects) {
       this.subjects = subjects;
@@ -30,6 +43,7 @@ public final class ScrapeSchedgeV1 {
 
   class Schools {
     final Map<String, String> schools;
+
     @JsonCreator
     Schools(final Map<String, String> schools) {
       this.schools = schools;
@@ -39,6 +53,18 @@ public final class ScrapeSchedgeV1 {
   public static List<Course> scrapeFromSchedge(Term term) {
     var subjects = Subject.allSubjects().listIterator();
     var client = HttpClient.newHttpClient();
+    var termString = term.json();
+
+    var schools = run(() -> {
+      var schoolsUri = URI.create(SCHEDGE_URL + termString);
+      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+      var handler = HttpResponse.BodyHandlers.ofString();
+      var resp = tcPass(() -> client.send(request, handler));
+      // var subjects = SCHEDGE_URL();
+      schools = fromJson(data, Schools.class);
+    });
+
+    Subjects subjectsA = null;
 
     var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {

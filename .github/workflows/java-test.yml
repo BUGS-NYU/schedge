@@ -15,7 +15,8 @@ jobs:
 
     runs-on: ubuntu-latest
     if: >
-      contains(github.event.head_commit.message, 'RUN_TEST') || github.event_name == "workflow_dispatch"
+      contains(github.event.head_commit.message, 'RUN_TEST')
+      || github.event_name == 'workflow_dispatch'
 
     # Service containers to run with `container-job`
     services:

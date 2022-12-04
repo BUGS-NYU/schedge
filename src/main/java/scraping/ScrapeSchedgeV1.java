@@ -6,6 +6,7 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
+import com.fasterxml.jackson.annotation.*;
 import org.slf4j.*;
 import utils.*;
 
@@ -13,6 +14,26 @@ public final class ScrapeSchedgeV1 {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
+
+  class SchedgeV1Subject {
+    String name;
+    String code;
+  }
+  class Subjects {
+    final Map<String, SchedgeV1Subject> subjects;
+    @JsonCreator
+    Subjects(final Map<String, SchedgeV1Subject> subjects) {
+      this.subjects = subjects;
+    }
+  }
+
+  class Schools {
+    final Map<String, String> schools;
+    @JsonCreator
+    Schools(final Map<String, String> schools) {
+      this.schools = schools;
+    }
+  }
 
   public static List<Course> scrapeFromSchedge(Term term) {
     var subjects = Subject.allSubjects().listIterator();

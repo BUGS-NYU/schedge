@@ -1,4 +1,4 @@
-name: Deploy
+name: Check Formatting
 
 on:
   push:
@@ -48,7 +48,7 @@ jobs:
         with:
           source: './src/main/java ./src/test/java'
           extensions: 'java'
-          clangFormatVersion: 15
+          clangFormatVersion: 14
           inplace: True
 
       - name: Check for Changes

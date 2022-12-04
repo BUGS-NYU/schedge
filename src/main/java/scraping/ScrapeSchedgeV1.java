@@ -2,11 +2,11 @@ package scraping;
 
 import static utils.Nyu.*;
 
+import com.fasterxml.jackson.annotation.*;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
-import com.fasterxml.jackson.annotation.*;
 import org.slf4j.*;
 import utils.*;
 

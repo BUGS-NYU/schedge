@@ -15,8 +15,27 @@
 #   ```
 #
 #                               - Albert Liu, Nov 06, 2022 Sun 13:21
-FROM openjdk:17.0.2-jdk-slim-buster
+# FROM openjdk:17.0.2-jdk-slim-buster
+# Example of custom Java runtime using jlink in a multi-stage container build
+FROM eclipse-temurin:11-alpine as jre-build
 
+# Create a custom Java runtime
+RUN $JAVA_HOME/bin/jlink \
+        --add-modules java.se \
+        --add-modules jdk.zipfs \
+        --strip-debug \
+        --no-man-pages \
+        --no-header-files \
+        --compress=2 \
+        --output /javaruntime
+
+# Define your base image
+FROM alpine:3.17
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH "${JAVA_HOME}/bin:${PATH}"
+COPY --from=jre-build /javaruntime $JAVA_HOME
+
+# Continue with your application deployment
 WORKDIR "/home/user"
 
 EXPOSE 4358

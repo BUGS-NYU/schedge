@@ -46,9 +46,9 @@ jobs:
     - name: Validate Job Run
       run: exit 1
       if: >
-        !contains(github.event.head_commit.message, 'RUN_TEST')
-        && github.event_name != 'workflow_dispatch'
+        true
         && github.ref != 'refs/heads/main'
+        && !contains(github.event.pull_request.head.label, 'RUN_TEST')
 
     - name: Checkout Project
       uses: actions/checkout@v3

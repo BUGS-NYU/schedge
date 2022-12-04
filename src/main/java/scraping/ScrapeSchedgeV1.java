@@ -1,7 +1,9 @@
 package scraping;
 
 import static utils.ArrayJS.*;
+import static utils.JsonMapper.*;
 import static utils.Nyu.*;
+import static utils.Try.*;
 
 import com.fasterxml.jackson.annotation.*;
 import java.net.*;
@@ -29,15 +31,36 @@ public final class ScrapeSchedgeV1 {
 
   class SchedgeV1Subject {
     String name;
-    String code;
+    String fullCode;
+
+    String schoolCode;
+    String subjectCode;
   }
 
   class Subjects {
-    final Map<String, SchedgeV1Subject> subjects;
+    final ArrayList<SchedgeV1Subject> subjects;
 
     @JsonCreator
-    Subjects(final Map<String, SchedgeV1Subject> subjects) {
-      this.subjects = subjects;
+    Subjects(final Map<String, Map<String, String>> subjects) {
+      this.subjects = new ArrayList<>();
+
+      for (var schoolPair : subjects.entrySet()) {
+        var schoolCode = schoolPair.getKey();
+        var schoolSubjects = schoolPair.getValue();
+
+        var size = this.subjects.size();
+        this.subjects.ensureCapacity(size + schoolSubjects.size());
+
+        for (var subjectPair : schoolSubjects.entrySet()) {
+          var subject = new SchedgeV1Subject();
+          subject.subjectCode = subjectPair.getKey();
+          subject.name = subjectPair.getValue();
+          subject.schoolCode = schoolCode;
+          subject.fullCode = subject.subjectCode + '-' + subject.schoolCode;
+
+          this.subjects.add(subject);
+        }
+      }
     }
   }
 
@@ -47,24 +70,47 @@ public final class ScrapeSchedgeV1 {
     @JsonCreator
     Schools(final Map<String, String> schools) {
       this.schools = schools;
+
+      for (var pair : missingPrograms.entrySet()) {
+        var schoolCode = pair.getKey();
+        var foundName = schools.get(schoolCode);
+        if (foundName == null || foundName.isEmpty()) {
+          schools.put(schoolCode, pair.getValue());
+        }
+      }
     }
   }
 
   public static List<Course> scrapeFromSchedge(Term term) {
-    var subjects = Subject.allSubjects().listIterator();
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
     var schools = run(() -> {
-      var schoolsUri = URI.create(SCHEDGE_URL + termString);
+      var schoolsUri = URI.create(SCHEDGE_URL + "schools");
       var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
       var handler = HttpResponse.BodyHandlers.ofString();
       var resp = tcPass(() -> client.send(request, handler));
-      // var subjects = SCHEDGE_URL();
-      schools = fromJson(data, Schools.class);
+      var data = resp.body();
+
+      return fromJson(data, Schools.class).schools;
     });
 
-    Subjects subjectsA = null;
+    var subjectsList = run(() -> {
+      var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
+      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+      var handler = HttpResponse.BodyHandlers.ofString();
+      var resp = tcPass(() -> client.send(request, handler));
+      var data = resp.body();
+
+      return fromJson(data, Subjects.class).subjects;
+    });
+
+    var subjectsFullCodeList = new ArrayList<String>();
+    subjectsFullCodeList.ensureCapacity(subjectsList.size());
+    for (var subject : subjectsList) {
+      subjectsFullCodeList.add(subject.fullCode);
+    }
+    var subjects = subjectsFullCodeList.listIterator();
 
     var engine = new FutureEngine<String>();
     for (int i = 0; i < 20; i++) {

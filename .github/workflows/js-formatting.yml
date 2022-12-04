@@ -1,0 +1,33 @@
+name: Check JS Formatting
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  js-linter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Set up Node + Yarn
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      - name: Install JS Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint React Formatting
+        run: yarn format
+
+      - name: Check for Changes
+        run: git diff --exit-code

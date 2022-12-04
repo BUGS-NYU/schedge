@@ -2,9 +2,9 @@ package cli;
 
 import static picocli.CommandLine.*;
 
-import utils.Nyu;
 import api.App;
 import picocli.CommandLine;
+import utils.Nyu;
 
 /*
    @Help: Add annotations, comments to code

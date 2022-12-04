@@ -10,18 +10,18 @@ public final class Health extends App.Endpoint {
   public static final class HealthInfo {
     public boolean alive;
 
-    public boolean getAlive() {
-      return alive;
-    }
+    public boolean getAlive() { return alive; }
   }
 
   @OpenApi(path = "/stat", methods = HttpMethod.GET, summary = "Health",
            description = "This endpoint provides information on the health of "
-                         + "the Runtime Environment. Currently very incomplete.",
+                         +
+                         "the Runtime Environment. Currently very incomplete.",
            responses =
            {
              @OpenApiResponse(status = "200", description = "OK.",
-                              content = @OpenApiContent(from = HealthInfo.class))
+                              content =
+                                  @OpenApiContent(from = HealthInfo.class))
              ,
                  @OpenApiResponse(
                      status = "400",

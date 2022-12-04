@@ -1,4 +1,4 @@
-name: Check Java Formatting
+name: Java - Check Formatting
 
 on:
   push:

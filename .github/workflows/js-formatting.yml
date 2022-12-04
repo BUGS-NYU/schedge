@@ -1,4 +1,4 @@
-name: Check JS Formatting
+name: JS - Check Formatting
 
 on:
   push:

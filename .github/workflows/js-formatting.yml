@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  linter:
+  js-linter:
     runs-on: ubuntu-latest
     permissions:
       contents: read

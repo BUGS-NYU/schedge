@@ -94,6 +94,7 @@ public class Database implements Runnable {
           "--v1 and --v2 are incompatible because they mean opposite things");
     }
 
+    // Default to v2 but use v1 if the user explicitly requests it
     var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
       copyTermFromProduction(version, term);

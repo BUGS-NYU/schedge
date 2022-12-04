@@ -77,6 +77,7 @@ public final class ScrapeSchedgeV2 {
       }
     }
 
+    var out = new ArrayList<Course>();
     for (var result : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));

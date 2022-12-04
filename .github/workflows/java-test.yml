@@ -82,7 +82,6 @@ jobs:
         sp2023/ITPG-GT sp2023/MASY1-GC sp2023/CSCI-UA sp2023/DM-UY sp2023/CS-UY
         sp2023/INTG1-GC sp2023/PUBB1-GC sp2023/URPL-GP sp2023/DHSS-GA sp2023/OART-UT
         sp2023/OART-GT sp2023/COART-UT sp2023/IMNY-UT sp2023/PWRT1-GC
-        ja2022
 
     - name: Test Code
       id: test-code

@@ -18,7 +18,7 @@ public final class ScrapeSchedgeV2 {
 
   private static final String LIST_SCHOOLS =
       "https://nyu.a1liu.com/api/schools/";
-  private static final String COURSES = "https://ny.a1liu.com/api/courses/";
+  private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
   public static final class ScrapeTermResult {
     public ArrayList<School> schools;

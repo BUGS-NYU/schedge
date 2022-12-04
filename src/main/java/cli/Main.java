@@ -24,8 +24,8 @@ public class Main implements Runnable {
             .addSubcommand("db", new CommandLine(new cli.Database()))
             .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
             .execute(args);
-
-    System.exit(exitCode);
+    if (exitCode != 0)
+      System.exit(exitCode);
   }
 
   @Override

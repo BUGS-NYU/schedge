@@ -8,4 +8,5 @@
 *.jsx -text
 *.ts -text
 *.tsx -text
+*.css -text
 *.java text

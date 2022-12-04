@@ -54,11 +54,13 @@ jobs:
     - name: Build JAR file
       run: |
         yarn gradle jar
-        mkdir -p /app
-        mv ./.build/libs/schedge.jar /app/schedge.jar
 
+    # Command lifted from `src/build/docker/entrypoint.sh`
     - name: Scrape terms
-      run: ./src/build/docker/entrypoint.sh db populate --v2 ja2021
+      run: >
+        java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection
+        -jar .build/libs/schedge.jar
+        db populate --v2 ja2021
 
     - name: Test Code
       run: yarn test

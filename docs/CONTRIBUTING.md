@@ -27,6 +27,9 @@ You'll need to install a few applications to contribute to this project:
   uses Java 11 features, so at least JDK 11 is required, but Gradle doesn't
   seem to support anything later than 18 right now, so you will not be able
   to build code if you install JDK 19.
+- [NodeJS](https://heynode.com/tutorial/install-nodejs-locally-nvm/) and [Yarn](https://yarnpkg.com/getting-started/install) -
+  This project uses Yarn and NodeJS for compiling JavaScript and also for running
+  custom build commands.
 
 > NOTE: If you're on MacOS, you may need to do additional work to set up
 > your computer. Open the Terminal App and run the following command:
@@ -56,11 +59,21 @@ You'll need to install a few applications to contribute to this project:
 - `yarn stop`: Close the servers when development is done
 
 ## Useful Commands
-- `yarn schedge db populate --semester=sp --year=2022` -
+- `yarn schedge db populate --v2 sp2022` -
   Populate your database with data from production
 - `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database
 
+## Testing
+- `yarn test` will test the backend; before running tests, please scrape the
+  following terms:
+  - `sp2023`
+  - `ja2022`
+  - `sp2021`
+  - `fa2022`
+
+  You can use `yarn schedge db populate --v2 --term=INSERT_TERM_HERE` to scrape
+  a specific term from production.
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

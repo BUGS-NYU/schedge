@@ -690,16 +690,19 @@ public final class Nyu {
     }
 
     @NotNull
+    @OpenApiExample(value = "NYU Accra (Global)")
     public String getName() {
       return name;
     }
 
     @NotNull
+    @OpenApiExample(value = "Africa/Accra")
     public String getTimezoneId() {
       return timezoneId;
     }
 
     @NotNull
+    @OpenApiExample(value = "Ghana Mean Time")
     public String getTimezoneName() {
       return timezoneName;
     }

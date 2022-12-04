@@ -7,7 +7,7 @@ import java.util.*;
 import org.slf4j.*;
 import utils.Utils;
 
-public final class Migrations {
+final class Migrations {
   private static Logger logger = LoggerFactory.getLogger("database.Migrations");
 
   private static final String SCHEMA_QUERY =

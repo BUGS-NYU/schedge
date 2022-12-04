@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedge2 {
+public final class ScrapeSchedgeV2 {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
@@ -31,6 +31,11 @@ public final class ScrapeSchedge2 {
   }
 
   public static ScrapeTermResult scrapeFromSchedge(Term term) {
+    return scrapeFromSchedge(term, null);
+  }
+
+  public static ScrapeTermResult
+  scrapeFromSchedge(Term term, List<String> inputSubjectList) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
@@ -53,6 +58,16 @@ public final class ScrapeSchedge2 {
       }
     }
 
+    if (inputSubjectList == null) {
+      inputSubjectList = subjectList;
+    }
+
+    out.courses = scrapeFromSchedge(client, term, inputSubjectList);
+    return out;
+  }
+
+  private static ArrayList<Course>
+  scrapeFromSchedge(HttpClient client, Term term, List<String> subjectList) {
     var subjects = subjectList.iterator();
     var engine = new FutureEngine<ScrapeResult>();
 
@@ -62,7 +77,7 @@ public final class ScrapeSchedge2 {
       }
     }
 
-    out.courses = new ArrayList<Course>();
+    var out = new ArrayList<Course>();
     for (var result : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
@@ -73,9 +88,9 @@ public final class ScrapeSchedge2 {
       }
 
       var courses = fromJson(result.text, Course[].class);
-      out.courses.ensureCapacity(out.courses.size() + courses.length);
+      out.ensureCapacity(out.size() + courses.length);
       for (var course : courses) {
-        out.courses.add(course);
+        out.add(course);
       }
     }
 

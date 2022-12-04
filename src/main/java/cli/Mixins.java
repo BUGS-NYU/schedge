@@ -2,7 +2,6 @@ package cli;
 
 import static picocli.CommandLine.*;
 
-import java.util.*;
 import picocli.CommandLine;
 import utils.*;
 import utils.Nyu;
@@ -53,15 +52,25 @@ public final class Mixins {
     }
   }
 
-  public static final class Term {
+  public static final class TermOption {
     @Spec private CommandLine.Model.CommandSpec spec;
 
     @Option(
         names = "--term",
         description =
-            "example: fa2020, where: fa=Fall, ja=January, sp=Spring, su=Summer",
-        required = true, converter = TermConverter.class)
+            "example: fa2021, where: fa=Fall, ja=January, sp=Spring, su=Summer",
+        required = true)
     public Nyu.Term term;
+  }
+
+  public static final class TermArgument {
+    @Spec private CommandLine.Model.CommandSpec spec;
+
+    @Parameters(
+        paramLabel = "TERMS",
+        description =
+            "example: fa2021, where: fa=Fall, ja=January, sp=Spring, su=Summer")
+    public Nyu.Term[] terms;
   }
 
   public static class TermConverter implements ITypeConverter<Nyu.Term> {

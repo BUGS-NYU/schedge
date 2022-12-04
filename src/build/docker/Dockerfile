@@ -1,5 +1,3 @@
-# FROM openjdk:8u212-jre-alpine3.9
-
 # @Note: Can use the following to prevent Docker's "load metadata"
 # bullshit: https://stackoverflow.com/a/70483395
 #
@@ -7,15 +5,15 @@
 #
 #   ```
 #   # Do this BEFORE losing internet connection
-#   docker pull openjdk:17.0.2-jdk-slim-buster
-#   docker tag openjdk:17.0.2-jdk-slim-buster schedge/base
+#   docker pull eclipse-temurin:19-jre-alpine
+#   docker tag eclipse-temurin:19-jre-alpine schedge/base
 #
-#   # in Dockerfile
+#   # in Dockerfile, edit the line below to be:
 #   FROM schedge/base
 #   ```
 #
 #                               - Albert Liu, Nov 06, 2022 Sun 13:21
-FROM openjdk:17.0.2-jdk-slim-buster
+FROM eclipse-temurin:19-jre-alpine
 
 WORKDIR "/home/user"
 

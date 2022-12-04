@@ -4,6 +4,7 @@ import static picocli.CommandLine.*;
 
 import api.App;
 import picocli.CommandLine;
+import utils.Nyu;
 
 /*
    @Help: Add annotations, comments to code
@@ -17,10 +18,15 @@ public class Main implements Runnable {
   boolean displayHelp;
 
   public static void main(String[] args) {
-    new CommandLine(new Main())
-        .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
-        .addSubcommand("db", new CommandLine(new cli.Database()))
-        .execute(args);
+    var exitCode =
+        new CommandLine(new Main())
+            .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
+            .addSubcommand("db", new CommandLine(new cli.Database()))
+            .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
+            .execute(args);
+
+    if (exitCode != 0)
+      System.exit(exitCode);
   }
 
   @Override

@@ -61,6 +61,8 @@ public class ScheduleTest {
         var body = respBody.string();
         var schedule = fromJson(body, ScheduleSections.Schedule.class);
 
+        Assert.assertEquals("Schedule should have the right number of meetings",
+                            3, schedule.size());
         Assert.assertFalse("Schedule should be invalid", schedule.valid);
         Assert.assertNotNull("Schedule should have conflict",
                              schedule.conflictA);
@@ -137,6 +139,8 @@ public class ScheduleTest {
         var body = respBody.string();
         var schedule = fromJson(body, ScheduleSections.Schedule.class);
 
+        Assert.assertEquals("Schedule should have the right number of meetings",
+                            4, schedule.size());
         Assert.assertFalse("Schedule should be invalid", schedule.valid);
         Assert.assertNotNull("Schedule should have conflict",
                              schedule.conflictA);

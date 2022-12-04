@@ -28,8 +28,7 @@ public class AugmentedMeeting {
   public final int minutesDuration;
   public final String campus;
 
-  @JsonIgnore
-  public final ZoneId tz;
+  @JsonIgnore public final ZoneId tz;
   public final ZonedDateTime endDate;
 
   public static DateTimeFormatter formatter =

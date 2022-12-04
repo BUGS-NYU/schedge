@@ -100,14 +100,11 @@ public final class PeopleSoftClassSearch {
     private int index = 0;
 
     private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
-      if (consumer == null) {
-        this.consumer = e -> {};
-      } else {
-        this.consumer = consumer;
-      }
+      consumer = Objects.requireNonNullElse(consumer, e -> {});
 
       this.term = term;
       this.ctx = ctx;
+      this.consumer = consumer;
 
       this.ps = new PSClient();
 
@@ -272,7 +269,7 @@ public final class PeopleSoftClassSearch {
     return new CoursesForTerm(term, bar, ctx);
   }
 
-  static ArrayList<SubjectElem> parseTermPage(String responseBody) {
+  public static ArrayList<SubjectElem> parseTermPage(String responseBody) {
     var doc = Jsoup.parse(responseBody, PSClient.MAIN_URL);
 
     var field = doc.expectFirst("#win0divNYU_CLASS_SEARCH");
@@ -296,7 +293,8 @@ public final class PeopleSoftClassSearch {
         var codePart = parts[1];
         codePart = codePart.substring(0, codePart.length() - 1);
 
-        var schoolCode = codePart.split("_")[0].split("-")[1];
+        var subjectParts = codePart.split("_")[0].split("-");
+        var schoolCode = subjectParts[subjectParts.length - 1];
 
         var action = schoolTag.id().substring(7);
 

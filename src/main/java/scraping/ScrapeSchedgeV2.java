@@ -12,7 +12,7 @@ import java.util.concurrent.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedge2 {
+public final class ScrapeSchedgeV2 {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 

@@ -43,10 +43,11 @@ jobs:
       JDBC_URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
+      # Disabling for now and seeing what happens
     - name: Validate Job Run For Scraping
       run: exit 1
       if: >
-        true
+        false
         && github.ref != 'refs/heads/main'
         && !contains(github.event.head_commit.message, 'RUN_TEST')
 

@@ -33,7 +33,11 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-    container: ubuntu:22.04
+        # Maps tcp port 5432 on service container to the host
+        ports:
+          - 5432:5432
+
+    # container: ubuntu:22.04
     env:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres

@@ -15,7 +15,6 @@
 #                               - Albert Liu, Nov 06, 2022 Sun 13:21
 FROM eclipse-temurin:19-jre-alpine
 
-# Continue with your application deployment
 WORKDIR "/home/user"
 
 EXPOSE 4358

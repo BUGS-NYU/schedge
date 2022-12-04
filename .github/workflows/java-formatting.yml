@@ -27,4 +27,4 @@ jobs:
           inplace: True
 
       - name: Check for Changes
-        run: git diff --exit-code
+        run: git diff --exit-code --name-only

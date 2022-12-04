@@ -9,6 +9,9 @@ permissions:
 jobs:
   java-test:
     runs-on: ubuntu-latest
+    if: >
+      true
+      && !contains(github.event.head_commit.message, 'skip ci')
 
     # Service containers to run with `container-job`
     services:
@@ -40,10 +43,11 @@ jobs:
       JDBC_URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
+      # Disabling for now and seeing what happens
     - name: Validate Job Run For Scraping
       run: exit 1
       if: >
-        true
+        false
         && github.ref != 'refs/heads/main'
         && !contains(github.event.head_commit.message, 'RUN_TEST')
 
@@ -76,7 +80,9 @@ jobs:
         db ci-populate
         sp2021/CSCI-UA sp2021/SCA-UA_1 sp2021/MATH-UA sp2021/DS-UA
         fa2022/CSCI-UA
-        sp2023
+        sp2023/ITPG-GT sp2023/MASY1-GC sp2023/CSCI-UA sp2023/DM-UY sp2023/CS-UY
+        sp2023/INTG1-GC sp2023/PUBB1-GC sp2023/URPL-GP sp2023/DHSS-GA sp2023/OART-UT
+        sp2023/OART-GT sp2023/COART-UT sp2023/IMNY-UT sp2023/PWRT1-GC
 
     - name: Test Code
       id: test-code

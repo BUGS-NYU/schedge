@@ -5,6 +5,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -44,6 +45,12 @@ jobs:
       JDBC_URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
+    - name: Validate Job Run
+      run: exit 1
+      if: >
+        !contains(github.event.head_commit.message, 'RUN_TEST')
+        && github.event_name != 'workflow_dispatch'
+
     - name: Checkout Project
       uses: actions/checkout@v3
       with:

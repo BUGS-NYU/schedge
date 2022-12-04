@@ -19,6 +19,7 @@ public final class ScrapeSchedgeV1 {
     String name;
     String code;
   }
+
   class Subjects {
     final Map<String, SchedgeV1Subject> subjects;
     @JsonCreator

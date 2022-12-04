@@ -111,6 +111,7 @@ public class Database implements Runnable {
              String[] subjectStrings) {
     var start = System.nanoTime();
 
+    var FULL_TERM = new ArrayList<String>();
     var map = new HashMap<String, ArrayList<String>>();
 
     for (var subjectAndTermString : subjectStrings) {
@@ -118,7 +119,7 @@ public class Database implements Runnable {
       var termString = parts[0];
 
       if (parts.length == 1) {
-        // map.put(termString, null);
+        map.put(termString, FULL_TERM);
         logger.info("Adding full term for {}", termString);
         continue;
       }
@@ -128,18 +129,24 @@ public class Database implements Runnable {
                   subjectString);
 
       var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
-      if (subjects != null)
+      if (subjects != FULL_TERM)
         subjects.add(subjectString);
     }
 
     for (var pair : map.entrySet()) {
       var term = Term.fromString(pair.getKey());
-      var subjects = pair.getValue();
+      var subjectsValue = pair.getValue();
+      if (subjectsValue == FULL_TERM) {
+        subjectsValue = null;
+      }
+
+      var subjects = subjectsValue;
 
       logger.info("Fetching term={}", term.json());
 
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
+
         var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
 
         var fetchEnd = System.nanoTime();

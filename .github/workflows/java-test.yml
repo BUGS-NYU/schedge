@@ -10,11 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  enable-scraping-for-java-test:
-    uses: ./.github/workflows/enable-scraping.yml
-
   java-test:
-    needs: enable-scraping-for-java-test
     runs-on: ubuntu-latest
 
     # Service containers to run with `container-job`
@@ -52,7 +48,7 @@ jobs:
       if: >
         !contains(github.event.head_commit.message, 'RUN_TEST')
         && github.event_name != 'workflow_dispatch'
-        && github.ref != 'main'
+        && github.ref != 'refs/heads/main'
 
     - name: Checkout Project
       uses: actions/checkout@v3

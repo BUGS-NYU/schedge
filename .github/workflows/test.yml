@@ -32,6 +32,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    container: ubuntu:22.04
     env:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres

@@ -88,11 +88,11 @@ public class Database implements Runnable {
     long start = System.nanoTime();
 
     var terms = termMixin.terms;
-
+    var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
     for (var term : terms) {
-      copyTermFromProduction(useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1,
-                             term);
+      copyTermFromProduction(version, term);
     }
+
     GetConnection.close();
 
     long end = System.nanoTime();

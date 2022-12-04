@@ -70,7 +70,7 @@ jobs:
       run: >
         java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection
         -jar .build/libs/schedge.jar
-        db populate --v2 ja2021
+        db populate --v2 sp2021 fa2022 ja2022 sp2023
 
     - name: Test Code
       run: yarn test

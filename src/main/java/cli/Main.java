@@ -34,8 +34,7 @@ public class Main implements Runnable {
   }
 
   @Command(name = "serve", description = "runs the app\n")
-  public void
-  serve() {
+  public void serve() {
     App.run();
   }
 }

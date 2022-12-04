@@ -84,11 +84,16 @@ public class Database implements Runnable {
                     + "Schedge instance.\n")
   public void
   populate(@Mixin Mixins.TermArgument termMixin,
-           @Option(names = {"--v1"},
-                   description = "scrape v1 instead of v2") boolean useV1) {
+           @Option(names = {"--v1"}, description = "scrape v1") boolean useV1,
+           @Option(names = {"--v2"}, description = "scrape v2") boolean useV2) {
     long start = System.nanoTime();
 
     var terms = termMixin.terms;
+    if (useV1 && useV2) {
+      throw new IllegalArgumentException(
+          "--v1 and --v2 are incompatible because they mean opposite things");
+    }
+
     var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
       copyTermFromProduction(version, term);

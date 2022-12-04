@@ -8,12 +8,12 @@ public final class Health extends App.Endpoint {
   public String getPath() { return "/stat"; }
 
   public static final class HealthInfo {
-
+    boolean alive;
   }
 
   @OpenApi(path = "/stat", methods = HttpMethod.GET, summary = "Health",
            description = "This endpoint provides information on the health of "
-                         + "the Runtime Environment",
+                         + "the Runtime Environment. Currently very incomplete.",
            responses =
            {
              @OpenApiResponse(status = "200", description = "OK.",
@@ -30,6 +30,8 @@ public final class Health extends App.Endpoint {
 
     // https://stackoverflow.com/questions/17374743/how-can-i-get-the-memory-that-my-java-program-uses-via-javas-runtime-api
     var info = new HealthInfo();
+    info.alive = true;
+
     return info;
   }
 }

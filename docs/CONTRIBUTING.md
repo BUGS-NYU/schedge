@@ -59,7 +59,7 @@ You'll need to install a few applications to contribute to this project:
 - `yarn stop`: Close the servers when development is done
 
 ## Useful Commands
-- `yarn schedge db populate --v2 --term=sp2022` -
+- `yarn schedge db populate --v2 sp2022` -
   Populate your database with data from production
 - `docker-compose postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres` -
   Run `psql` on the local database

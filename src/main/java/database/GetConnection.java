@@ -45,6 +45,31 @@ public class GetConnection {
         source = new HikariDataSource(config);
 
       dataSource = source;
+
+      withConnectionReturning(conn -> {
+        Migrations.runMigrations(conn);
+        return null;
+      });
+    }
+
+    public static <T> T withConnectionReturning(SQLFunction<T> f) {
+      Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
+
+      try {
+        conn.setAutoCommit(false);
+
+        T value = f.apply(conn);
+
+        conn.commit();
+
+        return value;
+      } catch (SQLException e) {
+        tcIgnore(() -> conn.rollback());
+
+        throw new RuntimeException(e);
+      } finally {
+        tcIgnore(() -> conn.close());
+      }
     }
   }
 
@@ -56,26 +81,8 @@ public class GetConnection {
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {
-    Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
-
-    try {
-      conn.setAutoCommit(false);
-
-      T value = f.apply(conn);
-
-      conn.commit();
-
-      return value;
-    } catch (SQLException e) {
-      tcIgnore(() -> conn.rollback());
-
-      throw new RuntimeException(e);
-    } finally {
-      tcIgnore(() -> conn.close());
-    }
+    return HolderClass.withConnectionReturning(f);
   }
 
-  public static void close() {
-    tcPass(() -> HolderClass.dataSource.close());
-  }
+  public static void close() { tcPass(HolderClass.dataSource::close); }
 }

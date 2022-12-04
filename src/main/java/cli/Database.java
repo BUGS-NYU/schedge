@@ -28,7 +28,7 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-schools", description = "Scrape schools for a term")
-  public void scrapeSchools(@Mixin Mixins.Term termMixin) {
+  public void scrapeSchools(@Mixin Mixins.TermOption termMixin) {
     long start = System.nanoTime();
 
     var term = termMixin.term;
@@ -44,14 +44,11 @@ public class Database implements Runnable {
   }
 
   @Command(name = "scrape-term", description = "Scrape all data for a term")
-  public void scrapeTerm(@Parameters(
-      paramLabel = "TERMS",
-      description = "Terms to scrape, e.g. fa2020, ja2020, sp2020, su2020",
-      converter = Mixins.TermConverter.class) Term[] terms) {
+  public void scrapeTerm(@Mixin Mixins.TermArgument termMixin) {
     long start = System.nanoTime();
 
     GetConnection.withConnection(conn -> {
-      for (var term : terms) {
+      for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
           ScrapeTerm.scrapeTerm(conn, term, e -> {
             switch (e.kind) {
@@ -85,13 +82,17 @@ public class Database implements Runnable {
       description = "Populate the database by scraping the existing production "
                     + "Schedge instance.\n")
   public void
-  populate(@Mixin Mixins.Term termMixin,
+  populate(@Mixin Mixins.TermArgument termMixin,
            @Option(names = {"--v2"},
                    description = "scrape v2 instead of v1") boolean useV2) {
     long start = System.nanoTime();
 
-    Term term = termMixin.term;
-    copyTermFromProduction(useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1, term);
+    var terms = termMixin.terms;
+    var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
+    for (var term : terms) {
+      copyTermFromProduction(version, term);
+    }
+
     GetConnection.close();
 
     long end = System.nanoTime();

@@ -1,0 +1,72 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  Server:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Set up Node + Yarn
+        uses: actions/setup-node@v3
+        with:
+          cache: 'yarn'
+
+      # https://nextjs.org/docs/advanced-features/ci-build-caching
+      - name: Cache NextJS Files
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/.next/cache
+          # Generate a new cache whenever packages or source files change.
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          # If source files changed but packages didn't, rebuild from a prior cache.
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '19'
+          distribution: 'adopt'
+          cache: 'gradle'
+
+      - name: Install JS Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Compile Frontend
+        run: yarn export
+
+      - name: Set version
+        run: >
+          sed -i "s/SCHEDGE DEVELOPMENT BUILD/Build version: $(git log --pretty=format:'%h' -n 1)./g" "src/main/java/api/App.java"
+      - name: Compile Backend
+        run: yarn gradle jar
+
+          # - name: Run Tests
+          #   run: JDBC_URL=jdbc:postgresql://postgres/postgres yarn test
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: src/build/docker/Dockerfile
+          push: true
+          tags: ghcr.io/a1liu/schedge:latest

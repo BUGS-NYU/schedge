@@ -8,7 +8,11 @@ public final class Health extends App.Endpoint {
   public String getPath() { return "/stat"; }
 
   public static final class HealthInfo {
-    boolean alive;
+    public boolean alive;
+
+    public boolean getAlive() {
+      return alive;
+    }
   }
 
   @OpenApi(path = "/stat", methods = HttpMethod.GET, summary = "Health",

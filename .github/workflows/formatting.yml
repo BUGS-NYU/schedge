@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  Server:
+  frontend:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,50 +23,33 @@ jobs:
         with:
           cache: 'yarn'
 
-      # https://nextjs.org/docs/advanced-features/ci-build-caching
-      - name: Cache NextJS Files
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/.next/cache
-          # Generate a new cache whenever packages or source files change.
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-          # If source files changed but packages didn't, rebuild from a prior cache.
-          restore-keys: |
-            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '19'
-          distribution: 'adopt'
-          cache: 'gradle'
-
       - name: Install JS Dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Compile Frontend
-        run: yarn export
+      - name: Lint React Formatting
+        run: yarn format
 
-      - name: Set version
-        run: >
-          sed -i "s/SCHEDGE DEVELOPMENT BUILD/Build version: $(git log --pretty=format:'%h' -n 1)./g" "src/main/java/api/App.java"
-      - name: Compile Backend
-        run: yarn gradle jar
+      - name: Check for Changes
+        run: git diff --exit-code
 
-          # - name: Run Tests
-          #   run: JDBC_URL=jdbc:postgresql://postgres/postgres yarn test
+  java:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          lfs: true
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+      - name: Run Java Formatter
+        uses: DoozyX/clang-format-lint-action@v0.14
         with:
-          context: .
-          file: src/build/docker/Dockerfile
-          push: true
-          tags: ghcr.io/a1liu/schedge:latest
+        source: './src/main/java ./src/test/java'
+        extensions: 'java'
+        clangFormatVersion: 15
+        inplace: True
+
+      - name: Check for Changes
+        run: git diff --exit-code

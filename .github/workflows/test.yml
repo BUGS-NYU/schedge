@@ -41,7 +41,7 @@ jobs:
     env:
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      JDBC_URL: jdbc:postgresql://postgres/postgres
+      JDBC_URL: jdbc:postgresql://localhost:5432/postgres
 
     steps:
     - name: Checkout Project

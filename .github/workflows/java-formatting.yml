@@ -2,9 +2,6 @@ name: Java - Check Formatting
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   java-linter:

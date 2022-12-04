@@ -1,5 +1,6 @@
 package scraping;
 
+import static scraping.ScrapeSchedgeV2.*;
 import static utils.ArrayJS.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
@@ -81,7 +82,7 @@ public final class ScrapeSchedgeV1 {
     }
   }
 
-  public static List<Course> scrapeFromSchedge(Term term) {
+  public static ScrapeTermResult scrapeFromSchedge(Term term) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
@@ -105,10 +106,25 @@ public final class ScrapeSchedgeV1 {
       return fromJson(data, Subjects.class).subjects;
     });
 
+    var out = new ScrapeTermResult();
+    out.schools = new ArrayList<>();
+
+    var schoolsMap = new HashMap<String, School>();
     var subjectsFullCodeList = new ArrayList<String>();
     subjectsFullCodeList.ensureCapacity(subjectsList.size());
+
     for (var subject : subjectsList) {
       subjectsFullCodeList.add(subject.fullCode);
+      var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
+        var name = schools.get(code);
+        var s = new School(name, code);
+        out.schools.add(s);
+
+        return s;
+      });
+
+      var s = new Subject(subject.fullCode, subject.name);
+      school.subjects.add(s);
     }
     var subjects = subjectsFullCodeList.listIterator();
 
@@ -119,7 +135,6 @@ public final class ScrapeSchedgeV1 {
       }
     }
 
-    var output = new ArrayList<Course>();
     for (String text : engine) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
@@ -130,13 +145,14 @@ public final class ScrapeSchedgeV1 {
       }
 
       var courses = JsonMapper.fromJson(text, Course[].class);
-      output.ensureCapacity(output.size() + courses.length);
+      var size = out.courses.size();
+      out.courses.ensureCapacity(size + courses.length);
       for (var course : courses) {
-        output.add(course);
+        out.courses.add(course);
       }
     }
 
-    return output;
+    return out;
   }
 
   private static Future<String> getData(HttpClient client, Term term,

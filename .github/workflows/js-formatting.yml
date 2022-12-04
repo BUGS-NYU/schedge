@@ -1,4 +1,4 @@
-name: Check Java Formatting
+name: Check JS Formatting
 
 on:
   push:
@@ -18,13 +18,16 @@ jobs:
         with:
           lfs: true
 
-      - name: Run Java Formatter
-        uses: DoozyX/clang-format-lint-action@v0.14
+      - name: Set up Node + Yarn
+        uses: actions/setup-node@v3
         with:
-          source: './src/main/java ./src/test/java'
-          extensions: 'java'
-          clangFormatVersion: 14
-          inplace: True
+          cache: 'yarn'
+
+      - name: Install JS Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Lint React Formatting
+        run: yarn format
 
       - name: Check for Changes
         run: git diff --exit-code

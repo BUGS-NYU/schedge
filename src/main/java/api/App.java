@@ -15,7 +15,8 @@ public class App {
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
   static {
-    GetConnection.withConnection(conn -> Migrations.runMigrations(conn));
+    // Ensure that the connection gets instantiated during startup
+    GetConnection.withConnection(conn -> {});
   }
 
   public abstract static class Endpoint implements Handler {

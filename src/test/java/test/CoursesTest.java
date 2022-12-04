@@ -31,8 +31,8 @@ public class CoursesTest {
     });
   }
 
-  @Test
-  public void testSimpleScrape() {
-    copyTermFromProduction(SchedgeVersion.V2, Term.fromString("ja2022"));
-  }
+//  @Test
+//  public void testSimpleScrape() {
+//    copyTermFromProduction(SchedgeVersion.V2, Term.fromString("ja2022"));
+//  }
 }

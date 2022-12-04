@@ -117,20 +117,26 @@ public class Database implements Runnable {
       var parts = subjectAndTermString.split("/", 2);
       var termString = parts[0];
 
-      if (parts.length == 0) {
-        map.put(termString, null);
+      if (parts.length == 1) {
+        // map.put(termString, null);
+        logger.info("Adding full term for {}", termString);
         continue;
       }
 
       var subjectString = parts[1];
+      logger.info("Adding term={}, subjectString={}", termString,
+                  subjectString);
 
-      var subjects = map.getOrDefault(termString, new ArrayList<>());
-      subjects.add(subjectString);
+      var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
+      if (subjects != null)
+        subjects.add(subjectString);
     }
 
     for (var pair : map.entrySet()) {
       var term = Term.fromString(pair.getKey());
       var subjects = pair.getValue();
+
+      logger.info("Fetching term={}", term.json());
 
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
@@ -143,6 +149,7 @@ public class Database implements Runnable {
           return;
 
         UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
+        InsertCourses.clearPrevious(conn, term);
         InsertCourses.insertCourses(conn, term, result.courses);
 
         var dbEnd = System.nanoTime();

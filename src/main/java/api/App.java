@@ -14,11 +14,6 @@ import utils.Utils;
 public class App {
   private static final Logger logger = LoggerFactory.getLogger("api.App");
 
-  static {
-    // Ensure that the connection gets instantiated during startup
-    GetConnection.withConnection(conn -> {});
-  }
-
   public abstract static class Endpoint implements Handler {
     public abstract String getPath();
 
@@ -64,6 +59,9 @@ public class App {
   public static final int PORT = 4358;
 
   public static Javalin makeApp() {
+    // Ensure that the connection gets instantiated during startup
+    GetConnection.forceInit();
+
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
         cors.add(it -> { it.anyHost(); });

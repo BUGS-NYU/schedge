@@ -75,6 +75,7 @@ jobs:
         -jar .build/libs/schedge.jar
         db populate --v2
         sp2021/CSCI-UA sp2021/SCA-UA_1 sp2021/MATH-UA
+        fa2022/CSCI-UA
         sp2023
 
     - name: Test Code

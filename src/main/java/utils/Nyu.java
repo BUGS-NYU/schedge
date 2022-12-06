@@ -35,24 +35,6 @@ public final class Nyu {
       this.name = name;
     }
 
-    private static final ArrayList<String> allSubjects;
-
-    static {
-      var subjects = new ArrayList<String>();
-      for (String line : Utils.asResourceLines("/subjects.txt")) {
-        String[] s = line.split(",", 3);
-        String subject = s[0], school = s[1], name = s[2];
-
-        subjects.add(subject);
-      }
-
-      allSubjects = subjects;
-    }
-
-    public static ArrayList<String> allSubjects() {
-      return new ArrayList<>(allSubjects);
-    }
-
     public String toString() { return "Subject(" + code + "," + name + ")"; }
   }
 

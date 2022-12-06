@@ -22,15 +22,28 @@ public final class ScrapeSchedgeV1 {
 
   static {
     var programs = new HashMap<String, String>();
+
     programs.put("NT", "Non-Credit Tisch School of the Arts");
     programs.put("GH", "NYU Abu Dhabi - Graduate");
     programs.put("CD", "College of Dentistry Continuing Education");
     programs.put("DN", "College of Dentistry - Graduate");
 
+    // @TODO: what the hell are these
+    programs.put("ND", "");
+    programs.put("NY", "");
+    programs.put("NB", "");
+    programs.put("NE", "");
+    programs.put("NH", "");
+    programs.put("NI", "");
+
     missingPrograms = programs;
   }
 
-  class SchedgeV1Subject {
+  static class NameField {
+    public String name;
+  }
+
+  static class SchedgeV1Subject {
     String name;
     String fullCode;
 
@@ -38,11 +51,11 @@ public final class ScrapeSchedgeV1 {
     String subjectCode;
   }
 
-  class Subjects {
+  static class Subjects {
     final ArrayList<SchedgeV1Subject> subjects;
 
     @JsonCreator
-    Subjects(final Map<String, Map<String, String>> subjects) {
+    Subjects(final Map<String, Map<String, NameField>> subjects) {
       this.subjects = new ArrayList<>();
 
       for (var schoolPair : subjects.entrySet()) {
@@ -55,7 +68,7 @@ public final class ScrapeSchedgeV1 {
         for (var subjectPair : schoolSubjects.entrySet()) {
           var subject = new SchedgeV1Subject();
           subject.subjectCode = subjectPair.getKey();
-          subject.name = subjectPair.getValue();
+          subject.name = subjectPair.getValue().name;
           subject.schoolCode = schoolCode;
           subject.fullCode = subject.subjectCode + '-' + subject.schoolCode;
 
@@ -65,31 +78,42 @@ public final class ScrapeSchedgeV1 {
     }
   }
 
-  class Schools {
+  static class Schools {
     final Map<String, String> schools;
 
     @JsonCreator
-    Schools(final Map<String, String> schools) {
-      this.schools = schools;
+    Schools(final Map<String, NameField> schools) {
+      this.schools = new HashMap<>();
 
       for (var pair : missingPrograms.entrySet()) {
+        this.schools.put(pair.getKey(), pair.getValue());
+      }
+
+      for (var pair : schools.entrySet()) {
         var schoolCode = pair.getKey();
-        var foundName = schools.get(schoolCode);
-        if (foundName == null || foundName.isEmpty()) {
-          schools.put(schoolCode, pair.getValue());
+        var schoolName = pair.getValue().name;
+
+        if (schoolName == null || schoolName.isEmpty()) {
+          schoolName = missingPrograms.get(schoolCode);
         }
+
+        if (schoolName == null)
+          throw new RuntimeException("Code: " + schoolCode);
+
+        this.schools.put(schoolCode, schoolName);
       }
     }
   }
 
-  class SchedgeV1Course {
+  @JsonIgnoreProperties(value = {"subjectCode"}, allowGetters = true)
+  static class SchedgeV1Course {
     public String name;
     public String deptCourseId;
     public String description;
     public List<SchedgeV1Section> sections;
   }
 
-  class SchedgeV1Section {
+  static class SchedgeV1Section {
     public int registrationNumber;
     public String code;
     public String name;
@@ -106,6 +130,7 @@ public final class ScrapeSchedgeV1 {
     public Double maxUnits;
     public String grading;
     public String location;
+    public String prerequisites;
     public String notes;
   }
 
@@ -135,6 +160,7 @@ public final class ScrapeSchedgeV1 {
 
     var out = new ScrapeTermResult();
     out.schools = new ArrayList<>();
+    out.courses = new ArrayList<>();
 
     var schoolsMap = new HashMap<String, School>();
     var subjectsFullCodeList = new ArrayList<String>();
@@ -144,6 +170,9 @@ public final class ScrapeSchedgeV1 {
       subjectsFullCodeList.add(subject.fullCode);
       var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
         var name = schools.get(code);
+        if (name == null)
+          throw new RuntimeException("Code: " + code);
+
         var s = new School(name, code);
         out.schools.add(s);
 
@@ -153,9 +182,10 @@ public final class ScrapeSchedgeV1 {
       var s = new Subject(subject.fullCode, subject.name);
       school.subjects.add(s);
     }
-    var subjects = subjectsFullCodeList.listIterator();
 
+    var subjects = subjectsFullCodeList.listIterator();
     var engine = new FutureEngine<ScrapeResult>();
+
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
@@ -167,9 +197,8 @@ public final class ScrapeSchedgeV1 {
         engine.add(getData(client, term, subjects.next()));
       }
 
-      if (result.text == null) {
+      if (result.text == null)
         continue;
-      }
 
       var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
       var size = out.courses.size();
@@ -183,21 +212,15 @@ public final class ScrapeSchedgeV1 {
         c.subjectCode = result.subject;
         c.sections = new ArrayList<>();
 
-        var descriptions = new HashMap<String, Integer>();
+        if (c.description == null)
+          c.description = "";
+        // throw new RuntimeException("Course: " + c.name + " " +
+        // c.subjectCode);
 
         for (var section : course.sections) {
-          var s = new Section();
-
-          descriptions.compute(section.name, (k, prev) -> {
-            if (prev == null)
-              prev = 0;
-
-            return prev + 1;
-          });
-
-          if (!section.name.equals(c.name)) {
-            s.name = section.name;
-          }
+          var s = translateSection(section);
+          if (!s.name.equals(c.name))
+            s.name = null;
 
           c.sections.add(s);
         }
@@ -207,6 +230,50 @@ public final class ScrapeSchedgeV1 {
     }
 
     return out;
+  }
+
+  private static Section translateSection(SchedgeV1Section section) {
+    var s = new Section();
+
+    s.name = section.name;
+    s.code = section.code;
+    s.registrationNumber = section.registrationNumber;
+    s.minUnits = section.minUnits;
+    s.maxUnits = section.maxUnits;
+    s.location = section.location;
+    s.campus = section.campus;
+    s.type = section.type;
+    s.status = section.status;
+    s.grading = section.grading;
+    s.meetings = section.meetings;
+    s.instructors = section.instructors;
+    s.waitlistTotal = section.waitlistTotal;
+
+    var mode = section.instructionMode;
+    s.instructionMode = Objects.requireNonNullElse(mode, "In-Person");
+
+    if (s.meetings == null)
+      s.meetings = new ArrayList<>();
+
+    if (section.prerequisites == null)
+      section.prerequisites = "";
+    if (section.notes == null)
+      section.notes = "";
+
+    section.prerequisites = section.prerequisites.trim();
+
+    s.notes = section.notes + "\nPREREQUISITES: " + section.prerequisites;
+
+    if (section.recitations != null) {
+      s.recitations = new ArrayList<>();
+
+      for (var recitation : section.recitations) {
+        var r = translateSection(recitation);
+        s.recitations.add(r);
+      }
+    }
+
+    return s;
   }
 
   private static Future<ScrapeResult> getData(HttpClient client, Term term,

@@ -3,3 +3,5 @@
 BasedOnStyle: LLVM
 ---
 Language: Java
+BraceWrapping:
+  AfterClass: true

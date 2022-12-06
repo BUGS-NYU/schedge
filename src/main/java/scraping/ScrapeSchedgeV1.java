@@ -40,6 +40,7 @@ public final class ScrapeSchedgeV1 {
   }
 
   static class NameField {
+    // Object comes in the form: {"name":"name here"}
     public String name;
   }
 

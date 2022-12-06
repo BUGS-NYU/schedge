@@ -3,5 +3,6 @@
 BasedOnStyle: LLVM
 ---
 Language: Java
-BraceWrapping:
-  AfterClass: true
+
+AllowShortFunctionsOnASingleLine: None
+

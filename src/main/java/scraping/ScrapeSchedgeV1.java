@@ -214,8 +214,6 @@ public final class ScrapeSchedgeV1 {
 
         if (c.description == null)
           c.description = "";
-        // throw new RuntimeException("Course: " + c.name + " " +
-        // c.subjectCode);
 
         for (var section : course.sections) {
           var s = translateSection(section);

@@ -28,13 +28,15 @@ public final class ScrapeSchedgeV1 {
     programs.put("CD", "College of Dentistry Continuing Education");
     programs.put("DN", "College of Dentistry - Graduate");
 
-    // @TODO: what the hell are these
-    programs.put("ND", "");
-    programs.put("NY", "");
-    programs.put("NB", "");
-    programs.put("NE", "");
-    programs.put("NH", "");
-    programs.put("NI", "");
+    // @TODO: what the hell are these - below are educated guesses
+    programs.put("ND", "Non-Credit College of Dentistry");
+    programs.put("NY", "Non-Credit Tandon School of Engineering");
+    programs.put("NB", "Non-Credit Leonard N. Stern School of Business");
+    programs.put(
+        "NE",
+        "Non-Credit Steinhardt School of Culture, Education, and Human Development");
+    programs.put("NH", "Non-Credit NYU Abu Dhabi");
+    programs.put("NI", "Non-Credit NYU Shanghai");
 
     missingPrograms = programs;
   }

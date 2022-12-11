@@ -1,7 +1,6 @@
 package scraping;
 
 import static scraping.PSCoursesParser.*;
-import static scraping.TermScrapeResult.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 

@@ -1,6 +1,5 @@
 package scraping;
 
-import static scraping.TermScrapeResult.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
 import static utils.Try.*;

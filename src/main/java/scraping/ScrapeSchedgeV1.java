@@ -1,7 +1,6 @@
 package scraping;
 
 import static scraping.ScrapeSchedgeV2.*;
-import static scraping.TermScrapeResult.*;
 import static utils.ArrayJS.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
@@ -10,7 +9,6 @@ import static utils.Try.*;
 import com.fasterxml.jackson.annotation.*;
 import java.net.*;
 import java.net.http.*;
-import java.sql.Array;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;

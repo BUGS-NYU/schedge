@@ -16,8 +16,7 @@ import java.util.concurrent.atomic.*;
 import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
-import scraping.PeopleSoftClassSearch;
-import scraping.TermScrapeResult;
+import scraping.ScrapeEvent;
 import utils.Utils;
 
 /**
@@ -80,7 +79,7 @@ public final class ScrapingEndpoint {
 
       var bar = builder.build();
 
-      Consumer<TermScrapeResult.ScrapeEvent> consumer = e -> {
+      Consumer<ScrapeEvent> consumer = e -> {
         switch (e.kind) {
         case MESSAGE:
         case SUBJECT_START:

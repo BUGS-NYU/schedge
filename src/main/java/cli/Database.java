@@ -52,7 +52,7 @@ public class Database implements Runnable {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
           ScrapeTerm.scrapeTerm(conn, term,
-                                TermScrapeResult.cliConsumer(logger, bar));
+                                ScrapeEvent.cliConsumer(logger, bar));
         }
       }
     });
@@ -83,7 +83,7 @@ public class Database implements Runnable {
     var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
       copyTermFromProduction(version, term,
-                             TermScrapeResult.logConsumer(logger));
+                             ScrapeEvent.logConsumer(logger));
     }
 
     GetConnection.close();
@@ -140,7 +140,7 @@ public class Database implements Runnable {
         var termStart = System.nanoTime();
 
         var result = ScrapeSchedgeV2.scrapeFromSchedge(
-            term, subjects, TermScrapeResult.logConsumer(logger));
+            term, subjects, ScrapeEvent.logConsumer(logger));
 
         var fetchEnd = System.nanoTime();
         var duration = (fetchEnd - termStart) / 1000000000.0;

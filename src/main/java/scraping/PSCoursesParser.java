@@ -34,7 +34,7 @@ public class PSCoursesParser {
 
   public static ArrayList<Nyu.Course>
   parseSubject(Try ctx, String html, String subjectCode,
-               Consumer<TermScrapeResult.ScrapeEvent> consumer) {
+               Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {
@@ -70,7 +70,7 @@ public class PSCoursesParser {
 
   static Nyu.Course
   parseCourse(Try ctx, Element courseHtml, String subjectCode,
-              Consumer<TermScrapeResult.ScrapeEvent> consumer) {
+              Consumer<ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
@@ -120,8 +120,8 @@ public class PSCoursesParser {
                       " - course.subjectCode=" + course.subjectCode +
                       ", but subject=" + subjectCode;
         consumer.accept(
-            TermScrapeResult.ScrapeEvent.warning(subjectCode, message));
-        consumer.accept(TermScrapeResult.ScrapeEvent.warning(
+            ScrapeEvent.warning(subjectCode, message));
+        consumer.accept(ScrapeEvent.warning(
             subjectCode, "Full: " + titleText));
       }
     }

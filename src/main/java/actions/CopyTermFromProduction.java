@@ -1,6 +1,5 @@
 package actions;
 
-import static scraping.TermScrapeResult.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
@@ -19,7 +18,7 @@ public class CopyTermFromProduction {
 
   public static void
   copyTermFromProduction(SchedgeVersion version, Term term,
-                         Consumer<TermScrapeResult.ScrapeEvent> consumer) {
+                         Consumer<ScrapeEvent> consumer) {
     GetConnection.withConnection(conn -> {
       long start = System.nanoTime();
       var result = run(() -> {

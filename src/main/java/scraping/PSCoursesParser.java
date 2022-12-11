@@ -68,9 +68,8 @@ public class PSCoursesParser {
     return courses;
   }
 
-  static Nyu.Course
-  parseCourse(Try ctx, Element courseHtml, String subjectCode,
-              Consumer<ScrapeEvent> consumer) {
+  static Nyu.Course parseCourse(Try ctx, Element courseHtml, String subjectCode,
+                                Consumer<ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
@@ -119,10 +118,8 @@ public class PSCoursesParser {
         var message = course.name +
                       " - course.subjectCode=" + course.subjectCode +
                       ", but subject=" + subjectCode;
-        consumer.accept(
-            ScrapeEvent.warning(subjectCode, message));
-        consumer.accept(ScrapeEvent.warning(
-            subjectCode, "Full: " + titleText));
+        consumer.accept(ScrapeEvent.warning(subjectCode, message));
+        consumer.accept(ScrapeEvent.warning(subjectCode, "Full: " + titleText));
       }
     }
 

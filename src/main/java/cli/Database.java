@@ -82,8 +82,7 @@ public class Database implements Runnable {
     // Default to v2 but use v1 if the user explicitly requests it
     var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
-      copyTermFromProduction(version, term,
-                             ScrapeEvent.logConsumer(logger));
+      copyTermFromProduction(version, term, ScrapeEvent.logConsumer(logger));
     }
 
     GetConnection.close();

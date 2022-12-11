@@ -16,9 +16,8 @@ public class CopyTermFromProduction {
     V2;
   }
 
-  public static void
-  copyTermFromProduction(SchedgeVersion version, Term term,
-                         Consumer<ScrapeEvent> consumer) {
+  public static void copyTermFromProduction(SchedgeVersion version, Term term,
+                                            Consumer<ScrapeEvent> consumer) {
     GetConnection.withConnection(conn -> {
       long start = System.nanoTime();
       var result = run(() -> {

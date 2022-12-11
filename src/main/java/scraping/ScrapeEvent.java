@@ -52,8 +52,7 @@ public final class ScrapeEvent {
     return new ScrapeEvent(Kind.HINT_CHANGE, null, null, hint);
   }
 
-  public static Consumer<ScrapeEvent> cli(Logger logger,
-                                          ProgressBar bar) {
+  public static Consumer<ScrapeEvent> cli(Logger logger, ProgressBar bar) {
     return e -> {
       switch (e.kind) {
       case MESSAGE:

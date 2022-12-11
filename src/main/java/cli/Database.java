@@ -51,8 +51,7 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          ScrapeTerm.scrapeTerm(conn, term,
-                                ScrapeEvent.cli(logger, bar));
+          ScrapeTerm.scrapeTerm(conn, term, ScrapeEvent.cli(logger, bar));
         }
       }
     });
@@ -138,8 +137,8 @@ public class Database implements Runnable {
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
 
-        var result = ScrapeSchedgeV2.scrapeFromSchedge(
-            term, subjects, ScrapeEvent.log(logger));
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects,
+                                                       ScrapeEvent.log(logger));
 
         var fetchEnd = System.nanoTime();
         var duration = (fetchEnd - termStart) / 1000000000.0;

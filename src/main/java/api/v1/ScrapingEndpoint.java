@@ -13,8 +13,11 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
+import scraping.PeopleSoftClassSearch;
+import scraping.TermScrapeResult;
 import utils.Utils;
 
 /**
@@ -77,28 +80,39 @@ public final class ScrapingEndpoint {
 
       var bar = builder.build();
 
+      Consumer<TermScrapeResult.ScrapeEvent> consumer = e -> {
+        switch (e.kind) {
+        case MESSAGE:
+        case SUBJECT_START:
+          bar.setExtraMessage(String.format("%1$-25s", e.message));
+          logger.info(e.message);
+          break;
+        case WARNING:
+          ctx.send(e.message);
+          logger.warn(e.message);
+          break;
+        case PROGRESS:
+          bar.stepBy(e.value);
+          break;
+        case HINT_CHANGE:
+          bar.maxHint(e.value);
+          break;
+        }
+      };
+
       GetConnection.withConnection(conn -> {
-        if (source.equals("schedge-v1")) {
-        } else {
-          ScrapeTerm.scrapeTerm(conn, term, e -> {
-            switch (e.kind) {
-            case MESSAGE:
-            case SUBJECT_START:
-              bar.setExtraMessage(String.format("%1$-25s", e.message));
-              logger.info(e.message);
-              break;
-            case WARNING:
-              ctx.send(e.message);
-              logger.warn(e.message);
-              break;
-            case PROGRESS:
-              bar.stepBy(e.value);
-              break;
-            case HINT_CHANGE:
-              bar.maxHint(e.value);
-              break;
-            }
-          });
+        switch (source) {
+        case "schedge-v1":
+          ScrapeTerm.scrapeSchedgeV1Term(conn, term, consumer);
+          return;
+        case "sis.nyu.edu":
+          ScrapeTerm.scrapeTerm(conn, term, consumer);
+          return;
+        default: {
+          var warning = "Invalid source: " + source;
+          ctx.send(warning);
+          logger.warn(warning);
+        }
         }
       });
 
@@ -145,8 +159,6 @@ public final class ScrapingEndpoint {
         var task = new FutureTask<>(() -> scrape(ctx));
         CURRENT_SCRAPE = task;
 
-        // TODO: correctly handle websocket closing, password checking, etc.
-        // Also, do a hash-compare before doing the equality check
         CompletableFuture.runAsync(() -> {
           var closeCode = 1011;
           var closeReason = "Unknown reason";

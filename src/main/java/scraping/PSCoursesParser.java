@@ -1,6 +1,5 @@
 package scraping;
 
-import static scraping.PeopleSoftClassSearch.*;
 import static utils.ArrayJS.*;
 
 import java.time.*;

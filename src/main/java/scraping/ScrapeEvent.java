@@ -1,5 +1,9 @@
 package scraping;
 
+import java.util.function.*;
+import me.tongfei.progressbar.*;
+import org.slf4j.*;
+
 /* Real fucking stupid implementation of whatever you desire
  * to call this. Event listening, observer pattern, whatever.
  *
@@ -46,5 +50,25 @@ public final class ScrapeEvent {
 
   static ScrapeEvent hintChange(int hint) {
     return new ScrapeEvent(Kind.HINT_CHANGE, null, null, hint);
+  }
+
+  public static Consumer<ScrapeEvent> cli(Logger logger, ProgressBar bar) {
+    return e -> {
+      switch (e.kind) {
+      case MESSAGE:
+      case SUBJECT_START:
+        bar.setExtraMessage(e.message);
+        break;
+      case WARNING:
+        logger.warn(e.message);
+        break;
+      case PROGRESS:
+        bar.stepBy(e.value);
+        break;
+      case HINT_CHANGE:
+        bar.maxHint(e.value);
+        break;
+      }
+    };
   }
 }

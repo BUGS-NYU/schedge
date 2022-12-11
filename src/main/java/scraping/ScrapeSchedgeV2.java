@@ -1,8 +1,8 @@
 package scraping;
 
+import static scraping.TermScrapeResult.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
-import static scraping.TermScrapeResult.*;
 import static utils.Try.*;
 
 import api.v1.*;
@@ -10,8 +10,8 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
-import org.slf4j.*;
 import java.util.function.*;
+import org.slf4j.*;
 import utils.*;
 
 public final class ScrapeSchedgeV2 {
@@ -28,7 +28,8 @@ public final class ScrapeSchedgeV2 {
     private final Iterator<String> subjects;
     private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-    private ScrapeTermResult(Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
+    private ScrapeTermResult(Term term, List<String> inputSubjectList,
+                             Consumer<ScrapeEvent> consumer) {
       super(term, consumer, Try.Ctx(logger));
 
       var termString = term.json();
@@ -101,12 +102,14 @@ public final class ScrapeSchedgeV2 {
     String subject;
   }
 
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return scrapeFromSchedge(term, null, consumer);
   }
 
   public static TermScrapeResult
-  scrapeFromSchedge(Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
+  scrapeFromSchedge(Term term, List<String> inputSubjectList,
+                    Consumer<ScrapeEvent> consumer) {
     return new ScrapeTermResult(term, inputSubjectList, consumer);
   }
 

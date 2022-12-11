@@ -6,6 +6,7 @@ import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
 import scraping.PeopleSoftClassSearch;
+import scraping.ScrapeEvent;
 import utils.Nyu;
 
 /*
@@ -39,23 +40,7 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.term;
     try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var courses = PeopleSoftClassSearch.scrapeTerm(term, e -> {
-        switch (e.kind) {
-        case MESSAGE:
-        case SUBJECT_START:
-          bar.setExtraMessage(e.message);
-          break;
-        case WARNING:
-          logger.warn(e.message);
-          break;
-        case PROGRESS:
-          bar.stepBy(e.value);
-          break;
-        case HINT_CHANGE:
-          bar.maxHint(e.value);
-          break;
-        }
-      });
+      var courses = PeopleSoftClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
       outputFileMixin.writeOutput(courses);
     }
 

@@ -1,11 +1,11 @@
 package scraping;
 
 import static scraping.ScrapeSchedgeV2.*;
+import static scraping.TermScrapeResult.*;
 import static utils.ArrayJS.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
-import static scraping.TermScrapeResult.*;
 
 import com.fasterxml.jackson.annotation.*;
 import java.net.*;
@@ -13,8 +13,7 @@ import java.net.http.*;
 import java.sql.Array;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
-
+import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
@@ -144,9 +143,9 @@ public final class ScrapeSchedgeV1 {
   public static final class ScrapeTermResult extends TermScrapeResult {
     public ArrayList<School> schools;
     public ArrayList<Course> courses;
-    private final HttpClient client  = HttpClient.newHttpClient();
+    private final HttpClient client = HttpClient.newHttpClient();
     private final Iterator<String> subjects;
-    private final  FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+    private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
     public ScrapeTermResult(Term term, Consumer<ScrapeEvent> consumer) {
       super(term, consumer, Try.Ctx(logger));
@@ -252,7 +251,8 @@ public final class ScrapeSchedgeV1 {
     }
   }
 
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return new ScrapeTermResult(term, consumer);
   }
 

@@ -23,7 +23,7 @@ public class CopyTermFromProduction {
         case V1:
           return ScrapeSchedgeV1.scrapeFromSchedge(term, e -> {});
         case V2:
-          return ScrapeSchedgeV2.scrapeFromSchedge(term, e-> {});
+          return ScrapeSchedgeV2.scrapeFromSchedge(term, e -> {});
 
         default:
           return null;

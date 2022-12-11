@@ -2,12 +2,14 @@ package actions;
 
 import static database.InsertCourses.*;
 import static database.UpdateSchools.*;
-import static scraping.PeopleSoftClassSearch.*;
+import static scraping.TermScrapeResult.*;
 import static utils.Nyu.*;
 
 import java.sql.*;
 import java.util.function.*;
 import scraping.PeopleSoftClassSearch;
+import scraping.ScrapeSchedgeV1;
+import scraping.TermScrapeResult;
 
 public class ScrapeTerm {
 

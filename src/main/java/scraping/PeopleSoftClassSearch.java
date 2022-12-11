@@ -1,6 +1,7 @@
 package scraping;
 
 import static scraping.PSCoursesParser.*;
+import static scraping.TermScrapeResult.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
@@ -15,55 +16,6 @@ import utils.*;
 public final class PeopleSoftClassSearch {
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
-
-  /* Real fucking stupid implementation of whatever you desire
-   * to call this. Event listening, observer pattern, whatever.
-   *
-   *                  - Albert Liu, Nov 27, 2022 Sun 02:32
-   */
-  public static final class ScrapeEvent {
-    public enum Kind {
-      WARNING,
-      MESSAGE,
-      SUBJECT_START,
-      PROGRESS,
-      HINT_CHANGE;
-    }
-
-    public final Kind kind;
-    public final String currentSubject;
-    public final String message;
-    public final int value;
-
-    private ScrapeEvent(Kind kind, String currentSubject, String message,
-                        int value) {
-      this.kind = kind;
-      this.currentSubject = currentSubject;
-      this.message = message;
-      this.value = value;
-    }
-
-    static ScrapeEvent warning(String subject, String message) {
-      return new ScrapeEvent(Kind.WARNING, subject, message, 0);
-    }
-
-    static ScrapeEvent message(String subject, String message) {
-      return new ScrapeEvent(Kind.MESSAGE, subject, message, 0);
-    }
-
-    static ScrapeEvent subject(String subject) {
-      return new ScrapeEvent(Kind.SUBJECT_START, subject, "Fetching " + subject,
-                             0);
-    }
-
-    static ScrapeEvent progress(int progress) {
-      return new ScrapeEvent(Kind.PROGRESS, null, null, progress);
-    }
-
-    static ScrapeEvent hintChange(int hint) {
-      return new ScrapeEvent(Kind.HINT_CHANGE, null, null, hint);
-    }
-  }
 
   public static final class SubjectElem {
     public final String schoolName;
@@ -89,22 +41,14 @@ public final class PeopleSoftClassSearch {
     }
   }
 
-  public static final class CoursesForTerm
-      implements Iterator<ArrayList<Course>> {
+  public static final class CoursesForTerm extends TermScrapeResult {
     private final ArrayList<SubjectElem> subjects;
-    private final Consumer<ScrapeEvent> consumer;
-    private final Try ctx;
-    private final Term term;
 
     private PSClient ps;
     private int index = 0;
 
-    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
-      consumer = Objects.requireNonNullElse(consumer, e -> {});
-
-      this.term = term;
-      this.ctx = ctx;
-      this.consumer = consumer;
+    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer) {
+      super(term, consumer, Try.Ctx(logger));
 
       this.ps = new PSClient();
 
@@ -188,20 +132,6 @@ public final class PeopleSoftClassSearch {
     public ArrayList<School> getSchools() {
       return ctx.log(() -> translateSubjects(subjects));
     }
-
-    // @Note: This happens to allow JSON serialization of this object to
-    // correctly run scraping, by forcing the serialization of the object to
-    // run this method, which then consumes the iterator. It's stupid.
-    //
-    //                                  - Albert Liu, Nov 10, 2022 Thu 22:21
-    public ArrayList<Course> getCourses() {
-      var courses = new ArrayList<Course>();
-      while (this.hasNext()) {
-        courses.addAll(this.next());
-      }
-
-      return courses;
-    }
   }
 
   public static final class FormEntry {
@@ -265,8 +195,7 @@ public final class PeopleSoftClassSearch {
    */
   public static CoursesForTerm scrapeTerm(Term term,
                                           Consumer<ScrapeEvent> bar) {
-    var ctx = Try.Ctx(logger);
-    return new CoursesForTerm(term, bar, ctx);
+    return new CoursesForTerm(term, bar);
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

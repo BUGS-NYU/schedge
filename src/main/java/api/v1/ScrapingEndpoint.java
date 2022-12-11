@@ -1,5 +1,6 @@
 package api.v1;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
 
@@ -12,9 +13,7 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import me.tongfei.progressbar.DelegatingProgressBarConsumer;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
+import me.tongfei.progressbar.*;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -25,6 +24,7 @@ import utils.Utils;
 public final class ScrapingEndpoint {
   private static final Logger logger =
       LoggerFactory.getLogger("api.v1.ScrapingEndpoint");
+
   public static final class Ref<T> { // IDK if this already exists
     public T current;
 
@@ -58,8 +58,18 @@ public final class ScrapingEndpoint {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
+      var source = run(() -> {
+        var src = ctx.queryParam("source");
+        if (src == null)
+          src = "";
+        if (src.trim().isEmpty())
+          src = "sis.nyu.edu";
+
+        return src;
+      });
+
       var builder = new ProgressBarBuilder();
-      builder.setTaskName("Scrape " + term.json())
+      builder.setTaskName(source + " " + term.json())
           .setConsumer(new DelegatingProgressBarConsumer(ctx::send, 160))
           .setStyle(ProgressBarStyle.ASCII)
           .setUpdateIntervalMillis(5_000)
@@ -68,25 +78,28 @@ public final class ScrapingEndpoint {
       var bar = builder.build();
 
       GetConnection.withConnection(conn -> {
-        ScrapeTerm.scrapeTerm(conn, term, e -> {
-          switch (e.kind) {
-          case MESSAGE:
-          case SUBJECT_START:
-            bar.setExtraMessage(String.format("%1$-25s", e.message));
-            logger.info(e.message);
-            break;
-          case WARNING:
-            ctx.send(e.message);
-            logger.warn(e.message);
-            break;
-          case PROGRESS:
-            bar.stepBy(e.value);
-            break;
-          case HINT_CHANGE:
-            bar.maxHint(e.value);
-            break;
-          }
-        });
+        if (source.equals("schedge-v1")) {
+        } else {
+          ScrapeTerm.scrapeTerm(conn, term, e -> {
+            switch (e.kind) {
+            case MESSAGE:
+            case SUBJECT_START:
+              bar.setExtraMessage(String.format("%1$-25s", e.message));
+              logger.info(e.message);
+              break;
+            case WARNING:
+              ctx.send(e.message);
+              logger.warn(e.message);
+              break;
+            case PROGRESS:
+              bar.stepBy(e.value);
+              break;
+            case HINT_CHANGE:
+              bar.maxHint(e.value);
+              break;
+            }
+          });
+        }
       });
 
       return "Done!";

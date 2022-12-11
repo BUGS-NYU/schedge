@@ -1,6 +1,5 @@
 package scraping;
 
-import static scraping.PeopleSoftClassSearch.*;
 import static utils.ArrayJS.*;
 
 import java.time.*;
@@ -35,7 +34,7 @@ public class PSCoursesParser {
 
   public static ArrayList<Nyu.Course>
   parseSubject(Try ctx, String html, String subjectCode,
-               Consumer<ScrapeEvent> consumer) {
+               Consumer<TermScrapeResult.ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {
@@ -70,7 +69,7 @@ public class PSCoursesParser {
   }
 
   static Nyu.Course parseCourse(Try ctx, Element courseHtml, String subjectCode,
-                                Consumer<ScrapeEvent> consumer) {
+                                Consumer<TermScrapeResult.ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
@@ -119,8 +118,8 @@ public class PSCoursesParser {
         var message = course.name +
                       " - course.subjectCode=" + course.subjectCode +
                       ", but subject=" + subjectCode;
-        consumer.accept(ScrapeEvent.warning(subjectCode, message));
-        consumer.accept(ScrapeEvent.warning(subjectCode, "Full: " + titleText));
+        consumer.accept(TermScrapeResult.ScrapeEvent.warning(subjectCode, message));
+        consumer.accept(TermScrapeResult.ScrapeEvent.warning(subjectCode, "Full: " + titleText));
       }
     }
 

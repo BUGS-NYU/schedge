@@ -5,7 +5,7 @@ import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import database.*;
-import java.util.function.Consumer;
+import java.util.function.*;
 import org.slf4j.*;
 import scraping.*;
 

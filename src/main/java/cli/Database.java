@@ -153,7 +153,7 @@ public class Database implements Runnable {
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
 
-        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects, e -> {});
 
         var fetchEnd = System.nanoTime();
         var duration = (fetchEnd - termStart) / 1000000000.0;
@@ -161,9 +161,9 @@ public class Database implements Runnable {
         if (result == null)
           return;
 
-        UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
+        UpdateSchools.updateSchoolsForTerm(conn, term, result.getSchools());
         InsertCourses.clearPrevious(conn, term);
-        InsertCourses.insertCourses(conn, term, result.courses);
+        InsertCourses.insertCourses(conn, term, result.getCourses());
 
         var dbEnd = System.nanoTime();
         duration = (dbEnd - fetchEnd) / 1000000000.0;

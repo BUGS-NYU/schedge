@@ -21,9 +21,9 @@ public class CopyTermFromProduction {
       var result = run(() -> {
         switch (version) {
         case V1:
-          return ScrapeSchedgeV1.scrapeFromSchedge(term);
+          return ScrapeSchedgeV1.scrapeFromSchedge(term, e -> {});
         case V2:
-          return ScrapeSchedgeV2.scrapeFromSchedge(term);
+          return ScrapeSchedgeV2.scrapeFromSchedge(term, e-> {});
 
         default:
           return null;
@@ -36,9 +36,9 @@ public class CopyTermFromProduction {
       if (result == null)
         return;
 
-      UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
+      UpdateSchools.updateSchoolsForTerm(conn, term, result.getSchools());
       InsertCourses.clearPrevious(conn, term);
-      InsertCourses.insertCourses(conn, term, result.courses);
+      InsertCourses.insertCourses(conn, term, result.getCourses());
     });
   }
 }

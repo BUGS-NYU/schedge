@@ -5,12 +5,16 @@ import static utils.ArrayJS.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
+import static scraping.TermScrapeResult.*;
 
 import com.fasterxml.jackson.annotation.*;
 import java.net.*;
 import java.net.http.*;
+import java.sql.Array;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
+
 import org.slf4j.*;
 import utils.*;
 
@@ -137,100 +141,119 @@ public final class ScrapeSchedgeV1 {
     public String notes;
   }
 
-  public static ScrapeTermResult scrapeFromSchedge(Term term) {
-    var client = HttpClient.newHttpClient();
-    var termString = term.json();
+  public static final class ScrapeTermResult extends TermScrapeResult {
+    public ArrayList<School> schools;
+    public ArrayList<Course> courses;
+    private final HttpClient client  = HttpClient.newHttpClient();
+    private final Iterator<String> subjects;
+    private final  FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-    var schools = run(() -> {
-      var schoolsUri = URI.create(SCHEDGE_URL + "schools");
-      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var resp = tcPass(() -> client.send(request, handler));
-      var data = resp.body();
+    public ScrapeTermResult(Term term, Consumer<ScrapeEvent> consumer) {
+      super(term, consumer, Try.Ctx(logger));
 
-      return fromJson(data, Schools.class).schools;
-    });
+      var schools = run(() -> {
+        var schoolsUri = URI.create(SCHEDGE_URL + "schools");
+        var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+        var handler = HttpResponse.BodyHandlers.ofString();
+        var resp = tcPass(() -> client.send(request, handler));
+        var data = resp.body();
 
-    var subjectsList = run(() -> {
-      var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
-      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var resp = tcPass(() -> client.send(request, handler));
-      var data = resp.body();
-
-      return fromJson(data, Subjects.class).subjects;
-    });
-
-    var out = new ScrapeTermResult();
-    out.schools = new ArrayList<>();
-    out.courses = new ArrayList<>();
-
-    var schoolsMap = new HashMap<String, School>();
-    var subjectsFullCodeList = new ArrayList<String>();
-    subjectsFullCodeList.ensureCapacity(subjectsList.size());
-
-    for (var subject : subjectsList) {
-      subjectsFullCodeList.add(subject.fullCode);
-      var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
-        var name = schools.get(code);
-        if (name == null)
-          throw new RuntimeException("Code: " + code);
-
-        var s = new School(name, code);
-        out.schools.add(s);
-
-        return s;
+        return fromJson(data, Schools.class).schools;
       });
 
-      var s = new Subject(subject.fullCode, subject.name);
-      school.subjects.add(s);
-    }
+      var subjectsList = run(() -> {
+        var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
+        var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+        var handler = HttpResponse.BodyHandlers.ofString();
+        var resp = tcPass(() -> client.send(request, handler));
+        var data = resp.body();
 
-    var subjects = subjectsFullCodeList.listIterator();
-    var engine = new FutureEngine<ScrapeResult>();
+        return fromJson(data, Subjects.class).subjects;
+      });
 
-    for (int i = 0; i < 20; i++) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
+      var schoolsMap = new HashMap<String, School>();
+      var subjectsFullCodeList = new ArrayList<String>();
+      subjectsFullCodeList.ensureCapacity(subjectsList.size());
+
+      for (var subject : subjectsList) {
+        subjectsFullCodeList.add(subject.fullCode);
+        var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
+          var name = schools.get(code);
+          if (name == null)
+            throw new RuntimeException("Code: " + code);
+
+          var s = new School(name, code);
+          this.schools.add(s);
+
+          return s;
+        });
+
+        var s = new Subject(subject.fullCode, subject.name);
+        school.subjects.add(s);
+      }
+
+      this.subjects = subjectsFullCodeList.listIterator();
+
+      for (int i = 0; i < 20; i++) {
+        if (subjects.hasNext()) {
+          engine.add(getData(client, term, subjects.next()));
+        }
       }
     }
 
-    for (var result : engine) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
-      }
+    @Override
+    public ArrayList<School> getSchools() {
+      return schools;
+    }
 
-      if (result.text == null)
-        continue;
+    @Override
+    public boolean hasNext() {
+      return this.engine.hasNext();
+    }
 
-      var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
-      var size = out.courses.size();
-      out.courses.ensureCapacity(size + courses.length);
-
-      for (var course : courses) {
-        var c = new Course();
-        c.name = course.name;
-        c.deptCourseId = course.deptCourseId;
-        c.description = course.description;
-        c.subjectCode = result.subject;
-        c.sections = new ArrayList<>();
-
-        if (c.description == null)
-          c.description = "";
-
-        for (var section : course.sections) {
-          var s = translateSection(section);
-          if (!s.name.equals(c.name))
-            s.name = null;
-
-          c.sections.add(s);
+    @Override
+    public ArrayList<Course> next() {
+      for (var result : engine) {
+        if (subjects.hasNext()) {
+          engine.add(getData(client, term, subjects.next()));
         }
 
-        out.courses.add(c);
-      }
-    }
+        if (result.text == null)
+          continue;
 
-    return out;
+        var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
+        var out = new ArrayList<Course>();
+        for (var course : courses) {
+          var c = new Course();
+          c.name = course.name;
+          c.deptCourseId = course.deptCourseId;
+          c.description = course.description;
+          c.subjectCode = result.subject;
+          c.sections = new ArrayList<>();
+
+          if (c.description == null)
+            c.description = "";
+
+          for (var section : course.sections) {
+            var s = translateSection(section);
+            if (!s.name.equals(c.name))
+              s.name = null;
+
+            c.sections.add(s);
+          }
+
+          out.add(c);
+        }
+
+        return out;
+      }
+
+      return null;
+    }
+  }
+
+  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return new ScrapeTermResult(term, consumer);
   }
 
   private static Section translateSection(SchedgeV1Section section) {

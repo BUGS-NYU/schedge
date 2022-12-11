@@ -4,12 +4,48 @@ import static utils.Nyu.*;
 
 import java.util.*;
 import java.util.function.*;
+
+import me.tongfei.progressbar.ProgressBar;
+import org.slf4j.Logger;
 import utils.Try;
 
 public abstract class TermScrapeResult implements Iterator<ArrayList<Course>> {
   protected final Consumer<ScrapeEvent> consumer;
   protected final Try ctx;
   protected final Term term;
+
+  public static Consumer<ScrapeEvent> cliConsumer(Logger logger, ProgressBar bar) {return e -> {
+    switch (e.kind) {
+      case MESSAGE:
+      case SUBJECT_START:
+        bar.setExtraMessage(e.message);
+        break;
+      case WARNING:
+        logger.warn(e.message);
+        break;
+      case PROGRESS:
+        bar.stepBy(e.value);
+        break;
+      case HINT_CHANGE:
+        bar.maxHint(e.value);
+        break;
+    }
+  };}
+
+  public static Consumer<ScrapeEvent> logConsumer(Logger logger) {return e -> {
+    switch (e.kind) {
+      case MESSAGE:
+      case SUBJECT_START:
+        logger.info(e.message);
+        break;
+      case WARNING:
+        logger.warn(e.message);
+        break;
+      case PROGRESS:
+      case HINT_CHANGE:
+        break;
+    }
+  };}
 
   /* Real fucking stupid implementation of whatever you desire
    * to call this. Event listening, observer pattern, whatever.

@@ -84,20 +84,36 @@ public class AugmentedMeeting {
     tz = Nyu.Campus.timezoneForCampus(campus);
   }
 
-  public String getSubject() { return subject; }
-  public String getDeptCourseId() { return deptCourseId; }
-  public String getCampus() { return campus; }
+  public String getSubject() {
+    return subject;
+  }
+  public String getDeptCourseId() {
+    return deptCourseId;
+  }
+  public String getCampus() {
+    return campus;
+  }
 
-  public String getSectionCode() { return sectionCode; }
-  public int getRegistrationNumber() { return registrationNumber; }
-  public String getSectionType() { return sectionType; }
+  public String getSectionCode() {
+    return sectionCode;
+  }
+  public int getRegistrationNumber() {
+    return registrationNumber;
+  }
+  public String getSectionType() {
+    return sectionType;
+  }
 
   @OpenApiPropertyType(definedBy = String.class)
   public Nyu.SectionStatus getSectionStatus() {
     return sectionStatus;
   }
-  public String getInstructionMode() { return instructionMode; }
-  public String getLocation() { return location; }
+  public String getInstructionMode() {
+    return instructionMode;
+  }
+  public String getLocation() {
+    return location;
+  }
 
   @NotNull
   public String getBeginDate() {
@@ -121,7 +137,9 @@ public class AugmentedMeeting {
         endDate.withZoneSameInstant(tz));
   }
 
-  public int getMinutesDuration() { return minutesDuration; }
+  public int getMinutesDuration() {
+    return minutesDuration;
+  }
 
   public int getMinutesInDay() {
     return beginDate.get(ChronoField.MINUTE_OF_DAY);

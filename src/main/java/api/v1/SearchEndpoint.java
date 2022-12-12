@@ -11,7 +11,9 @@ import utils.Nyu;
 
 public final class SearchEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/search/{term}"; }
+  public String getPath() {
+    return "/search/{term}";
+  }
 
   @OpenApi(
       path = "/api/search/{term}", methods = HttpMethod.GET, summary = "Search",

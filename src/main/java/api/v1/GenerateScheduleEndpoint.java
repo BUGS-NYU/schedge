@@ -12,7 +12,9 @@ import utils.*;
 
 public final class GenerateScheduleEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/generateSchedule/{term}"; }
+  public String getPath() {
+    return "/generateSchedule/{term}";
+  }
 
   @OpenApi(
       path = "/generateSchedule/{term}", methods = HttpMethod.GET,

@@ -21,7 +21,9 @@ public final class FutureEngine<Output>
   private final AtomicInteger size;
   private final long timeout;
 
-  public FutureEngine() { this(DEFAULT_TIMEOUT); }
+  public FutureEngine() {
+    this(DEFAULT_TIMEOUT);
+  }
 
   public FutureEngine(long timeout) {
     this.tasks = new ConcurrentLinkedQueue<>();

@@ -38,21 +38,29 @@ public class App {
       }
     }
 
-    public final void addTo(Javalin app) { app.get("/api" + getPath(), this); }
+    public final void addTo(Javalin app) {
+      app.get("/api" + getPath(), this);
+    }
   }
 
   public static class ApiError {
     private final int status;
     private final String message;
 
-    public ApiError(String message) { this(400, message); }
+    public ApiError(String message) {
+      this(400, message);
+    }
     public ApiError(int status, String message) {
       this.message = message;
       this.status = status;
     }
 
-    public int getStatus() { return status; }
-    public String getMessage() { return message; }
+    public int getStatus() {
+      return status;
+    }
+    public String getMessage() {
+      return message;
+    }
   }
 
   public static final int PORT = 4358;

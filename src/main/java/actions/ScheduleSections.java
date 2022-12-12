@@ -8,7 +8,8 @@ import java.util.*;
 import org.jetbrains.annotations.*;
 
 public final class ScheduleSections {
-  private ScheduleSections() {}
+  private ScheduleSections() {
+  }
 
   public static final class Schedule {
     public boolean valid = true;
@@ -55,7 +56,9 @@ public final class ScheduleSections {
       su = new ArrayList<>();
     }
 
-    public boolean getValid() { return valid; }
+    public boolean getValid() {
+      return valid;
+    }
 
     @JsonIgnore
     public int size() {

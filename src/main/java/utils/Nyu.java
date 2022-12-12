@@ -21,7 +21,9 @@ public final class Nyu {
 
     public final int nyuCode;
 
-    Semester(int nyuCode) { this.nyuCode = nyuCode; }
+    Semester(int nyuCode) {
+      this.nyuCode = nyuCode;
+    }
   }
 
   public static final class Subject {
@@ -35,7 +37,9 @@ public final class Nyu {
       this.name = name;
     }
 
-    public String toString() { return "Subject(" + code + "," + name + ")"; }
+    public String toString() {
+      return "Subject(" + code + "," + name + ")";
+    }
   }
 
   public static final class School {
@@ -68,9 +72,13 @@ public final class Nyu {
       return code;
     }
 
-    public final ArrayList<Subject> getSubjects() { return subjects; }
+    public final ArrayList<Subject> getSubjects() {
+      return subjects;
+    }
 
-    public String toString() { return "School(" + name + ")"; }
+    public String toString() {
+      return "School(" + name + ")";
+    }
   }
 
   public static final class Course {
@@ -87,13 +95,21 @@ public final class Nyu {
     //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     public String subjectCode;
 
-    public String getName() { return name; }
+    public String getName() {
+      return name;
+    }
 
     // @Note: these are required for the Javalin OpenAPI integration
     // to pick up fields on the output data
-    public String getDeptCourseId() { return deptCourseId; }
-    public String getDescription() { return description; }
-    public List<Section> getSections() { return sections; }
+    public String getDeptCourseId() {
+      return deptCourseId;
+    }
+    public String getDescription() {
+      return description;
+    }
+    public List<Section> getSections() {
+      return sections;
+    }
     @OpenApiExample(value = "CSCI-UA")
     public String getSubjectCode() {
       return subjectCode;
@@ -145,7 +161,9 @@ public final class Nyu {
       return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
-    public int getMinutesDuration() { return minutesDuration; }
+    public int getMinutesDuration() {
+      return minutesDuration;
+    }
 
     @NotNull
     public String getBeginDate() {
@@ -171,7 +189,9 @@ public final class Nyu {
       this.tz = tz;
     }
 
-    public int getMinutesDuration() { return minutesDuration; }
+    public int getMinutesDuration() {
+      return minutesDuration;
+    }
 
     @NotNull
     public String getBeginDate() {
@@ -235,7 +255,9 @@ public final class Nyu {
       return s;
     }
 
-    public int getRegistrationNumber() { return registrationNumber; }
+    public int getRegistrationNumber() {
+      return registrationNumber;
+    }
 
     @JsonInclude(NON_NULL)
     @OpenApiExample(value = "Topic: Natual Language Processing")
@@ -248,7 +270,9 @@ public final class Nyu {
       return code;
     }
 
-    public String[] getInstructors() { return instructors; }
+    public String[] getInstructors() {
+      return instructors;
+    }
 
     @NotNull
     public String getType() {
@@ -260,7 +284,9 @@ public final class Nyu {
       return status;
     }
 
-    public String getCampus() { return campus; }
+    public String getCampus() {
+      return campus;
+    }
 
     public List<ZonedMeeting> getMeetings() {
       var output = new ArrayList<ZonedMeeting>();
@@ -274,12 +300,24 @@ public final class Nyu {
       return output;
     }
 
-    public String getInstructionMode() { return instructionMode; }
-    public Double getMinUnits() { return minUnits; }
-    public Double getMaxUnits() { return maxUnits; }
-    public String getGrading() { return grading; }
-    public String getLocation() { return location; }
-    public String getNotes() { return notes; }
+    public String getInstructionMode() {
+      return instructionMode;
+    }
+    public Double getMinUnits() {
+      return minUnits;
+    }
+    public Double getMaxUnits() {
+      return maxUnits;
+    }
+    public String getGrading() {
+      return grading;
+    }
+    public String getLocation() {
+      return location;
+    }
+    public String getNotes() {
+      return notes;
+    }
 
     @JsonInclude(NON_NULL)
     public List<Section> getRecitations() {
@@ -290,7 +328,9 @@ public final class Nyu {
       return waitlistTotal;
     }
 
-    public String toString() { return JsonMapper.toJson(this); }
+    public String toString() {
+      return JsonMapper.toJson(this);
+    }
   }
 
   /**
@@ -309,7 +349,9 @@ public final class Nyu {
         return valueOf(status);
     }
 
-    public boolean isOpen() { return this == Open; }
+    public boolean isOpen() {
+      return this == Open;
+    }
   }
 
   public enum SectionType {
@@ -403,7 +445,9 @@ public final class Nyu {
     public final Nyu.Semester semester;
     public final int year;
 
-    public Term(String sem, int year) { this(semesterFromString(sem), year); }
+    public Term(String sem, int year) {
+      this(semesterFromString(sem), year);
+    }
 
     public Term(Nyu.Semester semester, int year) {
       if (year < 1900)
@@ -526,7 +570,9 @@ public final class Nyu {
       }
     }
 
-    public int getId() { return (year - 1900) * 10 + semester.nyuCode; }
+    public int getId() {
+      return (year - 1900) * 10 + semester.nyuCode;
+    }
 
     public String toString() {
       return "Term(" + semester + ' ' + year + ",id=" + getId() + ")";

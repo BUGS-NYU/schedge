@@ -9,7 +9,9 @@ import io.javalin.openapi.*;
 import java.util.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
-  public String getPath() { return "/courses/{term}/{subject}"; }
+  public String getPath() {
+    return "/courses/{term}/{subject}";
+  }
 
   @OpenApi(
       path = "/api/courses/{term}/{subject}", methods = HttpMethod.GET,

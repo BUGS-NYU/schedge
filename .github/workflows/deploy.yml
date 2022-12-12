@@ -72,3 +72,23 @@ jobs:
           file: src/build/docker/Dockerfile
           push: true
           tags: ghcr.io/a1liu/schedge:latest
+
+      - name: Wait for Server to update
+        shell: bash
+        run: |
+          x=1
+          sha=$(git log --pretty=format:'%h' -n 1)
+          output=""
+
+          while [[ $x -le 20 ]] && ! [[ "$output" =~ .*"$sha".* ]]; do
+            output=$(curl nyu.a1liu.com/api/stat)
+            sleep 15s
+            x=$(( $x + 1 ))
+          done
+
+          if [[ $x -le 20 ]]; then
+            exit 0
+          fi
+
+          # Retried way too many times
+          exit 1

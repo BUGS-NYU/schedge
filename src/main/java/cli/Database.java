@@ -4,7 +4,7 @@ import static actions.CopyTermFromProduction.*;
 import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
-import actions.ScrapeTerm;
+import actions.WriteTerm;
 import database.*;
 import java.util.*;
 import me.tongfei.progressbar.ProgressBar;
@@ -51,7 +51,9 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          ScrapeTerm.scrapeTerm(conn, term, ScrapeEvent.cli(logger, bar));
+          var data =
+              PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
+          WriteTerm.writeTerm(conn, data);
         }
       }
     });
@@ -81,7 +83,7 @@ public class Database implements Runnable {
     // Default to v2 but use v1 if the user explicitly requests it
     var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
-      copyTermFromProduction(version, term);
+      copyTermFromProduction(version, term, ScrapeEvent.log(logger));
     }
 
     GetConnection.close();
@@ -137,7 +139,8 @@ public class Database implements Runnable {
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
 
-        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects,
+                                                       ScrapeEvent.log(logger));
 
         var fetchEnd = System.nanoTime();
         var duration = (fetchEnd - termStart) / 1000000000.0;
@@ -145,10 +148,7 @@ public class Database implements Runnable {
         if (result == null)
           return;
 
-        UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
-        InsertCourses.clearPrevious(conn, term);
-        InsertCourses.insertCourses(conn, term, result.courses);
-
+        WriteTerm.writeTerm(conn, result);
         var dbEnd = System.nanoTime();
         duration = (dbEnd - fetchEnd) / 1000000000.0;
 

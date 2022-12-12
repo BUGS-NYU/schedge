@@ -40,22 +40,14 @@ public final class PSClassSearch {
     }
   }
 
-  public static final class CoursesForTerm
-      implements Iterator<ArrayList<Course>> {
+  public static final class CoursesForTerm extends TermScrapeResult {
     private final ArrayList<SubjectElem> subjects;
-    private final Consumer<ScrapeEvent> consumer;
-    private final Try ctx;
-    private final Term term;
 
     private PSClient ps;
     private int index = 0;
 
-    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
-      consumer = Objects.requireNonNullElse(consumer, e -> {});
-
-      this.term = term;
-      this.ctx = ctx;
-      this.consumer = consumer;
+    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer) {
+      super(term, consumer, Try.Ctx(logger));
 
       this.ps = new PSClient();
 
@@ -139,20 +131,6 @@ public final class PSClassSearch {
     public ArrayList<School> getSchools() {
       return ctx.log(() -> translateSubjects(subjects));
     }
-
-    // @Note: This happens to allow JSON serialization of this object to
-    // correctly run scraping, by forcing the serialization of the object to
-    // run this method, which then consumes the iterator. It's stupid.
-    //
-    //                                  - Albert Liu, Nov 10, 2022 Thu 22:21
-    public ArrayList<Course> getCourses() {
-      var courses = new ArrayList<Course>();
-      while (this.hasNext()) {
-        courses.addAll(this.next());
-      }
-
-      return courses;
-    }
   }
 
   public static final class FormEntry {
@@ -216,8 +194,7 @@ public final class PSClassSearch {
    */
   public static CoursesForTerm scrapeTerm(Term term,
                                           Consumer<ScrapeEvent> bar) {
-    var ctx = Try.Ctx(logger);
-    return new CoursesForTerm(term, bar, ctx);
+    return new CoursesForTerm(term, bar);
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

@@ -71,4 +71,21 @@ public final class ScrapeEvent {
       }
     };
   }
+
+  public static Consumer<ScrapeEvent> log(Logger logger) {
+    return e -> {
+      switch (e.kind) {
+      case MESSAGE:
+      case SUBJECT_START:
+        logger.info(e.message);
+        break;
+      case WARNING:
+        logger.warn(e.message);
+        break;
+      case PROGRESS:
+      case HINT_CHANGE:
+        break;
+      }
+    };
+  }
 }

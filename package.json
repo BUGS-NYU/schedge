@@ -8,7 +8,7 @@
     "gradle": "node src/gradlew.js",
     "exec": "docker-compose exec",
     "build": "node src/gradlew.js composeBuild",
-    "scrape-ws": "wscat -c ws://localhost:4358/api/scrape/sp2022 --auth schedge:admin",
+    "scrape-ws": "wscat -c ws://localhost:4358/api/scrape/su2020?source=schedge-v1 --auth schedge:admin",
     "test": "node src/gradlew.js test",
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",

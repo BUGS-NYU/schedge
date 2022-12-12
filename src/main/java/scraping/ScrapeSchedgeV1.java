@@ -11,10 +11,11 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV1 {
+public final class ScrapeSchedgeV1 extends TermScrapeResult {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
@@ -137,9 +138,16 @@ public final class ScrapeSchedgeV1 {
     public String notes;
   }
 
-  public static ScrapeTermResult scrapeFromSchedge(Term term) {
-    var client = HttpClient.newHttpClient();
-    var termString = term.json();
+  private final ArrayList<School> schools = new ArrayList<>();
+  private final HttpClient client = HttpClient.newHttpClient();
+  private final Iterator<String> subjects;
+  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+
+  private ScrapeSchedgeV1(Term term, Consumer<ScrapeEvent> consumer) {
+    super(term, consumer, Try.Ctx(logger));
+
+    consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
+    consumer.accept(ScrapeEvent.hintChange(-1));
 
     var schools = run(() -> {
       var schoolsUri = URI.create(SCHEDGE_URL + "schools");
@@ -161,9 +169,8 @@ public final class ScrapeSchedgeV1 {
       return fromJson(data, Subjects.class).subjects;
     });
 
-    var out = new ScrapeTermResult();
-    out.schools = new ArrayList<>();
-    out.courses = new ArrayList<>();
+    consumer.accept(ScrapeEvent.hintChange(subjectsList.size() + 1));
+    consumer.accept(ScrapeEvent.progress(1));
 
     var schoolsMap = new HashMap<String, School>();
     var subjectsFullCodeList = new ArrayList<String>();
@@ -177,7 +184,7 @@ public final class ScrapeSchedgeV1 {
           throw new RuntimeException("Code: " + code);
 
         var s = new School(name, code);
-        out.schools.add(s);
+        this.schools.add(s);
 
         return s;
       });
@@ -186,26 +193,38 @@ public final class ScrapeSchedgeV1 {
       school.subjects.add(s);
     }
 
-    var subjects = subjectsFullCodeList.listIterator();
-    var engine = new FutureEngine<ScrapeResult>();
+    this.subjects = subjectsFullCodeList.listIterator();
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 10; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
+        engine.add(getData(subjects.next()));
       }
     }
+  }
 
+  @Override
+  public ArrayList<School> getSchools() {
+    return schools;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return this.engine.hasNext();
+  }
+
+  @Override
+  public ArrayList<Course> next() {
     for (var result : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
+        engine.add(getData(subjects.next()));
       }
 
       if (result.text == null)
         continue;
 
+      consumer.accept(ScrapeEvent.subject(result.subject));
       var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
-      var size = out.courses.size();
-      out.courses.ensureCapacity(size + courses.length);
+      var out = new ArrayList<Course>();
 
       for (var course : courses) {
         var c = new Course();
@@ -226,11 +245,19 @@ public final class ScrapeSchedgeV1 {
           c.sections.add(s);
         }
 
-        out.courses.add(c);
+        out.add(c);
       }
+
+      consumer.accept(ScrapeEvent.progress(1));
+      return out;
     }
 
-    return out;
+    return null;
+  }
+
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return new ScrapeSchedgeV1(term, consumer);
   }
 
   private static Section translateSection(SchedgeV1Section section) {
@@ -277,8 +304,7 @@ public final class ScrapeSchedgeV1 {
     return s;
   }
 
-  private static Future<ScrapeResult> getData(HttpClient client, Term term,
-                                              String subject) {
+  private Future<ScrapeResult> getData(String subject) {
     var parts = subject.split("-");
     String school = parts[1];
     String major = parts[0];

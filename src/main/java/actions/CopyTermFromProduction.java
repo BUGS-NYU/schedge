@@ -4,6 +4,7 @@ import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import database.*;
+import java.util.function.*;
 import org.slf4j.*;
 import scraping.*;
 
@@ -15,15 +16,16 @@ public class CopyTermFromProduction {
     V2;
   }
 
-  public static void copyTermFromProduction(SchedgeVersion version, Term term) {
+  public static void copyTermFromProduction(SchedgeVersion version, Term term,
+                                            Consumer<ScrapeEvent> consumer) {
     GetConnection.withConnection(conn -> {
       long start = System.nanoTime();
       var result = run(() -> {
         switch (version) {
         case V1:
-          return ScrapeSchedgeV1.scrapeFromSchedge(term);
+          return ScrapeSchedgeV1.scrapeFromSchedge(term, consumer);
         case V2:
-          return ScrapeSchedgeV2.scrapeFromSchedge(term);
+          return ScrapeSchedgeV2.scrapeFromSchedge(term, consumer);
 
         default:
           return null;
@@ -36,9 +38,7 @@ public class CopyTermFromProduction {
       if (result == null)
         return;
 
-      UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
-      InsertCourses.clearPrevious(conn, term);
-      InsertCourses.insertCourses(conn, term, result.courses);
+      WriteTerm.writeTerm(conn, result);
     });
   }
 }

@@ -79,12 +79,13 @@ jobs:
           x=1
           sha=$(git log --pretty=format:'%h' -n 1)
           output=""
-          while [ $x -le 15 ] && [ "$output" =~ .*"$sha".* ]
+          while [ $x -le 20 ] && [ "$output" =~ .*"$sha".* ]
           do
             output=$(curl nyu.a1liu.com/api/stat)
+            sleep 15s
             x=$(( $x + 1 ))
           done
 
-          if [ $x -le 15 ]
+          if [ $x -le 20 ]
             exit 1
           fi

@@ -6,6 +6,9 @@ on:
       term:
         required: true
         description: Term to scrape (e.g. sp2021)
+      source:
+        required: false
+        description: Source to scrape from (either schedge-v1 or sis.nyu.edu)
 
 jobs:
   Scrape:
@@ -22,4 +25,7 @@ jobs:
         run: chmod +x ./websocat
 
       - name: Run Scrape on ${{ github.event.inputs.term }}
-        run: ./websocat "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}" -n --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"
+        run: >
+          ./websocat
+          "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}?source=${{ github.event.inputs.source }}"
+          -n --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"

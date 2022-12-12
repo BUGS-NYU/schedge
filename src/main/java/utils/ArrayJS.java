@@ -10,7 +10,9 @@ public final class ArrayJS {
   public interface ArrayFunc<T> extends ArrayFunc2<T> {
     boolean run(T obj);
 
-    default boolean run(T obj, int index) { return this.run(obj); }
+    default boolean run(T obj, int index) {
+      return this.run(obj);
+    }
   }
 
   public static <T> T find(Iterable<T> iterable, ArrayFunc<T> func) {
@@ -30,5 +32,7 @@ public final class ArrayJS {
     return null;
   }
 
-  public static <T> T run(Supplier<T> supplier) { return supplier.get(); }
+  public static <T> T run(Supplier<T> supplier) {
+    return supplier.get();
+  }
 }

@@ -10,7 +10,9 @@ import io.javalin.openapi.*;
 import java.util.*;
 
 public final class SchoolInfoEndpoint extends App.Endpoint {
-  public String getPath() { return "/schools/{term}"; }
+  public String getPath() {
+    return "/schools/{term}";
+  }
 
   public final static class Info {
     public Term term;

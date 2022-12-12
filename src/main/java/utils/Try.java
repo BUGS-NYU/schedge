@@ -31,8 +31,12 @@ public final class Try extends HashMap<String, Object> {
     this.logger = logger;
   }
 
-  public static Try Ctx() { return new Try(DEFAULT_LOGGER); }
-  public static Try Ctx(Logger logger) { return new Try(logger); }
+  public static Try Ctx() {
+    return new Try(DEFAULT_LOGGER);
+  }
+  public static Try Ctx(Logger logger) {
+    return new Try(logger);
+  }
 
   public static void tcPass(CallVoid supplier) {
     tcPass(() -> {
@@ -66,7 +70,9 @@ public final class Try extends HashMap<String, Object> {
     }
   }
 
-  public void increment(String name) { increment(name, 1); }
+  public void increment(String name) {
+    increment(name, 1);
+  }
   public void increment(String name, int i) {
     var counter = (TryCounter)this.computeIfAbsent(name, k -> new TryCounter());
     counter.value += i;

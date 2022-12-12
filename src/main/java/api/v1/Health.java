@@ -8,10 +8,14 @@ import org.jetbrains.annotations.NotNull;
 public final class Health extends App.Endpoint {
   public static final String BUILD_VERSION = "SCHEDGE DEVELOPMENT BUILD";
 
-  public String getPath() { return "/stat"; }
+  public String getPath() {
+    return "/stat";
+  }
 
   public static final class HealthInfo {
-    public boolean getAlive() { return true; }
+    public boolean getAlive() {
+      return true;
+    }
     @NotNull
     public String getVersion() {
       return BUILD_VERSION;

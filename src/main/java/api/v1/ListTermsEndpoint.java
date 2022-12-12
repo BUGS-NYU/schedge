@@ -10,7 +10,9 @@ import io.javalin.openapi.*;
 import java.util.*;
 
 public final class ListTermsEndpoint extends App.Endpoint {
-  public String getPath() { return "/terms"; }
+  public String getPath() {
+    return "/terms";
+  }
 
   public static Term parseTerm(String termString) {
     if (termString.contentEquals("current")) {

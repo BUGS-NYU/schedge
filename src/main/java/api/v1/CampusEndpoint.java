@@ -10,12 +10,16 @@ import java.util.*;
 
 public final class CampusEndpoint extends App.Endpoint {
 
-  public String getPath() { return "/campus"; }
+  public String getPath() {
+    return "/campus";
+  }
 
   class Data {
     public HashMap<String, Campus> campuses;
 
-    public HashMap<String, Campus> getCampuses() { return campuses; }
+    public HashMap<String, Campus> getCampuses() {
+      return campuses;
+    }
   }
 
   @OpenApi(

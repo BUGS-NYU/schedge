@@ -11,13 +11,10 @@ public final class Health extends App.Endpoint {
   public String getPath() { return "/stat"; }
 
   public static final class HealthInfo {
-    public boolean alive;
-    public String version;
-
-    public boolean getAlive() { return alive; }
+    public boolean getAlive() { return true; }
     @NotNull
     public String getVersion() {
-      return version;
+      return BUILD_VERSION;
     }
   }
 
@@ -42,8 +39,6 @@ public final class Health extends App.Endpoint {
 
     // https://stackoverflow.com/questions/17374743/how-can-i-get-the-memory-that-my-java-program-uses-via-javas-runtime-api
     var info = new HealthInfo();
-    info.alive = true;
-    info.version = BUILD_VERSION;
 
     return info;
   }

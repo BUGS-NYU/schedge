@@ -6,7 +6,7 @@ import static utils.Nyu.*;
 
 import java.sql.*;
 import java.util.function.*;
-import scraping.PeopleSoftClassSearch;
+import scraping.PSClassSearch;
 import scraping.ScrapeEvent;
 
 public class ScrapeTerm {
@@ -16,7 +16,7 @@ public class ScrapeTerm {
                                 Consumer<ScrapeEvent> consumer)
       throws SQLException {
     clearPrevious(conn, term);
-    var termData = PeopleSoftClassSearch.scrapeTerm(term, consumer);
+    var termData = PSClassSearch.scrapeTerm(term, consumer);
     updateSchoolsForTerm(conn, term, termData.getSchools());
 
     while (termData.hasNext()) {

@@ -19,7 +19,7 @@ import org.slf4j.*;
 import utils.*;
 
 public class PSClient {
-  static Logger logger = PeopleSoftClassSearch.logger;
+  static Logger logger = PSClassSearch.logger;
 
   HttpClient client;
   HashMap<String, String> formMap;
@@ -79,7 +79,7 @@ public class PSClient {
   }
 
   CompletableFuture<HttpResponse<String>>
-  fetchSubject(PeopleSoftClassSearch.SubjectElem subject) {
+  fetchSubject(PSClassSearch.SubjectElem subject) {
     var fut = this.inProgress;
     if (fut == null) {
       fut = CompletableFuture.completedFuture(null);
@@ -117,11 +117,11 @@ public class PSClient {
   static URI MAIN_URI = URI.create(MAIN_URL);
   static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
-  static final PeopleSoftClassSearch.FormEntry[] FORM_DEFAULTS =
-      new PeopleSoftClassSearch.FormEntry[] {
-          new PeopleSoftClassSearch.FormEntry("ICAJAX", "1"),
-          new PeopleSoftClassSearch.FormEntry("ICNAVTYPEDROPDOWN", "0"),
-          new PeopleSoftClassSearch.FormEntry(
+  static final PSClassSearch.FormEntry[] FORM_DEFAULTS =
+      new PSClassSearch.FormEntry[] {
+          new PSClassSearch.FormEntry("ICAJAX", "1"),
+          new PSClassSearch.FormEntry("ICNAVTYPEDROPDOWN", "0"),
+          new PSClassSearch.FormEntry(
               "ICBcDomData",
               "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
                   + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"

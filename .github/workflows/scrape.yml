@@ -8,6 +8,7 @@ on:
         description: Term to scrape (e.g. sp2021)
       source:
         required: false
+        default: sis.nyu.edu
         description: Source to scrape from (either schedge-v1 or sis.nyu.edu)
 
 jobs:

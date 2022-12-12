@@ -38,9 +38,7 @@ public class CopyTermFromProduction {
       if (result == null)
         return;
 
-      UpdateSchools.updateSchoolsForTerm(conn, term, result.getSchools());
-      InsertCourses.clearPrevious(conn, term);
-      InsertCourses.insertCourses(conn, term, result.getCourses());
+      WriteTerm.writeTerm(conn, result);
     });
   }
 }

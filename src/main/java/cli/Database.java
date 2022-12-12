@@ -148,10 +148,7 @@ public class Database implements Runnable {
         if (result == null)
           return;
 
-        UpdateSchools.updateSchoolsForTerm(conn, term, result.getSchools());
-        InsertCourses.clearPrevious(conn, term);
-        InsertCourses.insertCourses(conn, term, result.getCourses());
-
+        WriteTerm.writeTerm(conn, result);
         var dbEnd = System.nanoTime();
         duration = (dbEnd - fetchEnd) / 1000000000.0;
 

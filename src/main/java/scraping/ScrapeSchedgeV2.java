@@ -21,13 +21,18 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
       "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
+  static final class ScrapeResult {
+    String text;
+    String subject;
+  }
+
   private final ArrayList<School> schools;
   private final HttpClient client = HttpClient.newHttpClient();
   private final Iterator<String> subjects;
   private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-  private ScrapeTermResult(Term term, List<String> inputSubjectList,
-                           Consumer<ScrapeEvent> consumer) {
+  private ScrapeSchedgeV2(Term term, List<String> inputSubjectList,
+                          Consumer<ScrapeEvent> consumer) {
     super(term, consumer, Try.Ctx(logger));
 
     var termString = term.json();
@@ -94,11 +99,6 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     return null;
   }
 
-  static final class ScrapeResult {
-    String text;
-    String subject;
-  }
-
   public static TermScrapeResult
   scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return scrapeFromSchedge(term, null, consumer);
@@ -107,7 +107,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
   public static TermScrapeResult
   scrapeFromSchedge(Term term, List<String> inputSubjectList,
                     Consumer<ScrapeEvent> consumer) {
-    return new ScrapeTermResult(term, inputSubjectList, consumer);
+    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
   }
 
   private static Future<ScrapeResult> getData(HttpClient client, Term term,

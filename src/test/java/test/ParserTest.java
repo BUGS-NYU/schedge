@@ -4,8 +4,8 @@ import static utils.Try.*;
 
 import org.junit.*;
 import org.slf4j.*;
+import scraping.PSClassSearch;
 import scraping.PSCoursesParser;
-import scraping.PeopleSoftClassSearch;
 import utils.ArrayJS;
 import utils.Utils;
 
@@ -26,7 +26,7 @@ public class ParserTest {
   @Test
   public void testParseExternalSchools() {
     var html = Utils.readResource("/term-sp2022.html.snap");
-    var subjects = PeopleSoftClassSearch.parseTermPage(html);
+    var subjects = PSClassSearch.parseTermPage(html);
 
     var bocc = ArrayJS.find(subjects, s -> s.code.equals("BOCC"));
     Assert.assertEquals(bocc.schoolName, "Academic College");

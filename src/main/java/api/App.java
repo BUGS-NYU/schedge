@@ -7,7 +7,6 @@ import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.openapi.OpenApiInfo;
 import io.javalin.openapi.plugin.*;
-import java.io.*;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -74,7 +73,7 @@ public class App {
           + "<br/><br/>If you'd like to contribute, "
           + "<a href=\"https://github.com/A1Liu/schedge\">"
           + "check out the repository</a>.<br /> <br />"
-          + "<b><big>SCHEDGE DEVELOPMENT BUILD</big></b>";
+          + "<b><big>Build version: " + Health.BUILD_VERSION + ".</big></b>";
 
       var info = new OpenApiInfo();
       info.setVersion("2.0.0 beta");
@@ -95,7 +94,7 @@ public class App {
       });
 
       config.staticFiles.add(staticFiles -> { // ReDoc API Docs
-        staticFiles.hostedPath = "/api";
+        staticFiles.hostedPath = "/";
         staticFiles.directory = "/api";
         staticFiles.location = Location.CLASSPATH;
         staticFiles.precompress = false;

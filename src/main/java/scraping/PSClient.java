@@ -1,5 +1,6 @@
 package scraping;
 
+import static scraping.PSClassSearch.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
@@ -15,12 +16,9 @@ import java.util.concurrent.*;
 import java.util.stream.*;
 import org.jsoup.*;
 import org.jsoup.nodes.*;
-import org.slf4j.*;
 import utils.*;
 
 public class PSClient {
-  static Logger logger = PeopleSoftClassSearch.logger;
-
   HttpClient client;
   HashMap<String, String> formMap;
   CompletableFuture<HttpResponse<String>> inProgress;
@@ -78,8 +76,7 @@ public class PSClient {
     }
   }
 
-  CompletableFuture<HttpResponse<String>>
-  fetchSubject(PeopleSoftClassSearch.SubjectElem subject) {
+  CompletableFuture<HttpResponse<String>> fetchSubject(SubjectElem subject) {
     var fut = this.inProgress;
     if (fut == null) {
       fut = CompletableFuture.completedFuture(null);
@@ -117,28 +114,27 @@ public class PSClient {
   static URI MAIN_URI = URI.create(MAIN_URL);
   static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
-  static final PeopleSoftClassSearch.FormEntry[] FORM_DEFAULTS =
-      new PeopleSoftClassSearch.FormEntry[] {
-          new PeopleSoftClassSearch.FormEntry("ICAJAX", "1"),
-          new PeopleSoftClassSearch.FormEntry("ICNAVTYPEDROPDOWN", "0"),
-          new PeopleSoftClassSearch.FormEntry(
-              "ICBcDomData",
-              "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-                  + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-                  + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-                  + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
-                  + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
-                  + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
-                  + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
-                  + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-                  + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-                  + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
-                  + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
-                  + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
-                  + "~Course Search~UnknownValue~UnknownValue~https"
-                  + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-                  + "NYU_CLS_SRCH.GBL?~UnknownValue"),
-      };
+  static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
+      new FormEntry("ICAJAX", "1"),
+      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
+      new FormEntry(
+          "ICBcDomData",
+          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
+              + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
+              + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
+              + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
+              + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
+              + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
+              + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
+              + "~Course Search~UnknownValue~UnknownValue~https"
+              + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+              + "NYU_CLS_SRCH.GBL?~UnknownValue"),
+  };
 
   void incrementStateNum() {
     int action = Integer.parseInt(formMap.get("ICStateNum"));

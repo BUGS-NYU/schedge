@@ -48,7 +48,9 @@ jobs:
 
       - name: Set version
         run: >
-          sed -i "s/SCHEDGE DEVELOPMENT BUILD/Build version: $(git log --pretty=format:'%h' -n 1)./g" "src/main/java/api/App.java"
+          sed -i
+          "s/SCHEDGE DEVELOPMENT BUILD/$(git log --pretty=format:'%h' -n 1)/g"
+          "src/main/java/api/v1/Health.java"
 
       - name: Compile Backend
         run: yarn gradle jar
@@ -70,3 +72,30 @@ jobs:
           file: src/build/docker/Dockerfile
           push: true
           tags: ghcr.io/a1liu/schedge:latest
+
+      - name: Wait for Server to update
+        shell: bash
+        run: |
+          x=1
+          sha=$(git log --pretty=format:'%h' -n 1)
+          echo "SHA=$sha"
+          output=""
+
+          # Deploy updates are polled every 5 minutes
+          # 36 iterations at 10 seconds each = 6 minutes of time
+          while [[ $x -le 36 ]]; do
+            echo "Iteration: $x"
+            output=$(curl nyu.a1liu.com/api/stat 2> /dev/null)
+            echo " Received: $output"
+            if [[ "$output" =~ .*"$sha".* ]]; then
+              echo "           Production is up to date"
+              exit 0
+            fi
+
+            echo "           versions didn't match, sleeping for 10 seconds\\n"
+            sleep 10s
+            x=$(( $x + 1 ))
+          done
+
+          # Retried way too many times
+          exit 1

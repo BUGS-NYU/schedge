@@ -6,9 +6,6 @@ import api.App;
 import picocli.CommandLine;
 import utils.Nyu;
 
-/*
-   @Help: Add annotations, comments to code
-*/
 @Command(name = "schedge")
 public class Main implements Runnable {
 
@@ -37,17 +34,7 @@ public class Main implements Runnable {
   }
 
   @Command(name = "serve", description = "runs the app\n")
-  public void
-  serve(@Mixin Mixins.BatchSize batchSize,
-        @Option(names = "--scrape",
-                description = "whether or not to scrape while serving")
-        boolean scrape) {
+  public void serve() {
     App.run();
-
-    // while (scrape) {
-    //   UpdateData.updateData(batchSize.catalog, batchSize.sections);
-
-    //   tcFatal(() -> TimeUnit.DAYS.sleep(1), "Failed to sleep");
-    // }
   }
 }

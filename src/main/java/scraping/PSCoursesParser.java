@@ -1,6 +1,5 @@
 package scraping;
 
-import static scraping.PeopleSoftClassSearch.*;
 import static utils.ArrayJS.*;
 
 import java.time.*;
@@ -17,7 +16,7 @@ public class PSCoursesParser {
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
   public static ArrayList<Nyu.School>
-  translateSubjects(ArrayList<PeopleSoftClassSearch.SubjectElem> raw) {
+  translateSubjects(ArrayList<PSClassSearch.SubjectElem> raw) {
     var schools = new ArrayList<Nyu.School>();
     Nyu.School school = null;
 

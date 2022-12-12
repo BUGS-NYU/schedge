@@ -5,7 +5,7 @@ import static picocli.CommandLine.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.PeopleSoftClassSearch;
+import scraping.*;
 import utils.Nyu;
 
 /*
@@ -39,23 +39,8 @@ public class Scrape implements Runnable {
 
     Nyu.Term term = termMixin.term;
     try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var courses = PeopleSoftClassSearch.scrapeTerm(term, e -> {
-        switch (e.kind) {
-        case MESSAGE:
-        case SUBJECT_START:
-          bar.setExtraMessage(e.message);
-          break;
-        case WARNING:
-          logger.warn(e.message);
-          break;
-        case PROGRESS:
-          bar.stepBy(e.value);
-          break;
-        case HINT_CHANGE:
-          bar.maxHint(e.value);
-          break;
-        }
-      });
+      var courses =
+          PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
       outputFileMixin.writeOutput(courses);
     }
 
@@ -79,7 +64,7 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;
-    var courses = PeopleSoftClassSearch.scrapeSubject(term, subject);
+    var courses = PSClassSearch.scrapeSubject(term, subject);
     outputFileMixin.writeOutput(courses);
 
     long end = System.nanoTime();
@@ -99,7 +84,7 @@ public class Scrape implements Runnable {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;
-    var schools = PeopleSoftClassSearch.scrapeSchools(term);
+    var schools = PSClassSearch.scrapeSchools(term);
     outputFileMixin.writeOutput(schools);
 
     long end = System.nanoTime();

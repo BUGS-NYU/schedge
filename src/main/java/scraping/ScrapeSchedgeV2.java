@@ -9,10 +9,11 @@ import java.net.*;
 import java.net.http.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV2 {
+public final class ScrapeSchedgeV2 extends TermScrapeResult {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
@@ -20,23 +21,31 @@ public final class ScrapeSchedgeV2 {
       "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
-  public static final class ScrapeTermResult {
-    public ArrayList<School> schools;
-    public ArrayList<Course> courses;
-  }
-
   static final class ScrapeResult {
     String text;
     String subject;
   }
 
-  public static ScrapeTermResult scrapeFromSchedge(Term term) {
-    return scrapeFromSchedge(term, null);
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return scrapeFromSchedge(term, null, consumer);
   }
 
-  public static ScrapeTermResult
-  scrapeFromSchedge(Term term, List<String> inputSubjectList) {
-    var client = HttpClient.newHttpClient();
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, List<String> inputSubjectList,
+                    Consumer<ScrapeEvent> consumer) {
+    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
+  }
+
+  private final ArrayList<School> schools;
+  private final HttpClient client = HttpClient.newHttpClient();
+  private final Iterator<String> subjects;
+  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+
+  private ScrapeSchedgeV2(Term term, List<String> inputSubjectList,
+                          Consumer<ScrapeEvent> consumer) {
+    super(term, consumer, Try.Ctx(logger));
+
     var termString = term.json();
 
     var schoolsUri = URI.create(LIST_SCHOOLS + termString);
@@ -46,37 +55,39 @@ public final class ScrapeSchedgeV2 {
     var data = resp.body();
 
     var info = fromJson(data, SchoolInfoEndpoint.Info.class);
+    this.schools = info.schools;
 
-    var out = new ScrapeTermResult();
-    out.schools = info.schools;
+    if (inputSubjectList == null) {
+      inputSubjectList = new ArrayList<>();
 
-    var subjectList = new ArrayList<String>();
-
-    for (var school : info.schools) {
-      for (var subject : school.subjects) {
-        subjectList.add(subject.code);
+      for (var school : info.schools) {
+        for (var subject : school.subjects) {
+          inputSubjectList.add(subject.code);
+        }
       }
     }
 
-    if (inputSubjectList == null) {
-      inputSubjectList = subjectList;
-    }
-
-    out.courses = scrapeFromSchedge(client, term, inputSubjectList);
-    return out;
-  }
-
-  private static ArrayList<Course>
-  scrapeFromSchedge(HttpClient client, Term term, List<String> subjectList) {
-    var subjects = subjectList.iterator();
-    var engine = new FutureEngine<ScrapeResult>();
+    subjects = inputSubjectList.iterator();
 
     for (int i = 0; i < 20; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
     }
+  }
 
+  @Override
+  public ArrayList<School> getSchools() {
+    return this.schools;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return this.engine.hasNext();
+  }
+
+  @Override
+  public ArrayList<Course> next() {
     var out = new ArrayList<Course>();
     for (var result : engine) {
       if (subjects.hasNext()) {
@@ -92,9 +103,11 @@ public final class ScrapeSchedgeV2 {
       for (var course : courses) {
         out.add(course);
       }
+
+      return out;
     }
 
-    return out;
+    return null;
   }
 
   private static Future<ScrapeResult> getData(HttpClient client, Term term,

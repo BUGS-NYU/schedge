@@ -23,5 +23,8 @@ jobs:
           clangFormatVersion: 14
           inplace: True
 
+      - name: Display Changes
+        run: git diff
+
       - name: Check for Changes
         run: git diff --exit-code --name-only

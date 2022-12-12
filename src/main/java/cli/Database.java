@@ -4,7 +4,7 @@ import static actions.CopyTermFromProduction.*;
 import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
-import actions.ScrapeTerm;
+import actions.WriteTerm;
 import database.*;
 import java.util.*;
 import me.tongfei.progressbar.ProgressBar;
@@ -34,7 +34,7 @@ public class Database implements Runnable {
 
     var term = termMixin.term;
 
-    var schools = PeopleSoftClassSearch.scrapeSchools(term);
+    var schools = PSClassSearch.scrapeSchools(term);
 
     GetConnection.withConnection(
         conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
@@ -51,23 +51,9 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          ScrapeTerm.scrapeTerm(conn, term, e -> {
-            switch (e.kind) {
-            case MESSAGE:
-            case SUBJECT_START:
-              bar.setExtraMessage(e.message);
-              break;
-            case WARNING:
-              logger.warn(e.message);
-              break;
-            case PROGRESS:
-              bar.stepBy(e.value);
-              break;
-            case HINT_CHANGE:
-              bar.maxHint(e.value);
-              break;
-            }
-          });
+          var data =
+              PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
+          WriteTerm.writeTerm(conn, data);
         }
       }
     });
@@ -84,14 +70,20 @@ public class Database implements Runnable {
                     + "Schedge instance.\n")
   public void
   populate(@Mixin Mixins.TermArgument termMixin,
-           @Option(names = {"--v2"},
-                   description = "scrape v2 instead of v1") boolean useV2) {
+           @Option(names = {"--v1"}, description = "scrape v1") boolean useV1,
+           @Option(names = {"--v2"}, description = "scrape v2") boolean useV2) {
     long start = System.nanoTime();
 
     var terms = termMixin.terms;
-    var version = useV2 ? SchedgeVersion.V2 : SchedgeVersion.V1;
+    if (useV1 && useV2) {
+      throw new IllegalArgumentException(
+          "--v1 and --v2 are incompatible because they mean opposite things");
+    }
+
+    // Default to v2 but use v1 if the user explicitly requests it
+    var version = useV1 ? SchedgeVersion.V1 : SchedgeVersion.V2;
     for (var term : terms) {
-      copyTermFromProduction(version, term);
+      copyTermFromProduction(version, term, ScrapeEvent.log(logger));
     }
 
     GetConnection.close();
@@ -147,7 +139,8 @@ public class Database implements Runnable {
       GetConnection.withConnection(conn -> {
         var termStart = System.nanoTime();
 
-        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects);
+        var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects,
+                                                       ScrapeEvent.log(logger));
 
         var fetchEnd = System.nanoTime();
         var duration = (fetchEnd - termStart) / 1000000000.0;
@@ -155,10 +148,7 @@ public class Database implements Runnable {
         if (result == null)
           return;
 
-        UpdateSchools.updateSchoolsForTerm(conn, term, result.schools);
-        InsertCourses.clearPrevious(conn, term);
-        InsertCourses.insertCourses(conn, term, result.courses);
-
+        WriteTerm.writeTerm(conn, result);
         var dbEnd = System.nanoTime();
         duration = (dbEnd - fetchEnd) / 1000000000.0;
 

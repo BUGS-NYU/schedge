@@ -1,9 +1,10 @@
 package api.v1;
 
+import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
 
-import actions.ScrapeTerm;
+import actions.WriteTerm;
 import database.GetConnection;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
@@ -12,10 +13,10 @@ import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
-import me.tongfei.progressbar.DelegatingProgressBarConsumer;
-import me.tongfei.progressbar.ProgressBarBuilder;
-import me.tongfei.progressbar.ProgressBarStyle;
+import java.util.function.*;
+import me.tongfei.progressbar.*;
 import org.slf4j.*;
+import scraping.*;
 import utils.Utils;
 
 /**
@@ -25,6 +26,7 @@ import utils.Utils;
 public final class ScrapingEndpoint {
   private static final Logger logger =
       LoggerFactory.getLogger("api.v1.ScrapingEndpoint");
+
   public static final class Ref<T> { // IDK if this already exists
     public T current;
 
@@ -54,12 +56,26 @@ public final class ScrapingEndpoint {
     AUTH_HASH = digest.digest(AUTH_STRING.getBytes(StandardCharsets.UTF_8));
   }
 
+  interface ScrapeJob {
+    public TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+  }
+
   private static String scrape(WsContext ctx) {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
 
+      var source = run(() -> {
+        var src = ctx.queryParam("source");
+        if (src == null)
+          src = "";
+        if (src.trim().isEmpty())
+          src = "sis.nyu.edu";
+
+        return src;
+      });
+
       var builder = new ProgressBarBuilder();
-      builder.setTaskName("Scrape " + term.json())
+      builder.setTaskName(source + " " + term.json())
           .setConsumer(new DelegatingProgressBarConsumer(ctx::send, 160))
           .setStyle(ProgressBarStyle.ASCII)
           .setUpdateIntervalMillis(5_000)
@@ -67,8 +83,28 @@ public final class ScrapingEndpoint {
 
       var bar = builder.build();
 
+      ScrapeJob job = run(() -> {
+        switch (source) {
+        case "schedge-v1":
+          return ScrapeSchedgeV1::scrapeFromSchedge;
+        case "sis.nyu.edu":
+          return PSClassSearch::scrapeTerm;
+        default: {
+          var warning = "Invalid source: " + source;
+          ctx.send(warning);
+          logger.warn(warning);
+
+          return null;
+        }
+        }
+      });
+
+      if (job == null) {
+        return "No job to run!";
+      }
+
       GetConnection.withConnection(conn -> {
-        ScrapeTerm.scrapeTerm(conn, term, e -> {
+        var result = job.scrape(term, e -> {
           switch (e.kind) {
           case MESSAGE:
           case SUBJECT_START:
@@ -87,6 +123,8 @@ public final class ScrapingEndpoint {
             break;
           }
         });
+
+        WriteTerm.writeTerm(conn, result);
       });
 
       return "Done!";
@@ -132,8 +170,6 @@ public final class ScrapingEndpoint {
         var task = new FutureTask<>(() -> scrape(ctx));
         CURRENT_SCRAPE = task;
 
-        // TODO: correctly handle websocket closing, password checking, etc.
-        // Also, do a hash-compare before doing the equality check
         CompletableFuture.runAsync(() -> {
           var closeCode = 1011;
           var closeReason = "Unknown reason";

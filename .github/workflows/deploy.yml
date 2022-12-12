@@ -74,6 +74,7 @@ jobs:
           tags: ghcr.io/a1liu/schedge:latest
 
       - name: Wait for Server to update
+        shell: bash
         run: |
           x=1
           sha=$(git log --pretty=format:'%h' -n 1)

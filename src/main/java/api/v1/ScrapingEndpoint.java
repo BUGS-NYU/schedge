@@ -10,7 +10,6 @@ import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
@@ -89,7 +88,7 @@ public final class ScrapingEndpoint {
         case "schedge-v1":
           return ScrapeSchedgeV1::scrapeFromSchedge;
         case "sis.nyu.edu":
-          return PeopleSoftClassSearch::scrapeTerm;
+          return PSClassSearch::scrapeTerm;
         default: {
           var warning = "Invalid source: " + source;
           ctx.send(warning);

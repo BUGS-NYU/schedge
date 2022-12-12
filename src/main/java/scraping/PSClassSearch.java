@@ -12,7 +12,7 @@ import org.jsoup.nodes.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class PeopleSoftClassSearch {
+public final class PSClassSearch {
   static Logger logger =
       LoggerFactory.getLogger("scraping.PeopleSoftClassSearch");
 

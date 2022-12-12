@@ -34,7 +34,7 @@ public class Database implements Runnable {
 
     var term = termMixin.term;
 
-    var schools = PeopleSoftClassSearch.scrapeSchools(term);
+    var schools = PSClassSearch.scrapeSchools(term);
 
     GetConnection.withConnection(
         conn -> { UpdateSchools.updateSchoolsForTerm(conn, term, schools); });
@@ -51,8 +51,8 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          var data = PeopleSoftClassSearch.scrapeTerm(
-              term, ScrapeEvent.cli(logger, bar));
+          var data =
+              PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
           WriteTerm.writeTerm(conn, data);
         }
       }

@@ -82,7 +82,7 @@ jobs:
           output=""
 
           while [[ $x -le 30 ]]; do
-            output=$(curl nyu.a1liu.com/api/stat 2 > /dev/null)
+            output=$(curl nyu.a1liu.com/api/stat 2> /dev/null)
             echo "Received: $output"
             if [[ "$output" =~ .*"$sha".* ]]; then
               echo "Production is up to date"

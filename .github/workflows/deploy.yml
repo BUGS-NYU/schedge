@@ -90,7 +90,7 @@ jobs:
               exit 0
             fi
 
-            echo "           versions didn't match, sleeping for 10 seconds\n"
+            echo "           versions didn't match, sleeping for 10 seconds\\n"
             sleep 10s
             x=$(( $x + 1 ))
           done

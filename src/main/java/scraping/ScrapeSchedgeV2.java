@@ -26,6 +26,17 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     String subject;
   }
 
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return scrapeFromSchedge(term, null, consumer);
+  }
+
+  public static TermScrapeResult
+  scrapeFromSchedge(Term term, List<String> inputSubjectList,
+                    Consumer<ScrapeEvent> consumer) {
+    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
+  }
+
   private final ArrayList<School> schools;
   private final HttpClient client = HttpClient.newHttpClient();
   private final Iterator<String> subjects;
@@ -97,17 +108,6 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     }
 
     return null;
-  }
-
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
-    return scrapeFromSchedge(term, null, consumer);
-  }
-
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, List<String> inputSubjectList,
-                    Consumer<ScrapeEvent> consumer) {
-    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
   }
 
   private static Future<ScrapeResult> getData(HttpClient client, Term term,

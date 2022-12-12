@@ -8,7 +8,20 @@ import java.sql.*;
 import java.util.function.*;
 import scraping.*;
 
-public class ScrapeTerm {
+public class WriteTerm {
+
+  public static void writeTerm(Connection conn, TermScrapeResult data)
+      throws SQLException {
+    var term = data.term;
+    clearPrevious(conn, term);
+
+    updateSchoolsForTerm(conn, term, data.getSchools());
+
+    while (data.hasNext()) {
+      var coursesBatch = data.next();
+      insertCourses(conn, term, coursesBatch);
+    }
+  }
 
   // @Note: bar is nullable
   public static void scrapeTerm(Connection conn, Term term,

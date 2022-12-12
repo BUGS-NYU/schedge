@@ -9,7 +9,7 @@ import utils.Try;
 public abstract class TermScrapeResult implements Iterator<ArrayList<Course>> {
   protected final Consumer<ScrapeEvent> consumer;
   protected final Try ctx;
-  protected final Term term;
+  public final Term term;
 
   public TermScrapeResult(Term term, Consumer<ScrapeEvent> consumer, Try ctx) {
     consumer = Objects.requireNonNullElse(consumer, e -> {});

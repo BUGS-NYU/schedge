@@ -4,19 +4,20 @@ import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
 
-import actions.ScrapeTerm;
+import actions.WriteTerm;
 import database.GetConnection;
 import io.javalin.Javalin;
 import io.javalin.websocket.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
-import scraping.ScrapeEvent;
+import scraping.*;
 import utils.Utils;
 
 /**
@@ -56,6 +57,10 @@ public final class ScrapingEndpoint {
     AUTH_HASH = digest.digest(AUTH_STRING.getBytes(StandardCharsets.UTF_8));
   }
 
+  interface ScrapeJob {
+    public TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+  }
+
   private static String scrape(WsContext ctx) {
     try {
       var term = Term.fromString(ctx.pathParam("term"));
@@ -79,40 +84,48 @@ public final class ScrapingEndpoint {
 
       var bar = builder.build();
 
-      Consumer<ScrapeEvent> consumer = e -> {
-        switch (e.kind) {
-        case MESSAGE:
-        case SUBJECT_START:
-          bar.setExtraMessage(String.format("%1$-25s", e.message));
-          logger.info(e.message);
-          break;
-        case WARNING:
-          ctx.send(e.message);
-          logger.warn(e.message);
-          break;
-        case PROGRESS:
-          bar.stepBy(e.value);
-          break;
-        case HINT_CHANGE:
-          bar.maxHint(e.value);
-          break;
-        }
-      };
-
-      GetConnection.withConnection(conn -> {
+      ScrapeJob job = run(() -> {
         switch (source) {
         case "schedge-v1":
-          ScrapeTerm.scrapeSchedgeV1Term(conn, term, consumer);
-          return;
+          return ScrapeSchedgeV1::scrapeFromSchedge;
         case "sis.nyu.edu":
-          ScrapeTerm.scrapeTerm(conn, term, consumer);
-          return;
+          return PeopleSoftClassSearch::scrapeTerm;
         default: {
           var warning = "Invalid source: " + source;
           ctx.send(warning);
           logger.warn(warning);
+
+          return null;
         }
         }
+      });
+
+      if (job == null) {
+        return "No job to run!";
+      }
+
+      GetConnection.withConnection(conn -> {
+        var result = job.scrape(term, e -> {
+          switch (e.kind) {
+          case MESSAGE:
+          case SUBJECT_START:
+            bar.setExtraMessage(String.format("%1$-25s", e.message));
+            logger.info(e.message);
+            break;
+          case WARNING:
+            ctx.send(e.message);
+            logger.warn(e.message);
+            break;
+          case PROGRESS:
+            bar.stepBy(e.value);
+            break;
+          case HINT_CHANGE:
+            bar.maxHint(e.value);
+            break;
+          }
+        });
+
+        WriteTerm.writeTerm(conn, result);
       });
 
       return "Done!";

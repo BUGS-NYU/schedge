@@ -4,7 +4,7 @@ import static actions.CopyTermFromProduction.*;
 import static picocli.CommandLine.*;
 import static utils.Nyu.*;
 
-import actions.ScrapeTerm;
+import actions.WriteTerm;
 import database.*;
 import java.util.*;
 import me.tongfei.progressbar.ProgressBar;
@@ -51,7 +51,7 @@ public class Database implements Runnable {
     GetConnection.withConnection(conn -> {
       for (var term : termMixin.terms) {
         try (ProgressBar bar = new ProgressBar("Scrape " + term.json(), -1)) {
-          ScrapeTerm.scrapeTerm(conn, term, ScrapeEvent.cli(logger, bar));
+          WriteTerm.scrapeTerm(conn, term, ScrapeEvent.cli(logger, bar));
         }
       }
     });

@@ -49,7 +49,7 @@ jobs:
       - name: Set version
         run: >
           sed -i
-          "s/SCHEDGE DEVELOPMENT BUILD/Build version: $(git log --pretty=format:'%h' -n 1)./g"
+          "s/SCHEDGE DEVELOPMENT BUILD/$(git log --pretty=format:'%h' -n 1)/g"
           "src/main/java/api/v1/Health.java"
 
       - name: Compile Backend
@@ -82,14 +82,15 @@ jobs:
           output=""
 
           while [[ $x -le 30 ]]; do
+            echo "Iteration: $x"
             output=$(curl nyu.a1liu.com/api/stat 2> /dev/null)
-            echo "Received: $output"
+            echo " Received: $output"
             if [[ "$output" =~ .*"$sha".* ]]; then
-              echo "Production is up to date"
+              echo "           Production is up to date"
               exit 0
             fi
 
-            echo "versions didn't match, sleeping for 10 seconds"
+            echo "           versions didn't match, sleeping for 10 seconds\n"
             sleep 10s
             x=$(( $x + 1 ))
           done

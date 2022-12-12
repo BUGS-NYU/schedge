@@ -78,17 +78,21 @@ jobs:
         run: |
           x=1
           sha=$(git log --pretty=format:'%h' -n 1)
+          echo "SHA=$sha"
           output=""
 
-          while [[ $x -le 20 ]] && ! [[ "$output" =~ .*"$sha".* ]]; do
-            output=$(curl nyu.a1liu.com/api/stat)
-            sleep 15s
+          while [[ $x -le 30 ]] && ! [[ "$output" =~ .*"$sha".* ]]; do
+            output=$(curl nyu.a1liu.com/api/stat 2 > /dev/null)
+            echo "Received: $output"
+            if [[ "$output" =~ .*"$sha".* ]]; then
+              echo "Production is up to date"
+              exit 0
+            fi
+
+            echo "versions didn't match, sleeping for 10 seconds"
+            sleep 10s
             x=$(( $x + 1 ))
           done
-
-          if [[ $x -le 20 ]]; then
-            exit 0
-          fi
 
           # Retried way too many times
           exit 1

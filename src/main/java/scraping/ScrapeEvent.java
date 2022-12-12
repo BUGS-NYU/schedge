@@ -1,8 +1,8 @@
 package scraping;
 
-import java.util.function.Consumer;
-import me.tongfei.progressbar.ProgressBar;
-import org.slf4j.Logger;
+import java.util.function.*;
+import me.tongfei.progressbar.*;
+import org.slf4j.*;
 
 /* Real fucking stupid implementation of whatever you desire
  * to call this. Event listening, observer pattern, whatever.

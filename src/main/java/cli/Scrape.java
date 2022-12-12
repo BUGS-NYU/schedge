@@ -5,8 +5,7 @@ import static picocli.CommandLine.*;
 import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.*;
 import picocli.CommandLine;
-import scraping.PeopleSoftClassSearch;
-import scraping.ScrapeEvent;
+import scraping.*;
 import utils.Nyu;
 
 /*

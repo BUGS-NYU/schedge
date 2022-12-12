@@ -15,7 +15,7 @@ import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV1 {
+public final class ScrapeSchedgeV1 extends TermScrapeResult {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
@@ -138,171 +138,168 @@ public final class ScrapeSchedgeV1 {
     public String notes;
   }
 
-  private static final class ScrapeTermResult extends TermScrapeResult {
-    private final ArrayList<School> schools = new ArrayList<>();
-    private final HttpClient client = HttpClient.newHttpClient();
-    private final Iterator<String> subjects;
-    private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+  private final ArrayList<School> schools = new ArrayList<>();
+  private final HttpClient client = HttpClient.newHttpClient();
+  private final Iterator<String> subjects;
+  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-    private ScrapeTermResult(Term term, Consumer<ScrapeEvent> consumer) {
-      super(term, consumer, Try.Ctx(logger));
+  private ScrapeSchedgeV1(Term term, Consumer<ScrapeEvent> consumer) {
+    super(term, consumer, Try.Ctx(logger));
 
-      consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
-      consumer.accept(ScrapeEvent.hintChange(-1));
+    consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
+    consumer.accept(ScrapeEvent.hintChange(-1));
 
-      var schools = run(() -> {
-        var schoolsUri = URI.create(SCHEDGE_URL + "schools");
-        var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-        var handler = HttpResponse.BodyHandlers.ofString();
-        var resp = tcPass(() -> client.send(request, handler));
-        var data = resp.body();
+    var schools = run(() -> {
+      var schoolsUri = URI.create(SCHEDGE_URL + "schools");
+      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+      var handler = HttpResponse.BodyHandlers.ofString();
+      var resp = tcPass(() -> client.send(request, handler));
+      var data = resp.body();
 
-        return fromJson(data, Schools.class).schools;
+      return fromJson(data, Schools.class).schools;
+    });
+
+    var subjectsList = run(() -> {
+      var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
+      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+      var handler = HttpResponse.BodyHandlers.ofString();
+      var resp = tcPass(() -> client.send(request, handler));
+      var data = resp.body();
+
+      return fromJson(data, Subjects.class).subjects;
+    });
+
+    consumer.accept(ScrapeEvent.hintChange(subjectsList.size() + 1));
+    consumer.accept(ScrapeEvent.progress(1));
+
+    var schoolsMap = new HashMap<String, School>();
+    var subjectsFullCodeList = new ArrayList<String>();
+    subjectsFullCodeList.ensureCapacity(subjectsList.size());
+
+    for (var subject : subjectsList) {
+      subjectsFullCodeList.add(subject.fullCode);
+      var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
+        var name = schools.get(code);
+        if (name == null)
+          throw new RuntimeException("Code: " + code);
+
+        var s = new School(name, code);
+        this.schools.add(s);
+
+        return s;
       });
 
-      var subjectsList = run(() -> {
-        var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
-        var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-        var handler = HttpResponse.BodyHandlers.ofString();
-        var resp = tcPass(() -> client.send(request, handler));
-        var data = resp.body();
+      var s = new Subject(subject.fullCode, subject.name);
+      school.subjects.add(s);
+    }
 
-        return fromJson(data, Subjects.class).subjects;
-      });
+    this.subjects = subjectsFullCodeList.listIterator();
 
-      consumer.accept(ScrapeEvent.hintChange(subjectsList.size() + 1));
+    for (int i = 0; i < 10; i++) {
+      if (subjects.hasNext()) {
+        engine.add(getData(subjects.next()));
+      }
+    }
+  }
+
+  @Override
+  public ArrayList<School> getSchools() {
+    return schools;
+  }
+
+  @Override
+  public boolean hasNext() {
+    return this.engine.hasNext();
+  }
+
+  @Override
+  public ArrayList<Course> next() {
+    for (var result : engine) {
+      if (subjects.hasNext()) {
+        engine.add(getData(subjects.next()));
+      }
+
+      if (result.text == null)
+        continue;
+
+      consumer.accept(ScrapeEvent.subject(result.subject));
+
+      var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
+      var out = new ArrayList<Course>();
+      for (var course : courses) {
+        var c = new Course();
+        c.name = course.name;
+        c.deptCourseId = course.deptCourseId;
+        c.description = course.description;
+        c.subjectCode = result.subject;
+        c.sections = new ArrayList<>();
+
+        if (c.description == null)
+          c.description = "";
+
+        for (var section : course.sections) {
+          var s = translateSection(section);
+          if (!s.name.equals(c.name))
+            s.name = null;
+
+          c.sections.add(s);
+        }
+
+        out.add(c);
+      }
+
       consumer.accept(ScrapeEvent.progress(1));
 
-      var schoolsMap = new HashMap<String, School>();
-      var subjectsFullCodeList = new ArrayList<String>();
-      subjectsFullCodeList.ensureCapacity(subjectsList.size());
+      return out;
+    }
 
-      for (var subject : subjectsList) {
-        subjectsFullCodeList.add(subject.fullCode);
-        var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
-          var name = schools.get(code);
-          if (name == null)
-            throw new RuntimeException("Code: " + code);
+    return null;
+  }
 
-          var s = new School(name, code);
-          this.schools.add(s);
+  private Future<ScrapeResult> getData(String subject) {
+    var parts = subject.split("-");
+    String school = parts[1];
+    String major = parts[0];
 
-          return s;
-        });
+    // @TODO Fix this hack to work around weird behavior from V1 and NYU
+    if (school.contentEquals("UI")) {
+      school = "SHU";
+    }
 
-        var s = new Subject(subject.fullCode, subject.name);
-        school.subjects.add(s);
+    var components =
+        new String[] {"" + term.year, term.semester.toString(), school, major};
+
+    var uri =
+        URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
+
+    var request = HttpRequest.newBuilder().uri(uri).build();
+
+    long start = System.nanoTime();
+
+    var handler = HttpResponse.BodyHandlers.ofString();
+    var fut = client.sendAsync(request, handler);
+    return fut.handleAsync((resp, throwable) -> {
+      long end = System.nanoTime();
+      double duration = (end - start) / 1000000000.0;
+      logger.info("Fetching took {} seconds: subject={}", duration, subject);
+
+      if (resp == null) {
+        logger.error("Error (subject={}): {}", subject, throwable.getMessage());
+
+        return null;
       }
 
-      this.subjects = subjectsFullCodeList.listIterator();
+      var result = new ScrapeResult();
+      result.text = resp.body();
+      result.subject = subject;
 
-      for (int i = 0; i < 10; i++) {
-        if (subjects.hasNext()) {
-          engine.add(getData(subjects.next()));
-        }
-      }
-    }
-
-    @Override
-    public ArrayList<School> getSchools() {
-      return schools;
-    }
-
-    @Override
-    public boolean hasNext() {
-      return this.engine.hasNext();
-    }
-
-    @Override
-    public ArrayList<Course> next() {
-      for (var result : engine) {
-        if (subjects.hasNext()) {
-          engine.add(getData(subjects.next()));
-        }
-
-        if (result.text == null)
-          continue;
-
-        consumer.accept(ScrapeEvent.subject(result.subject));
-
-        var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
-        var out = new ArrayList<Course>();
-        for (var course : courses) {
-          var c = new Course();
-          c.name = course.name;
-          c.deptCourseId = course.deptCourseId;
-          c.description = course.description;
-          c.subjectCode = result.subject;
-          c.sections = new ArrayList<>();
-
-          if (c.description == null)
-            c.description = "";
-
-          for (var section : course.sections) {
-            var s = translateSection(section);
-            if (!s.name.equals(c.name))
-              s.name = null;
-
-            c.sections.add(s);
-          }
-
-          out.add(c);
-        }
-
-        consumer.accept(ScrapeEvent.progress(1));
-
-        return out;
-      }
-
-      return null;
-    }
-
-    private Future<ScrapeResult> getData(String subject) {
-      var parts = subject.split("-");
-      String school = parts[1];
-      String major = parts[0];
-
-      // @TODO Fix this hack to work around weird behavior from V1 and NYU
-      if (school.contentEquals("UI")) {
-        school = "SHU";
-      }
-
-      var components = new String[] {"" + term.year, term.semester.toString(),
-                                     school, major};
-
-      var uri =
-          URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
-
-      var request = HttpRequest.newBuilder().uri(uri).build();
-
-      long start = System.nanoTime();
-
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var fut = client.sendAsync(request, handler);
-      return fut.handleAsync((resp, throwable) -> {
-        long end = System.nanoTime();
-        double duration = (end - start) / 1000000000.0;
-        logger.info("Fetching took {} seconds: subject={}", duration, subject);
-
-        if (resp == null) {
-          logger.error("Error (subject={}): {}", subject,
-                       throwable.getMessage());
-
-          return null;
-        }
-
-        var result = new ScrapeResult();
-        result.text = resp.body();
-        result.subject = subject;
-
-        return result;
-      });
-    }
+      return result;
+    });
   }
 
   public static TermScrapeResult
   scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
-    return new ScrapeTermResult(term, consumer);
+    return new ScrapeSchedgeV1(term, consumer);
   }
 
   private static Section translateSection(SchedgeV1Section section) {

@@ -87,5 +87,7 @@ jobs:
           done
 
           if [ $x -le 20 ]
-            exit 1
+            exit 0
           fi
+
+          exit 1

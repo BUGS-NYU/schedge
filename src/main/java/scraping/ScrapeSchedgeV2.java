@@ -13,7 +13,7 @@ import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV2 {
+public final class ScrapeSchedgeV2 extends TermScrapeResult {
   private static Logger logger =
       LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
@@ -21,79 +21,77 @@ public final class ScrapeSchedgeV2 {
       "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
-  private static final class ScrapeTermResult extends TermScrapeResult {
-    private final ArrayList<School> schools;
-    private final HttpClient client = HttpClient.newHttpClient();
-    private final Iterator<String> subjects;
-    private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+  private final ArrayList<School> schools;
+  private final HttpClient client = HttpClient.newHttpClient();
+  private final Iterator<String> subjects;
+  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-    private ScrapeTermResult(Term term, List<String> inputSubjectList,
-                             Consumer<ScrapeEvent> consumer) {
-      super(term, consumer, Try.Ctx(logger));
+  private ScrapeTermResult(Term term, List<String> inputSubjectList,
+                           Consumer<ScrapeEvent> consumer) {
+    super(term, consumer, Try.Ctx(logger));
 
-      var termString = term.json();
+    var termString = term.json();
 
-      var schoolsUri = URI.create(LIST_SCHOOLS + termString);
-      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var resp = tcPass(() -> client.send(request, handler));
-      var data = resp.body();
+    var schoolsUri = URI.create(LIST_SCHOOLS + termString);
+    var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+    var handler = HttpResponse.BodyHandlers.ofString();
+    var resp = tcPass(() -> client.send(request, handler));
+    var data = resp.body();
 
-      var info = fromJson(data, SchoolInfoEndpoint.Info.class);
-      this.schools = info.schools;
+    var info = fromJson(data, SchoolInfoEndpoint.Info.class);
+    this.schools = info.schools;
 
-      if (inputSubjectList == null) {
-        inputSubjectList = new ArrayList<>();
+    if (inputSubjectList == null) {
+      inputSubjectList = new ArrayList<>();
 
-        for (var school : info.schools) {
-          for (var subject : school.subjects) {
-            inputSubjectList.add(subject.code);
-          }
-        }
-      }
-
-      subjects = inputSubjectList.iterator();
-
-      for (int i = 0; i < 20; i++) {
-        if (subjects.hasNext()) {
-          engine.add(getData(client, term, subjects.next()));
+      for (var school : info.schools) {
+        for (var subject : school.subjects) {
+          inputSubjectList.add(subject.code);
         }
       }
     }
 
-    @Override
-    public ArrayList<School> getSchools() {
-      return this.schools;
+    subjects = inputSubjectList.iterator();
+
+    for (int i = 0; i < 20; i++) {
+      if (subjects.hasNext()) {
+        engine.add(getData(client, term, subjects.next()));
+      }
     }
+  }
 
-    @Override
-    public boolean hasNext() {
-      return this.engine.hasNext();
-    }
+  @Override
+  public ArrayList<School> getSchools() {
+    return this.schools;
+  }
 
-    @Override
-    public ArrayList<Course> next() {
-      var out = new ArrayList<Course>();
-      for (var result : engine) {
-        if (subjects.hasNext()) {
-          engine.add(getData(client, term, subjects.next()));
-        }
+  @Override
+  public boolean hasNext() {
+    return this.engine.hasNext();
+  }
 
-        if (result == null) {
-          continue;
-        }
-
-        var courses = fromJson(result.text, Course[].class);
-        out.ensureCapacity(out.size() + courses.length);
-        for (var course : courses) {
-          out.add(course);
-        }
-
-        return out;
+  @Override
+  public ArrayList<Course> next() {
+    var out = new ArrayList<Course>();
+    for (var result : engine) {
+      if (subjects.hasNext()) {
+        engine.add(getData(client, term, subjects.next()));
       }
 
-      return null;
+      if (result == null) {
+        continue;
+      }
+
+      var courses = fromJson(result.text, Course[].class);
+      out.ensureCapacity(out.size() + courses.length);
+      for (var course : courses) {
+        out.add(course);
+      }
+
+      return out;
     }
+
+    return null;
   }
 
   static final class ScrapeResult {

@@ -28,6 +28,7 @@ Here's a list of frontends that people have written for this API.
 - https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )
 - https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )
+- https://rate-my-classes-pro.netlify.app | https://apple.co/3AduK8G (repo at https://github.com/zhumingcheng697/Rate-My-Classes-Pro )
 
 If you've written a front end to this API, you can open a PR and add yourself to this list!
 

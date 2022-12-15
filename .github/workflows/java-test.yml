@@ -2,6 +2,9 @@ name: Java - Run Tests
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -9,9 +12,6 @@ permissions:
 jobs:
   java-test:
     runs-on: ubuntu-latest
-    if: >
-      true
-      && !contains(github.event.head_commit.message, 'skip ci')
 
     # Service containers to run with `container-job`
     services:

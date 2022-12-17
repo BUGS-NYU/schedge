@@ -5,6 +5,7 @@ import styles from "./css/SearchBar.module.css";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useSchools } from "../pages";
+import Loading from "components/img/loading.svg";
 import { Term } from "./types";
 
 interface Props {
@@ -41,9 +42,8 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
 
   return (
     <div>
-      <img
+      <Loading
         className={cx(styles.loader, !!isLoading && styles.loading)}
-        src="./loading.svg"
         alt="loading symbol"
       />
 

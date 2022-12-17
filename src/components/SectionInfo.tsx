@@ -117,15 +117,6 @@ function sectionStatusText(section: Section): string {
   }
 }
 
-function styleStatus(_status): React.CSSProperties["color"] {
-  // if (status === "Open") {
-  // } else if (status === "Closed") {
-  // } else {
-  // }
-
-  return "unset";
-}
-
 export const SectionInfo: React.VFC<Props> = ({
   section,
   ignoreNotes,
@@ -154,9 +145,7 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
 
         <SectionAttribute label="Status">
-          <span style={{ color: styleStatus(section.status) }}>
-            {sectionStatusText(section)}
-          </span>
+          {sectionStatusText(section)}
         </SectionAttribute>
 
         <SectionAttribute label="Location">

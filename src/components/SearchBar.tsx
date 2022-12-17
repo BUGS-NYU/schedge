@@ -22,14 +22,10 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
     error,
   } = useQuery(["search", term.code, query], async () => {
     const resp = await axios.get(`/api/search/${term.code}`, {
-      params: {
-        query,
-        limit: 5,
-      },
+      params: { query, limit: 5 },
     });
-    const data = resp.data;
 
-    const sortedData = data.sort((a, b) => a.deptCourseId - b.deptCourseId);
+    const sortedData = [...resp.data].sort((a, b) => a.deptCourseId - b.deptCourseId);
     return sortedData;
   });
   const { data: schools } = useSchools(term);

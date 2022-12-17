@@ -23,7 +23,6 @@ export const useSchools = (term: Term) => {
 
 function Home() {
   const term = usePageState((s) => s.term);
-
   const { data: schools } = useSchools(term);
 
   return (

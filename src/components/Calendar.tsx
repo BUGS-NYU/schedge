@@ -152,12 +152,12 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
       </div>
       <div className={styles.course}>
         {days.map((day, i) => {
+          // ignoring Saturday and Sunday for now
           if (day == "su" || day == "sa") {
             return null;
           }
 
-          const meetings: CalendarMeeting[] = schedule?.[day] ?? [];
-          //ignoring Saturday and Sunday for now
+          const meetings = schedule?.[day] ?? [];
           return (
             <div className={styles.calendarDay} key={day}>
               {daysToStr[day]}

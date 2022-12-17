@@ -1,9 +1,10 @@
 import React from "react";
+import { persist } from "zustand/middleware";
 import Link from "next/link";
 import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
-import create from "zustand";
+import create, { StateCreator } from "zustand";
 import { Section } from "./subject";
 import { MainLayout } from "components/Layout";
 import { Term } from "components/state";
@@ -15,17 +16,9 @@ export interface AugmentedSection extends Section {
   subjectCode: string;
 }
 
-interface Schedule {
-  term: Term;
-  schedule: Record<number, AugmentedSection>;
-  wishlist: Record<number, AugmentedSection>;
-}
-
 interface ScheduleState {
-  term: Term | undefined;
   schedule: Record<number, AugmentedSection>;
   wishlist: Record<number, AugmentedSection>;
-  archive: Schedule[];
 
   cb: {
     addToWishlist: (section: AugmentedSection) => void;
@@ -36,7 +29,7 @@ interface ScheduleState {
   };
 }
 
-export const useSchedule = create<ScheduleState>((set, get) => {
+const store: StateCreator<ScheduleState, any, []> = (set, get) => {
   const scheduleFromWishlist = (regNum: number) => {
     const { schedule, wishlist } = get();
     const wishlistEntry = wishlist[regNum];
@@ -77,10 +70,8 @@ export const useSchedule = create<ScheduleState>((set, get) => {
   };
 
   return {
-    term: undefined,
     schedule: {},
     wishlist: {},
-    archive: [],
 
     cb: {
       addToWishlist,
@@ -90,7 +81,17 @@ export const useSchedule = create<ScheduleState>((set, get) => {
       clearSchedule,
     },
   };
-});
+};
+
+export const useSchedule = create(
+  persist(store, {
+    name: "schedule-local-storage", // name of item in the storage (must be unique)
+    partialize: (state) => {
+      const { cb, ...partial } = state;
+      return partial;
+    },
+  })
+);
 
 export function useScheduleCb() {
   return useSchedule().cb;
@@ -106,11 +107,7 @@ function SchedulePage() {
       <div className={styles.container}>
         <Calendar registrationNumbers={Object.keys(schedule)} />
 
-        <div
-          style={{
-            marginTop: "2rem",
-          }}
-        >
+        <div style={{ marginTop: "2rem" }}>
           <div className={styles.header}>
             <h2
               className={styles.wishlist}

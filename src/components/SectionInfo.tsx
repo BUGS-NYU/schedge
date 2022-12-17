@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import styles from "./css/section.module.css";
 import cx from "classnames";
-import { AugmentedSection, useScheduleCb } from "pages/schedule";
 import { DateTime } from "luxon";
-import { usePageState } from "./state";
+import { AugmentedSection, usePageState, useScheduleCb } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";

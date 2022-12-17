@@ -6,7 +6,7 @@ import headerStyles from "./css/header.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { z } from "zod";
-import EditCalendarSVG from "./edit-calendar.svg";
+import EditCalendarSVG from "./img/edit-calendar.svg";
 import cx from "classnames";
 import { NumberStringSchema, Semester, SemesterSchema, Term } from "./types";
 

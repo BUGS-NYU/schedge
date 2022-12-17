@@ -109,7 +109,3 @@ export const useSchedule = create(
     },
   })
 );
-
-export function useScheduleCb() {
-  return useSchedule().cb;
-}

@@ -4,11 +4,10 @@ import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import { MainLayout } from "components/Layout";
-import { useSchedule, useScheduleCb } from "components/state";
+import { useSchedule } from "components/state";
 
 function SchedulePage() {
-  const { schedule, wishlist } = useSchedule();
-  const { clearSchedule } = useScheduleCb();
+  const { schedule, wishlist, cb } = useSchedule();
   const wishlistLength = Object.keys(wishlist).length;
 
   return (
@@ -46,7 +45,7 @@ function SchedulePage() {
           </div>
 
           <button
-            onClick={clearSchedule}
+            onClick={cb.clearSchedule}
             className={styles.clearScheduleButton}
             tabIndex={0}
           >

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import styles from "./css/section.module.css";
 import cx from "classnames";
 import { DateTime } from "luxon";
-import { AugmentedSection, usePageState, useScheduleCb } from "./state";
+import { AugmentedSection, usePageState, useSchedule } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
@@ -132,7 +132,7 @@ export const SectionInfo: React.VFC<Props> = ({
   lastSection,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { addToWishlist } = useScheduleCb();
+  const cb = useSchedule(s => s.cb);
 
   return (
     <div
@@ -198,7 +198,7 @@ export const SectionInfo: React.VFC<Props> = ({
 
         <button
           className={styles.wishlistButton}
-          onClick={() => addToWishlist(section)}
+          onClick={() => cb.addToWishlist(section)}
         >
           Add to Wishlist
         </button>

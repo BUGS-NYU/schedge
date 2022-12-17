@@ -1,14 +1,15 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { SchoolSchema, Term, usePageState } from "components/state";
+import { usePageState } from "components/state";
 import css from "./index.module.css";
 import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
-import { MainLayout } from "../components/Layout";
+import { MainLayout } from "components/Layout";
+import { SchoolSchema, Term } from "components/types";
 
-export const SchoolInfoSchema = z.object({
+const SchoolInfoSchema = z.object({
   term: z.string(),
   schools: z.array(SchoolSchema),
 });
@@ -21,8 +22,7 @@ export const useSchools = (term: Term) => {
 };
 
 function Home() {
-  const { term } = usePageState();
-
+  const term = usePageState((s) => s.term);
   const { data: schools } = useSchools(term);
 
   return (
@@ -31,7 +31,7 @@ function Home() {
         <SearchBar term={term} />
       </div>
       <div className={css.schoolsContainer}>
-        <div id="departmentTitle">Schools</div>
+        <div className={css.departmentTitle}>Schools</div>
         {!!schools && (
           <div className={css.schools}>
             {schools.schools.map((school, i) => (

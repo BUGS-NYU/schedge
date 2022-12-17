@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import styles from "./section.module.css";
+import styles from "./css/section.module.css";
 import cx from "classnames";
-import { AugmentedSection, useScheduleCb } from "../pages/schedule";
 import { DateTime } from "luxon";
-import { usePageState } from "./state";
+import { AugmentedSection, usePageState } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
-import { Section } from "../pages/subject";
+import { Section } from "./types";
 
 interface DateProps {
   section: AugmentedSection;
@@ -39,7 +38,7 @@ const CampusesSchema = z.object({
 });
 
 const DateSection: React.VFC<DateProps> = ({ section }) => {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
   const { data: { campuses } = {} } = useQuery(
     ["campuses", term.code],
     async () => {
@@ -118,22 +117,13 @@ function sectionStatusText(section: Section): string {
   }
 }
 
-function styleStatus(_status): React.CSSProperties["color"] {
-  // if (status === "Open") {
-  // } else if (status === "Closed") {
-  // } else {
-  // }
-
-  return "unset";
-}
-
 export const SectionInfo: React.VFC<Props> = ({
   section,
   ignoreNotes,
   lastSection,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { addToWishlist } = useScheduleCb();
+  const cb = usePageState((s) => s.cb);
 
   return (
     <div
@@ -155,9 +145,7 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
 
         <SectionAttribute label="Status">
-          <span style={{ color: styleStatus(section.status) }}>
-            {sectionStatusText(section)}
-          </span>
+          {sectionStatusText(section)}
         </SectionAttribute>
 
         <SectionAttribute label="Location">
@@ -199,7 +187,7 @@ export const SectionInfo: React.VFC<Props> = ({
 
         <button
           className={styles.wishlistButton}
-          onClick={() => addToWishlist(section)}
+          onClick={() => cb.addToWishlist(section)}
         >
           Add to Wishlist
         </button>

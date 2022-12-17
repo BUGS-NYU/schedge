@@ -3,18 +3,16 @@ import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { usePageState } from "components/state";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { Course, SubjectSchema, useCourses } from "./subject";
-import { z } from "zod";
-import EditCalendarSVG from "components/edit-calendar.svg";
-import { ScheduleButton } from "../components/Layout";
-
-const IdSchema = z.string();
+import { useQueryParam } from "components/useQueryParam";
+import { SubjectSchema, useCourses } from "./subject";
+import GoBack from "components/img/go-back.svg";
+import { ScheduleButton } from "components/Layout";
+import { Course, IdSchema, NumberStringSchema } from "components/types";
 
 function CoursePage() {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
 
-  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const [courseid] = useQueryParam("courseid", IdSchema);
 
@@ -34,11 +32,7 @@ function CoursePage() {
           }}
         >
           <a className={styles.svgButton}>
-            <img
-              src="/img/go-back.svg"
-              alt="Go back"
-              className={styles.svgButton}
-            />
+            <GoBack className={styles.svgButton} alt="Go back" />
           </a>
         </Link>
 

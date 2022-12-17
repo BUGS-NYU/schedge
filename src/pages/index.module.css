@@ -29,17 +29,17 @@
   border-top: 1rem solid var(--grey200);
   background-color: var(--grey300);
   position: relative;
+}
 
-  & > :global(#departmentTitle) {
-    font-size: 1.7rem;
-    padding: 1rem;
-    font-weight: bold;
-    color: var(--grey700);
-    position: absolute;
-    top: 0.3rem;
-    left: 0.3rem;
-    animation: fadeIn 1.2s ease forwards;
-  }
+.departmentTitle {
+  font-size: 1.7rem;
+  padding: 1rem;
+  font-weight: bold;
+  color: var(--grey700);
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  animation: fadeIn 1.2s ease forwards;
 }
 
 .schools {
@@ -63,29 +63,22 @@
   top: 0.3rem;
   animation: fadeIn 1.2s ease forwards;
 }
-
 .schoolContainer {
   padding: 0.25rem 0;
   cursor: pointer;
-
-  & > .schoolTitle {
-    font-size: 1.2rem;
-    font-family: var(--condensedFont);
-    text-align: left;
-    margin: 0.2rem 0;
-    position: sticky;
-
-    & > .schoolCode {
-      padding: 0.5rem;
-      color: var(--grey600);
-      font-weight: 800;
-    }
-
-    & > .schoolName {
-      color: var(--grey900);
-    }
-  }
-
-  &:hover {
-  }
+}
+.schoolTitle {
+  font-size: 1.2rem;
+  font-family: var(--condensedFont);
+  text-align: left;
+  margin: 0.2rem 0;
+  position: sticky;
+}
+.schoolCode {
+  padding: 0.5rem;
+  color: var(--grey600);
+  font-weight: 800;
+}
+.schoolName {
+  color: var(--grey900);
 }

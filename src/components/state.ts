@@ -1,73 +1,90 @@
-import create from "zustand";
-import { z } from "zod";
-import { QueryNumberSchema } from "./useQueryParam";
+import create, { StateCreator } from "zustand";
+import { Section, Term } from "./types";
+import { persist } from "zustand/middleware";
 
-const SubjectSchema = z.object({
-  code: z.string(),
-  name: z.string(),
-});
-
-export const SchoolSchema = z.object({
-  name: z.string(),
-  subjects: z.array(SubjectSchema),
-});
-
-export const SemesterSchema = z.union([
-  z.literal("sp"),
-  z.literal("fa"),
-  z.literal("ja"),
-  z.literal("su"),
-]);
-
-export type Semester = z.infer<typeof SemesterSchema>;
-
-export const parseTerm = (term: string): Term => {
-  return {
-    semester: SemesterSchema.parse(term.substring(0, 2)),
-    year: QueryNumberSchema.parse(term.substring(2)),
-    code: term,
-  };
-};
-
-export const semName = (sem: Semester) => {
-  switch (sem) {
-    case "ja":
-      return "January";
-    case "sp":
-      return "Spring";
-    case "su":
-      return "Summer";
-    case "fa":
-      return "Fall";
-  }
-};
-
-export interface Term {
-  year: number;
-  semester: Semester;
-  code: string;
+export interface AugmentedSection extends Section {
+  name: string;
+  sectionName?: string | null;
+  deptCourseId: string;
+  subjectCode: string;
 }
 
 interface PageState {
   term: Term;
-  update: (partial: Partial<Term>) => void;
+  schedule: Record<number, AugmentedSection>;
+  wishlist: Record<number, AugmentedSection>;
+
+  cb: {
+    updateTerm: (term: Term) => void;
+    addToWishlist: (section: AugmentedSection) => void;
+    removeFromWishlist: (regNum: number) => void;
+    scheduleFromWishlist: (regNum: number) => void;
+    removeFromSchedule: (regNum: number) => void;
+    clearSchedule: () => void;
+  };
 }
 
-export const usePageState = create<PageState>((set) => {
-  return {
-    update: (term) => {
-      set((prev) => ({
-        term: {
-          ...prev.term,
-          ...term,
-        },
-      }));
-    },
+const store: StateCreator<PageState, any> = (set, get) => {
+  const scheduleFromWishlist = (regNum: number) => {
+    const { schedule, wishlist } = get();
+    const wishlistEntry = wishlist[regNum];
+    if (!wishlistEntry) return;
 
+    set({ schedule: { ...schedule, [regNum]: wishlistEntry } });
+  };
+
+  const removeFromSchedule = (regNum: number) => {
+    const { schedule } = get();
+
+    const newSchedule = { ...schedule };
+    delete newSchedule[regNum];
+
+    set({ schedule: newSchedule });
+  };
+
+  const addToWishlist = (section: AugmentedSection) => {
+    const regNum = section.registrationNumber;
+    const { wishlist } = get();
+    set({ wishlist: { ...wishlist, [regNum]: section } });
+  };
+
+  const removeFromWishlist = (regNum: number) => {
+    const { wishlist, schedule } = get();
+    const newWishlist = { ...wishlist };
+    delete newWishlist[regNum];
+    const newSchedule = { ...schedule };
+    delete newSchedule[regNum];
+
+    set({ wishlist: newWishlist, schedule: newSchedule });
+  };
+
+  return {
     term: {
       year: 2023,
-      semester: "sp",
+      sem: "sp",
       code: "sp2023",
     },
+
+    schedule: {},
+    wishlist: {},
+
+    cb: {
+      updateTerm: (term) => set({ term }),
+      clearSchedule: () => set({ schedule: {}, wishlist: {} }),
+      addToWishlist,
+      removeFromWishlist,
+      scheduleFromWishlist,
+      removeFromSchedule,
+    },
   };
-});
+};
+
+export const usePageState = create(
+  persist(store, {
+    name: "page-globals-storage", // name of item in the storage (must be unique)
+    partialize: (state) => {
+      const { cb, ...partial } = state;
+      return partial;
+    },
+  })
+);

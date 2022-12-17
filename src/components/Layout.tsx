@@ -8,7 +8,7 @@ import axios from "axios";
 import { z } from "zod";
 import EditCalendarSVG from "./edit-calendar.svg";
 import cx from "classnames";
-import { parseTerm, Semester, semName, Term } from "./types";
+import { NumberStringSchema, Semester, SemesterSchema, Term } from "./types";
 
 export const ScheduleButton: React.VFC<{
   className?: string;
@@ -34,10 +34,23 @@ export const ScheduleButton: React.VFC<{
   );
 };
 
-async function fetchTerms(): Promise<Term[]> {
+const semName: Record<Semester, string> = {
+  ja: "January",
+  sp: "Spring",
+  su: "Summer",
+  fa: "Fall",
+};
+
+async function fetchTerms(): Promise<Record<string, Term>> {
   const resp = await axios.get("/api/terms");
   const data = z.array(z.string()).parse(resp.data);
-  const terms = data.map(parseTerm);
+  const terms = data.map((term: string): Term => {
+    return {
+      semester: SemesterSchema.parse(term.substring(0, 2)),
+      year: NumberStringSchema.parse(term.substring(2)),
+      code: term,
+    };
+  });
 
   const semNum = (sem: Semester): number => {
     switch (sem) {
@@ -59,11 +72,16 @@ async function fetchTerms(): Promise<Term[]> {
 
   terms.reverse();
 
-  return terms;
+  const termsByCode = {};
+  for (const term of terms) {
+    termsByCode[term.code] = term;
+  }
+
+  return termsByCode;
 }
 
 export const MainLayout: React.FC = ({ children }) => {
-  const { data: termData } = useQuery(["terms"], fetchTerms);
+  const { data: termsByCode } = useQuery(["terms"], fetchTerms);
 
   const term = usePageState((s) => s.term);
   const update = usePageState((s) => s.update);
@@ -90,16 +108,18 @@ export const MainLayout: React.FC = ({ children }) => {
               className={headerStyles.selectBox}
               value={term.code}
               onChange={(evt) => {
-                update(parseTerm(evt.target.value));
+                const newTerm = termsByCode?.[evt.target.value];
+                newTerm && update(newTerm);
               }}
             >
-              {termData?.map((term) => {
-                return (
-                  <option key={term.code} value={term.code}>
-                    {semName(term.semester)} {term.year}
-                  </option>
-                );
-              })}
+              {termsByCode &&
+                Object.values(termsByCode).map((term) => {
+                  return (
+                    <option key={term.code} value={term.code}>
+                      {semName[term.semester]} {term.year}
+                    </option>
+                  );
+                })}
             </select>
 
             <svg

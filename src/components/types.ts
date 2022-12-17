@@ -42,27 +42,6 @@ export const NumberStringSchema = z.preprocess((obj): number | undefined => {
   return undefined;
 }, z.number());
 
-export const parseTerm = (term: string): Term => {
-  return {
-    semester: SemesterSchema.parse(term.substring(0, 2)),
-    year: NumberStringSchema.parse(term.substring(2)),
-    code: term,
-  };
-};
-
-export const semName = (sem: Semester) => {
-  switch (sem) {
-    case "ja":
-      return "January";
-    case "sp":
-      return "Spring";
-    case "su":
-      return "Summer";
-    case "fa":
-      return "Fall";
-  }
-};
-
 export interface Term {
   year: number;
   semester: Semester;

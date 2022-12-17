@@ -65,14 +65,13 @@ const ScheduleSchema = CalendarSchema.extend({
   conflictB: CalendarMeetingSchema.optional(),
 });
 
-interface MeetingProps {
-  meeting: CalendarMeeting;
-}
-
 function addMinutes(date: Date, minutes: number): Date {
   return new Date(date.getTime() + minutes * 60000);
 }
 
+interface MeetingProps {
+  meeting: CalendarMeeting;
+}
 export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
   const computeMargin = (parsedDate: Date) => {
     // The start time is 8:00. The size of each grid block is 4rem. We need a margin
@@ -117,7 +116,6 @@ export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
 interface Props {
   registrationNumbers: string[];
 }
-
 export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
   const { term } = usePageState();
   const { data: schedule, isLoading } = useQuery(

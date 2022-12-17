@@ -32,7 +32,7 @@ function Home() {
         <SearchBar term={term} />
       </div>
       <div className={css.schoolsContainer}>
-        <div id="departmentTitle">Schools</div>
+        <div className={css.departmentTitle}>Schools</div>
         {!!schools && (
           <div className={css.schools}>
             {schools.schools.map((school, i) => (

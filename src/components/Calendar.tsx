@@ -24,9 +24,7 @@ const times = [
   "21:00",
 ];
 
-const days = ["su", "mo", "tu", "we", "th", "fr", "sa"] as const;
-
-const daysToStr = {
+const days = {
   su: "Sunday",
   mo: "Monday",
   tu: "Tuesday",
@@ -151,7 +149,7 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
         ))}
       </div>
       <div className={styles.course}>
-        {days.map((day, i) => {
+        {Object.entries(days).map(([day, name], i) => {
           // ignoring Saturday and Sunday for now
           if (day == "su" || day == "sa") {
             return null;
@@ -160,7 +158,7 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
           const meetings = schedule?.[day] ?? [];
           return (
             <div className={styles.calendarDay} key={day}>
-              {daysToStr[day]}
+              {name}
               {meetings.map((meeting, i) => {
                 return <ScheduleCourse meeting={meeting} key={i} />;
               })}

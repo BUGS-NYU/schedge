@@ -7,9 +7,7 @@ interface Props {
 }
 
 export const WishlistCourse: React.VFC<Props> = ({ section }) => {
-  const { schedule } = useSchedule();
-  const { removeFromWishlist, scheduleFromWishlist, removeFromSchedule } =
-    useScheduleCb();
+  const { schedule, cb } = useSchedule();
 
   return (
     <div className={styles.wishlistCourseContainer}>
@@ -32,14 +30,14 @@ export const WishlistCourse: React.VFC<Props> = ({ section }) => {
             checked={!!schedule[section.registrationNumber]}
             onChange={(e) =>
               schedule[section.registrationNumber]
-                ? removeFromSchedule(section.registrationNumber)
-                : scheduleFromWishlist(section.registrationNumber)
+                ? cb.removeFromSchedule(section.registrationNumber)
+                : cb.scheduleFromWishlist(section.registrationNumber)
             }
           />
 
           <button
             className={styles.removeButton}
-            onClick={() => removeFromWishlist(section.registrationNumber)}
+            onClick={() => cb.removeFromWishlist(section.registrationNumber)}
             tabIndex={0}
           >
             Remove

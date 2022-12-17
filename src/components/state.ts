@@ -107,7 +107,7 @@ export const useSchedule = create(
       const { cb, ...partial } = state;
       return partial;
     },
-  }),
+  })
 );
 
 export function useScheduleCb() {

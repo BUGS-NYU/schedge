@@ -2,15 +2,15 @@ import "./App.css";
 import React from "react";
 import { usePageState } from "components/state";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { SemesterSchema } from "../components/types";
+import { useQueryParam } from "../hooks/useQueryParam";
+import { NumberStringSchema, SemesterSchema } from "../components/types";
 
 const queryClient = new QueryClient();
 
 function App({ Component, pageProps }) {
   const update = usePageState((s) => s.update);
 
-  const [year] = useQueryParam("year", QueryNumberSchema);
+  const [year] = useQueryParam("year", NumberStringSchema);
   const [semester] = useQueryParam("semester", SemesterSchema);
 
   React.useEffect(() => {

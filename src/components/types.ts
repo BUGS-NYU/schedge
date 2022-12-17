@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { QueryNumberSchema } from "./useQueryParam";
 
 export const IdSchema = z.string();
 
@@ -21,10 +20,32 @@ export const SemesterSchema = z.union([
   z.literal("su"),
 ]);
 
+export const NumberStringSchema = z.preprocess((obj): number | undefined => {
+  if (typeof obj === "string") {
+    const parsed = Number.parseInt(obj, 10);
+
+    // Number.parseInt returns NaN when it fails to parse.
+    // This *should* never happen, but designers have started editing
+    // the URL parameters manually, so we need to check this value
+    // somewhat carefully to avoid propagating a NaN.
+    if (Number.isNaN(parsed)) {
+      return undefined;
+    }
+
+    return parsed;
+  }
+
+  if (typeof obj === "number") {
+    return obj;
+  }
+
+  return undefined;
+}, z.number());
+
 export const parseTerm = (term: string): Term => {
   return {
     semester: SemesterSchema.parse(term.substring(0, 2)),
-    year: QueryNumberSchema.parse(term.substring(2)),
+    year: NumberStringSchema.parse(term.substring(2)),
     code: term,
   };
 };

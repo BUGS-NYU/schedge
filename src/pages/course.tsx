@@ -3,15 +3,15 @@ import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { usePageState } from "components/state";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { useQueryParam } from "../hooks/useQueryParam";
 import { SubjectSchema, useCourses } from "./subject";
 import { ScheduleButton } from "../components/Layout";
-import { Course, IdSchema } from "../components/types";
+import { Course, IdSchema, NumberStringSchema } from "../components/types";
 
 function CoursePage() {
   const { term } = usePageState();
 
-  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const [courseid] = useQueryParam("courseid", IdSchema);
 

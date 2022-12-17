@@ -3,13 +3,14 @@ import { usePageState } from "components/state";
 import styles from "./school.module.css";
 import Link from "next/link";
 import { useSchools } from "./index";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { useQueryParam } from "../hooks/useQueryParam";
 import { MainLayout } from "../components/Layout";
+import { NumberStringSchema } from "../components/types";
 
 export default function SchoolPage() {
   const { term } = usePageState();
 
-  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const { data: schools, isLoading } = useSchools(term);
   const school = schools?.schools?.[schoolIndex];
 

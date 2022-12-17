@@ -3,12 +3,17 @@ import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { useQueryParam } from "../hooks/useQueryParam";
 import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
 import { MainLayout } from "../components/Layout";
-import { Course, CourseSchema, Term } from "../components/types";
+import {
+  Course,
+  CourseSchema,
+  NumberStringSchema,
+  Term,
+} from "../components/types";
 
 export const useCourses = (term: Term, subject: string) => {
   return useQuery(
@@ -30,7 +35,7 @@ export const SubjectSchema = z.string();
 export default function SubjectPage() {
   const { term } = usePageState();
 
-  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const { data: schools } = useSchools(term);
   const school = schools?.schools?.[schoolIndex];

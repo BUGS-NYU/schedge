@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./wishlist-course.module.css";
+import styles from "./css/wishlist-course.module.css";
 import {
   AugmentedSection,
   useSchedule,

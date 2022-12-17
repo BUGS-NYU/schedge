@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from "./section.module.css";
+import styles from "./css/section.module.css";
 import cx from "classnames";
 import { AugmentedSection, useScheduleCb } from "../pages/schedule";
 import { DateTime } from "luxon";

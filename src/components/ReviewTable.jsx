@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./review-table.module.css";
+import styles from "./css/review-table.module.css";
 
 const ExpandMoreIcon = ({ style }) => {
   return (

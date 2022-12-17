@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
 import { usePageState } from "./state";
-import headerStyles from "./header.module.css";
+import headerStyles from "./css/header.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { z } from "zod";

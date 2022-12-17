@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import cx from "classnames";
-import styles from "./SearchBar.module.css";
+import styles from "./css/SearchBar.module.css";
 import { useQuery } from "react-query";
 import axios from "axios";
 import { useSchools } from "../pages";

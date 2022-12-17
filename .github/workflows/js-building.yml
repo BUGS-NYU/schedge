@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  js-linter:
+  ts-checker:
     runs-on: ubuntu-latest
 
     steps:

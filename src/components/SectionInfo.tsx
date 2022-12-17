@@ -132,7 +132,7 @@ export const SectionInfo: React.VFC<Props> = ({
   lastSection,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const cb = useSchedule(s => s.cb);
+  const cb = useSchedule((s) => s.cb);
 
   return (
     <div

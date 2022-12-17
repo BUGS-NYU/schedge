@@ -5,6 +5,7 @@ import styles from "./course.module.css";
 import { usePageState } from "components/state";
 import { useQueryParam } from "hooks/useQueryParam";
 import { SubjectSchema, useCourses } from "./subject";
+import GoBack from "components/img/go-back.svg";
 import { ScheduleButton } from "components/Layout";
 import { Course, IdSchema, NumberStringSchema } from "components/types";
 
@@ -31,11 +32,7 @@ function CoursePage() {
           }}
         >
           <a className={styles.svgButton}>
-            <img
-              src="/img/go-back.svg"
-              alt="Go back"
-              className={styles.svgButton}
-            />
+            <GoBack className={styles.svgButton} alt="Go back" />
           </a>
         </Link>
 

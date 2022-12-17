@@ -3,7 +3,7 @@ import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { useQueryParam } from "hooks/useQueryParam";
+import { useQueryParam } from "components/useQueryParam";
 import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";

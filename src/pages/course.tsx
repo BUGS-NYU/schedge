@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { usePageState } from "components/state";
-import { useQueryParam } from "hooks/useQueryParam";
+import { useQueryParam } from "components/useQueryParam";
 import { SubjectSchema, useCourses } from "./subject";
 import GoBack from "components/img/go-back.svg";
 import { ScheduleButton } from "components/Layout";

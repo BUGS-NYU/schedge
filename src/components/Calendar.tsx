@@ -6,7 +6,7 @@ import axios from "axios";
 import { usePageState } from "./state";
 import { StringDateSchema } from "../pages/subject";
 
-export const times = [
+const times = [
   "",
   "8:00",
   "9:00",
@@ -24,9 +24,9 @@ export const times = [
   "21:00",
 ];
 
-export const days = ["su", "mo", "tu", "we", "th", "fr", "sa"] as const;
+const days = ["su", "mo", "tu", "we", "th", "fr", "sa"] as const;
 
-export const daysToStr = {
+const daysToStr = {
   su: "Sunday",
   mo: "Monday",
   tu: "Tuesday",
@@ -151,23 +151,22 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
         ))}
       </div>
       <div className={styles.course}>
-        {schedule &&
-          days.map((day, i) => {
-            if (day == "su" || day == "sa") {
-              return null;
-            }
+        {days.map((day, i) => {
+          if (day == "su" || day == "sa") {
+            return null;
+          }
 
-            const meetings: CalendarMeeting[] = schedule[day];
-            //ignoring Saturday and Sunday for now
-            return (
-              <div className={styles.calendarDay} key={day}>
-                {daysToStr[day]}
-                {meetings.map((meeting, i) => {
-                  return <ScheduleCourse meeting={meeting} key={i} />;
-                })}
-              </div>
-            );
-          })}
+          const meetings: CalendarMeeting[] = schedule?.[day] ?? [];
+          //ignoring Saturday and Sunday for now
+          return (
+            <div className={styles.calendarDay} key={day}>
+              {daysToStr[day]}
+              {meetings.map((meeting, i) => {
+                return <ScheduleCourse meeting={meeting} key={i} />;
+              })}
+            </div>
+          );
+        })}
         {/* The calendar is generated using a grid. The time range is from 8:00 to
         21:00 so we need 13 rows. Currently we are having 5 days from Mon-Fri.
         So we need to generate 13 * 5 = 65 grid tile. */}

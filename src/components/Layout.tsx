@@ -46,7 +46,7 @@ async function fetchTerms(): Promise<Record<string, Term>> {
   const data = z.array(z.string()).parse(resp.data);
   const terms = data.map((term: string): Term => {
     return {
-      semester: SemesterSchema.parse(term.substring(0, 2)),
+      sem: SemesterSchema.parse(term.substring(0, 2)),
       year: NumberStringSchema.parse(term.substring(2)),
       code: term,
     };
@@ -67,9 +67,8 @@ async function fetchTerms(): Promise<Record<string, Term>> {
 
   terms.sort((t1, t2) => {
     if (t1.year !== t2.year) return t1.year - t2.year;
-    return semNum(t1.semester) - semNum(t2.semester);
+    return semNum(t1.sem) - semNum(t2.sem);
   });
-
   terms.reverse();
 
   const termsByCode = {};

@@ -44,7 +44,7 @@ export const NumberStringSchema = z.preprocess((obj): number | undefined => {
 
 export interface Term {
   year: number;
-  semester: Semester;
+  sem: Semester;
   code: string;
 }
 

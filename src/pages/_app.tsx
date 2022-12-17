@@ -19,7 +19,7 @@ function App({ Component, pageProps }) {
     }
 
     if (semester) {
-      update({ semester });
+      update({ sem: semester });
     }
   }, [update, year, semester]);
 

@@ -81,7 +81,7 @@ async function fetchTerms(): Promise<Record<string, Term>> {
 }
 
 export const MainLayout: React.FC = ({ children }) => {
-  const { data: termsByCode } = useQuery(["terms"], fetchTerms);
+  const { data: termsByCode = {} } = useQuery(["terms"], fetchTerms);
 
   const term = usePageState((s) => s.term);
   const update = usePageState((s) => s.update);
@@ -108,18 +108,17 @@ export const MainLayout: React.FC = ({ children }) => {
               className={headerStyles.selectBox}
               value={term.code}
               onChange={(evt) => {
-                const newTerm = termsByCode?.[evt.target.value];
+                const newTerm = termsByCode[evt.target.value];
                 newTerm && update(newTerm);
               }}
             >
-              {termsByCode &&
-                Object.values(termsByCode).map((term) => {
-                  return (
-                    <option key={term.code} value={term.code}>
-                      {semName[term.semester]} {term.year}
-                    </option>
-                  );
-                })}
+              {Object.values(termsByCode).map((term) => {
+                return (
+                  <option key={term.code} value={term.code}>
+                    {semName[term.semester]} {term.year}
+                  </option>
+                );
+              })}
             </select>
 
             <svg

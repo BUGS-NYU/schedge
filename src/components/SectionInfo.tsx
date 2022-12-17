@@ -7,7 +7,7 @@ import { usePageState } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
-import { Section } from "../pages/subject";
+import { Section } from "./types";
 
 interface DateProps {
   section: AugmentedSection;

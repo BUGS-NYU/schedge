@@ -1,8 +1,9 @@
 import "./App.css";
 import React from "react";
-import { SemesterSchema, usePageState } from "components/state";
+import { usePageState } from "components/state";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { SemesterSchema } from "../components/types";
 
 const queryClient = new QueryClient();
 

@@ -1,14 +1,15 @@
 import React from "react";
 import { useQuery } from "react-query";
-import { SchoolSchema, Term, usePageState } from "components/state";
+import { usePageState } from "components/state";
 import css from "./index.module.css";
 import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
 import { MainLayout } from "../components/Layout";
+import { SchoolSchema, Term } from "../components/types";
 
-export const SchoolInfoSchema = z.object({
+const SchoolInfoSchema = z.object({
   term: z.string(),
   schools: z.array(SchoolSchema),
 });

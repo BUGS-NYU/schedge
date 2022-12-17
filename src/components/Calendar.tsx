@@ -4,7 +4,7 @@ import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
 import { usePageState } from "./state";
-import { StringDateSchema } from "../pages/subject";
+import { StringDateSchema } from "./types";
 
 const times = [
   "",
@@ -165,6 +165,7 @@ export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
             </div>
           );
         })}
+
         {/* The calendar is generated using a grid. The time range is from 8:00 to
         21:00 so we need 13 rows. Currently we are having 5 days from Mon-Fri.
         So we need to generate 13 * 5 = 65 grid tile. */}

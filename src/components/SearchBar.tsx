@@ -4,8 +4,8 @@ import cx from "classnames";
 import styles from "./SearchBar.module.css";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { Term } from "./state";
 import { useSchools } from "../pages";
+import { Term } from "./types";
 
 interface Props {
   term: Term;

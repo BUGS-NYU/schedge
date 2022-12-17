@@ -1,13 +1,14 @@
 import React from "react";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
-import { parseTerm, Semester, semName, Term, usePageState } from "./state";
+import { usePageState } from "./state";
 import headerStyles from "./header.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { z } from "zod";
 import EditCalendarSVG from "./edit-calendar.svg";
 import cx from "classnames";
+import { parseTerm, Semester, semName, Term } from "./types";
 
 export const ScheduleButton: React.VFC<{
   className?: string;
@@ -63,12 +64,9 @@ async function fetchTerms(): Promise<Term[]> {
 
 export const MainLayout: React.FC = ({ children }) => {
   const { data: termData } = useQuery(["terms"], fetchTerms);
-  const router = useRouter();
 
   const term = usePageState((s) => s.term);
   const update = usePageState((s) => s.update);
-
-  const selectRef = React.useRef<HTMLSelectElement>();
 
   return (
     <div
@@ -89,7 +87,6 @@ export const MainLayout: React.FC = ({ children }) => {
 
           <div className={headerStyles.selectWrapper}>
             <select
-              ref={selectRef}
               className={headerStyles.selectBox}
               value={term.code}
               onChange={(evt) => {

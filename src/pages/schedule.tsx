@@ -5,9 +5,8 @@ import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import create, { StateCreator } from "zustand";
-import { Section } from "./subject";
 import { MainLayout } from "components/Layout";
-import { Term } from "components/state";
+import { Section, Term } from "../components/types";
 
 export interface AugmentedSection extends Section {
   name: string;

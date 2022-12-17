@@ -4,12 +4,9 @@ import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { usePageState } from "components/state";
 import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
-import { Course, SubjectSchema, useCourses } from "./subject";
-import { z } from "zod";
-import EditCalendarSVG from "components/edit-calendar.svg";
+import { SubjectSchema, useCourses } from "./subject";
 import { ScheduleButton } from "../components/Layout";
-
-const IdSchema = z.string();
+import { Course, IdSchema } from "../components/types";
 
 function CoursePage() {
   const { term } = usePageState();

@@ -33,7 +33,7 @@ export const useCourses = (term: Term, subject: string) => {
 
 export const SubjectSchema = z.string();
 export default function SubjectPage() {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
 
   const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);

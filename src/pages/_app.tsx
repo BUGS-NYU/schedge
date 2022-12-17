@@ -8,18 +8,14 @@ import { NumberStringSchema, SemesterSchema } from "components/types";
 const queryClient = new QueryClient();
 
 function App({ Component, pageProps }) {
-  const update = usePageState((s) => s.update);
+  const update = usePageState((s) => s.cb.updateTerm);
 
   const [year] = useQueryParam("year", NumberStringSchema);
   const [semester] = useQueryParam("semester", SemesterSchema);
 
   React.useEffect(() => {
-    if (year) {
-      update({ year });
-    }
-
-    if (semester) {
-      update({ sem: semester });
+    if (year && semester) {
+      update({ year, sem: semester, code: `${semester}${year}` });
     }
   }, [update, year, semester]);
 

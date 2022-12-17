@@ -4,10 +4,10 @@ import WishlistCourse from "components/WishlistCourse";
 import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import { MainLayout } from "components/Layout";
-import { useSchedule } from "components/state";
+import { usePageState } from "components/state";
 
 function SchedulePage() {
-  const { schedule, wishlist, cb } = useSchedule();
+  const { schedule, wishlist, cb } = usePageState();
   const wishlistLength = Object.keys(wishlist).length;
 
   return (

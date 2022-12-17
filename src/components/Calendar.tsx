@@ -117,7 +117,7 @@ interface Props {
   registrationNumbers: string[];
 }
 export const Calendar: React.VFC<Props> = ({ registrationNumbers }) => {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
   const { data: schedule, isLoading } = useQuery(
     ["schedule", term.code, ...registrationNumbers],
     async () => {

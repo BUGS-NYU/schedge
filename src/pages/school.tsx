@@ -8,7 +8,7 @@ import { MainLayout } from "components/Layout";
 import { NumberStringSchema } from "components/types";
 
 export default function SchoolPage() {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
 
   const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const { data: schools, isLoading } = useSchools(term);

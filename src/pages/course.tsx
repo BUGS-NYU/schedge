@@ -10,7 +10,7 @@ import { ScheduleButton } from "components/Layout";
 import { Course, IdSchema, NumberStringSchema } from "components/types";
 
 function CoursePage() {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
 
   const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);

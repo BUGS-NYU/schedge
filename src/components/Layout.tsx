@@ -75,7 +75,7 @@ export const MainLayout: React.FC = ({ children }) => {
   const { data: termsByCode = {} } = useQuery(["terms"], fetchTerms);
 
   const term = usePageState((s) => s.term);
-  const update = usePageState((s) => s.update);
+  const update = usePageState((s) => s.cb.updateTerm);
 
   return (
     <div

@@ -1,13 +1,13 @@
 import React from "react";
 import styles from "./css/wishlist-course.module.css";
-import { AugmentedSection, useSchedule } from "./state";
+import { AugmentedSection, usePageState } from "./state";
 
 interface Props {
   section: AugmentedSection;
 }
 
 export const WishlistCourse: React.VFC<Props> = ({ section }) => {
-  const { schedule, cb } = useSchedule();
+  const { schedule, cb } = usePageState();
 
   return (
     <div className={styles.wishlistCourseContainer}>

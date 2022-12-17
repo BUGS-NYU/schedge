@@ -2,30 +2,6 @@ import create, { StateCreator } from "zustand";
 import { Section, Term } from "./types";
 import { persist } from "zustand/middleware";
 
-interface PageState {
-  term: Term;
-  update: (partial: Partial<Term>) => void;
-}
-
-export const usePageState = create<PageState>((set) => {
-  return {
-    update: (term) => {
-      set((prev) => ({
-        term: {
-          ...prev.term,
-          ...term,
-        },
-      }));
-    },
-
-    term: {
-      year: 2023,
-      sem: "sp",
-      code: "sp2023",
-    },
-  };
-});
-
 export interface AugmentedSection extends Section {
   name: string;
   sectionName?: string | null;
@@ -33,11 +9,13 @@ export interface AugmentedSection extends Section {
   subjectCode: string;
 }
 
-interface ScheduleState {
+interface PageState {
+  term: Term;
   schedule: Record<number, AugmentedSection>;
   wishlist: Record<number, AugmentedSection>;
 
   cb: {
+    updateTerm: (term: Term) => void;
     addToWishlist: (section: AugmentedSection) => void;
     removeFromWishlist: (regNum: number) => void;
     scheduleFromWishlist: (regNum: number) => void;
@@ -46,7 +24,7 @@ interface ScheduleState {
   };
 }
 
-const store: StateCreator<ScheduleState, any, []> = (set, get) => {
+const store: StateCreator<PageState, any> = (set, get) => {
   const scheduleFromWishlist = (regNum: number) => {
     const { schedule, wishlist } = get();
     const wishlistEntry = wishlist[regNum];
@@ -61,9 +39,7 @@ const store: StateCreator<ScheduleState, any, []> = (set, get) => {
     const newSchedule = { ...schedule };
     delete newSchedule[regNum];
 
-    set({
-      schedule: newSchedule,
-    });
+    set({ schedule: newSchedule });
   };
 
   const addToWishlist = (section: AugmentedSection) => {
@@ -82,27 +58,30 @@ const store: StateCreator<ScheduleState, any, []> = (set, get) => {
     set({ wishlist: newWishlist, schedule: newSchedule });
   };
 
-  const clearSchedule = () => {
-    set({ schedule: {}, wishlist: {} });
-  };
-
   return {
+    term: {
+      year: 2023,
+      sem: "sp",
+      code: "sp2023",
+    },
+
     schedule: {},
     wishlist: {},
 
     cb: {
+      updateTerm: (term) => set({ term }),
+      clearSchedule: () => set({ schedule: {}, wishlist: {} }),
       addToWishlist,
       removeFromWishlist,
       scheduleFromWishlist,
       removeFromSchedule,
-      clearSchedule,
     },
   };
 };
 
-export const useSchedule = create(
+export const usePageState = create(
   persist(store, {
-    name: "schedule-local-storage", // name of item in the storage (must be unique)
+    name: "page-globals-storage", // name of item in the storage (must be unique)
     partialize: (state) => {
       const { cb, ...partial } = state;
       return partial;

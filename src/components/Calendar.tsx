@@ -85,6 +85,16 @@ export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
     );
   };
 
+  const endDate = addMinutes(meeting.beginDate, meeting.minutesDuration);
+  const begin = meeting.beginDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const end = endDate.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   return (
     <div
       className={styles.courseBlock}
@@ -99,17 +109,7 @@ export const ScheduleCourse: React.VFC<MeetingProps> = ({ meeting }) => {
         </div>
       </div>
       <div className="time">
-        {`${meeting.beginDate.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-              - ${addMinutes(
-                meeting.beginDate,
-                meeting.minutesDuration
-              ).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}`}
+        {begin} - {end}
       </div>
       <div className="location">{meeting.location}</div>
     </div>

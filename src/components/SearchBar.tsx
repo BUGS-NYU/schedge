@@ -4,7 +4,7 @@ import cx from "classnames";
 import styles from "./css/SearchBar.module.css";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { useSchools } from "../pages";
+import { useSchools } from "pages/index";
 import Loading from "components/img/loading.svg";
 import { Term } from "./types";
 

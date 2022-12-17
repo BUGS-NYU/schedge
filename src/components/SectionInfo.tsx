@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./section.module.css";
 import cx from "classnames";
-import { AugmentedSection, useSchedule } from "../pages/schedule";
+import { AugmentedSection, useScheduleCb } from "../pages/schedule";
 import { DateTime } from "luxon";
 import { usePageState } from "./state";
 import { useQuery } from "react-query";
@@ -133,7 +133,7 @@ export const SectionInfo: React.VFC<Props> = ({
   lastSection,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { addToWishlist } = useSchedule();
+  const { addToWishlist } = useScheduleCb();
 
   return (
     <div

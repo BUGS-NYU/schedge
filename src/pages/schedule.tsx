@@ -5,7 +5,8 @@ import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import create from "zustand";
 import { Section } from "./subject";
-import { MainLayout } from "../components/Layout";
+import { MainLayout } from "components/Layout";
+import { Term } from "components/state";
 
 export interface AugmentedSection extends Section {
   name: string;
@@ -14,15 +15,25 @@ export interface AugmentedSection extends Section {
   subjectCode: string;
 }
 
-interface ScheduleState {
+interface Schedule {
+  term: Term;
   schedule: Record<number, AugmentedSection>;
   wishlist: Record<number, AugmentedSection>;
+}
 
-  addToWishlist: (section: AugmentedSection) => void;
-  removeFromWishlist: (regNum: number) => void;
-  scheduleFromWishlist: (regNum: number) => void;
-  removeFromSchedule: (regNum: number) => void;
-  clearSchedule: () => void;
+interface ScheduleState {
+  term: Term | undefined;
+  schedule: Record<number, AugmentedSection>;
+  wishlist: Record<number, AugmentedSection>;
+  archive: Schedule[];
+
+  cb: {
+    addToWishlist: (section: AugmentedSection) => void;
+    removeFromWishlist: (regNum: number) => void;
+    scheduleFromWishlist: (regNum: number) => void;
+    removeFromSchedule: (regNum: number) => void;
+    clearSchedule: () => void;
+  };
 }
 
 export const useSchedule = create<ScheduleState>((set, get) => {
@@ -62,23 +73,32 @@ export const useSchedule = create<ScheduleState>((set, get) => {
   };
 
   const clearSchedule = () => {
-    set({ schedule: [], wishlist: [] });
+    set({ schedule: {}, wishlist: {} });
   };
 
   return {
-    schedule: [],
-    wishlist: [],
+    term: undefined,
+    schedule: {},
+    wishlist: {},
+    archive: [],
 
-    addToWishlist,
-    removeFromWishlist,
-    scheduleFromWishlist,
-    removeFromSchedule,
-    clearSchedule,
-  } as ScheduleState;
+    cb: {
+      addToWishlist,
+      removeFromWishlist,
+      scheduleFromWishlist,
+      removeFromSchedule,
+      clearSchedule,
+    },
+  };
 });
 
+export function useScheduleCb() {
+  return useSchedule().cb;
+}
+
 function SchedulePage() {
-  const { schedule, wishlist, clearSchedule } = useSchedule();
+  const { schedule, wishlist } = useSchedule();
+  const { clearSchedule } = useScheduleCb();
   const wishlistLength = Object.keys(wishlist).length;
 
   return (

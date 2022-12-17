@@ -6,7 +6,7 @@ import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
 import create, { StateCreator } from "zustand";
 import { MainLayout } from "components/Layout";
-import { Section, Term } from "../components/types";
+import { Section, Term } from "components/types";
 
 export interface AugmentedSection extends Section {
   name: string;

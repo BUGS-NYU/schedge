@@ -1,10 +1,6 @@
 import React from "react";
 import styles from "./css/wishlist-course.module.css";
-import {
-  AugmentedSection,
-  useSchedule,
-  useScheduleCb,
-} from "../pages/schedule";
+import { AugmentedSection, useSchedule, useScheduleCb } from "pages/schedule";
 
 interface Props {
   section: AugmentedSection;

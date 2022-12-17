@@ -2,8 +2,8 @@ import "./App.css";
 import React from "react";
 import { usePageState } from "components/state";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { useQueryParam } from "../hooks/useQueryParam";
-import { NumberStringSchema, SemesterSchema } from "../components/types";
+import { useQueryParam } from "hooks/useQueryParam";
+import { NumberStringSchema, SemesterSchema } from "components/types";
 
 const queryClient = new QueryClient();
 

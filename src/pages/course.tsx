@@ -3,10 +3,10 @@ import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
 import { usePageState } from "components/state";
-import { useQueryParam } from "../hooks/useQueryParam";
+import { useQueryParam } from "hooks/useQueryParam";
 import { SubjectSchema, useCourses } from "./subject";
-import { ScheduleButton } from "../components/Layout";
-import { Course, IdSchema, NumberStringSchema } from "../components/types";
+import { ScheduleButton } from "components/Layout";
+import { Course, IdSchema, NumberStringSchema } from "components/types";
 
 function CoursePage() {
   const { term } = usePageState();

@@ -3,17 +3,17 @@ import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { useQueryParam } from "../hooks/useQueryParam";
+import { useQueryParam } from "hooks/useQueryParam";
 import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
-import { MainLayout } from "../components/Layout";
+import { MainLayout } from "components/Layout";
 import {
   Course,
   CourseSchema,
   NumberStringSchema,
   Term,
-} from "../components/types";
+} from "components/types";
 
 export const useCourses = (term: Term, subject: string) => {
   return useQuery(

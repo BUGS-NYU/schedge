@@ -3,9 +3,9 @@ import { usePageState } from "components/state";
 import styles from "./school.module.css";
 import Link from "next/link";
 import { useSchools } from "./index";
-import { useQueryParam } from "../hooks/useQueryParam";
-import { MainLayout } from "../components/Layout";
-import { NumberStringSchema } from "../components/types";
+import { useQueryParam } from "hooks/useQueryParam";
+import { MainLayout } from "components/Layout";
+import { NumberStringSchema } from "components/types";
 
 export default function SchoolPage() {
   const { term } = usePageState();

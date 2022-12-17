@@ -6,8 +6,8 @@ import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
-import { MainLayout } from "../components/Layout";
-import { SchoolSchema, Term } from "../components/types";
+import { MainLayout } from "components/Layout";
+import { SchoolSchema, Term } from "components/types";
 
 const SchoolInfoSchema = z.object({
   term: z.string(),

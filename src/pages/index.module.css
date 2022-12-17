@@ -63,12 +63,10 @@
   top: 0.3rem;
   animation: fadeIn 1.2s ease forwards;
 }
-
 .schoolContainer {
   padding: 0.25rem 0;
   cursor: pointer;
 }
-
 .schoolTitle {
   font-size: 1.2rem;
   font-family: var(--condensedFont);
@@ -76,13 +74,11 @@
   margin: 0.2rem 0;
   position: sticky;
 }
-
 .schoolCode {
   padding: 0.5rem;
   color: var(--grey600);
   font-weight: 800;
 }
-
 .schoolName {
   color: var(--grey900);
 }

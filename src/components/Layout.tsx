@@ -40,6 +40,12 @@ const semName: Record<Semester, string> = {
   su: "Summer",
   fa: "Fall",
 };
+const semNum: Record<Semester, number> = {
+  ja: 0,
+  sp: 1,
+  su: 2,
+  fa: 3,
+};
 
 async function fetchTerms(): Promise<Record<string, Term>> {
   const resp = await axios.get("/api/terms");
@@ -51,23 +57,9 @@ async function fetchTerms(): Promise<Record<string, Term>> {
       code: term,
     };
   });
-
-  const semNum = (sem: Semester): number => {
-    switch (sem) {
-      case "ja":
-        return 0;
-      case "sp":
-        return 1;
-      case "su":
-        return 2;
-      case "fa":
-        return 3;
-    }
-  };
-
   terms.sort((t1, t2) => {
     if (t1.year !== t2.year) return t1.year - t2.year;
-    return semNum(t1.sem) - semNum(t2.sem);
+    return semNum[t1.sem] - semNum[t2.sem];
   });
   terms.reverse();
 

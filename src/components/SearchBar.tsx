@@ -25,7 +25,9 @@ export const SearchBar: React.VFC<Props> = ({ term }) => {
       params: { query, limit: 5 },
     });
 
-    const sortedData = [...resp.data].sort((a, b) => a.deptCourseId - b.deptCourseId);
+    const sortedData = [...resp.data].sort(
+      (a, b) => a.deptCourseId - b.deptCourseId
+    );
     return sortedData;
   });
   const { data: schools } = useSchools(term);

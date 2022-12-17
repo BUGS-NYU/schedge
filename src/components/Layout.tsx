@@ -114,7 +114,7 @@ export const MainLayout: React.FC = ({ children }) => {
               {Object.values(termsByCode).map((term) => {
                 return (
                   <option key={term.code} value={term.code}>
-                    {semName[term.semester]} {term.year}
+                    {semName[term.sem]} {term.year}
                   </option>
                 );
               })}

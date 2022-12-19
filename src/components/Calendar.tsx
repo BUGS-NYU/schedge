@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./css/calendar.module.css";
-import fonts from "./css/fonts.module.css";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";

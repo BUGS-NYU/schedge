@@ -1,5 +1,5 @@
 .colorHeader {
-  height: calc(14vmin + 10rem);
+  min-height: calc(14vmin + 10rem);
 
   background: linear-gradient(
     167deg,
@@ -55,7 +55,7 @@
   width: 90%;
   margin-left: 5vw;
   background-color: var(--grey100);
-  padding: 0px 4vmin 64px 4%;
+  padding: 8px 4vmin 64px 4%;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
 
   display: flex;

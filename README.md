@@ -23,7 +23,7 @@ large the waitlist is. Additionally, Schedge doesn't get updates from NYU when t
 change, so for example, if a professor changes a course description, and there wasn't
 a scrape afterwards, Schedge won't pick it up.
 
-## Frontends / Apps that use Schedge
+## Apps that use Schedge
 Here's a list of apps that use this API:
 
 - https://rate-my-classes-pro.netlify.app | https://apple.co/3AduK8G (repo at https://github.com/zhumingcheng697/Rate-My-Classes-Pro )

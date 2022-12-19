@@ -172,7 +172,7 @@ export const SectionInfo: React.VFC<Props> = ({
       <div className={styles.utilBar}>
         {!!section.recitations?.length && (
           <button
-            className={styles.expandButton}
+            className={styles.button}
             onClick={(e) => setExpanded((prev) => !prev)}
           >
             {expanded ? "Hide" : "Show"} Recitations
@@ -180,7 +180,7 @@ export const SectionInfo: React.VFC<Props> = ({
         )}
 
         <button
-          className={styles.wishlistButton}
+          className={styles.button}
           onClick={() => cb.addToWishlist(section)}
         >
           Add to Wishlist

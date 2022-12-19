@@ -29,10 +29,6 @@
   cursor: pointer;
   margin-right: 2rem;
   transition: 0.1s;
-
-  & > svg {
-    margin-right: 0.65rem;
-  }
 }
 
 .sectionDescription {

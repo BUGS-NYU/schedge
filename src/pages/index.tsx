@@ -40,7 +40,7 @@ function Home() {
               <div key={school.name} className={css.schoolContainer}>
                 <Link href={{ pathname: "/school", query: { schoolIndex: i } }}>
                   <a className={css.schoolTitle}>
-                    <span className={cx(fonts.body2, css.schoolCode)}>
+                    <span className={fonts.boldInfo}>
                       {school.subjects[0]?.code?.split("-")?.[1]}
                     </span>
 

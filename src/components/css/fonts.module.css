@@ -1,6 +1,7 @@
 .heading {
   font-size: 1.7rem;
   font-weight: bold;
+  color: var(--grey700);
 }
 
 .body2 {
@@ -9,4 +10,11 @@
 
 .caption {
   font-size: 1rem;
+}
+
+.boldInfo {
+  font-size: 1.2rem;
+  font-weight: bold;
+  font-family: var(--condensedFont);
+  color: var(--grey600);
 }

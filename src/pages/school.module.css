@@ -10,11 +10,6 @@
   }
 }
 
-.departmentHeader {
-  width: 100%;
-  font-size: 2rem;
-}
-
 .departments {
   width: 100%;
   display: grid;
@@ -29,15 +24,4 @@
 
 .department {
   padding: 0.3rem 0;
-  text-decoration: none;
-  color: inherit;
-
-  &:hover {
-  }
-}
-
-.departmentCode {
-  color: var(--grey600);
-  font-family: var(--condensedFont);
-  font-weight: 700;
 }

@@ -1,34 +1,9 @@
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes deptFadeIn {
-  from {
-    opacity: 0;
-    padding-top: 2rem;
-  }
-  to {
-    opacity: 1;
-    padding-top: 0rem;
-  }
-}
-
 .schoolsContainer {
   width: 100%;
   min-height: 50vh;
   border-top: 1rem solid var(--grey200);
   background-color: var(--grey300);
-  position: relative;
-}
-
-.departmentTitle {
-  padding: 1rem;
-  animation: fadeIn 1.2s ease forwards;
+  padding: 1rem 0 0 0;
 }
 
 .schools {
@@ -37,7 +12,6 @@
   grid-template-columns: repeat(2, minmax(22rem, 1fr));
   grid-gap: 0.5rem;
   padding: 1rem 2rem 2rem 2rem;
-  animation: deptFadeIn 0.8s ease forwards;
 
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;

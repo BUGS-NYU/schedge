@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { usePageState } from "components/state";
 import css from "./index.module.css";
 import fonts from "components/css/fonts.module.css";
+import anim from "components/css/animation.module.css";
 import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
@@ -33,9 +34,14 @@ function Home() {
         <SearchBar term={term} />
       </div>
       <div className={css.schoolsContainer}>
-        <div className={cx(fonts.heading, css.departmentTitle)}>Schools</div>
+        <div
+          className={cx(fonts.heading2, anim.fadeIn)}
+          style={{ padding: "1rem" }}
+        >
+          Schools
+        </div>
         {!!schools && (
-          <div className={css.schools}>
+          <div className={cx(anim.verticalFadeIn, css.schools)}>
             {schools.schools.map((school, i) => (
               <div key={school.name} className={css.schoolContainer}>
                 <Link href={{ pathname: "/school", query: { schoolIndex: i } }}>

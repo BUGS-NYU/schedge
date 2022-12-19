@@ -40,8 +40,8 @@ function CoursePage() {
       </div>
 
       <div className={styles.courseHeader}>
-        <div id={styles.titleDepartment}>{subjectCode}</div>
-        <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
+        <div className={styles.titleDepartment}>{subjectCode}</div>
+        <div className={styles.titleName}>{course?.name ?? "Loading..."}</div>
       </div>
     </div>
   );

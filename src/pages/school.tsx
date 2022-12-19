@@ -1,4 +1,5 @@
 import React from "react";
+import anim from "components/css/animation.module.css";
 import fonts from "components/css/fonts.module.css";
 import cx from "classnames";
 import { usePageState } from "components/state";
@@ -18,12 +19,12 @@ export default function SchoolPage() {
 
   return (
     <MainLayout>
-      <div className={fonts.heading}>{school?.name}</div>
+      <div className={fonts.heading2}>{school?.name}</div>
 
       {isLoading && <span>Loading...</span>}
 
       {!!school && (
-        <div className={styles.departments}>
+        <div className={cx(anim.verticalFadeIn, styles.departments)}>
           {school.subjects.map((subject, i) => {
             return (
               <Link

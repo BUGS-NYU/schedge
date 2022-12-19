@@ -1,21 +1,8 @@
-@keyframes deptFadeIn {
-  from {
-    opacity: 0;
-    padding-top: 2rem;
-  }
-
-  to {
-    opacity: 1;
-    padding-top: 0rem;
-  }
-}
-
 .departments {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, minmax(22rem, 1fr));
   grid-gap: 0.5rem;
-  animation: deptFadeIn 0.8s ease forwards;
 
   @media (max-width: 1000px) {
     grid-template-columns: 1fr;

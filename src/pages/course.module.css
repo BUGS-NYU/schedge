@@ -49,17 +49,16 @@
   border-top-left-radius: 0.8rem;
   border-top-right-radius: 0.8rem;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
+}
 
-  & #titleDepartment {
-    font-size: calc(1vmin + 0.7rem);
-    margin: 0 0 -0.5vmin 0.3vmin;
-    font-family: var(--grey200);
-  }
+.titleDepartment {
+  font-size: calc(1vmin + 0.7rem);
+  margin: 0 0 -0.5vmin 0.3vmin;
+}
 
-  & #titleName {
-    font-size: calc(2.2vmin + 1.4rem);
-    font-weight: bold;
-  }
+.titleName {
+  font-size: calc(2.2vmin + 1.4rem);
+  font-weight: bold;
 }
 
 .courseBody {

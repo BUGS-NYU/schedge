@@ -1,4 +1,5 @@
 import React from "react";
+import fonts from "components/css/fonts.module.css";
 import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
@@ -43,26 +44,22 @@ export default function SubjectPage() {
     (subject) => subject.code === subjectCode
   );
 
-  const { data: courseList } = useCourses(term, subjectCode);
+  const { data: courseList = [] } = useCourses(term, subjectCode);
 
   return (
     <MainLayout>
-      <div className={styles.departmentHeader}>
-        <Link
-          href={{
-            pathname: "/school",
-            query: { schoolIndex },
-          }}
-        >
-          <a className={styles.schoolName}>{school?.name}</a>
+      <div>
+        <Link href={{ pathname: "/school", query: { schoolIndex } }}>
+          <a className={fonts.body2}>{school?.name}</a>
         </Link>
 
-        <div className={styles.departmentName}>{subject?.name}</div>
+        <div className={fonts.heading1}>{subject?.name}</div>
       </div>
 
       <div className={styles.courseContainer}>
-        {courseList?.map((course, i) => (
+        {courseList.map((course, i) => (
           <Link
+            key={i}
             href={{
               pathname: "/course",
               query: {
@@ -71,7 +68,6 @@ export default function SubjectPage() {
                 subject: subjectCode,
               },
             }}
-            key={i}
           >
             <a className={styles.course}>
               <h4>

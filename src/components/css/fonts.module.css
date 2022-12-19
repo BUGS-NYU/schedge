@@ -1,16 +1,13 @@
 .heading {
-  font-size: 1.7em;
+  font-size: 1.7rem;
+  font-weight: bold;
 }
 
 .body2 {
-  font-size: 1.2em;
+  font-size: 1.2rem;
 }
 
 .caption {
-  font-size: 1em;
+  font-size: 1rem;
   text-decoration: none;
-}
-
-.bold {
-  font-weight: bold;
 }

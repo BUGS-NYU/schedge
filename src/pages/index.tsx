@@ -2,6 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 import { usePageState } from "components/state";
 import css from "./index.module.css";
+import fonts from "components/css/fonts.module.css";
 import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
@@ -28,29 +29,22 @@ function Home() {
 
   return (
     <MainLayout>
-      <div className={css.searchContainer}>
+      <div style={{ position: "relative", minHeight: "38vh" }}>
         <SearchBar term={term} />
       </div>
       <div className={css.schoolsContainer}>
-        <div className={css.departmentTitle}>Schools</div>
+        <div className={cx(fonts.heading, css.departmentTitle)}>Schools</div>
         {!!schools && (
           <div className={css.schools}>
             {schools.schools.map((school, i) => (
               <div key={school.name} className={css.schoolContainer}>
-                <Link
-                  href={{
-                    pathname: "/school",
-                    query: { schoolIndex: i },
-                  }}
-                >
-                  <a
-                    className={css.schoolTitle}
-                    style={{ textDecoration: "none" }}
-                  >
-                    <span className={css.schoolCode}>
+                <Link href={{ pathname: "/school", query: { schoolIndex: i } }}>
+                  <a className={css.schoolTitle}>
+                    <span className={cx(fonts.body2, css.schoolCode)}>
                       {school.subjects[0]?.code?.split("-")?.[1]}
                     </span>
-                    <span className={css.schoolName}>{school.name}</span>
+
+                    <span className={fonts.body2}>{school.name}</span>
                   </a>
                 </Link>
               </div>

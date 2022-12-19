@@ -9,8 +9,8 @@ out their schedules, and eventually to also do some of that for them.
 **API DOCS:** https://nyu.a1liu.com/api/
 
 ### NOTE: The previous version of Schedge has been deprecated, and will not have up-to-date data for semesters after Fall 2022.
-The service that Schedge previously depended on was removed by NYU, and uses an
-entirely different data model from the new service that NYU now uses,
+The service that Schedge previously depended on was removed by NYU, and its
+replacement uses an entirely different data model,
 so Schedge v2 (the current version) contains breaking changes.
 
 **Deprecated V1 API DOCS:** https://schedge.a1liu.com/

@@ -9,7 +9,8 @@ out their schedules, and eventually to also do some of that for them.
 **API DOCS:** https://nyu.a1liu.com/api/
 
 ### NOTE: The previous version of Schedge has been deprecated, and will not have up-to-date data for semesters after Fall 2022.
-The service that Schedge v1 depended on was removed by NYU, and uses an entirely different data model,
+The service that Schedge previously depended on was removed by NYU, and its
+replacement uses an entirely different data model,
 so Schedge v2 (the current version) contains breaking changes.
 
 **Deprecated V1 API DOCS:** https://schedge.a1liu.com/
@@ -22,15 +23,15 @@ large the waitlist is. Additionally, Schedge doesn't get updates from NYU when t
 change, so for example, if a professor changes a course description, and there wasn't
 a scrape afterwards, Schedge won't pick it up.
 
-## Front Ends
-Here's a list of frontends that people have written a frontend for this API.
+## Apps that use Schedge
+Here's a list of apps that use this API:
 
 - https://rate-my-classes-pro.netlify.app | https://apple.co/3AduK8G (repo at https://github.com/zhumingcheng697/Rate-My-Classes-Pro )
 - https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )
 - https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )
 
-If you've written a front end to this API, you can open a PR and add yourself to this list!
+If your project uses Schedge, please open a PR and add it to this list!
 
 ## Contributing
 Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provide

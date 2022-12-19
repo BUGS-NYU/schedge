@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import fonts from "./css/fonts.module.css";
 import styles from "./css/section.module.css";
 import cx from "classnames";
 import { DateTime } from "luxon";
@@ -12,7 +13,7 @@ interface DateProps {
   section: AugmentedSection;
 }
 
-const formatTime = (dt: DateTime): string => {
+const fmtTime = (dt: DateTime): string => {
   const local = DateTime.local();
   const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
 
@@ -73,20 +74,15 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
 
   return (
     <div>
-      {meetings.map((meeting, index) => {
+      {meetings.map((meeting, i) => {
+        const { startTime, endTime } = meeting;
+
+        const timeStr = `${fmtTime(startTime)} - ${fmtTime(endTime)}`;
+        const text = `${startTime.weekdayLong}, ${timeStr}`;
+
         return (
-          <div key={index} className={styles.dateContainer}>
-            <span className={styles.boldedDate}>
-              {meeting.startTime.weekdayLong}
-            </span>
-            {", "}
-            <span className={styles.boldedDate}>
-              {formatTime(meeting.startTime)}
-            </span>
-            {" - "}
-            <span className={styles.boldedDate}>
-              {formatTime(meeting.endTime)}
-            </span>
+          <div key={i} className={fonts.body2} style={{ fontWeight: "bold" }}>
+            {text}
           </div>
         );
       })}
@@ -102,9 +98,9 @@ interface Props {
 
 const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
   return (
-    <div className={styles.sectionAttribute}>
+    <div>
       <h5>{label}</h5>
-      <div className={styles.sectionAttrValue}>{children}</div>
+      <div className={fonts.body1}>{children}</div>
     </div>
   );
 };
@@ -132,11 +128,9 @@ export const SectionInfo: React.VFC<Props> = ({
         !lastSection && styles.sectionBorder
       )}
     >
-      {section.sectionName && (
-        <h3 className={styles.sectionName}>{section.name}</h3>
-      )}
-      <h4 className={styles.sectionNum}>
+      <h4 className={fonts.heading2}>
         {section.type} {section.code}
+        {!!section.sectionName && " - " + section.name}
       </h4>
 
       <div className={styles.attributeContainer}>
@@ -163,7 +157,7 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
       </div>
 
-      <SectionAttribute label="instructors">
+      <SectionAttribute label="Instructors">
         {section.instructors.map((instructor) => (
           <span key={instructor}>{instructor}</span>
         ))}
@@ -178,7 +172,7 @@ export const SectionInfo: React.VFC<Props> = ({
       <div className={styles.utilBar}>
         {!!section.recitations?.length && (
           <button
-            className={styles.expandButton}
+            className={styles.button}
             onClick={(e) => setExpanded((prev) => !prev)}
           >
             {expanded ? "Hide" : "Show"} Recitations
@@ -186,7 +180,7 @@ export const SectionInfo: React.VFC<Props> = ({
         )}
 
         <button
-          className={styles.wishlistButton}
+          className={styles.button}
           onClick={() => cb.addToWishlist(section)}
         >
           Add to Wishlist

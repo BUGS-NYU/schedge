@@ -1,17 +1,3 @@
-.departmentHeader {
-}
-
-.schoolName {
-  font-size: 1.4rem;
-  text-decoration: none;
-  color: inherit;
-}
-
-.departmentName {
-  font-weight: bold;
-  font-size: 2.6rem;
-}
-
 .courseContainer {
   display: flex;
   align-items: flex-start;
@@ -27,8 +13,6 @@
   width: 60vmin;
   min-height: 5vmax;
   border-radius: 0.3rem;
-  text-decoration: none;
-  color: inherit;
 
   @media (max-width: 1000px) {
     width: 38vmin;

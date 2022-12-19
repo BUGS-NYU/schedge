@@ -1,4 +1,6 @@
 import React from "react";
+import fonts from "components/css/fonts.module.css";
+import cx from "classnames";
 import Link from "next/link";
 import { SectionInfo } from "components/SectionInfo";
 import styles from "./course.module.css";
@@ -40,8 +42,8 @@ function CoursePage() {
       </div>
 
       <div className={styles.courseHeader}>
-        <div id={styles.titleDepartment}>{subjectCode}</div>
-        <div id={styles.titleName}>{course?.name ?? "Loading..."}</div>
+        <div className={fonts.body2}>{subjectCode}</div>
+        <div className={fonts.heading1}>{course?.name ?? "Loading..."}</div>
       </div>
     </div>
   );
@@ -59,15 +61,15 @@ function CoursePage() {
       {header}
 
       <div className={styles.courseBody}>
-        <div className={styles.sectionsDescription}>
-          <p>{course?.description}</p>
+        <p className={cx(fonts.body1, styles.courseNotes)}>
+          {course?.description}
+        </p>
 
-          {/* Handle course description here if all sections have the same one */}
-          {pullNotesToTop && <p>{course.sections[0]?.notes}</p>}
-        </div>
-
-        {!!course?.sections?.length && (
-          <div className={styles.sectionsHeader}>Sections</div>
+        {/* Handle course description here if all sections have the same one */}
+        {pullNotesToTop && (
+          <p className={cx(fonts.body1, styles.courseNotes)}>
+            {course.sections[0]?.notes}
+          </p>
         )}
 
         {course?.sections?.map((section, i) => {

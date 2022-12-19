@@ -1,5 +1,5 @@
 .colorHeader {
-  height: calc(14vmin + 10rem);
+  min-height: calc(14vmin + 10rem);
 
   background: linear-gradient(
     167deg,
@@ -49,25 +49,13 @@
   border-top-left-radius: 0.8rem;
   border-top-right-radius: 0.8rem;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
-
-  & #titleDepartment {
-    font-size: calc(1vmin + 0.7rem);
-    margin: 0 0 -0.5vmin 0.3vmin;
-    font-family: var(--grey200);
-  }
-
-  & #titleName {
-    font-size: calc(2.2vmin + 1.4rem);
-    font-weight: bold;
-  }
 }
 
 .courseBody {
   width: 90%;
   margin-left: 5vw;
   background-color: var(--grey100);
-  color: var(--grey800);
-  padding: 0px 4vmin 64px 4%;
+  padding: 8px 4vmin 64px 4%;
   box-shadow: 0 -5px 5px rgba(0, 0, 0, 0.15);
 
   display: flex;
@@ -75,16 +63,7 @@
   gap: 16px;
 }
 
-.sectionsDescription {
-  font-size: 1.2rem;
-  line-height: 1.65rem;
+.courseNotes {
   width: 73%;
-  color: var(--grey800);
-  position: relative;
-}
-
-.sectionsHeader {
-  font-weight: bold;
-  font-size: calc(1.2vmin + 1.5rem);
   color: var(--grey800);
 }

@@ -1,4 +1,7 @@
 import React from "react";
+import anim from "components/css/animation.module.css";
+import fonts from "components/css/fonts.module.css";
+import cx from "classnames";
 import { usePageState } from "components/state";
 import styles from "./school.module.css";
 import Link from "next/link";
@@ -11,17 +14,17 @@ export default function SchoolPage() {
   const term = usePageState((s) => s.term);
 
   const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
-  const { data: schools, isLoading } = useSchools(term);
-  const school = schools?.schools?.[schoolIndex];
+  const { data: { schools } = {}, isLoading } = useSchools(term);
+  const school = schools?.[schoolIndex];
 
   return (
     <MainLayout>
-      <div className={styles.departmentHeader}>{school?.name}</div>
+      <div className={fonts.heading2}>{school?.name}</div>
 
       {isLoading && <span>Loading...</span>}
 
       {!!school && (
-        <div className={styles.departments}>
+        <div className={cx(anim.verticalFadeIn, styles.departments)}>
           {school.subjects.map((subject, i) => {
             return (
               <Link
@@ -32,9 +35,9 @@ export default function SchoolPage() {
                 }}
               >
                 <a className={styles.department}>
-                  <span className={styles.departmentCode}>{subject.code}</span>
+                  <span className={fonts.boldInfo}>{subject.code}</span>
 
-                  <span className="departmentName">&nbsp; {subject.name}</span>
+                  <span className={fonts.body2}>&nbsp; {subject.name}</span>
                 </a>
               </Link>
             );

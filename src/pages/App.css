@@ -46,6 +46,8 @@
 * {
   box-sizing: border-box;
   font-family: var(--primaryFont);
+  color: var(--grey900);
+  text-decoration: none;
   padding: 0;
   margin: 0;
 }

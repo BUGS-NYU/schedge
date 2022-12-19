@@ -6,6 +6,7 @@ import { SearchBar } from "components/SearchBar";
 import axios from "axios";
 import { z } from "zod";
 import Link from "next/link";
+import cx from "classnames";
 import { MainLayout } from "components/Layout";
 import { SchoolSchema, Term } from "components/types";
 

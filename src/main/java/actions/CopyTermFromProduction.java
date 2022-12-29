@@ -1,6 +1,5 @@
 package actions;
 
-import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import database.*;
@@ -20,17 +19,10 @@ public class CopyTermFromProduction {
                                             Consumer<ScrapeEvent> consumer) {
     GetConnection.withConnection(conn -> {
       long start = System.nanoTime();
-      var result = run(() -> {
-        switch (version) {
-        case V1:
-          return ScrapeSchedgeV1.scrapeFromSchedge(term, consumer);
-        case V2:
-          return ScrapeSchedgeV2.scrapeFromSchedge(term, consumer);
-
-        default:
-          return null;
-        }
-      });
+      var result = switch (version) {
+        case V1 -> ScrapeSchedgeV1.scrapeFromSchedge(term, consumer);
+        case V2 -> ScrapeSchedgeV2.scrapeFromSchedge(term, consumer);
+      };
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

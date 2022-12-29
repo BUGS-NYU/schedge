@@ -472,28 +472,12 @@ public final class Nyu {
 
     // @TODO Make this more accurate
     public static Nyu.Semester getSemester(LocalDateTime time) {
-      switch (time.getMonth()) {
-      case JANUARY:
-        return Nyu.Semester.ja;
-      case FEBRUARY:
-      case MARCH:
-      case APRIL:
-      case MAY:
-        return Nyu.Semester.sp;
-      case JUNE:
-      case JULY:
-      case AUGUST:
-        return Nyu.Semester.su;
-      case SEPTEMBER:
-      case OCTOBER:
-      case NOVEMBER:
-      case DECEMBER:
-        return Nyu.Semester.fa;
-
-      default:
-        throw new RuntimeException("Did they add another month? month=" +
-                                   time.getMonth());
-      }
+      return switch (time.getMonth()) {
+      case JANUARY -> Nyu.Semester.ja;
+      case FEBRUARY, MARCH, APRIL, MAY -> Nyu.Semester.sp;
+      case JUNE, JULY, AUGUST -> Nyu.Semester.su;
+      case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Nyu.Semester.fa;
+      };
     }
 
     public static Term getCurrentTerm() {
@@ -532,35 +516,21 @@ public final class Nyu {
     }
 
     public Term prevTerm() {
-      switch (semester) {
-      case ja:
-        return new Term(Nyu.Semester.fa, year - 1);
-      case sp:
-        return new Term(Nyu.Semester.ja, year);
-      case su:
-        return new Term(Semester.sp, year);
-      case fa:
-        return new Term(Semester.su, year);
-
-      default:
-        return null;
-      }
+      return switch (semester) {
+      case ja -> new Term(Nyu.Semester.fa, year - 1);
+      case sp -> new Term(Nyu.Semester.ja, year);
+      case su -> new Term(Semester.sp, year);
+      case fa -> new Term(Semester.su, year);
+      };
     }
 
     public Term nextTerm() {
-      switch (semester) {
-      case ja:
-        return new Term(Semester.sp, year);
-      case sp:
-        return new Term(Semester.su, year);
-      case su:
-        return new Term(Semester.fa, year);
-      case fa:
-        return new Term(Semester.ja, year + 1);
-
-      default:
-        return null;
-      }
+      return switch (semester) {
+      case ja -> new Term(Semester.sp, year);
+      case sp -> new Term(Semester.su, year);
+      case su -> new Term(Semester.fa, year);
+      case fa -> new Term(Semester.ja, year + 1);
+      };
     }
 
     public int getId() {
@@ -693,39 +663,39 @@ public final class Nyu {
       };
 
       for (var campus : campusList) {
-        map.put(campus.name, campus);
+          map.put(campus.name, campus);
+        }
+
+        campuses = map;
       }
 
-      campuses = map;
-    }
+      public static ZoneId timezoneForCampus(String name) {
+        var campus = campuses.get(name);
+        if (campus == null) {
+          // throw new IllegalArgumentException("Bad campus: " + campus);
+          System.err.println("\nBad campus: " + name);
+          return ZoneId.of("America/New_York");
+        }
 
-    public static ZoneId timezoneForCampus(String name) {
-      var campus = campuses.get(name);
-      if (campus == null) {
-        // throw new IllegalArgumentException("Bad campus: " + campus);
-        System.err.println("\nBad campus: " + name);
-        return ZoneId.of("America/New_York");
+        return campus.timezone;
       }
 
-      return campus.timezone;
-    }
+      @NotNull
+      @OpenApiExample(value = "NYU Accra (Global)")
+      public String getName() {
+        return name;
+      }
 
-    @NotNull
-    @OpenApiExample(value = "NYU Accra (Global)")
-    public String getName() {
-      return name;
-    }
+      @NotNull
+      @OpenApiExample(value = "Africa/Accra")
+      public String getTimezoneId() {
+        return timezoneId;
+      }
 
-    @NotNull
-    @OpenApiExample(value = "Africa/Accra")
-    public String getTimezoneId() {
-      return timezoneId;
-    }
-
-    @NotNull
-    @OpenApiExample(value = "Ghana Mean Time")
-    public String getTimezoneName() {
-      return timezoneName;
+      @NotNull
+      @OpenApiExample(value = "Ghana Mean Time")
+      public String getTimezoneName() {
+        return timezoneName;
+      }
     }
   }
-}

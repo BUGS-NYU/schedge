@@ -86,20 +86,13 @@ public final class Nyu {
     public String deptCourseId;
     public String description;
     public List<Section> sections;
-
-    // @NOTE: This is de-normalized into the Course object because that makes it
-    // easier to work with when inserting into the database. However, we don't
-    // want to include it in the actual API, because it doesn't seem necessary
-    // right now.
-    //
-    //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     public String subjectCode;
 
     public String getName() {
       return name;
     }
 
-    // @Note: these are required for the Javalin OpenAPI integration
+    // @Note: these methods are required for the Javalin OpenAPI integration
     // to pick up fields on the output data
     public String getDeptCourseId() {
       return deptCourseId;

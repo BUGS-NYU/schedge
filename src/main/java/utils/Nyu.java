@@ -475,17 +475,13 @@ public final class Nyu {
 
     public static Semester semesterFromStringNullable(String sem) {
       switch (sem.toLowerCase()) {
-      case "ja":
-      case "january":
+      case "ja", "january":
         return Semester.ja;
-      case "sp":
-      case "spring":
+      case "sp", "spring":
         return Semester.sp;
-      case "su":
-      case "summer":
+      case "su", "summer":
         return Semester.su;
-      case "fa":
-      case "fall":
+      case "fa", "fall":
         return Semester.fa;
 
       default:

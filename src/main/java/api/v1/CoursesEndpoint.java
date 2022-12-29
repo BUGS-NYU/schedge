@@ -6,9 +6,8 @@ import api.*;
 import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import utils.Try;
-
 import java.util.*;
+import utils.Try;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() {

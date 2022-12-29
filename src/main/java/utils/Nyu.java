@@ -26,15 +26,6 @@ public final class Nyu {
     }
   }
 
-  public record Subject(String code, String name) {
-    @JsonCreator
-    public Subject(@JsonProperty("code") String code,
-                   @JsonProperty("name") String name) {
-      this.code = code;
-      this.name = name;
-    }
-  }
-
   public static final class School {
     public final String name;
     public final String code;
@@ -426,106 +417,9 @@ public final class Nyu {
     }
   }
 
-  public record Term(Semester semester, int year) {
-    public Term(String sem, int year) {
-      this(semesterFromString(sem), year);
-    }
-
-    public Term {
-      if (year < 1900)
-        throw new IllegalArgumentException("Year was invalid: " + year);
-    }
-
-    public static Term fromId(int id) {
-      // @Note: This requires order of enum variants to be correct
-      var semester = Semester.values()[(id % 10) / 2 - 1];
-
-      return new Term(semester, id / 10 + 1900);
-    }
-
-    @JsonCreator
-    public static Term fromString(String termString) {
-      if (termString.contentEquals("current")) {
-        return getCurrentTerm();
-      }
-
-      if (termString.contentEquals("next")) {
-        return getCurrentTerm().nextTerm();
-      }
-
-      int year = Integer.parseInt(termString.substring(2));
-      return new Term(termString.substring(0, 2), year);
-    }
-
-    // @TODO Make this more accurate
-    public static Semester getSemester(LocalDateTime time) {
-      return switch (time.getMonth()) {
-      case JANUARY -> Semester.ja;
-      case FEBRUARY, MARCH, APRIL, MAY -> Semester.sp;
-      case JUNE, JULY, AUGUST -> Semester.su;
-      case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Semester.fa;
-      };
-    }
-
-    public static Term getCurrentTerm() {
-      LocalDateTime now = LocalDateTime.now();
-      int year = now.getYear();
-
-      return new Term(getSemester(now), year);
-    }
-
-    public static Semester semesterFromStringNullable(String sem) {
-      switch (sem.toLowerCase()) {
-      case "ja", "january":
-        return Semester.ja;
-      case "sp", "spring":
-        return Semester.sp;
-      case "su", "summer":
-        return Semester.su;
-      case "fa", "fall":
-        return Semester.fa;
-
-      default:
-        return null;
-      }
-    }
-
-    public static Semester semesterFromString(String sem) {
-      var semCode = semesterFromStringNullable(sem);
-      if (semCode == null)
-        throw new IllegalArgumentException("Invalid semester string: " + sem);
-
-      return semCode;
-    }
-
-    public Term prevTerm() {
-      return switch (semester) {
-      case ja -> new Term(Semester.fa, year - 1);
-      case sp -> new Term(Semester.ja, year);
-      case su -> new Term(Semester.sp, year);
-      case fa -> new Term(Semester.su, year);
-      };
-    }
-
-    public Term nextTerm() {
-      return switch (semester) {
-      case ja -> new Term(Semester.sp, year);
-      case sp -> new Term(Semester.su, year);
-      case su -> new Term(Semester.fa, year);
-      case fa -> new Term(Semester.ja, year + 1);
-      };
-    }
-
-    public int getId() {
-      return (year - 1900) * 10 + semester.nyuCode;
-    }
-
-    @JsonValue
-    public String json() {
-      return "" + semester + year;
-    }
-  }
-
+  /**
+   *
+   */
   public static final class Campus {
     public final String name;
     public final String timezoneId;
@@ -627,39 +521,148 @@ public final class Nyu {
       };
 
       for (var campus : campusList) {
-          map.put(campus.name, campus);
-        }
-
-        campuses = map;
+        map.put(campus.name, campus);
       }
 
-      public static ZoneId timezoneForCampus(String name) {
-        var campus = campuses.get(name);
-        if (campus == null) {
-          // throw new IllegalArgumentException("Bad campus: " + campus);
-          System.err.println("\nBad campus: " + name);
-          return ZoneId.of("America/New_York");
-        }
+      campuses = map;
+    }
 
-        return campus.timezone;
+    public static ZoneId timezoneForCampus(String name) {
+      var campus = campuses.get(name);
+      if (campus == null) {
+        // throw new IllegalArgumentException("Bad campus: " + campus);
+        System.err.println("\nBad campus: " + name);
+        return ZoneId.of("America/New_York");
       }
 
-      @NotNull
-      @OpenApiExample(value = "NYU Accra (Global)")
-      public String getName() {
-        return name;
-      }
+      return campus.timezone;
+    }
 
-      @NotNull
-      @OpenApiExample(value = "Africa/Accra")
-      public String getTimezoneId() {
-        return timezoneId;
-      }
+    @NotNull
+    @OpenApiExample(value = "NYU Accra (Global)")
+    public String getName() {
+      return name;
+    }
 
-      @NotNull
-      @OpenApiExample(value = "Ghana Mean Time")
-      public String getTimezoneName() {
-        return timezoneName;
-      }
+    @NotNull
+    @OpenApiExample(value = "Africa/Accra")
+    public String getTimezoneId() {
+      return timezoneId;
+    }
+
+    @NotNull
+    @OpenApiExample(value = "Ghana Mean Time")
+    public String getTimezoneName() {
+      return timezoneName;
     }
   }
+
+  public record Term(Semester semester, int year) {
+    public Term(String sem, int year) {
+      this(semesterFromString(sem), year);
+    }
+
+    public Term {
+      if (year < 1900)
+        throw new IllegalArgumentException("Year was invalid: " + year);
+    }
+
+    public static Term fromId(int id) {
+      // @Note: This requires order of enum variants to be correct
+      var semester = Semester.values()[(id % 10) / 2 - 1];
+
+      return new Term(semester, id / 10 + 1900);
+    }
+
+    @JsonCreator
+    public static Term fromString(String termString) {
+      if (termString.contentEquals("current")) {
+        return getCurrentTerm();
+      }
+
+      if (termString.contentEquals("next")) {
+        return getCurrentTerm().nextTerm();
+      }
+
+      int year = Integer.parseInt(termString.substring(2));
+      return new Term(termString.substring(0, 2), year);
+    }
+
+    // @TODO Make this more accurate
+    public static Semester getSemester(LocalDateTime time) {
+      return switch (time.getMonth()) {
+        case JANUARY -> Semester.ja;
+        case FEBRUARY, MARCH, APRIL, MAY -> Semester.sp;
+        case JUNE, JULY, AUGUST -> Semester.su;
+        case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Semester.fa;
+      };
+    }
+
+    public static Term getCurrentTerm() {
+      LocalDateTime now = LocalDateTime.now();
+      int year = now.getYear();
+
+      return new Term(getSemester(now), year);
+    }
+
+    public static Semester semesterFromStringNullable(String sem) {
+      switch (sem.toLowerCase()) {
+        case "ja", "january":
+          return Semester.ja;
+        case "sp", "spring":
+          return Semester.sp;
+        case "su", "summer":
+          return Semester.su;
+        case "fa", "fall":
+          return Semester.fa;
+
+        default:
+          return null;
+        }
+    }
+
+    public static Semester semesterFromString(String sem) {
+      var semCode = semesterFromStringNullable(sem);
+      if (semCode == null)
+        throw new IllegalArgumentException("Invalid semester string: " + sem);
+
+      return semCode;
+    }
+
+    public Term prevTerm() {
+      return switch (semester) {
+        case ja -> new Term(Semester.fa, year - 1);
+        case sp -> new Term(Semester.ja, year);
+        case su -> new Term(Semester.sp, year);
+        case fa -> new Term(Semester.su, year);
+      };
+    }
+
+    public Term nextTerm() {
+      return switch (semester) {
+        case ja -> new Term(Semester.sp, year);
+        case sp -> new Term(Semester.su, year);
+        case su -> new Term(Semester.fa, year);
+        case fa -> new Term(Semester.ja, year + 1);
+      };
+    }
+
+    public int getId() {
+      return (year - 1900) * 10 + semester.nyuCode;
+    }
+
+    @JsonValue
+    public String json() {
+      return "" + semester + year;
+    }
+  }
+
+  public record Subject(String code, String name) {
+    @JsonCreator
+    public Subject(@JsonProperty("code") String code,
+                   @JsonProperty("name") String name) {
+      this.code = code;
+      this.name = name;
+    }
+  }
+}

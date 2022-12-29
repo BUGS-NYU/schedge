@@ -417,9 +417,6 @@ public final class Nyu {
     }
   }
 
-  /**
-   *
-   */
   public static final class Campus {
     public final String name;
     public final String timezoneId;

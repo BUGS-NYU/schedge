@@ -473,10 +473,10 @@ public final class Nyu {
     // @TODO Make this more accurate
     public static Semester getSemester(LocalDateTime time) {
       return switch (time.getMonth()) {
-      case JANUARY -> Nyu.Semester.ja;
-      case FEBRUARY, MARCH, APRIL, MAY -> Nyu.Semester.sp;
-      case JUNE, JULY, AUGUST -> Nyu.Semester.su;
-      case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Nyu.Semester.fa;
+      case JANUARY -> Semester.ja;
+      case FEBRUARY, MARCH, APRIL, MAY -> Semester.sp;
+      case JUNE, JULY, AUGUST -> Semester.su;
+      case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Semester.fa;
       };
     }
 

@@ -435,14 +435,14 @@ public final class Nyu {
 
   public static final class Term {
 
-    public final Nyu.Semester semester;
+    public final Semester semester;
     public final int year;
 
     public Term(String sem, int year) {
       this(semesterFromString(sem), year);
     }
 
-    public Term(Nyu.Semester semester, int year) {
+    public Term(Semester semester, int year) {
       if (year < 1900)
         throw new IllegalArgumentException("Year was invalid: " + year);
 
@@ -452,7 +452,7 @@ public final class Nyu {
 
     public static Term fromId(int id) {
       // @Note: This requires order of enum variants to be correct
-      Nyu.Semester semester = Nyu.Semester.values()[(id % 10) / 2 - 1];
+      var semester = Semester.values()[(id % 10) / 2 - 1];
 
       return new Term(semester, id / 10 + 1900);
     }
@@ -471,7 +471,7 @@ public final class Nyu {
     }
 
     // @TODO Make this more accurate
-    public static Nyu.Semester getSemester(LocalDateTime time) {
+    public static Semester getSemester(LocalDateTime time) {
       return switch (time.getMonth()) {
       case JANUARY -> Nyu.Semester.ja;
       case FEBRUARY, MARCH, APRIL, MAY -> Nyu.Semester.sp;
@@ -487,28 +487,28 @@ public final class Nyu {
       return new Term(getSemester(now), year);
     }
 
-    public static Nyu.Semester semesterFromStringNullable(String sem) {
+    public static Semester semesterFromStringNullable(String sem) {
       switch (sem.toLowerCase()) {
       case "ja":
       case "january":
-        return Nyu.Semester.ja;
+        return Semester.ja;
       case "sp":
       case "spring":
-        return Nyu.Semester.sp;
+        return Semester.sp;
       case "su":
       case "summer":
-        return Nyu.Semester.su;
+        return Semester.su;
       case "fa":
       case "fall":
-        return Nyu.Semester.fa;
+        return Semester.fa;
 
       default:
         return null;
       }
     }
 
-    public static Nyu.Semester semesterFromString(String sem) {
-      Nyu.Semester semCode = semesterFromStringNullable(sem);
+    public static Semester semesterFromString(String sem) {
+      var semCode = semesterFromStringNullable(sem);
       if (semCode == null)
         throw new IllegalArgumentException("Invalid semester string: " + sem);
 
@@ -517,8 +517,8 @@ public final class Nyu {
 
     public Term prevTerm() {
       return switch (semester) {
-      case ja -> new Term(Nyu.Semester.fa, year - 1);
-      case sp -> new Term(Nyu.Semester.ja, year);
+      case ja -> new Term(Semester.fa, year - 1);
+      case sp -> new Term(Semester.ja, year);
       case su -> new Term(Semester.sp, year);
       case fa -> new Term(Semester.su, year);
       };

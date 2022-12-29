@@ -65,7 +65,7 @@ public final class Nyu {
       return code;
     }
 
-    public final ArrayList<Subject> getSubjects() {
+    public ArrayList<Subject> getSubjects() {
       return subjects;
     }
 

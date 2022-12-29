@@ -103,6 +103,8 @@ public class Database implements Runnable {
              String[] subjectStrings) {
     var start = System.nanoTime();
 
+    GetConnection.forceInit();
+
     var FULL_TERM = new ArrayList<String>();
     var map = new HashMap<String, ArrayList<String>>();
 

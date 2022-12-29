@@ -88,13 +88,13 @@ public final class Try extends HashMap<String, Object> {
   public <E> E log(Call<E> supplier) {
     try {
       return supplier.get();
-    } catch (Throwable e) {
-      logger.warn("Context: " + this.toString());
-      if (e instanceof RuntimeException)
-        throw(RuntimeException) e;
-      if (e instanceof Error)
-        throw(Error) e;
-      throw new RuntimeException(e);
+    } catch (Throwable throwable) {
+      logger.warn("Context: " + this);
+      if (throwable instanceof RuntimeException e)
+        throw e;
+      if (throwable instanceof Error e)
+        throw e;
+      throw new RuntimeException(throwable);
     }
   }
 }

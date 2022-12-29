@@ -21,9 +21,8 @@ public class App {
     @Override
     public final void handle(Context ctx) {
       try {
-        Object output = this.handleEndpoint(ctx);
-        if (output instanceof ApiError) {
-          var e = (ApiError)output;
+        var output = this.handleEndpoint(ctx);
+        if (output instanceof ApiError e) {
           ctx.status(e.status);
           ctx.json(e);
 

@@ -63,6 +63,17 @@ public class App {
   }
 
   public static final int PORT = 4358;
+  public static final String DESCR_TEMPLATE = """
+    Schedge is an API to NYU's course catalog. Please note that
+    <b>this API is a beta build currently under active development
+    and is subject to change</b>. <br /><br />
+    If you'd like to contribute,
+    <a href="https://github.com/A1Liu/schedge">check out the repository</a>.
+    <br /> <br />
+    <b><big>Build version:
+    <a href="https://github.com/A1Liu/schedge/tree/%1$s">%1$s</a>.
+    </big></b>
+  """;
 
   public static Javalin makeApp() {
     // Ensure that the connection gets instantiated during startup
@@ -73,14 +84,7 @@ public class App {
         cors.add(it -> { it.anyHost(); });
       });
 
-      var description =
-          "Schedge is an API to NYU's course catalog. "
-          + "Please note that <b>this API is a beta build currently under "
-          + "active development and is subject to change</b>."
-          + "<br/><br/>If you'd like to contribute, "
-          + "<a href=\"https://github.com/A1Liu/schedge\">"
-          + "check out the repository</a>.<br /> <br />"
-          + "<b><big>Build version: " + Health.BUILD_VERSION + ".</big></b>";
+      var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION);
 
       var info = new OpenApiInfo();
       info.setVersion("2.0.0 beta");

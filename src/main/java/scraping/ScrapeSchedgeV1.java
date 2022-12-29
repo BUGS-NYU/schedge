@@ -315,7 +315,7 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     }
 
     var components =
-        new String[] {"" + term.year, term.semester.toString(), school, major};
+        new String[] {"" + term.year(), term.semester().toString(), school, major};
 
     var uri =
         URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");

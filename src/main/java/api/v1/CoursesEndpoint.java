@@ -6,6 +6,8 @@ import api.*;
 import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
+import utils.Try;
+
 import java.util.*;
 
 public final class CoursesEndpoint extends App.Endpoint {
@@ -50,6 +52,7 @@ public final class CoursesEndpoint extends App.Endpoint {
     var term = Term.fromString(termString);
 
     var subject = ctx.pathParam("subject").toUpperCase();
+    Try.DEFAULT_LOGGER.info("Hello " + term);
 
     Object output = GetConnection.withConnectionReturning(conn -> {
       List<String> subjects = Collections.singletonList(subject);

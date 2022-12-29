@@ -129,8 +129,7 @@ public final class Utils {
                                          " is null");
     }
 
-    if (obj instanceof NullWrapper) {
-      NullWrapper nullable = (NullWrapper)obj;
+    if (obj instanceof NullWrapper nullable) {
       if (nullable.value == null) {
         stmt.setNull(index, nullable.type);
         return;

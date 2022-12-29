@@ -26,19 +26,12 @@ public final class Nyu {
     }
   }
 
-  public static final class Subject {
-    public final String code;
-    public final String name;
-
+  public record Subject(String code, String name) {
     @JsonCreator
     public Subject(@JsonProperty("code") String code,
                    @JsonProperty("name") String name) {
       this.code = code;
       this.name = name;
-    }
-
-    public String toString() {
-      return "Subject(" + code + "," + name + ")";
     }
   }
 
@@ -433,21 +426,14 @@ public final class Nyu {
     }
   }
 
-  public static final class Term {
-
-    public final Semester semester;
-    public final int year;
-
+  public record Term(Semester semester, int year) {
     public Term(String sem, int year) {
       this(semesterFromString(sem), year);
     }
 
-    public Term(Semester semester, int year) {
+    public Term {
       if (year < 1900)
         throw new IllegalArgumentException("Year was invalid: " + year);
-
-      this.semester = semester;
-      this.year = year;
     }
 
     public static Term fromId(int id) {
@@ -537,28 +523,9 @@ public final class Nyu {
       return (year - 1900) * 10 + semester.nyuCode;
     }
 
-    public String toString() {
-      return "Term(" + semester + ' ' + year + ",id=" + getId() + ")";
-    }
-
     @JsonValue
     public String json() {
       return "" + semester + year;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-      Term term = (Term)o;
-      return semester == term.semester && year == term.year;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(semester, year);
     }
   }
 

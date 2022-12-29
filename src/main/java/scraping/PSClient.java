@@ -160,14 +160,14 @@ public class PSClient {
   }
 
   static String yearText(Term term) {
-    switch (term.semester) {
+    switch (term.semester()) {
     case ja:
     case sp:
     case su:
-      return (term.year - 1) + "-" + term.year;
+      return (term.year() - 1) + "-" + term.year();
 
     case fa:
-      return term.year + "-" + (term.year + 1);
+      return term.year() + "-" + (term.year() + 1);
 
     default:
       throw new RuntimeException("whatever");
@@ -175,7 +175,7 @@ public class PSClient {
   }
 
   static String semesterId(Term term) {
-    switch (term.semester) {
+    switch (term.semester()) {
     case fa:
       return "NYU_CLS_WRK_NYU_FALL$36$";
     case ja:

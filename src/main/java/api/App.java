@@ -70,8 +70,8 @@ public class App {
     If you'd like to contribute,
     <a href="https://github.com/A1Liu/schedge">check out the repository</a>.
     <br /> <br />
-    <b><big> Build version:
-    <a href="https://github.com/A1Liu/schedge/tree/%s">%s</a>.
+    <b><big>Build version:
+    <a href="https://github.com/A1Liu/schedge/tree/%1$s">%1$s</a>.
     </big></b>
   """;
 
@@ -84,8 +84,7 @@ public class App {
         cors.add(it -> { it.anyHost(); });
       });
 
-      var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION,
-                                      Health.BUILD_VERSION);
+      var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION);
 
       var info = new OpenApiInfo();
       info.setVersion("2.0.0 beta");

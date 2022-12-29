@@ -443,6 +443,7 @@ public final class Nyu {
       return new Term(semester, id / 10 + 1900);
     }
 
+    @JsonCreator
     public static Term fromString(String termString) {
       if (termString.contentEquals("current")) {
         return getCurrentTerm();

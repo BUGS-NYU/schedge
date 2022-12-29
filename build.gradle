@@ -14,8 +14,8 @@ mainClassName = 'cli.Main'
 // }
 
 java {
-  sourceCompatibility = '11'
-  targetCompatibility = '11'
+  sourceCompatibility = 11
+  targetCompatibility = 11
 }
 
 tasks.named('wrapper') {

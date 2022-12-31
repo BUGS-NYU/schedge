@@ -29,6 +29,7 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     programs.put("CD", "College of Dentistry Continuing Education");
     programs.put("DN", "College of Dentistry - Graduate");
 
+    // @TODO: what the hell are these - below are educated guesses
     programs.put("ND", "Non-Credit College of Dentistry");
     programs.put("NY", "Non-Credit Tandon School of Engineering");
     programs.put("NB", "Non-Credit Leonard N. Stern School of Business");
@@ -308,7 +309,6 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     String school = parts[1];
     String major = parts[0];
 
-    // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {
       school = "SHU";
     }

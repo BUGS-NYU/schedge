@@ -5,8 +5,19 @@ import database.*;
 import io.javalin.Javalin;
 import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.micrometer.MicrometerPlugin;
 import io.javalin.openapi.OpenApiInfo;
 import io.javalin.openapi.plugin.*;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -79,6 +90,12 @@ public class App {
     // Ensure that the connection gets instantiated during startup
     GetConnection.forceInit();
 
+    var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+
+    // add a tag to all reported values to simplify filtering in large
+    // installations:
+    registry.config().commonTags("schedge", "Schedge");
+
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
         cors.add(it -> { it.anyHost(); });
@@ -96,6 +113,12 @@ public class App {
       openApiConfig.setInfo(info);
       openApiConfig.setDocumentationPath(jsonPath);
       config.plugins.register(new OpenApiPlugin(openApiConfig));
+
+      config.plugins.register(MicrometerPlugin.Companion.create(metrics -> {
+        metrics.registry = registry;
+        metrics.tags = Tags.empty();
+        metrics.tagExceptionName = true;
+      }));
 
       config.staticFiles.add(staticFiles -> { // NextJS UI
         staticFiles.hostedPath = "/";
@@ -131,6 +154,17 @@ public class App {
     new CoursesEndpoint().addTo(app);
 
     ScrapingEndpoint.add(app);
+
+    app.get("/api/prometheus", ctx -> {
+      ctx.contentType(TextFormat.CONTENT_TYPE_004).result(registry.scrape());
+    });
+
+    new ClassLoaderMetrics().bindTo(registry);
+    new JvmMemoryMetrics().bindTo(registry);
+    new JvmGcMetrics().bindTo(registry);
+    new JvmThreadMetrics().bindTo(registry);
+    new UptimeMetrics().bindTo(registry);
+    new ProcessorMetrics().bindTo(registry);
 
     return app;
   }

@@ -39,12 +39,11 @@ public final class Utils {
 
   public static List<String> resourcePaths(String path)
       throws IOException, URISyntaxException {
-    URI uri = Utils.class.getResource(path).toURI();
+    var uri = Utils.class.getResource(path).toURI();
 
     if (uri.getScheme().equals("jar")) {
-      try (FileSystem fileSystem = FileSystems.newFileSystem(
-               uri, Collections.<String, Object>emptyMap())) {
-        var myPath = fileSystem.getPath(path);
+      try (var fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+        var myPath = fs.getPath(path);
 
         return Files.walk(myPath)
             .filter(Files::isRegularFile)

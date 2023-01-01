@@ -81,13 +81,13 @@ public final class ScrapingEndpoint {
           return ScrapeSchedgeV1::scrapeFromSchedge;
         case "sis.nyu.edu":
           return PSClassSearch::scrapeTerm;
-          default -> {
-            var warning = "Invalid source: " + source;
-            ctx.send(warning);
-            logger.warn(warning);
+        default: {
+          var warning = "Invalid source: " + source;
+          ctx.send(warning);
+          logger.warn(warning);
 
-            return null;
-          }
+          return null;
+        }
         }
       });
 

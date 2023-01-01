@@ -6,7 +6,6 @@ import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.util.*;
 import org.jetbrains.annotations.NotNull;
 import utils.Nyu;
 
@@ -30,9 +29,6 @@ public class AugmentedMeeting {
 
   @JsonIgnore public final ZoneId tz;
   public final ZonedDateTime endDate;
-
-  public static DateTimeFormatter formatter =
-      DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
 
   public AugmentedMeeting(ResultSet rs) throws SQLException {
     subject = rs.getString("subject_code");

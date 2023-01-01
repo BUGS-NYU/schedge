@@ -27,18 +27,6 @@ public final class ScrapingEndpoint {
   private static final Logger logger =
       LoggerFactory.getLogger("api.v1.ScrapingEndpoint");
 
-  public static final class Ref<T> { // IDK if this already exists
-    public T current;
-
-    public Ref(T t) {
-      this.current = t;
-    }
-
-    public Ref() {
-      this.current = null;
-    }
-  }
-
   private static final AtomicReference<Object> MUTEX =
       new AtomicReference<>(null);
   private static volatile Future<String> CURRENT_SCRAPE = null;
@@ -61,7 +49,7 @@ public final class ScrapingEndpoint {
   }
 
   interface ScrapeJob {
-    public TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+    TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
   }
 
   private static String scrape(WsContext ctx) {
@@ -87,21 +75,17 @@ public final class ScrapingEndpoint {
 
       var bar = builder.build();
 
-      ScrapeJob job = run(() -> {
-        switch (source) {
-        case "schedge-v1":
-          return ScrapeSchedgeV1::scrapeFromSchedge;
-        case "sis.nyu.edu":
-          return PSClassSearch::scrapeTerm;
-        default: {
+      ScrapeJob job = switch (source) {
+        case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
+        case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
+        default -> {
           var warning = "Invalid source: " + source;
           ctx.send(warning);
           logger.warn(warning);
 
-          return null;
+          yield null;
         }
-        }
-      });
+      };
 
       if (job == null) {
         return "No job to run!";

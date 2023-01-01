@@ -120,7 +120,7 @@ public class Database implements Runnable {
 
       var subjectString = parts[1];
       logger.debug("Adding term={}, subjectString={}", termString,
-                  subjectString);
+                   subjectString);
 
       var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
       if (subjects != FULL_TERM)

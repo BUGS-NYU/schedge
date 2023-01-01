@@ -116,8 +116,7 @@ public final class InsertCourses {
 
       ResultSet rs = stmt.getResultSet();
       if (!rs.next())
-        throw new RuntimeException("inserting course failed for course=" +
-                                   c);
+        throw new RuntimeException("inserting course failed for course=" + c);
 
       int courseId = rs.getInt(1);
       rs.close();
@@ -157,8 +156,7 @@ public final class InsertCourses {
 
         ResultSet rs = stmt.getResultSet();
         if (!rs.next())
-          throw new RuntimeException("inserting section=" + s +
-                                     "failed");
+          throw new RuntimeException("inserting section=" + s + "failed");
 
         int sectionId = rs.getInt(1);
         rs.close();

@@ -12,13 +12,10 @@ public final class ArrayJS {
   }
 
   private static <T> T findImpl(Iterable<T> iterable, ArrayFunc<T> func) {
-    int i = 0;
     for (var t : iterable) {
       if (func.run(t)) {
         return t;
       }
-
-      i++;
     }
 
     return null;

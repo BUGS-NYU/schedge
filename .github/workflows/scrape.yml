@@ -12,7 +12,8 @@ on:
         description: Source to scrape from (either schedge-v1 or sis.nyu.edu)
 
 jobs:
-  Scrape:
+  scrape:
+    name: "Scrape ${{ github.event.inputs.term }} from ${{ github.event.inputs.source }}"
     runs-on: ubuntu-latest
     environment: admin
     permissions:

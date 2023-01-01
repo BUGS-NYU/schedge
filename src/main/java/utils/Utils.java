@@ -1,6 +1,6 @@
 package utils;
 
-import static utils.Try.tcIgnore;
+import static utils.Try.*;
 
 import java.io.*;
 import java.net.*;

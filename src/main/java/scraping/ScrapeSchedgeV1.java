@@ -222,7 +222,8 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
       if (result.text == null)
         continue;
 
-      consumer.accept(ScrapeEvent.message(result.subject, "Fetching " + result.subject));
+      consumer.accept(
+          ScrapeEvent.message(result.subject, "Fetching " + result.subject));
       var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
       var out = new ArrayList<Course>();
 

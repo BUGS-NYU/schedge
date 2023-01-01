@@ -113,8 +113,8 @@ public final class ScrapingEndpoint {
             ctx.send(w.message);
             logger.warn(w.message);
           } else if (e instanceof ScrapeEvent.Message m) {
-              bar.setExtraMessage(String.format("%1$-25s", m.message));
-              logger.info(m.message);
+            bar.setExtraMessage(String.format("%1$-25s", m.message));
+            logger.info(m.message);
           } else if (e instanceof ScrapeEvent.Progress p) {
             bar.stepBy(p.progress);
           } else if (e instanceof ScrapeEvent.HintChange h) {

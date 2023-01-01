@@ -9,13 +9,14 @@ import org.slf4j.*;
  *
  *                  - Albert Liu, Nov 27, 2022 Sun 02:32
  */
-public sealed class ScrapeEvent permits ScrapeEvent.Message, ScrapeEvent.Progress, ScrapeEvent.HintChange {
+public sealed class ScrapeEvent permits ScrapeEvent.Message,
+    ScrapeEvent.Progress, ScrapeEvent.HintChange {
   public static sealed class Message extends ScrapeEvent permits Warn {
     public final String message;
 
     private Message(String currentSubject, String message) {
       super(currentSubject);
-      this.message= message;
+      this.message = message;
     }
   }
 
@@ -72,7 +73,7 @@ public sealed class ScrapeEvent permits ScrapeEvent.Message, ScrapeEvent.Progres
       if (e instanceof Warn w) {
         logger.warn(w.message);
       } else if (e instanceof Message m) {
-          bar.setExtraMessage(m.message);
+        bar.setExtraMessage(m.message);
       } else if (e instanceof Progress p) {
         bar.stepBy(p.progress);
       } else if (e instanceof HintChange h) {

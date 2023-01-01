@@ -94,7 +94,7 @@ public class App {
 
     // add a tag to all reported values to simplify filtering in large
     // installations:
-    registry.config().commonTags("schedge");
+    registry.config().commonTags("schedge", "Schedge");
 
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API

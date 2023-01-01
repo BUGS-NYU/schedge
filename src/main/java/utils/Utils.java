@@ -8,6 +8,8 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 
+import static utils.Try.tcIgnore;
+
 public final class Utils {
   private static BufferedReader inReader =
       new BufferedReader(new InputStreamReader(System.in));
@@ -145,8 +147,16 @@ public final class Utils {
     String value = System.getenv(name);
     if (value == null) {
       return defaultValue;
-    } else
-      return value;
+    }
+    return value;
+  }
+
+  public static int getEnvDefault(String name, int defaultValue) {
+    Integer value = tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
   }
 
   static class NullWrapper {

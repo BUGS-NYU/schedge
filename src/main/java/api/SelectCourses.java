@@ -1,11 +1,11 @@
 package api;
 
 import static utils.Nyu.*;
+import static utils.Try.*;
 
 import database.SelectRows;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.*;
 
 public class SelectCourses {
@@ -18,11 +18,9 @@ public class SelectCourses {
 
   public static Stream<Course> selectCourses(Connection conn, Term term,
                                              String code) {
-    try {
-      return RowsToCourses.rowsToCourses(
-          SelectRows.selectRows(conn, term, code));
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+    return tcPass(() -> {
+      var rows = SelectRows.selectRows(conn, term, code);
+      return RowsToCourses.rowsToCourses(rows);
+    });
   }
 }

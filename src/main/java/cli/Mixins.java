@@ -25,7 +25,7 @@ public final class Mixins {
   public static final class InputFile {
     @Option(names = "--input-file",
             description =
-                "intput file to read from. If none provided, read from stdout")
+                "intput file to read from. If none provided, read from stdin")
     private String inputFile;
 
     public String getInput() {

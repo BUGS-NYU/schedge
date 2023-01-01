@@ -1,5 +1,7 @@
 package utils;
 
+import static utils.Try.tcIgnore;
+
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
@@ -7,8 +9,6 @@ import java.sql.*;
 import java.time.*;
 import java.util.*;
 import java.util.stream.*;
-
-import static utils.Try.tcIgnore;
 
 public final class Utils {
   private static BufferedReader inReader =

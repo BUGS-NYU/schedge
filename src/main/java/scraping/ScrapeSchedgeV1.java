@@ -309,7 +309,6 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     String school = parts[1];
     String major = parts[0];
 
-    // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {
       school = "SHU";
     }

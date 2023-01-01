@@ -62,11 +62,12 @@ dependencies {
     // Metrics with Micrometer & Prometheus
     "io.micrometer:micrometer-core:1.10.2",
     "io.micrometer:micrometer-registry-prometheus:1.10.2",
+    "io.javalin:javalin-micrometer:5.2.0",
 
     // Web server framework and documentation
-    "io.javalin:javalin:5.1.4",
+    "io.javalin:javalin:5.2.0",
     // for /openapi route with JSON schema
-    "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
+    "io.javalin.community.openapi:javalin-openapi-plugin:5.2.0",
   )
 }
 

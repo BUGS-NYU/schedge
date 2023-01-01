@@ -6,7 +6,12 @@ import io.javalin.Javalin;
 import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.openapi.OpenApiInfo;
+import io.javalin.micrometer.MicrometerPlugin;
 import io.javalin.openapi.plugin.*;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.prometheus.client.exporter.common.TextFormat;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -79,6 +84,8 @@ public class App {
     // Ensure that the connection gets instantiated during startup
     GetConnection.forceInit();
 
+    var registry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
         cors.add(it -> { it.anyHost(); });
@@ -96,6 +103,12 @@ public class App {
       openApiConfig.setInfo(info);
       openApiConfig.setDocumentationPath(jsonPath);
       config.plugins.register(new OpenApiPlugin(openApiConfig));
+
+      config.plugins.register(MicrometerPlugin.Companion.create(metrics -> {
+        metrics.registry = registry;
+        metrics.tags = Tags.empty();
+        metrics.tagExceptionName = true;
+      }));
 
       config.staticFiles.add(staticFiles -> { // NextJS UI
         staticFiles.hostedPath = "/";
@@ -117,7 +130,7 @@ public class App {
 
       String message = String.format(
           "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
-          stackTrace, ctx.queryParamMap().toString(), ctx.path());
+          stackTrace, ctx.queryParamMap(), ctx.path());
       logger.warn(message);
     });
 
@@ -129,6 +142,11 @@ public class App {
     new SearchEndpoint().addTo(app);
     new GenerateScheduleEndpoint().addTo(app);
     new CoursesEndpoint().addTo(app);
+
+    app.get("/prometheus",
+            ctx
+            -> ctx.contentType(TextFormat.CONTENT_TYPE_004)
+                   .result(registry.scrape()));
 
     ScrapingEndpoint.add(app);
 

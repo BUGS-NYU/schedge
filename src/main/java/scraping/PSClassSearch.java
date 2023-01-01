@@ -176,12 +176,8 @@ public final class PSClassSearch {
         var responseBody = resp.body();
 
         return parseSubject(ctx, responseBody, subject.code, e -> {
-          switch (e.kind) {
-          case WARNING:
-            logger.warn(e.message);
-            break;
-          default:
-            break;
+          if (e instanceof ScrapeEvent.Warn w) {
+            logger.warn(w.message);
           }
         });
       }

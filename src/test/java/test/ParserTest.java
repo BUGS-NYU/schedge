@@ -6,6 +6,7 @@ import org.junit.*;
 import org.slf4j.*;
 import scraping.PSClassSearch;
 import scraping.PSCoursesParser;
+import scraping.ScrapeEvent;
 import utils.ArrayJS;
 import utils.Utils;
 
@@ -16,8 +17,7 @@ public class ParserTest {
     var html = Utils.readResource("/csci-ua-sp2021.html.snap");
     var ctx = Ctx(logger);
     PSCoursesParser.parseSubject(ctx, html, "CSCI-UA", e -> {
-      switch (e.kind) {
-      case WARNING:
+      if (e instanceof ScrapeEvent.Warn w) {
         Assert.fail();
       }
     });
@@ -45,8 +45,7 @@ public class ParserTest {
     var html = Utils.readResource("/sts-uy-ja2023.html.snap");
     var ctx = Ctx(logger);
     var output = PSCoursesParser.parseSubject(ctx, html, "STS-UY", e -> {
-      switch (e.kind) {
-      case WARNING:
+      if (e instanceof ScrapeEvent.Warn w) {
         Assert.fail();
       }
     });

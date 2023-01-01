@@ -5,10 +5,9 @@ import static utils.Try.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 
 /**
- * This class handles batch resoltion of futures.
+ * This class handles batch resolution of futures.
  *
  * @author Albert Liu
  */

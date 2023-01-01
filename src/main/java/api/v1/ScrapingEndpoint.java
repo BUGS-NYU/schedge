@@ -27,18 +27,6 @@ public final class ScrapingEndpoint {
   private static final Logger logger =
       LoggerFactory.getLogger("api.v1.ScrapingEndpoint");
 
-  public static final class Ref<T> { // IDK if this already exists
-    public T current;
-
-    public Ref(T t) {
-      this.current = t;
-    }
-
-    public Ref() {
-      this.current = null;
-    }
-  }
-
   private static final AtomicReference<Object> MUTEX =
       new AtomicReference<>(null);
   private static volatile Future<String> CURRENT_SCRAPE = null;
@@ -61,7 +49,7 @@ public final class ScrapingEndpoint {
   }
 
   interface ScrapeJob {
-    public TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+    TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
   }
 
   private static String scrape(WsContext ctx) {
@@ -109,22 +97,16 @@ public final class ScrapingEndpoint {
 
       GetConnection.withConnection(conn -> {
         var result = job.scrape(term, e -> {
-          switch (e.kind) {
-          case MESSAGE:
-          case SUBJECT_START:
-            bar.setExtraMessage(String.format("%1$-25s", e.message));
-            logger.info(e.message);
-            break;
-          case WARNING:
-            ctx.send(e.message);
-            logger.warn(e.message);
-            break;
-          case PROGRESS:
-            bar.stepBy(e.value);
-            break;
-          case HINT_CHANGE:
-            bar.maxHint(e.value);
-            break;
+          if (e instanceof ScrapeEvent.Warn w) {
+            ctx.send(w.message);
+            logger.warn(w.message);
+          } else if (e instanceof ScrapeEvent.Message m) {
+            bar.setExtraMessage(String.format("%1$-25s", m.message));
+            logger.info(m.message);
+          } else if (e instanceof ScrapeEvent.Progress p) {
+            bar.stepBy(p.progress);
+          } else if (e instanceof ScrapeEvent.HintChange h) {
+            bar.maxHint(h.newValue);
           }
         });
 

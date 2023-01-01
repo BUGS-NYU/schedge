@@ -1,7 +1,5 @@
 package utils;
 
-import static utils.Try.*;
-
 import java.io.*;
 import java.net.*;
 import java.nio.file.*;
@@ -152,7 +150,7 @@ public final class Utils {
   }
 
   public static int getEnvDefault(String name, int defaultValue) {
-    Integer value = tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    Integer value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
     if (value == null) {
       return defaultValue;
     }

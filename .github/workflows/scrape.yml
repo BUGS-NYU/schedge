@@ -31,3 +31,12 @@ jobs:
           exec ./websocat
           "wss://nyu.a1liu.com/api/scrape/${{ github.event.inputs.term }}?source=${{ github.event.inputs.source }}"
           -n --basic-auth "${{ secrets.SCHEDGE_PASSWORD }}"
+          | tee output.txt
+
+      - name: Check for success
+        run: |
+          output=$(tail output.txt)
+          if [[ "$output" =~ "Failed: ".* ]]; then
+            echo "Scraping failed"
+            exit 1
+          fi

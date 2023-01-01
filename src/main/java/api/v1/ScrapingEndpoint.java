@@ -30,9 +30,13 @@ public final class ScrapingEndpoint {
   public static final class Ref<T> { // IDK if this already exists
     public T current;
 
-    public Ref(T t) { this.current = t; }
+    public Ref(T t) {
+      this.current = t;
+    }
 
-    public Ref() { this.current = null; }
+    public Ref() {
+      this.current = null;
+    }
   }
 
   private static final AtomicReference<Object> MUTEX =

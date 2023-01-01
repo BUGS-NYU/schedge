@@ -104,8 +104,7 @@ final class Migrations {
       for (int i = 0; i < line.length(); i++) {
         char c = line.charAt(i);
         switch (c) {
-        case '\'':
-        case '"': {
+        case '\'', '"': {
           for (int j = i + 1; j < line.length(); j++) {
             if (line.charAt(j) == c) {
               i = j;

@@ -28,7 +28,9 @@ public final class Mixins {
                 "intput file to read from. If none provided, read from stdout")
     private String inputFile;
 
-    public String getInput() { return Utils.readFromFileOrStdin(inputFile); }
+    public String getInput() {
+      return Utils.readFromFileOrStdin(inputFile);
+    }
   }
 
   public static final class OutputFile {
@@ -74,7 +76,8 @@ public final class Mixins {
   }
 
   public static class TermConverter implements ITypeConverter<Nyu.Term> {
-    public TermConverter() {}
+    public TermConverter() {
+    }
 
     @Override
     public Nyu.Term convert(String value) {

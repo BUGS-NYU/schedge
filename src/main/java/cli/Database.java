@@ -103,6 +103,8 @@ public class Database implements Runnable {
              String[] subjectStrings) {
     var start = System.nanoTime();
 
+    GetConnection.forceInit();
+
     var FULL_TERM = new ArrayList<String>();
     var map = new HashMap<String, ArrayList<String>>();
 
@@ -112,13 +114,13 @@ public class Database implements Runnable {
 
       if (parts.length == 1) {
         map.put(termString, FULL_TERM);
-        logger.info("Adding full term for {}", termString);
+        logger.debug("Adding full term for {}", termString);
         continue;
       }
 
       var subjectString = parts[1];
-      logger.info("Adding term={}, subjectString={}", termString,
-                  subjectString);
+      logger.debug("Adding term={}, subjectString={}", termString,
+                   subjectString);
 
       var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
       if (subjects != FULL_TERM)

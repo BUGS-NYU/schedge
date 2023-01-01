@@ -1,13 +1,14 @@
 import React from "react";
 import { useQuery } from "react-query";
 import { useRouter } from "next/router";
-import { parseTerm, Semester, semName, Term, usePageState } from "./state";
-import headerStyles from "./header.module.css";
+import { usePageState } from "./state";
+import headerStyles from "./css/header.module.css";
 import Link from "next/link";
 import axios from "axios";
 import { z } from "zod";
-import EditCalendarSVG from "./edit-calendar.svg";
+import EditCalendarSVG from "./img/edit-calendar.svg";
 import cx from "classnames";
+import { NumberStringSchema, Semester, SemesterSchema, Term } from "./types";
 
 export const ScheduleButton: React.VFC<{
   className?: string;
@@ -33,42 +34,48 @@ export const ScheduleButton: React.VFC<{
   );
 };
 
-async function fetchTerms(): Promise<Term[]> {
+const semName: Record<Semester, string> = {
+  ja: "January",
+  sp: "Spring",
+  su: "Summer",
+  fa: "Fall",
+};
+const semNum: Record<Semester, number> = {
+  ja: 0,
+  sp: 1,
+  su: 2,
+  fa: 3,
+};
+
+async function fetchTerms(): Promise<Record<string, Term>> {
   const resp = await axios.get("/api/terms");
   const data = z.array(z.string()).parse(resp.data);
-  const terms = data.map(parseTerm);
-
-  const semNum = (sem: Semester): number => {
-    switch (sem) {
-      case "ja":
-        return 0;
-      case "sp":
-        return 1;
-      case "su":
-        return 2;
-      case "fa":
-        return 3;
-    }
-  };
-
+  const terms = data.map((term: string): Term => {
+    return {
+      sem: SemesterSchema.parse(term.substring(0, 2)),
+      year: NumberStringSchema.parse(term.substring(2)),
+      code: term,
+    };
+  });
   terms.sort((t1, t2) => {
     if (t1.year !== t2.year) return t1.year - t2.year;
-    return semNum(t1.semester) - semNum(t2.semester);
+    return semNum[t1.sem] - semNum[t2.sem];
   });
-
   terms.reverse();
 
-  return terms;
+  const termsByCode = {};
+  for (const term of terms) {
+    termsByCode[term.code] = term;
+  }
+
+  return termsByCode;
 }
 
 export const MainLayout: React.FC = ({ children }) => {
-  const { data: termData } = useQuery(["terms"], fetchTerms);
-  const router = useRouter();
+  const { data: termsByCode = {} } = useQuery(["terms"], fetchTerms);
 
   const term = usePageState((s) => s.term);
-  const update = usePageState((s) => s.update);
-
-  const selectRef = React.useRef<HTMLSelectElement>();
+  const update = usePageState((s) => s.cb.updateTerm);
 
   return (
     <div
@@ -89,17 +96,17 @@ export const MainLayout: React.FC = ({ children }) => {
 
           <div className={headerStyles.selectWrapper}>
             <select
-              ref={selectRef}
               className={headerStyles.selectBox}
               value={term.code}
               onChange={(evt) => {
-                update(parseTerm(evt.target.value));
+                const newTerm = termsByCode[evt.target.value];
+                newTerm && update(newTerm);
               }}
             >
-              {termData?.map((term) => {
+              {Object.values(termsByCode).map((term) => {
                 return (
                   <option key={term.code} value={term.code}>
-                    {semName(term.semester)} {term.year}
+                    {semName[term.sem]} {term.year}
                   </option>
                 );
               })}

@@ -26,6 +26,10 @@
     "**/*.tsx"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "src/main",
+    "src/migrations",
+    "src/test",
+    "src/build"
   ]
 }

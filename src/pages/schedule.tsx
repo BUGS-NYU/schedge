@@ -1,84 +1,58 @@
 import React from "react";
 import Link from "next/link";
-import WishlistCourse from "components/WishlistCourse";
-import styles from "./schedule.module.css";
 import { Calendar } from "components/Calendar";
-import create from "zustand";
-import { Section } from "./subject";
-import { MainLayout } from "../components/Layout";
+import { MainLayout } from "components/Layout";
+import { AugmentedSection, usePageState } from "components/state";
+import styles from "components/css/wishlist-course.module.css";
 
-export interface AugmentedSection extends Section {
-  name: string;
-  sectionName?: string | null;
-  deptCourseId: string;
-  subjectCode: string;
+interface WishlistProps {
+  section: AugmentedSection;
 }
 
-interface ScheduleState {
-  schedule: Record<number, AugmentedSection>;
-  wishlist: Record<number, AugmentedSection>;
+export const WishlistCourse: React.VFC<WishlistProps> = ({ section }) => {
+  const { schedule, cb } = usePageState();
 
-  addToWishlist: (section: AugmentedSection) => void;
-  removeFromWishlist: (regNum: number) => void;
-  scheduleFromWishlist: (regNum: number) => void;
-  removeFromSchedule: (regNum: number) => void;
-  clearSchedule: () => void;
-}
+  return (
+    <div className={styles.wishlistCourseContainer}>
+      <div style={{ padding: "1rem" }}>
+        <div>
+          {section.subjectCode} {section.deptCourseId}: {section.name}
+        </div>
+        <div>
+          Section: <span>{section.code}</span>
+        </div>
+        <div>
+          Registration No: <span>{section.registrationNumber}</span>
+        </div>
+        <div className={styles.wishlistUtilBox}>
+          <div className={styles.customFormControlLabel}>Schedule</div>
 
-export const useSchedule = create<ScheduleState>((set, get) => {
-  const scheduleFromWishlist = (regNum: number) => {
-    const { schedule, wishlist } = get();
-    const wishlistEntry = wishlist[regNum];
-    if (!wishlistEntry) return;
+          <input
+            type="checkbox"
+            className={styles.CustomCheckbox}
+            checked={!!schedule[section.registrationNumber]}
+            onChange={(e) =>
+              schedule[section.registrationNumber]
+                ? cb.removeFromSchedule(section.registrationNumber)
+                : cb.scheduleFromWishlist(section.registrationNumber)
+            }
+          />
 
-    set({ schedule: { ...schedule, [regNum]: wishlistEntry } });
-  };
-
-  const removeFromSchedule = (regNum: number) => {
-    const { schedule } = get();
-
-    const newSchedule = { ...schedule };
-    delete newSchedule[regNum];
-
-    set({
-      schedule: newSchedule,
-    });
-  };
-
-  const addToWishlist = (section: AugmentedSection) => {
-    const regNum = section.registrationNumber;
-    const { wishlist } = get();
-    set({ wishlist: { ...wishlist, [regNum]: section } });
-  };
-
-  const removeFromWishlist = (regNum: number) => {
-    const { wishlist, schedule } = get();
-    const newWishlist = { ...wishlist };
-    delete newWishlist[regNum];
-    const newSchedule = { ...schedule };
-    delete newSchedule[regNum];
-
-    set({ wishlist: newWishlist, schedule: newSchedule });
-  };
-
-  const clearSchedule = () => {
-    set({ schedule: [], wishlist: [] });
-  };
-
-  return {
-    schedule: [],
-    wishlist: [],
-
-    addToWishlist,
-    removeFromWishlist,
-    scheduleFromWishlist,
-    removeFromSchedule,
-    clearSchedule,
-  } as ScheduleState;
-});
+          <button
+            className={styles.removeButton}
+            onClick={() => cb.removeFromWishlist(section.registrationNumber)}
+            tabIndex={0}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 function SchedulePage() {
-  const { schedule, wishlist, clearSchedule } = useSchedule();
+  const { schedule, wishlist, cb } = usePageState();
   const wishlistLength = Object.keys(wishlist).length;
 
   return (
@@ -86,11 +60,7 @@ function SchedulePage() {
       <div className={styles.container}>
         <Calendar registrationNumbers={Object.keys(schedule)} />
 
-        <div
-          style={{
-            marginTop: "2rem",
-          }}
-        >
+        <div style={{ marginTop: "2rem" }}>
           <div className={styles.header}>
             <h2
               className={styles.wishlist}
@@ -120,7 +90,7 @@ function SchedulePage() {
           </div>
 
           <button
-            onClick={clearSchedule}
+            onClick={cb.clearSchedule}
             className={styles.clearScheduleButton}
             tabIndex={0}
           >

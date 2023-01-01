@@ -20,7 +20,9 @@ public class JsonMapper {
     return ctx.log(() -> objMapper.readValue(json, clazz));
   }
 
-  public static String toJson(Object o) { return toJson(o, false); }
+  public static String toJson(Object o) {
+    return toJson(o, false);
+  }
 
   public static void toJsonFile(String fileName, Object o) {
     toJsonFile(fileName, o, false);

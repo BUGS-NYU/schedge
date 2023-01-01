@@ -62,7 +62,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
       for (var school : info.schools) {
         for (var subject : school.subjects) {
-          inputSubjectList.add(subject.code);
+          inputSubjectList.add(subject.code());
         }
       }
     }

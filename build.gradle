@@ -5,8 +5,6 @@ plugins {
 }
 
 mainClassName = 'cli.Main'
-sourceCompatibility = '11'
-targetCompatibility = '11'
 
 // def getenv = { String env_val, default_val ->
 //   ext.val = System.getenv(env_val)
@@ -15,10 +13,14 @@ targetCompatibility = '11'
 //   } else return ext.val
 // }
 
+java {
+  sourceCompatibility = 17
+  targetCompatibility = 17
+}
+
 tasks.named('wrapper') {
   jarFile = "${project.projectDir}/src/build/gradle/gradle-wrapper.jar"
 }
-
 
 tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked"
@@ -57,10 +59,15 @@ dependencies {
     // JSON
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 
+    // Metrics with Micrometer & Prometheus
+    "io.micrometer:micrometer-core:1.10.2",
+    "io.micrometer:micrometer-registry-prometheus:1.10.2",
+    "io.javalin:javalin-micrometer:5.2.0",
+
     // Web server framework and documentation
-    "io.javalin:javalin:5.1.4",
-    // for /openapi route with JSON scheme
-    "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
+    "io.javalin:javalin:5.2.0",
+    // for /openapi route with JSON schema
+    "io.javalin.community.openapi:javalin-openapi-plugin:5.2.0",
   )
 }
 

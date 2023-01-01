@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "react-query";
-import styles from "./instructor.module.css";
+import styles from "./css/instructor.module.css";
 import ReviewsBuilder from "./ReviewsBuilder";
 import ReviewTableHeaders from "./ReviewTableHeaders";
 import ReviewTable from "./ReviewTable";

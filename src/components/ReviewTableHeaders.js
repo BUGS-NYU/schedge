@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./review-table-headers.module.css";
+import styles from "./css/review-table-headers.module.css";
 
 export default function ReviewTableHeaders({
   name,

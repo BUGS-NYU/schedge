@@ -309,13 +309,12 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     String school = parts[1];
     String major = parts[0];
 
-    // @TODO Fix this hack to work around weird behavior from V1 and NYU
     if (school.contentEquals("UI")) {
       school = "SHU";
     }
 
-    var components =
-        new String[] {"" + term.year, term.semester.toString(), school, major};
+    var components = new String[] {"" + term.year(), term.semester().toString(),
+                                   school, major};
 
     var uri =
         URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");

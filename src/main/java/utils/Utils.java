@@ -129,8 +129,7 @@ public final class Utils {
                                          " is null");
     }
 
-    if (obj instanceof NullWrapper) {
-      NullWrapper nullable = (NullWrapper)obj;
+    if (obj instanceof NullWrapper nullable) {
       if (nullable.value == null) {
         stmt.setNull(index, nullable.type);
         return;
@@ -146,8 +145,16 @@ public final class Utils {
     String value = System.getenv(name);
     if (value == null) {
       return defaultValue;
-    } else
-      return value;
+    }
+    return value;
+  }
+
+  public static int getEnvDefault(String name, int defaultValue) {
+    Integer value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
   }
 
   static class NullWrapper {

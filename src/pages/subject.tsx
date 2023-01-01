@@ -1,58 +1,20 @@
 import React from "react";
-import { Term, usePageState } from "components/state";
+import fonts from "components/css/fonts.module.css";
+import { usePageState } from "components/state";
 import styles from "./subject.module.css";
 import Link from "next/link";
 import { useQuery } from "react-query";
-import { QueryNumberSchema, useQueryParam } from "../components/useQueryParam";
+import { useQueryParam } from "components/useQueryParam";
 import { useSchools } from "./index";
 import { z } from "zod";
 import axios from "axios";
-import { MainLayout } from "../components/Layout";
-
-export const StringDateSchema = z.preprocess(
-  (obj) => new Date(obj as any),
-  z.date()
-);
-
-export type Meeting = z.infer<typeof MeetingSchema>;
-export const MeetingSchema = z.object({
-  beginDate: StringDateSchema,
-  beginDateLocal: z.string(),
-  endDate: StringDateSchema,
-  endDateLocal: z.string(),
-  minutesDuration: z.number(),
-});
-
-export type Recitation = z.infer<typeof RecitationSchema>;
-export const RecitationSchema = z.object({
-  name: z.string().nullish(),
-  registrationNumber: z.number(),
-  campus: z.string(),
-  code: z.string(),
-  notes: z.string(),
-  type: z.string(),
-  instructors: z.array(z.string()),
-  location: z.string().nullish(),
-  minUnits: z.number(),
-  maxUnits: z.number(),
-  status: z.string(),
-  meetings: z.array(MeetingSchema),
-  waitlistTotal: z.number().nullish(),
-});
-
-export type Section = z.infer<typeof SectionSchema>;
-export const SectionSchema = RecitationSchema.extend({
-  recitations: z.array(RecitationSchema).nullish(),
-});
-
-export type Course = z.infer<typeof CourseSchema>;
-export const CourseSchema = z.object({
-  deptCourseId: z.string(),
-  subjectCode: z.string(),
-  name: z.string(),
-  description: z.string(),
-  sections: z.array(SectionSchema),
-});
+import { MainLayout } from "components/Layout";
+import {
+  Course,
+  CourseSchema,
+  NumberStringSchema,
+  Term,
+} from "components/types";
 
 export const useCourses = (term: Term, subject: string) => {
   return useQuery(
@@ -72,9 +34,9 @@ export const useCourses = (term: Term, subject: string) => {
 
 export const SubjectSchema = z.string();
 export default function SubjectPage() {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
 
-  const [schoolIndex] = useQueryParam("schoolIndex", QueryNumberSchema);
+  const [schoolIndex] = useQueryParam("schoolIndex", NumberStringSchema);
   const [subjectCode] = useQueryParam("subject", SubjectSchema);
   const { data: schools } = useSchools(term);
   const school = schools?.schools?.[schoolIndex];
@@ -82,26 +44,22 @@ export default function SubjectPage() {
     (subject) => subject.code === subjectCode
   );
 
-  const { data: courseList } = useCourses(term, subjectCode);
+  const { data: courseList = [] } = useCourses(term, subjectCode);
 
   return (
     <MainLayout>
-      <div className={styles.departmentHeader}>
-        <Link
-          href={{
-            pathname: "/school",
-            query: { schoolIndex },
-          }}
-        >
-          <a className={styles.schoolName}>{school?.name}</a>
+      <div>
+        <Link href={{ pathname: "/school", query: { schoolIndex } }}>
+          <a className={fonts.body2}>{school?.name}</a>
         </Link>
 
-        <div className={styles.departmentName}>{subject?.name}</div>
+        <div className={fonts.heading1}>{subject?.name}</div>
       </div>
 
       <div className={styles.courseContainer}>
-        {courseList?.map((course, i) => (
+        {courseList.map((course, i) => (
           <Link
+            key={i}
             href={{
               pathname: "/course",
               query: {
@@ -110,7 +68,6 @@ export default function SubjectPage() {
                 subject: subjectCode,
               },
             }}
-            key={i}
           >
             <a className={styles.course}>
               <h4>

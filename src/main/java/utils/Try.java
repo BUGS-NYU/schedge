@@ -31,8 +31,12 @@ public final class Try extends HashMap<String, Object> {
     this.logger = logger;
   }
 
-  public static Try Ctx() { return new Try(DEFAULT_LOGGER); }
-  public static Try Ctx(Logger logger) { return new Try(logger); }
+  public static Try Ctx() {
+    return new Try(DEFAULT_LOGGER);
+  }
+  public static Try Ctx(Logger logger) {
+    return new Try(logger);
+  }
 
   public static void tcPass(CallVoid supplier) {
     tcPass(() -> {
@@ -66,7 +70,9 @@ public final class Try extends HashMap<String, Object> {
     }
   }
 
-  public void increment(String name) { increment(name, 1); }
+  public void increment(String name) {
+    increment(name, 1);
+  }
   public void increment(String name, int i) {
     var counter = (TryCounter)this.computeIfAbsent(name, k -> new TryCounter());
     counter.value += i;
@@ -82,13 +88,13 @@ public final class Try extends HashMap<String, Object> {
   public <E> E log(Call<E> supplier) {
     try {
       return supplier.get();
-    } catch (Throwable e) {
-      logger.warn("Context: " + this.toString());
-      if (e instanceof RuntimeException)
-        throw(RuntimeException) e;
-      if (e instanceof Error)
-        throw(Error) e;
-      throw new RuntimeException(e);
+    } catch (Throwable throwable) {
+      logger.warn("Context: " + this);
+      if (throwable instanceof RuntimeException e)
+        throw e;
+      if (throwable instanceof Error e)
+        throw e;
+      throw new RuntimeException(throwable);
     }
   }
 }

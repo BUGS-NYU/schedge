@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import styles from "./section.module.css";
+import fonts from "./css/fonts.module.css";
+import styles from "./css/section.module.css";
 import cx from "classnames";
-import { AugmentedSection, useSchedule } from "../pages/schedule";
 import { DateTime } from "luxon";
-import { usePageState } from "./state";
+import { AugmentedSection, usePageState } from "./state";
 import { useQuery } from "react-query";
 import { z } from "zod";
 import axios from "axios";
-import { Section } from "../pages/subject";
+import { Section } from "./types";
 
 interface DateProps {
   section: AugmentedSection;
 }
 
-const formatTime = (dt: DateTime): string => {
+const fmtTime = (dt: DateTime): string => {
   const local = DateTime.local();
   const formatted = dt.toLocaleString(DateTime.TIME_SIMPLE);
 
@@ -39,7 +39,7 @@ const CampusesSchema = z.object({
 });
 
 const DateSection: React.VFC<DateProps> = ({ section }) => {
-  const { term } = usePageState();
+  const term = usePageState((s) => s.term);
   const { data: { campuses } = {} } = useQuery(
     ["campuses", term.code],
     async () => {
@@ -74,20 +74,15 @@ const DateSection: React.VFC<DateProps> = ({ section }) => {
 
   return (
     <div>
-      {meetings.map((meeting, index) => {
+      {meetings.map((meeting, i) => {
+        const { startTime, endTime } = meeting;
+
+        const timeStr = `${fmtTime(startTime)} - ${fmtTime(endTime)}`;
+        const text = `${startTime.weekdayLong}, ${timeStr}`;
+
         return (
-          <div key={index} className={styles.dateContainer}>
-            <span className={styles.boldedDate}>
-              {meeting.startTime.weekdayLong}
-            </span>
-            {", "}
-            <span className={styles.boldedDate}>
-              {formatTime(meeting.startTime)}
-            </span>
-            {" - "}
-            <span className={styles.boldedDate}>
-              {formatTime(meeting.endTime)}
-            </span>
+          <div key={i} className={fonts.body2} style={{ fontWeight: "bold" }}>
+            {text}
           </div>
         );
       })}
@@ -103,9 +98,9 @@ interface Props {
 
 const SectionAttribute: React.FC<{ label: string }> = ({ label, children }) => {
   return (
-    <div className={styles.sectionAttribute}>
+    <div>
       <h5>{label}</h5>
-      <div className={styles.sectionAttrValue}>{children}</div>
+      <div className={fonts.body1}>{children}</div>
     </div>
   );
 };
@@ -118,22 +113,13 @@ function sectionStatusText(section: Section): string {
   }
 }
 
-function styleStatus(_status): React.CSSProperties["color"] {
-  // if (status === "Open") {
-  // } else if (status === "Closed") {
-  // } else {
-  // }
-
-  return "unset";
-}
-
 export const SectionInfo: React.VFC<Props> = ({
   section,
   ignoreNotes,
   lastSection,
 }) => {
   const [expanded, setExpanded] = useState(false);
-  const { addToWishlist } = useSchedule();
+  const cb = usePageState((s) => s.cb);
 
   return (
     <div
@@ -142,11 +128,9 @@ export const SectionInfo: React.VFC<Props> = ({
         !lastSection && styles.sectionBorder
       )}
     >
-      {section.sectionName && (
-        <h3 className={styles.sectionName}>{section.name}</h3>
-      )}
-      <h4 className={styles.sectionNum}>
+      <h4 className={fonts.heading2}>
         {section.type} {section.code}
+        {!!section.sectionName && " - " + section.name}
       </h4>
 
       <div className={styles.attributeContainer}>
@@ -155,9 +139,7 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
 
         <SectionAttribute label="Status">
-          <span style={{ color: styleStatus(section.status) }}>
-            {sectionStatusText(section)}
-          </span>
+          {sectionStatusText(section)}
         </SectionAttribute>
 
         <SectionAttribute label="Location">
@@ -175,7 +157,7 @@ export const SectionInfo: React.VFC<Props> = ({
         </SectionAttribute>
       </div>
 
-      <SectionAttribute label="instructors">
+      <SectionAttribute label="Instructors">
         {section.instructors.map((instructor) => (
           <span key={instructor}>{instructor}</span>
         ))}
@@ -190,7 +172,7 @@ export const SectionInfo: React.VFC<Props> = ({
       <div className={styles.utilBar}>
         {!!section.recitations?.length && (
           <button
-            className={styles.expandButton}
+            className={styles.button}
             onClick={(e) => setExpanded((prev) => !prev)}
           >
             {expanded ? "Hide" : "Show"} Recitations
@@ -198,8 +180,8 @@ export const SectionInfo: React.VFC<Props> = ({
         )}
 
         <button
-          className={styles.wishlistButton}
-          onClick={() => addToWishlist(section)}
+          className={styles.button}
+          onClick={() => cb.addToWishlist(section)}
         >
           Add to Wishlist
         </button>

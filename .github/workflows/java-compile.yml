@@ -2,6 +2,9 @@ name: Java - Typecheck
 
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -24,7 +27,7 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v3
       with:
-        java-version: '19'
+        java-version: '17'
         distribution: 'temurin'
         cache: 'gradle'
 

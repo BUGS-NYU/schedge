@@ -21,21 +21,9 @@ public final class Nyu {
 
     public final int nyuCode;
 
-    Semester(int nyuCode) { this.nyuCode = nyuCode; }
-  }
-
-  public static final class Subject {
-    public final String code;
-    public final String name;
-
-    @JsonCreator
-    public Subject(@JsonProperty("code") String code,
-                   @JsonProperty("name") String name) {
-      this.code = code;
-      this.name = name;
+    Semester(int nyuCode) {
+      this.nyuCode = nyuCode;
     }
-
-    public String toString() { return "Subject(" + code + "," + name + ")"; }
   }
 
   public static final class School {
@@ -68,9 +56,13 @@ public final class Nyu {
       return code;
     }
 
-    public final ArrayList<Subject> getSubjects() { return subjects; }
+    public ArrayList<Subject> getSubjects() {
+      return subjects;
+    }
 
-    public String toString() { return "School(" + name + ")"; }
+    public String toString() {
+      return "School(" + name + ")";
+    }
   }
 
   public static final class Course {
@@ -78,22 +70,23 @@ public final class Nyu {
     public String deptCourseId;
     public String description;
     public List<Section> sections;
-
-    // @NOTE: This is de-normalized into the Course object because that makes it
-    // easier to work with when inserting into the database. However, we don't
-    // want to include it in the actual API, because it doesn't seem necessary
-    // right now.
-    //
-    //                                  - Albert Liu, Oct 11, 2022 Tue 01:01
     public String subjectCode;
 
-    public String getName() { return name; }
+    public String getName() {
+      return name;
+    }
 
-    // @Note: these are required for the Javalin OpenAPI integration
+    // @Note: these methods are required for the Javalin OpenAPI integration
     // to pick up fields on the output data
-    public String getDeptCourseId() { return deptCourseId; }
-    public String getDescription() { return description; }
-    public List<Section> getSections() { return sections; }
+    public String getDeptCourseId() {
+      return deptCourseId;
+    }
+    public String getDescription() {
+      return description;
+    }
+    public List<Section> getSections() {
+      return sections;
+    }
     @OpenApiExample(value = "CSCI-UA")
     public String getSubjectCode() {
       return subjectCode;
@@ -145,7 +138,9 @@ public final class Nyu {
       return ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
-    public int getMinutesDuration() { return minutesDuration; }
+    public int getMinutesDuration() {
+      return minutesDuration;
+    }
 
     @NotNull
     public String getBeginDate() {
@@ -171,7 +166,9 @@ public final class Nyu {
       this.tz = tz;
     }
 
-    public int getMinutesDuration() { return minutesDuration; }
+    public int getMinutesDuration() {
+      return minutesDuration;
+    }
 
     @NotNull
     public String getBeginDate() {
@@ -235,7 +232,9 @@ public final class Nyu {
       return s;
     }
 
-    public int getRegistrationNumber() { return registrationNumber; }
+    public int getRegistrationNumber() {
+      return registrationNumber;
+    }
 
     @JsonInclude(NON_NULL)
     @OpenApiExample(value = "Topic: Natual Language Processing")
@@ -248,7 +247,9 @@ public final class Nyu {
       return code;
     }
 
-    public String[] getInstructors() { return instructors; }
+    public String[] getInstructors() {
+      return instructors;
+    }
 
     @NotNull
     public String getType() {
@@ -260,7 +261,9 @@ public final class Nyu {
       return status;
     }
 
-    public String getCampus() { return campus; }
+    public String getCampus() {
+      return campus;
+    }
 
     public List<ZonedMeeting> getMeetings() {
       var output = new ArrayList<ZonedMeeting>();
@@ -274,12 +277,24 @@ public final class Nyu {
       return output;
     }
 
-    public String getInstructionMode() { return instructionMode; }
-    public Double getMinUnits() { return minUnits; }
-    public Double getMaxUnits() { return maxUnits; }
-    public String getGrading() { return grading; }
-    public String getLocation() { return location; }
-    public String getNotes() { return notes; }
+    public String getInstructionMode() {
+      return instructionMode;
+    }
+    public Double getMinUnits() {
+      return minUnits;
+    }
+    public Double getMaxUnits() {
+      return maxUnits;
+    }
+    public String getGrading() {
+      return grading;
+    }
+    public String getLocation() {
+      return location;
+    }
+    public String getNotes() {
+      return notes;
+    }
 
     @JsonInclude(NON_NULL)
     public List<Section> getRecitations() {
@@ -290,7 +305,9 @@ public final class Nyu {
       return waitlistTotal;
     }
 
-    public String toString() { return JsonMapper.toJson(this); }
+    public String toString() {
+      return JsonMapper.toJson(this);
+    }
   }
 
   /**
@@ -309,7 +326,9 @@ public final class Nyu {
         return valueOf(status);
     }
 
-    public boolean isOpen() { return this == Open; }
+    public boolean isOpen() {
+      return this == Open;
+    }
   }
 
   public enum SectionType {
@@ -395,161 +414,6 @@ public final class Nyu {
       default:
         return this.toString();
       }
-    }
-  }
-
-  public static final class Term {
-
-    public final Nyu.Semester semester;
-    public final int year;
-
-    public Term(String sem, int year) { this(semesterFromString(sem), year); }
-
-    public Term(Nyu.Semester semester, int year) {
-      if (year < 1900)
-        throw new IllegalArgumentException("Year was invalid: " + year);
-
-      this.semester = semester;
-      this.year = year;
-    }
-
-    public static Term fromId(int id) {
-      // @Note: This requires order of enum variants to be correct
-      Nyu.Semester semester = Nyu.Semester.values()[(id % 10) / 2 - 1];
-
-      return new Term(semester, id / 10 + 1900);
-    }
-
-    public static Term fromString(String termString) {
-      if (termString.contentEquals("current")) {
-        return getCurrentTerm();
-      }
-
-      if (termString.contentEquals("next")) {
-        return getCurrentTerm().nextTerm();
-      }
-
-      int year = Integer.parseInt(termString.substring(2));
-      return new Term(termString.substring(0, 2), year);
-    }
-
-    // @TODO Make this more accurate
-    public static Nyu.Semester getSemester(LocalDateTime time) {
-      switch (time.getMonth()) {
-      case JANUARY:
-        return Nyu.Semester.ja;
-      case FEBRUARY:
-      case MARCH:
-      case APRIL:
-      case MAY:
-        return Nyu.Semester.sp;
-      case JUNE:
-      case JULY:
-      case AUGUST:
-        return Nyu.Semester.su;
-      case SEPTEMBER:
-      case OCTOBER:
-      case NOVEMBER:
-      case DECEMBER:
-        return Nyu.Semester.fa;
-
-      default:
-        throw new RuntimeException("Did they add another month? month=" +
-                                   time.getMonth());
-      }
-    }
-
-    public static Term getCurrentTerm() {
-      LocalDateTime now = LocalDateTime.now();
-      int year = now.getYear();
-
-      return new Term(getSemester(now), year);
-    }
-
-    public static Nyu.Semester semesterFromStringNullable(String sem) {
-      switch (sem.toLowerCase()) {
-      case "ja":
-      case "january":
-        return Nyu.Semester.ja;
-      case "sp":
-      case "spring":
-        return Nyu.Semester.sp;
-      case "su":
-      case "summer":
-        return Nyu.Semester.su;
-      case "fa":
-      case "fall":
-        return Nyu.Semester.fa;
-
-      default:
-        return null;
-      }
-    }
-
-    public static Nyu.Semester semesterFromString(String sem) {
-      Nyu.Semester semCode = semesterFromStringNullable(sem);
-      if (semCode == null)
-        throw new IllegalArgumentException("Invalid semester string: " + sem);
-
-      return semCode;
-    }
-
-    public Term prevTerm() {
-      switch (semester) {
-      case ja:
-        return new Term(Nyu.Semester.fa, year - 1);
-      case sp:
-        return new Term(Nyu.Semester.ja, year);
-      case su:
-        return new Term(Semester.sp, year);
-      case fa:
-        return new Term(Semester.su, year);
-
-      default:
-        return null;
-      }
-    }
-
-    public Term nextTerm() {
-      switch (semester) {
-      case ja:
-        return new Term(Semester.sp, year);
-      case sp:
-        return new Term(Semester.su, year);
-      case su:
-        return new Term(Semester.fa, year);
-      case fa:
-        return new Term(Semester.ja, year + 1);
-
-      default:
-        return null;
-      }
-    }
-
-    public int getId() { return (year - 1900) * 10 + semester.nyuCode; }
-
-    public String toString() {
-      return "Term(" + semester + ' ' + year + ",id=" + getId() + ")";
-    }
-
-    @JsonValue
-    public String json() {
-      return "" + semester + year;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o)
-        return true;
-      if (o == null || getClass() != o.getClass())
-        return false;
-      Term term = (Term)o;
-      return semester == term.semester && year == term.year;
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(semester, year);
     }
   }
 
@@ -687,6 +551,115 @@ public final class Nyu {
     @OpenApiExample(value = "Ghana Mean Time")
     public String getTimezoneName() {
       return timezoneName;
+    }
+  }
+
+  public record Term(Semester semester, int year) {
+    public Term(String sem, int year) {
+      this(semesterFromString(sem), year);
+    }
+
+    public Term {
+      if (year < 1900)
+        throw new IllegalArgumentException("Year was invalid: " + year);
+    }
+
+    public static Term fromId(int id) {
+      // @Note: This requires order of enum variants to be correct
+      var semester = Semester.values()[(id % 10) / 2 - 1];
+
+      return new Term(semester, id / 10 + 1900);
+    }
+
+    @JsonCreator
+    public static Term fromString(String termString) {
+      if (termString.contentEquals("current")) {
+        return getCurrentTerm();
+      }
+
+      if (termString.contentEquals("next")) {
+        return getCurrentTerm().nextTerm();
+      }
+
+      int year = Integer.parseInt(termString.substring(2));
+      return new Term(termString.substring(0, 2), year);
+    }
+
+    // @TODO Make this more accurate
+    public static Semester getSemester(LocalDateTime time) {
+      return switch (time.getMonth()) {
+        case JANUARY -> Semester.ja;
+        case FEBRUARY, MARCH, APRIL, MAY -> Semester.sp;
+        case JUNE, JULY, AUGUST -> Semester.su;
+        case SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER -> Semester.fa;
+      };
+    }
+
+    public static Term getCurrentTerm() {
+      LocalDateTime now = LocalDateTime.now();
+      int year = now.getYear();
+
+      return new Term(getSemester(now), year);
+    }
+
+    public static Semester semesterFromStringNullable(String sem) {
+      switch (sem.toLowerCase()) {
+        case "ja", "january":
+          return Semester.ja;
+        case "sp", "spring":
+          return Semester.sp;
+        case "su", "summer":
+          return Semester.su;
+        case "fa", "fall":
+          return Semester.fa;
+
+        default:
+          return null;
+        }
+    }
+
+    public static Semester semesterFromString(String sem) {
+      var semCode = semesterFromStringNullable(sem);
+      if (semCode == null)
+        throw new IllegalArgumentException("Invalid semester string: " + sem);
+
+      return semCode;
+    }
+
+    public Term prevTerm() {
+      return switch (semester) {
+        case ja -> new Term(Semester.fa, year - 1);
+        case sp -> new Term(Semester.ja, year);
+        case su -> new Term(Semester.sp, year);
+        case fa -> new Term(Semester.su, year);
+      };
+    }
+
+    public Term nextTerm() {
+      return switch (semester) {
+        case ja -> new Term(Semester.sp, year);
+        case sp -> new Term(Semester.su, year);
+        case su -> new Term(Semester.fa, year);
+        case fa -> new Term(Semester.ja, year + 1);
+      };
+    }
+
+    public int getId() {
+      return (year - 1900) * 10 + semester.nyuCode;
+    }
+
+    @JsonValue
+    public String json() {
+      return "" + semester + year;
+    }
+  }
+
+  public record Subject(String code, String name) {
+    @JsonCreator
+    public Subject(@JsonProperty("code") String code,
+                   @JsonProperty("name") String name) {
+      this.code = code;
+      this.name = name;
     }
   }
 }

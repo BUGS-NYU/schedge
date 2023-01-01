@@ -42,7 +42,7 @@ public final class UpdateSchools {
         }
 
         for (var subject : school.subjects) {
-          Utils.setArray(subjectInsert, subject.code, subject.name, id,
+          Utils.setArray(subjectInsert, subject.code(), subject.name(), id,
                          termString);
           subjectInsert.addBatch();
         }

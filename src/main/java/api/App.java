@@ -117,7 +117,7 @@ public class App {
 
       String message = String.format(
           "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
-          stackTrace, ctx.queryParamMap().toString(), ctx.path());
+          stackTrace, ctx.queryParamMap(), ctx.path());
       logger.warn(message);
     });
 

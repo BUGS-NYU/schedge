@@ -73,7 +73,7 @@ public class App {
     }
   }
 
-  public static final int PORT = 4358;
+  public static final int PORT = Utils.getEnvDefault("SCHEDGE_PORT", 4358);
   public static final String DESCR_TEMPLATE = """
     Schedge is an API to NYU's course catalog. Please note that
     <b>this API is a beta build currently under active development

@@ -38,8 +38,8 @@ dependencies {
   )
 
   testImplementation(
-    'junit:junit:4.13.2',
-    'io.javalin:javalin-testtools:5.1.3',
+    "junit:junit:4.13.2",
+    "io.javalin:javalin-testtools:$javalin",
   )
 
   implementation(

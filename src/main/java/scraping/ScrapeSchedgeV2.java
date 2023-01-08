@@ -130,7 +130,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
         return null;
       }
 
-      tcPass(() -> Thread.sleep(1_000));
+      tcPass(() -> Thread.sleep(500));
 
       var out = new ScrapeResult();
       out.text = resp.body();

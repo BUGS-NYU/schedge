@@ -4,7 +4,6 @@ import static picocli.CommandLine.*;
 
 import api.App;
 import picocli.CommandLine;
-import utils.Nyu;
 
 @Command(name = "schedge")
 public class Main implements Runnable {
@@ -17,9 +16,6 @@ public class Main implements Runnable {
   public static void main(String[] args) {
     var exitCode =
         new CommandLine(new Main())
-            .addSubcommand("scrape", new CommandLine(new cli.Scrape()))
-            .addSubcommand("db", new CommandLine(new cli.Database()))
-            .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
             .execute(args);
 
     if (exitCode != 0)

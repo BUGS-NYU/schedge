@@ -7,7 +7,6 @@ import org.slf4j.*;
 import scraping.PSClassSearch;
 import scraping.PSCoursesParser;
 import scraping.ScrapeEvent;
-import utils.ArrayJS;
 import utils.Utils;
 
 public class ParserTest {

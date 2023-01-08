@@ -1,7 +1,6 @@
 package api;
 
 import api.v1.*;
-import database.*;
 import io.javalin.Javalin;
 import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
@@ -76,9 +75,6 @@ public class App {
   """;
 
   public static Javalin makeApp() {
-    // Ensure that the connection gets instantiated during startup
-    GetConnection.forceInit();
-
     Javalin app = Javalin.create(config -> {
       config.plugins.enableCors(cors -> { // It's a public API
         cors.add(it -> { it.anyHost(); });
@@ -96,41 +92,9 @@ public class App {
       openApiConfig.setInfo(info);
       openApiConfig.setDocumentationPath(jsonPath);
       config.plugins.register(new OpenApiPlugin(openApiConfig));
-
-      config.staticFiles.add(staticFiles -> { // NextJS UI
-        staticFiles.hostedPath = "/";
-        staticFiles.directory = "/next";
-        staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = true;
-      });
-
-      config.staticFiles.add(staticFiles -> { // ReDoc API Docs
-        staticFiles.hostedPath = "/";
-        staticFiles.directory = "/api";
-        staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = false;
-      });
     });
 
-    app.exception(Exception.class, (e, ctx) -> {
-      String stackTrace = Utils.stackTrace(e);
-
-      String message = String.format(
-          "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
-          stackTrace, ctx.queryParamMap(), ctx.path());
-      logger.warn(message);
-    });
-
-    new SchoolInfoEndpoint().addTo(app);
-    new CampusEndpoint().addTo(app);
-    new ListTermsEndpoint().addTo(app);
     new Health().addTo(app);
-
-    new SearchEndpoint().addTo(app);
-    new GenerateScheduleEndpoint().addTo(app);
-    new CoursesEndpoint().addTo(app);
-
-    ScrapingEndpoint.add(app);
 
     return app;
   }

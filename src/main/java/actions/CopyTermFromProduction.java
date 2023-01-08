@@ -10,6 +10,7 @@ import scraping.*;
 public class CopyTermFromProduction {
   static final Logger logger =
       LoggerFactory.getLogger("actions.CopyTermFromProduction");
+
   public enum SchedgeVersion {
     V1,
     V2;

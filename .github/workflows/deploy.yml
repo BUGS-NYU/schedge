@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  Server:
+  server:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -99,3 +99,30 @@ jobs:
 
           # Retried way too many times
           exit 1
+
+  docker-compose:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Setup Git User
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Copy Files
+        run: |
+          mkdir worktree-output
+          cp src/build/docker/production.docker-compose.yml worktree-output
+
+      - name: Copy Files
+        run: |
+          git --work-tree worktree-output add --all
+          git commit -m "Automatic deploy action run by github-actions"
+          git push origin HEAD:prod-config --force

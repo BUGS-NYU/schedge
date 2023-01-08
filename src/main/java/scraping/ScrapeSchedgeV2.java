@@ -69,7 +69,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
     subjects = inputSubjectList.iterator();
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 5; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
@@ -122,13 +122,15 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     return fut.handleAsync((resp, throwable) -> {
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching took {} seconds: subject={}", duration, subject);
+      logger.info("Fetching subject={} took {} seconds", duration, subject);
 
       if (resp == null) {
         logger.error("Error (subject={}): {}", subject, throwable.getMessage());
 
         return null;
       }
+
+      tcPass(() -> Thread.sleep(500));
 
       var out = new ScrapeResult();
       out.text = resp.body();

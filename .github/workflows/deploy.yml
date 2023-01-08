@@ -119,7 +119,7 @@ jobs:
       - name: Copy Files
         run: |
           mkdir worktree-output
-          cp src/build/docker/production.docker-compose.yml worktree-output
+          cp src/build/docker/production.docker-compose.yml worktree-output/docker-compose.yml
 
       - name: Push to prod-config Branch
         run: |

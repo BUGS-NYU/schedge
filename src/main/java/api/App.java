@@ -86,15 +86,16 @@ public class App {
 
       var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION);
 
-      var info = new OpenApiInfo();
-      info.setVersion("2.0.0 beta");
-      info.setTitle("Schedge");
-      info.setDescription(description);
+      var openApiConfig = new OpenApiPluginConfiguration();
+      openApiConfig.withDocumentationPath("/api/swagger.json");
+      openApiConfig.withDefinitionConfiguration((version, definition) -> {
+        definition.withOpenApiInfo(info -> {
+          info.setVersion("2.0.0 beta");
+          info.setTitle("Schedge");
+          info.setDescription(description);
+        });
+      });
 
-      var jsonPath = "/api/swagger.json";
-      var openApiConfig = new OpenApiConfiguration();
-      openApiConfig.setInfo(info);
-      openApiConfig.setDocumentationPath(jsonPath);
       config.plugins.register(new OpenApiPlugin(openApiConfig));
 
       config.staticFiles.add(staticFiles -> { // NextJS UI

@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
   annotationProcessor(
-    "io.javalin.community.openapi:openapi-annotation-processor:5.1.0"
+    "io.javalin.community.openapi:openapi-annotation-processor:5.3.0"
   )
 
   testImplementation(
@@ -60,9 +60,9 @@ dependencies {
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 
     // Web server framework and documentation
-    "io.javalin:javalin:5.1.4",
+    "io.javalin:javalin:5.3.0",
     // for /openapi route with JSON scheme
-    "io.javalin.community.openapi:javalin-openapi-plugin:5.1.0",
+    "io.javalin.community.openapi:javalin-openapi-plugin:5.3.0",
   )
 }
 

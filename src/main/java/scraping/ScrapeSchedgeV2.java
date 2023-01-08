@@ -69,7 +69,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
     subjects = inputSubjectList.iterator();
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 5; i++) {
       if (subjects.hasNext()) {
         engine.add(getData(client, term, subjects.next()));
       }
@@ -129,6 +129,8 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
         return null;
       }
+
+      tcPass(() -> Thread.sleep(1_000));
 
       var out = new ScrapeResult();
       out.text = resp.body();

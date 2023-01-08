@@ -121,7 +121,7 @@ jobs:
           mkdir worktree-output
           cp src/build/docker/production.docker-compose.yml worktree-output
 
-      - name: Copy Files
+      - name: Push to prod-config Branch
         run: |
           git --work-tree worktree-output add --all
           git commit -m "Automatic deploy action run by github-actions"

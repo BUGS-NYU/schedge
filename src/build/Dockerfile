@@ -22,7 +22,7 @@ EXPOSE 4358
 ENV PATH "/app:$PATH"
 RUN echo 'export PATH="/app:${PATH}"' >> /root/.bashrc
 
-COPY ./src/build/docker/entrypoint.sh /app/schedge
+COPY ./src/build/entrypoint.sh /app/schedge
 
 # This is not strictly necessary, but alerts the developer to problems with the
 # executable before they happen in the container; the last time there was

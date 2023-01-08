@@ -121,7 +121,6 @@ jobs:
           mkdir worktree-output
           cp src/build/docker/production.docker-compose.yml worktree-output
 
-
       - name: Copy Files
         run: |
           git --work-tree worktree-output add --all

@@ -1,0 +1,216 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "paths": {
+    "/api/courses/{term}/{subject}": {
+      "get": {
+        "tags": [],
+        "summary": "Courses",
+        "description": "Lists all courses for a specific semester and subject.",
+        "parameters": [
+          {
+            "name": "subject",
+            "in": "path",
+            "description": "Must be a valid subject code. Take a look at the docs for the schools endpoint for more information.",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string",
+              "example": "MATH-UA"
+            }
+          },
+          {
+            "name": "term",
+            "in": "path",
+            "description": "Must be a valid term code, either \u0027current\u0027, \u0027next\u0027, or something like sp2021 for Spring 2021. Use \u0027su\u0027 for Summer, \u0027sp\u0027 for Spring, \u0027fa\u0027 for Fall, and \u0027ja\u0027 for January/JTerm",
+            "required": true,
+            "deprecated": false,
+            "allowEmptyValue": false,
+            "schema": {
+              "type": "string",
+              "example": "fa2022"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status of the executed command",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Course"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "One of the values in the path parameter was not valid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false,
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "Course": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deptCourseId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            }
+          },
+          "subjectCode": {
+            "type": "string",
+            "example": "CSCI-UA"
+          }
+        }
+      },
+      "Section": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "campus": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "grading": {
+            "type": "string"
+          },
+          "instructionMode": {
+            "type": "string"
+          },
+          "instructors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "location": {
+            "type": "string"
+          },
+          "maxUnits": {
+            "type": "number",
+            "format": "double"
+          },
+          "meetings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ZonedMeeting"
+            }
+          },
+          "minUnits": {
+            "type": "number",
+            "format": "double"
+          },
+          "name": {
+            "type": "string",
+            "example": "Topic: Natual Language Processing"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "recitations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            }
+          },
+          "registrationNumber": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "waitlistTotal": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "code",
+          "registrationNumber",
+          "type"
+        ]
+      },
+      "ZonedMeeting": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "beginDate": {
+            "type": "string"
+          },
+          "beginDateLocal": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "endDateLocal": {
+            "type": "string"
+          },
+          "minutesDuration": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "beginDate",
+          "beginDateLocal",
+          "endDate",
+          "endDateLocal",
+          "minutesDuration"
+        ]
+      }
+    }
+  }
+}

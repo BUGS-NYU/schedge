@@ -7,6 +7,7 @@ import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
 import java.util.*;
+import api.App.ApiError;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() {
@@ -53,6 +54,12 @@ public final class CoursesEndpoint extends App.Endpoint {
 
     Object output = GetConnection.withConnectionReturning(conn -> {
       List<String> subjects = Collections.singletonList(subject);
+
+      if(subjects.size() == 0){
+        ApiError noClasses = new ApiError("Sorry, this class is not available");
+        ctx.json(noClasses);
+        throw new Error();
+      }
 
       return SelectCourses.selectCourses(conn, term, subjects);
     });

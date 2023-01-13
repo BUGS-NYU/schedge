@@ -55,7 +55,7 @@ public final class CoursesEndpoint extends App.Endpoint {
     Object output = GetConnection.withConnectionReturning(conn -> {
       List<String> subjects = Collections.singletonList(subject);
 
-      if(subjects.size() == 0){
+      if(subjects.size() == 0) {
         ApiError noClasses = new ApiError("Sorry, this class is not available");
         ctx.json(noClasses);
         return noClasses;

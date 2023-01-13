@@ -58,7 +58,7 @@ public final class CoursesEndpoint extends App.Endpoint {
       if(subjects.size() == 0){
         ApiError noClasses = new ApiError("Sorry, this class is not available");
         ctx.json(noClasses);
-        throw new Error();
+        return noClasses;
       }
 
       return SelectCourses.selectCourses(conn, term, subjects);

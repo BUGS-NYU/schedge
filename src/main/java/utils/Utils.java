@@ -11,6 +11,16 @@ import java.util.stream.*;
 public final class Utils {
   private static BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
 
+  public static final class Ref<T> {
+    public T value;
+  }
+
+  public static <T> Ref<T> ref(T t) {
+    var ref = new Ref<T>();
+    ref.value = t;
+    return ref;
+  }
+
   public static void profileWait() {
     System.err.print("Press Enter to start the profile.");
 

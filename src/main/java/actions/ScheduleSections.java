@@ -122,27 +122,13 @@ public final class ScheduleSections {
     meetings.sort(Comparator.comparingInt(AugmentedMeeting::getMinutesInDay));
     for (AugmentedMeeting meeting : meetings) {
       switch (meeting.beginDate.get(ChronoField.DAY_OF_WEEK)) {
-        case 1:
-          schedule.mo.add(meeting);
-          break;
-        case 2:
-          schedule.tu.add(meeting);
-          break;
-        case 3:
-          schedule.we.add(meeting);
-          break;
-        case 4:
-          schedule.th.add(meeting);
-          break;
-        case 5:
-          schedule.fr.add(meeting);
-          break;
-        case 6:
-          schedule.sa.add(meeting);
-          break;
-        case 7:
-          schedule.su.add(meeting);
-          break;
+        case 1 -> schedule.mo.add(meeting);
+        case 2 -> schedule.tu.add(meeting);
+        case 3 -> schedule.we.add(meeting);
+        case 4 -> schedule.th.add(meeting);
+        case 5 -> schedule.fr.add(meeting);
+        case 6 -> schedule.sa.add(meeting);
+        case 7 -> schedule.su.add(meeting);
       }
     }
 

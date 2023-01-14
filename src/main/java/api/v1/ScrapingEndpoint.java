@@ -76,22 +76,18 @@ public final class ScrapingEndpoint {
 
       ScrapeJob job =
           run(
-              () -> {
-                switch (source) {
-                  case "schedge-v1":
-                    return ScrapeSchedgeV1::scrapeFromSchedge;
-                  case "sis.nyu.edu":
-                    return PSClassSearch::scrapeTerm;
-                  default:
-                    {
+              () ->
+                  switch (source) {
+                    case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
+                    case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
+                    default -> {
                       var warning = "Invalid source: " + source;
                       ctx.send(warning);
                       logger.warn(warning);
 
-                      return null;
+                      yield null;
                     }
-                }
-              });
+                  });
 
       if (job == null) {
         return "No job to run!";

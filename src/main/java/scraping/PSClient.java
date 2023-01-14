@@ -165,34 +165,19 @@ public class PSClient {
   }
 
   static String yearText(Term term) {
-    switch (term.semester()) {
-      case ja:
-      case sp:
-      case su:
-        return (term.year() - 1) + "-" + term.year();
-
-      case fa:
-        return term.year() + "-" + (term.year() + 1);
-
-      default:
-        throw new RuntimeException("whatever");
-    }
+    return switch (term.semester()) {
+      case ja, sp, su -> (term.year() - 1) + "-" + term.year();
+      case fa -> term.year() + "-" + (term.year() + 1);
+    };
   }
 
   static String semesterId(Term term) {
-    switch (term.semester()) {
-      case fa:
-        return "NYU_CLS_WRK_NYU_FALL$36$";
-      case ja:
-        return "NYU_CLS_WRK_NYU_WINTER$37$";
-      case sp:
-        return "NYU_CLS_WRK_NYU_SPRING$38$";
-      case su:
-        return "NYU_CLS_WRK_NYU_SUMMER$39$";
-
-      default:
-        throw new RuntimeException("whatever");
-    }
+    return switch (term.semester()) {
+      case fa -> "NYU_CLS_WRK_NYU_FALL$36$";
+      case ja -> "NYU_CLS_WRK_NYU_WINTER$37$";
+      case sp -> "NYU_CLS_WRK_NYU_SPRING$38$";
+      case su -> "NYU_CLS_WRK_NYU_SUMMER$39$";
+    };
   }
 
   // I think I get like silently rate-limited during testing without this
@@ -202,10 +187,7 @@ public class PSClient {
 
   static String formEncode(HashMap<String, String> values) {
     return values.entrySet().stream()
-        .map(
-            e -> {
-              return e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
-            })
+        .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
         .collect(Collectors.joining("&"));
   }
 

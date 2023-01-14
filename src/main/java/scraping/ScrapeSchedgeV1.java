@@ -88,9 +88,7 @@ public final class ScrapeSchedgeV1 {
     Schools(final Map<String, NameField> schools) {
       this.schools = new HashMap<>();
 
-      for (var pair : missingPrograms.entrySet()) {
-        this.schools.put(pair.getKey(), pair.getValue());
-      }
+      this.schools.putAll(missingPrograms);
 
       for (var pair : schools.entrySet()) {
         var schoolCode = pair.getKey();
@@ -194,8 +192,6 @@ public final class ScrapeSchedgeV1 {
       var s = new Subject(subject.fullCode, subject.name);
       school.subjects.add(s);
     }
-
-    var subjects = subjectsFullCodeList.listIterator();
 
     var results =
         Flowable.fromIterable(subjectsFullCodeList)

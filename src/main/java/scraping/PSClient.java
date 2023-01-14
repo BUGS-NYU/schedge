@@ -97,7 +97,8 @@ public class PSClient {
         out.handle(
             (resp_, err) -> {
               if (err != null) {
-                // @TODO
+                logger.error("Got Error in PSClient handler", err);
+                // @TODO actually handle this
               }
 
               incrementStateNum();

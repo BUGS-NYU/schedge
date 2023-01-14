@@ -66,7 +66,7 @@ public final class PSClassSearch {
     return ctx.log(
         () -> {
           var ps = new PSClient();
-          var resp = ps.navigateToTerm(term).get();
+          var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
           return translateSubjects(subjects);
         });
@@ -81,7 +81,7 @@ public final class PSClassSearch {
     return ctx.log(
         () -> {
           var ps = new PSClient();
-          var resp = ps.navigateToTerm(term).get();
+          var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
 
           var subject = find(subjects, s -> s.code.equals(subjectCode));
@@ -120,7 +120,7 @@ public final class PSClassSearch {
     var subjects =
         ctx.log(
             () -> {
-              var resp = ps.value.navigateToTerm(term).get();
+              var resp = ps.value.navigateToTerm(term);
               return parseTermPage(resp.body());
             });
 
@@ -161,7 +161,7 @@ public final class PSClassSearch {
                       Thread.sleep(10_000);
 
                       ps.value = new PSClient();
-                      ps.value.navigateToTerm(term).get();
+                      ps.value.navigateToTerm(term);
                     }
                   }
 

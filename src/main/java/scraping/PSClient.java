@@ -34,8 +34,7 @@ public class PSClient {
             .build();
   }
 
-  CompletableFuture<HttpResponse<String>> navigateToTerm(Nyu.Term term)
-      throws IOException, InterruptedException {
+  HttpResponse<String> navigateToTerm(Nyu.Term term) throws IOException, InterruptedException {
     String yearText = yearText(term);
     String semesterId = semesterId(term);
 
@@ -71,7 +70,7 @@ public class PSClient {
       formMap.put("ICAction", semesterId);
       formMap.put(semesterId, "Y");
 
-      var resp = client.sendAsync(post(MAIN_URI, formMap), handler);
+      var resp = client.send(post(MAIN_URI, formMap), handler);
 
       return resp;
     }

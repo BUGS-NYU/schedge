@@ -207,7 +207,7 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
 
     for (int i = 0; i < 10; i++) {
       if (subjects.hasNext()) {
-        engine.add(getData(subjects.next()));
+        engine.add(getData(client, term, subjects.next()));
       }
     }
   }
@@ -226,7 +226,7 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
   public ArrayList<Course> next() {
     for (var result : engine) {
       if (subjects.hasNext()) {
-        engine.add(getData(subjects.next()));
+        engine.add(getData(client, term, subjects.next()));
       }
 
       if (result.text == null) continue;
@@ -307,7 +307,7 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
     return s;
   }
 
-  private Future<ScrapeResult> getData(String subject) {
+  private static Future<ScrapeResult> getData(HttpClient client, Term term, String subject) {
     var parts = subject.split("-");
     String school = parts[1];
     String major = parts[0];

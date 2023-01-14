@@ -7,15 +7,16 @@ import static utils.Nyu.*;
 import static utils.Try.*;
 
 import com.fasterxml.jackson.annotation.*;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV1 implements TermScrapeResult {
+public final class ScrapeSchedgeV1 {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
@@ -137,23 +138,13 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
     public String notes;
   }
 
-  private final ArrayList<School> schools = new ArrayList<>();
-  private final HttpClient client = HttpClient.newHttpClient();
-  private final Iterator<String> subjects;
-  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
-  private final Try ctx;
-  private final Term term;
-  private final Consumer<ScrapeEvent> consumer;
-
-  private ScrapeSchedgeV1(Term term, Consumer<ScrapeEvent> consumer) {
-    this.term = term;
-    this.ctx = Try.Ctx(logger);
-    this.consumer = consumer;
+  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    var client = HttpClient.newHttpClient();
 
     consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
     consumer.accept(ScrapeEvent.hintChange(-1));
 
-    var schools =
+    var schoolsRaw =
         run(
             () -> {
               var schoolsUri = URI.create(SCHEDGE_URL + "schools");
@@ -184,17 +175,18 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
     var subjectsFullCodeList = new ArrayList<String>();
     subjectsFullCodeList.ensureCapacity(subjectsList.size());
 
+    var schools = new ArrayList<School>();
     for (var subject : subjectsList) {
       subjectsFullCodeList.add(subject.fullCode);
       var school =
           schoolsMap.computeIfAbsent(
               subject.schoolCode,
               code -> {
-                var name = schools.get(code);
+                var name = schoolsRaw.get(code);
                 if (name == null) throw new RuntimeException("Code: " + code);
 
                 var s = new School(name, code);
-                this.schools.add(s);
+                schools.add(s);
 
                 return s;
               });
@@ -203,67 +195,49 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
       school.subjects.add(s);
     }
 
-    this.subjects = subjectsFullCodeList.listIterator();
+    var subjects = subjectsFullCodeList.listIterator();
 
-    for (int i = 0; i < 10; i++) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
-      }
-    }
-  }
+    var results =
+        Flowable.fromIterable(subjectsFullCodeList)
+            .parallel(5)
+            .runOn(Schedulers.io())
+            .map(subject -> getData(client, term, subject))
+            .sequential()
+            .map(
+                result -> {
+                  if (result.text == null) return null;
 
-  @Override
-  public ArrayList<School> schools() {
-    return schools;
-  }
+                  consumer.accept(
+                      ScrapeEvent.message(result.subject, "Fetching " + result.subject));
+                  var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
+                  List<Course> out = new ArrayList<>();
 
-  @Override
-  public boolean hasNext() {
-    return this.engine.hasNext();
-  }
+                  for (var course : courses) {
+                    var c = new Course();
+                    c.name = course.name;
+                    c.deptCourseId = course.deptCourseId;
+                    c.description = course.description;
+                    c.subjectCode = result.subject;
+                    c.sections = new ArrayList<>();
 
-  @Override
-  public ArrayList<Course> next() {
-    for (var result : engine) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
-      }
+                    if (c.description == null) c.description = "";
 
-      if (result.text == null) continue;
+                    for (var section : course.sections) {
+                      var s = translateSection(section);
+                      if (!s.name.equals(c.name)) s.name = null;
 
-      consumer.accept(ScrapeEvent.message(result.subject, "Fetching " + result.subject));
-      var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
-      var out = new ArrayList<Course>();
+                      c.sections.add(s);
+                    }
 
-      for (var course : courses) {
-        var c = new Course();
-        c.name = course.name;
-        c.deptCourseId = course.deptCourseId;
-        c.description = course.description;
-        c.subjectCode = result.subject;
-        c.sections = new ArrayList<>();
+                    out.add(c);
+                  }
 
-        if (c.description == null) c.description = "";
+                  consumer.accept(ScrapeEvent.progress(1));
+                  return out;
+                })
+            .blockingIterable();
 
-        for (var section : course.sections) {
-          var s = translateSection(section);
-          if (!s.name.equals(c.name)) s.name = null;
-
-          c.sections.add(s);
-        }
-
-        out.add(c);
-      }
-
-      consumer.accept(ScrapeEvent.progress(1));
-      return out;
-    }
-
-    return null;
-  }
-
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
-    return new ScrapeSchedgeV1(term, consumer);
+    return new TermScrapeResult.Impl(term, schools, results);
   }
 
   private static Section translateSection(SchedgeV1Section section) {
@@ -307,46 +281,38 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
     return s;
   }
 
-  private static Future<ScrapeResult> getData(HttpClient client, Term term, String subject) {
-    var parts = subject.split("-");
-    String school = parts[1];
-    String major = parts[0];
+  private static ScrapeResult getData(HttpClient client, Term term, String subject) {
+    try {
+      long start = System.nanoTime();
 
-    if (school.contentEquals("UI")) {
-      school = "SHU";
+      var parts = subject.split("-");
+      String school = parts[1];
+      String major = parts[0];
+
+      if (school.contentEquals("UI")) {
+        school = "SHU";
+      }
+
+      var components = new String[] {"" + term.year(), term.semester().toString(), school, major};
+      var uri = URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
+      var request = HttpRequest.newBuilder().uri(uri).build();
+      var handler = HttpResponse.BodyHandlers.ofString();
+
+      var resp = client.send(request, handler);
+
+      long end = System.nanoTime();
+      double duration = (end - start) / 1000000000.0;
+      logger.info("Fetching took {} seconds: subject={}", duration, subject);
+
+      var result = new ScrapeResult();
+      result.text = resp.body();
+      result.subject = subject;
+
+      return result;
+    } catch (Exception e) {
+      logger.error("Error (subject={}): {}", subject, e.getMessage());
+
+      return null;
     }
-
-    var components = new String[] {"" + term.year(), term.semester().toString(), school, major};
-
-    var uri = URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
-
-    var request = HttpRequest.newBuilder().uri(uri).build();
-
-    long start = System.nanoTime();
-
-    var handler = HttpResponse.BodyHandlers.ofString();
-    var fut = client.sendAsync(request, handler);
-    return fut.handleAsync(
-        (resp, throwable) -> {
-          long end = System.nanoTime();
-          double duration = (end - start) / 1000000000.0;
-          logger.info("Fetching took {} seconds: subject={}", duration, subject);
-
-          if (resp == null) {
-            logger.error("Error (subject={}): {}", subject, throwable.getMessage());
-
-            return null;
-          }
-
-          var result = new ScrapeResult();
-          result.text = resp.body();
-          result.subject = subject;
-
-          return result;
-        });
-  }
-
-  public Term term() {
-    return term;
   }
 }

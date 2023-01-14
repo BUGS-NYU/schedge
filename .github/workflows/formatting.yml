@@ -35,7 +35,7 @@ jobs:
       run: yarn install --frozen-lockfile
 
     - name: Warm up Gradle
-      run: yarn gradle --version
+      run: yarn gradle
 
     - name: Lint Formatting
       run: yarn format

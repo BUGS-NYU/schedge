@@ -20,7 +20,7 @@ services:
     platform: linux/amd64
     build:
       context: .
-      dockerfile: ./src/build/docker/Dockerfile
+      dockerfile: ./src/build/Dockerfile
     restart: "no"
     environment:
       - DB_USERNAME=postgres

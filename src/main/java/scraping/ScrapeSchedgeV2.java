@@ -25,19 +25,6 @@ public final class ScrapeSchedgeV2 {
     String subject;
   }
 
-  public record Result(Term term, ArrayList<School> schools, Iterable<List<Course>> courses)
-      implements TermScrapeResult {
-    @Override
-    public boolean hasNext() {
-      return false;
-    }
-
-    @Override
-    public List<Course> next() {
-      return null;
-    }
-  }
-
   public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return scrapeFromSchedge(term, null, consumer);
   }

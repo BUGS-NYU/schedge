@@ -34,6 +34,6 @@ COPY ./src/build/entrypoint.sh /app/schedge
 #                                     - Albert Liu, Oct 09, 2022 Sun 17:54 EDT
 RUN chmod +x /app/schedge
 
-COPY ./.build/libs/schedge.jar /app/schedge.jar
+COPY ./build/libs/schedge.jar /app/schedge.jar
 
 ENTRYPOINT ["/app/schedge", "serve"]

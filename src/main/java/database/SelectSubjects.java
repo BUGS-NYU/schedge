@@ -4,12 +4,9 @@ import static utils.Nyu.*;
 
 import java.sql.*;
 import java.util.*;
-import org.slf4j.*;
 import utils.Utils;
 
 public class SelectSubjects {
-  private static Logger logger = LoggerFactory.getLogger("database.SelectSubjects");
-
   private static final String SELECT_SCHOOLS = "SELECT id, name, code FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
@@ -17,23 +14,45 @@ public class SelectSubjects {
 
   public static ArrayList<School> selectSchoolsForTerm(Connection conn, Term term)
       throws SQLException {
-    try (var schoolSel = conn.prepareStatement(SELECT_SCHOOLS);
-        var subjectSel = conn.prepareStatement(SELECT_SUBJECTS)) {
+    var subjectsForSchool = selectSubjects(conn, term);
+
+    try (var schoolSel = conn.prepareStatement(SELECT_SCHOOLS)) {
       Utils.setArray(schoolSel, term.json());
 
-      var schools = new HashMap<Integer, School>();
+      var schools = new ArrayList<School>();
+
       try (ResultSet rs = schoolSel.executeQuery()) {
         while (rs.next()) {
           var id = rs.getInt("id");
           var name = rs.getString("name");
           var code = rs.getString("code");
 
-          School school = new School(name, code);
-
-          schools.put(id, school);
+          var school = new School(name, code, subjectsForSchool.get(id));
+          schools.add(school);
         }
       }
 
+      return schools;
+    }
+  }
+
+  public static ArrayList<Subject> selectSubjectsForTerm(Connection conn, Term term)
+      throws SQLException {
+    var subjects = selectSubjects(conn, term);
+
+    var outputList = new ArrayList<Subject>();
+    for (var entry : subjects.entrySet()) {
+      outputList.addAll(entry.getValue());
+    }
+
+    return outputList;
+  }
+
+  private static HashMap<Integer, ArrayList<Subject>> selectSubjects(Connection conn, Term term)
+      throws SQLException {
+    var schools = new HashMap<Integer, ArrayList<Subject>>();
+
+    try (var subjectSel = conn.prepareStatement(SELECT_SUBJECTS)) {
       Utils.setArray(subjectSel, term.json());
 
       try (ResultSet rs = subjectSel.executeQuery()) {
@@ -42,13 +61,12 @@ public class SelectSubjects {
           var code = rs.getString("code");
           var name = rs.getString("name");
 
-          Subject subject = new Subject(code, name);
-
-          schools.get(school).subjects.add(subject);
+          var subject = new Subject(code, name);
+          schools.computeIfAbsent(school, (k) -> new ArrayList<>()).add(subject);
         }
       }
 
-      return new ArrayList<School>(schools.values());
+      return schools;
     }
   }
 }

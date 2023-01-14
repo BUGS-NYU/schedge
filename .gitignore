@@ -6,7 +6,6 @@
 
 # Schedge-specific
 /.letsencrypt
-/.build
 /src/main/resources/next/*
 !/src/main/resources/next/.gitkeep
 *.log

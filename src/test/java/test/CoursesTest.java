@@ -32,4 +32,31 @@ public class CoursesTest {
           }
         });
   }
+
+  @Test
+  public void testCoursesInvalidSubject() {
+    var subjects = new String[] {"CSCI-UAd", "CSCI-d", "mEdew"};
+
+    var testUrl = "/api/courses/sp2021/";
+    var app = App.makeApp();
+    JavalinTest.test(
+        app,
+        (server, client) -> {
+          for (var subject : subjects) {
+            try (var resp = client.get(testUrl + subject);
+                var respBody = resp.body()) {
+
+              Assert.assertEquals(resp.code(), 400);
+
+              var body = respBody.string();
+              var expected =
+                  "{\"status\":400,\"message\":\"the subject \\\""
+                      + subject
+                      + "\\\" is invalid for the term Term[semester=sp, year=2021]\"}";
+
+              Assert.assertEquals(body.toLowerCase(), expected.toLowerCase());
+            }
+          }
+        });
+  }
 }

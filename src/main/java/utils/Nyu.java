@@ -358,58 +358,33 @@ public final class Nyu {
 
     @JsonValue
     public String getName() {
-      switch (this) {
-        case LEC:
-          return "Lecture";
-        case RCT:
-          return "Recitation";
-        case LAB:
-          return "Lab";
-        case SEM:
-          return "Seminar";
-        case IND:
-          return "Independent Study";
-        case SIM:
-          return "Simulation";
-        case CLI:
-          return "Clinic";
-        case FLD:
-          return "Field Instruction";
-        case WKS:
-          return "Workshop";
-        case STI:
-          return "Independent Instruction";
-        case STU:
-          return "Studio";
-        case STG:
-          return "Group Instruction";
-        case INT:
-          return "Internship";
-        case RSC:
-          return "Research (Tandon)";
-        case CLQ:
-          return "Colloquium";
-        case PRO:
-          return "Project (Tandon)";
-        case GUI:
-          return "Guided Studies (Tandon)";
-        case NCR:
-          return "Non-Credit (Tandon)";
-        case PRP:
-          return "Preparatory";
-        case MAM:
-          return "Maintaining Marticulation";
-        case DLX:
-          return "Distance Learning Hybrid";
-        case PCT:
-          return "Practicum";
-        case LLB:
-          return "Lecture for Lab";
-        case NCL:
-          return "Non-Credit Lab";
-        default:
-          return this.toString();
-      }
+      return switch (this) {
+        case LEC -> "Lecture";
+        case RCT -> "Recitation";
+        case LAB -> "Lab";
+        case SEM -> "Seminar";
+        case IND -> "Independent Study";
+        case SIM -> "Simulation";
+        case CLI -> "Clinic";
+        case FLD -> "Field Instruction";
+        case WKS -> "Workshop";
+        case STI -> "Independent Instruction";
+        case STU -> "Studio";
+        case STG -> "Group Instruction";
+        case INT -> "Internship";
+        case RSC -> "Research (Tandon)";
+        case CLQ -> "Colloquium";
+        case PRO -> "Project (Tandon)";
+        case GUI -> "Guided Studies (Tandon)";
+        case NCR -> "Non-Credit (Tandon)";
+        case PRP -> "Preparatory";
+        case MAM -> "Maintaining Marticulation";
+        case DLX -> "Distance Learning Hybrid";
+        case PCT -> "Practicum";
+        case LLB -> "Lecture for Lab";
+        case NCL -> "Non-Credit Lab";
+        case DLG, NCH, EQV -> this.toString();
+      };
     }
   }
 
@@ -588,19 +563,13 @@ public final class Nyu {
     }
 
     public static Semester semesterFromStringNullable(String sem) {
-      switch (sem.toLowerCase()) {
-        case "ja", "january":
-          return Semester.ja;
-        case "sp", "spring":
-          return Semester.sp;
-        case "su", "summer":
-          return Semester.su;
-        case "fa", "fall":
-          return Semester.fa;
-
-        default:
-          return null;
-      }
+      return switch (sem.toLowerCase()) {
+        case "ja", "january" -> Semester.ja;
+        case "sp", "spring" -> Semester.sp;
+        case "su", "summer" -> Semester.su;
+        case "fa", "fall" -> Semester.fa;
+        default -> null;
+      };
     }
 
     public static Semester semesterFromString(String sem) {

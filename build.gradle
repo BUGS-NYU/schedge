@@ -114,11 +114,6 @@ test {
     maxHeapSize = "1G"
 }
 
-// The build directory should not begin with the same name as the script
-allprojects {
-  buildDir = ".build"
-}
-
 // @TODO use application plugin to make a distribution instead of using
 // a fat jar. Fat jars take an annoying amount of time to compile, wheras
 // the distribution plugin likely won't, because it has less work to do.

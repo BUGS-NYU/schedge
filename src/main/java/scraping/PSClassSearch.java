@@ -132,7 +132,6 @@ public final class PSClassSearch {
         Flowable.fromIterable(subjects)
             .map(
                 subject -> {
-                  System.out.println("FUFUFUFUFU");
                   ctx.put("subject", subject);
                   consumer.accept(ScrapeEvent.subject(subject.code));
 

@@ -19,6 +19,10 @@ public final class Try extends HashMap<String, Object> {
     E get() throws Exception;
   }
 
+  public interface CallWithExceptionType<T, E extends Exception> {
+    T get() throws E;
+  }
+
   public interface CallVoid {
     void get() throws Exception;
   }
@@ -98,5 +102,19 @@ public final class Try extends HashMap<String, Object> {
       if (throwable instanceof Error e) throw e;
       throw new RuntimeException(throwable);
     }
+  }
+
+  public static <T, E extends Exception> T tcRetryRuntimeExceptions(
+      int retryCount, CallWithExceptionType<T, E> supplier) throws E {
+    RuntimeException error = null;
+    for (int i = 0; i < retryCount; i++) {
+      try {
+        return supplier.get();
+      } catch (RuntimeException e) {
+        error = e;
+      }
+    }
+
+    throw error;
   }
 }

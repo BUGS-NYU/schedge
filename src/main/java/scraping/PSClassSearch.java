@@ -5,7 +5,6 @@ import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -133,6 +132,7 @@ public final class PSClassSearch {
         Flowable.fromIterable(subjects)
             .map(
                 subject -> {
+                  System.out.println("FUFUFUFUFU");
                   ctx.put("subject", subject);
                   consumer.accept(ScrapeEvent.subject(subject.code));
 
@@ -141,7 +141,11 @@ public final class PSClassSearch {
                       var resp = ps.value.fetchSubject(subject).get();
                       var body = resp.body();
 
-                      return parseSubject(ctx, body, subject.code, consumer);
+                      var parsed = parseSubject(ctx, body, subject.code, consumer);
+
+                      consumer.accept(ScrapeEvent.progress(1));
+
+                      return parsed;
                     } catch (CancellationException e) {
                       // When this method is cancelled through task cancellation, don't
                       // keep retrying
@@ -173,8 +177,7 @@ public final class PSClassSearch {
                   consumer.accept(ScrapeEvent.progress(1));
 
                   return parsed;
-                })
-            .subscribeOn(Schedulers.io());
+                });
 
     return new TermScrapeResult.Impl(term, schools, results.blockingIterable());
   }

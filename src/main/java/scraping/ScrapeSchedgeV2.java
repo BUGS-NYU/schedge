@@ -83,7 +83,10 @@ public final class ScrapeSchedgeV2 {
       double duration = (end - start) / 1000000000.0;
       logger.info("Fetching subject={} took {} seconds", duration, subject);
 
-      tcPass(() -> Thread.sleep(500));
+      // This slows down the scrape, which is bad, but gives the production server some
+      // breathing room, so that development doesn't accidentally DDOS the server.
+      // TODO: Optimize the code enough that this isn't necessary anymore
+      tcPass(() -> Thread.sleep(250));
 
       var out = new ScrapeResult();
       out.text = resp.body();

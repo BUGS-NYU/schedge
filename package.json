@@ -34,6 +34,7 @@
     "@types/react": "17.0.2",
     "caniuse-lite": "1.0.30001431",
     "eslint": "8.23.1",
+    "clang-format": "1.8.0",
     "eslint-config-next": "12.3.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
     "eslint-plugin-react": "7.31.8",

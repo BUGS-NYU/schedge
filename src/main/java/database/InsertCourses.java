@@ -9,12 +9,11 @@ import org.slf4j.*;
 import utils.Utils;
 
 /**
- * This class insert courses into the Postgresql database based on
- * the data scraped from Albert Mobile
+ * This class insert courses into the Postgresql database based on the data scraped from Albert
+ * Mobile
  */
 public final class InsertCourses {
-  private static Logger logger =
-      LoggerFactory.getLogger("database.InsertCourses");
+  private static Logger logger = LoggerFactory.getLogger("database.InsertCourses");
 
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement courses;
@@ -24,22 +23,25 @@ public final class InsertCourses {
     private static final String sectionSql;
 
     static {
-      String[] sectionFields = new String[] {"registration_number",
-                                             "name",
-                                             "campus",
-                                             "min_units",
-                                             "max_units",
-                                             "instruction_mode",
-                                             "location",
-                                             "grading",
-                                             "notes",
-                                             "course_id",
-                                             "section_code",
-                                             "section_type",
-                                             "section_status",
-                                             "waitlist_total",
-                                             "associated_with",
-                                             "instructors"};
+      String[] sectionFields =
+          new String[] {
+            "registration_number",
+            "name",
+            "campus",
+            "min_units",
+            "max_units",
+            "instruction_mode",
+            "location",
+            "grading",
+            "notes",
+            "course_id",
+            "section_code",
+            "section_type",
+            "section_status",
+            "waitlist_total",
+            "associated_with",
+            "instructors"
+          };
 
       StringBuilder builder = new StringBuilder();
       builder.append("INSERT INTO sections (");
@@ -69,15 +71,17 @@ public final class InsertCourses {
 
     Prepared(Connection conn) throws SQLException {
       this.courses =
-          conn.prepareStatement("INSERT INTO courses "
-                                + "(term, name, subject_code, "
-                                + "dept_course_id, description) "
-                                + "VALUES (?, ?, ?, ?, ?) RETURNING id");
+          conn.prepareStatement(
+              "INSERT INTO courses "
+                  + "(term, name, subject_code, "
+                  + "dept_course_id, description) "
+                  + "VALUES (?, ?, ?, ?, ?) RETURNING id");
 
       this.sections = conn.prepareStatement(sectionSql);
 
-      this.meetings = conn.prepareStatement(
-          "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
+      this.meetings =
+          conn.prepareStatement(
+              "INSERT INTO meetings (section_id, begin_date, duration, end_date) VALUES (?, ?, ?, ?)");
     }
 
     public void close() throws SQLException {
@@ -87,8 +91,7 @@ public final class InsertCourses {
     }
   }
 
-  public static void clearPrevious(Connection conn, Term term)
-      throws SQLException {
+  public static void clearPrevious(Connection conn, Term term) throws SQLException {
     String sql = "DELETE FROM courses WHERE term = ?";
     try (PreparedStatement deletePrevious = conn.prepareStatement(sql)) {
       deletePrevious.setObject(1, term.json());
@@ -96,8 +99,8 @@ public final class InsertCourses {
     }
   }
 
-  public static void insertCourses(Connection conn, Term term,
-                                   List<Course> courses) throws SQLException {
+  public static void insertCourses(Connection conn, Term term, List<Course> courses)
+      throws SQLException {
     try (Prepared p = new Prepared(conn)) {
       insertCourses(p, term, courses);
     }
@@ -110,13 +113,11 @@ public final class InsertCourses {
     for (Course c : courses) {
       // System.out.println(c.name + " " + c.subjectCode + " " +
       // c.deptCourseId);
-      Utils.setArray(stmt, term.json(), c.name, c.subjectCode, c.deptCourseId,
-                     c.description);
+      Utils.setArray(stmt, term.json(), c.name, c.subjectCode, c.deptCourseId, c.description);
       stmt.execute();
 
       ResultSet rs = stmt.getResultSet();
-      if (!rs.next())
-        throw new RuntimeException("inserting course failed for course=" + c);
+      if (!rs.next()) throw new RuntimeException("inserting course failed for course=" + c);
 
       int courseId = rs.getInt(1);
       rs.close();
@@ -125,46 +126,45 @@ public final class InsertCourses {
     }
   }
 
-  private static void insertSections(Prepared p, int courseId,
-                                     List<Section> sections,
-                                     Integer associatedWith)
+  private static void insertSections(
+      Prepared p, int courseId, List<Section> sections, Integer associatedWith)
       throws SQLException {
     PreparedStatement stmt = p.sections;
 
     for (Section s : sections) {
       Object[] fieldValues =
-          new Object[] {s.registrationNumber,
-                        Utils.nullable(Types.VARCHAR, s.name),
-                        s.campus,
-                        s.minUnits,
-                        s.maxUnits,
-                        s.instructionMode,
-                        Utils.nullable(Types.VARCHAR, s.location),
-                        s.grading,
-                        s.notes,
-                        courseId,
-                        s.code,
-                        s.type,
-                        s.status.name(),
-                        Utils.nullable(Types.INTEGER, s.waitlistTotal),
-                        Utils.nullable(Types.INTEGER, associatedWith),
-                        s.instructors};
+          new Object[] {
+            s.registrationNumber,
+            Utils.nullable(Types.VARCHAR, s.name),
+            s.campus,
+            s.minUnits,
+            s.maxUnits,
+            s.instructionMode,
+            Utils.nullable(Types.VARCHAR, s.location),
+            s.grading,
+            s.notes,
+            courseId,
+            s.code,
+            s.type,
+            s.status.name(),
+            Utils.nullable(Types.INTEGER, s.waitlistTotal),
+            Utils.nullable(Types.INTEGER, associatedWith),
+            s.instructors
+          };
 
       try {
         Utils.setArray(stmt, fieldValues);
         stmt.execute();
 
         ResultSet rs = stmt.getResultSet();
-        if (!rs.next())
-          throw new RuntimeException("inserting section=" + s + "failed");
+        if (!rs.next()) throw new RuntimeException("inserting section=" + s + "failed");
 
         int sectionId = rs.getInt(1);
         rs.close();
 
         insertMeetings(p, sectionId, s.meetings);
         if (s.recitations != null) {
-          if (associatedWith != null)
-            throw new RuntimeException("why did this happen?");
+          if (associatedWith != null) throw new RuntimeException("why did this happen?");
 
           insertSections(p, courseId, s.recitations, sectionId);
         }
@@ -175,18 +175,17 @@ public final class InsertCourses {
     }
   }
 
-  private static void insertMeetings(Prepared p, int sectionId,
-                                     List<Meeting> meetings)
+  private static void insertMeetings(Prepared p, int sectionId, List<Meeting> meetings)
       throws SQLException {
     // safety measure for now, because production code is a lil broken
-    if (meetings == null)
-      return;
+    if (meetings == null) return;
 
     PreparedStatement stmt = p.meetings;
 
     for (Meeting m : meetings) {
       Utils.setArray(
-          stmt, sectionId,
+          stmt,
+          sectionId,
           m.beginDate.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime(),
           m.minutesDuration,
           m.endDate.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime());

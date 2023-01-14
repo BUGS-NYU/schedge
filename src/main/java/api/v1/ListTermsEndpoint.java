@@ -28,23 +28,21 @@ public final class ListTermsEndpoint extends App.Endpoint {
   }
 
   @OpenApi(
-      path = "/api/terms", methods = HttpMethod.GET, summary = "Terms List",
-      description =
-          "This endpoint provides a list of terms that Schedge has data for",
-      responses =
-      {
-        @OpenApiResponse(status = "200", description = "List of terms",
-                         content = @OpenApiContent(from = String[].class))
-        ,
-            @OpenApiResponse(status = "400",
-                             description = "One of the values in the path "
-                                           + "parameter was "
-                                           + "not valid.",
-                             content =
-                                 @OpenApiContent(from = App.ApiError.class))
+      path = "/api/terms",
+      methods = HttpMethod.GET,
+      summary = "Terms List",
+      description = "This endpoint provides a list of terms that Schedge has data for",
+      responses = {
+        @OpenApiResponse(
+            status = "200",
+            description = "List of terms",
+            content = @OpenApiContent(from = String[].class)),
+        @OpenApiResponse(
+            status = "400",
+            description = "One of the values in the path " + "parameter was " + "not valid.",
+            content = @OpenApiContent(from = App.ApiError.class))
       })
-  public Object
-  handleEndpoint(Context ctx) {
+  public Object handleEndpoint(Context ctx) {
     return withConnectionReturning(conn -> selectTerms(conn));
   }
 }

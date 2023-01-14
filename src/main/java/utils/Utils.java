@@ -9,8 +9,7 @@ import java.util.*;
 import java.util.stream.*;
 
 public final class Utils {
-  private static BufferedReader inReader =
-      new BufferedReader(new InputStreamReader(System.in));
+  private static BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
 
   public static void profileWait() {
     System.err.print("Press Enter to start the profile.");
@@ -26,8 +25,7 @@ public final class Utils {
   public static String readResource(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
-    if (resource == null)
-      throw new IllegalArgumentException("Resource doesn't exist: " + path);
+    if (resource == null) throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
     return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
   }
@@ -37,8 +35,7 @@ public final class Utils {
     return Arrays.asList(readResource(path).split("\\n"));
   }
 
-  public static List<String> resourcePaths(String path)
-      throws IOException, URISyntaxException {
+  public static List<String> resourcePaths(String path) throws IOException, URISyntaxException {
     var uri = Utils.class.getResource(path).toURI();
 
     if (uri.getScheme().equals("jar")) {
@@ -87,45 +84,42 @@ public final class Utils {
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
     switch (dayOfWeek) {
-    case "Mo":
-    case "Mon":
-      return DayOfWeek.MONDAY;
-    case "Tu":
-    case "Tue":
-      return DayOfWeek.TUESDAY;
-    case "We":
-    case "Wed":
-      return DayOfWeek.WEDNESDAY;
-    case "Th":
-    case "Thu":
-      return DayOfWeek.THURSDAY;
-    case "Fr":
-    case "Fri":
-      return DayOfWeek.FRIDAY;
-    case "Sa":
-    case "Sat":
-      return DayOfWeek.SATURDAY;
-    case "Su":
-    case "Sun":
-      return DayOfWeek.SUNDAY;
-    default:
-      return DayOfWeek.valueOf(dayOfWeek);
+      case "Mo":
+      case "Mon":
+        return DayOfWeek.MONDAY;
+      case "Tu":
+      case "Tue":
+        return DayOfWeek.TUESDAY;
+      case "We":
+      case "Wed":
+        return DayOfWeek.WEDNESDAY;
+      case "Th":
+      case "Thu":
+        return DayOfWeek.THURSDAY;
+      case "Fr":
+      case "Fri":
+        return DayOfWeek.FRIDAY;
+      case "Sa":
+      case "Sat":
+        return DayOfWeek.SATURDAY;
+      case "Su":
+      case "Sun":
+        return DayOfWeek.SUNDAY;
+      default:
+        return DayOfWeek.valueOf(dayOfWeek);
     }
   }
 
   public static boolean deleteFile(File f) {
     if (f.isDirectory()) {
-      for (File c : f.listFiles())
-        deleteFile(c);
+      for (File c : f.listFiles()) deleteFile(c);
     }
     return f.delete();
   }
 
-  public static void setObject(PreparedStatement stmt, int index, Object obj)
-      throws SQLException {
+  public static void setObject(PreparedStatement stmt, int index, Object obj) throws SQLException {
     if (obj == null) {
-      throw new IllegalArgumentException("object at index " + index +
-                                         " is null");
+      throw new IllegalArgumentException("object at index " + index + " is null");
     }
 
     if (obj instanceof NullWrapper nullable) {
@@ -170,8 +164,7 @@ public final class Utils {
     return new NullWrapper(type, value);
   }
 
-  public static PreparedStatement setArray(PreparedStatement stmt,
-                                           Object... objs) {
+  public static PreparedStatement setArray(PreparedStatement stmt, Object... objs) {
     int i = 0;
     try {
       for (i = 0; i < objs.length; i++) {

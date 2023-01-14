@@ -15,8 +15,7 @@ public class PSCoursesParser {
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
-  public static ArrayList<Nyu.School>
-  translateSubjects(ArrayList<PSClassSearch.SubjectElem> raw) {
+  public static ArrayList<Nyu.School> translateSubjects(ArrayList<PSClassSearch.SubjectElem> raw) {
     var schools = new ArrayList<Nyu.School>();
     Nyu.School school = null;
 
@@ -32,14 +31,13 @@ public class PSCoursesParser {
     return schools;
   }
 
-  public static ArrayList<Nyu.Course>
-  parseSubject(Try ctx, String html, String subjectCode,
-               Consumer<ScrapeEvent> consumer) {
+  public static ArrayList<Nyu.Course> parseSubject(
+      Try ctx, String html, String subjectCode, Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
     {
       var field = doc.expectFirst("#win0divPAGECONTAINER");
-      var cdata = (CDataNode)field.textNodes().get(0);
+      var cdata = (CDataNode) field.textNodes().get(0);
       doc = Jsoup.parse(cdata.text());
     }
 
@@ -68,8 +66,8 @@ public class PSCoursesParser {
     return courses;
   }
 
-  static Nyu.Course parseCourse(Try ctx, Element courseHtml, String subjectCode,
-                                Consumer<ScrapeEvent> consumer) {
+  static Nyu.Course parseCourse(
+      Try ctx, Element courseHtml, String subjectCode, Consumer<ScrapeEvent> consumer) {
     var course = new Nyu.Course();
 
     // This happens to work; nothing else really works as well.
@@ -80,15 +78,15 @@ public class PSCoursesParser {
     {
       // HU-UY 347 | LA-UY 143 | PL-UY 2064 | STS-UY 2144 Ethics and
       // Technology
-      var titleSections = run(() -> {
-        var subjectSections =
-            titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
-        var titleTextFiltered =
-            subjectSections[subjectSections.length - 1].trim();
+      var titleSections =
+          run(
+              () -> {
+                var subjectSections = titleText.split("[A-Z]+-[A-Z]+ [A-Za-z0-9]+ \\| ");
+                var titleTextFiltered = subjectSections[subjectSections.length - 1].trim();
 
-        // STS-UY 2144 Ethics and Technology
-        return titleTextFiltered.split(" ", 3);
-      });
+                // STS-UY 2144 Ethics and Technology
+                return titleTextFiltered.split(" ", 3);
+              });
 
       var descrElements = sectionElement.select("p");
       var descrP = descrElements.get(descrElements.size() - 2);
@@ -115,9 +113,12 @@ public class PSCoursesParser {
       //                  - Albert Liu, Oct 16, 2022 Sun 13:43
       var isSCA = subjectCode.startsWith("SCA-UA");
       if (!isSCA) {
-        var message = course.name +
-                      " - course.subjectCode=" + course.subjectCode +
-                      ", but subject=" + subjectCode;
+        var message =
+            course.name
+                + " - course.subjectCode="
+                + course.subjectCode
+                + ", but subject="
+                + subjectCode;
         consumer.accept(ScrapeEvent.warning(subjectCode, message));
         consumer.accept(ScrapeEvent.warning(subjectCode, "Full: " + titleText));
       }
@@ -146,8 +147,7 @@ public class PSCoursesParser {
     return course;
   }
 
-  static Nyu.Section parseSection(Try ctx, String courseSubjectCode,
-                                  Element sectionHtml) {
+  static Nyu.Section parseSection(Try ctx, String courseSubjectCode, Element sectionHtml) {
     var wrapper = sectionHtml.expectFirst("td");
     var data = wrapper.children();
 
@@ -214,8 +214,7 @@ public class PSCoursesParser {
     var notes = new StringBuilder();
     for (var node : wrapper.textNodes()) {
       var text = node.text().trim();
-      if (text.length() == 0)
-        continue;
+      if (text.length() == 0) continue;
 
       if (metaText.isEmpty()) {
         metaText = text;
@@ -293,14 +292,11 @@ public class PSCoursesParser {
         endTimeStr = parts[tokenIdx] + parts[tokenIdx + 1];
       }
 
-      beginDateTime = LocalDateTime.from(
-          timeParser.parse(beginDateStr + ' ' + beginTimeStr));
-      var stopDateTime =
-          LocalDateTime.from(timeParser.parse(beginDateStr + ' ' + endTimeStr));
-      duration = (int)ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
+      beginDateTime = LocalDateTime.from(timeParser.parse(beginDateStr + ' ' + beginTimeStr));
+      var stopDateTime = LocalDateTime.from(timeParser.parse(beginDateStr + ' ' + endTimeStr));
+      duration = (int) ChronoUnit.MINUTES.between(beginDateTime, stopDateTime);
 
-      endDateTime =
-          LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
+      endDateTime = LocalDateTime.from(timeParser.parse(endDateStr + " 11.59PM"));
     }
 
     var tz = Nyu.Campus.timezoneForCampus(section.campus);

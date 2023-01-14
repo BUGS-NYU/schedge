@@ -27,9 +27,11 @@ public class PSClient {
     var cookieHandler = new CookieManager();
     var builder = HttpClient.newBuilder();
 
-    this.client = builder.connectTimeout(Duration.of(30, ChronoUnit.SECONDS))
-                      .cookieHandler(cookieHandler)
-                      .build();
+    this.client =
+        builder
+            .connectTimeout(Duration.of(30, ChronoUnit.SECONDS))
+            .cookieHandler(cookieHandler)
+            .build();
   }
 
   CompletableFuture<HttpResponse<String>> navigateToTerm(Nyu.Term term)
@@ -52,8 +54,7 @@ public class PSClient {
       var links = yearHeader.select("a.ps-link");
 
       var link = find(links, l -> l.text().equals(yearText));
-      if (link == null)
-        throw new RuntimeException("yearText not found");
+      if (link == null) throw new RuntimeException("yearText not found");
 
       var id = link.id();
 
@@ -84,57 +85,61 @@ public class PSClient {
 
     var handler = HttpResponse.BodyHandlers.ofString();
 
-    var out = fut.handle((resp_, err_) -> {
-      incrementStateNum();
-      formMap.put("ICAction", subject.action);
+    var out =
+        fut.handle(
+            (resp_, err_) -> {
+              incrementStateNum();
+              formMap.put("ICAction", subject.action);
 
-      return tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
-    });
+              return tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
+            });
 
-    this.inProgress = out.handle((resp_, err) -> {
-      if (err != null) {
-        // @TODO
-      }
+    this.inProgress =
+        out.handle(
+            (resp_, err) -> {
+              if (err != null) {
+                // @TODO
+              }
 
-      incrementStateNum();
-      formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
+              incrementStateNum();
+              formMap.put("ICAction", "NYU_CLS_DERIVED_BACK");
 
-      var resp = tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
+              var resp = tcPass(() -> client.send(post(MAIN_URI, formMap), handler));
 
-      tcPass(() -> Thread.sleep(5000));
+              tcPass(() -> Thread.sleep(5000));
 
-      return resp;
-    });
+              return resp;
+            });
 
     return out;
   }
 
-  static String MAIN_URL =
-      "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
+  static String MAIN_URL = "https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL";
   static URI MAIN_URI = URI.create(MAIN_URL);
   static URI REDIRECT_URI = URI.create(MAIN_URL + "?&");
 
-  static final FormEntry[] FORM_DEFAULTS = new FormEntry[] {
-      new FormEntry("ICAJAX", "1"),
-      new FormEntry("ICNAVTYPEDROPDOWN", "0"),
-      new FormEntry(
-          "ICBcDomData",
-          "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-              + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
-              + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
-              + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
-              + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
-              + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
-              + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
-              + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
-              + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
-              + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
-              + "~Course Search~UnknownValue~UnknownValue~https"
-              + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
-              + "NYU_CLS_SRCH.GBL?~UnknownValue"),
-  };
+  static final FormEntry[] FORM_DEFAULTS =
+      new FormEntry[] {
+        new FormEntry("ICAJAX", "1"),
+        new FormEntry("ICNAVTYPEDROPDOWN", "0"),
+        new FormEntry(
+            "ICBcDomData",
+            "C~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+                + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+                + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+                + "NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~EMPLOYEE"
+                + "~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH~Course Search~"
+                + "UnknownValue~UnknownValue~https://sis.nyu.edu/psc/csprod"
+                + "/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL?~UnknownValue*C"
+                + "~UnknownValue~EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~"
+                + "NYU_CLS_SRCH~Course Search~UnknownValue~UnknownValue"
+                + "~https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR"
+                + ".NYU_CLS_SRCH.GBL?~UnknownValue*C~UnknownValue~"
+                + "EMPLOYEE~SA~NYU_SR.NYU_CLS_SRCH.GBL~NYU_CLS_SRCH"
+                + "~Course Search~UnknownValue~UnknownValue~https"
+                + "://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR."
+                + "NYU_CLS_SRCH.GBL?~UnknownValue"),
+      };
 
   void incrementStateNum() {
     int action = Integer.parseInt(formMap.get("ICStateNum"));
@@ -161,32 +166,32 @@ public class PSClient {
 
   static String yearText(Term term) {
     switch (term.semester()) {
-    case ja:
-    case sp:
-    case su:
-      return (term.year() - 1) + "-" + term.year();
+      case ja:
+      case sp:
+      case su:
+        return (term.year() - 1) + "-" + term.year();
 
-    case fa:
-      return term.year() + "-" + (term.year() + 1);
+      case fa:
+        return term.year() + "-" + (term.year() + 1);
 
-    default:
-      throw new RuntimeException("whatever");
+      default:
+        throw new RuntimeException("whatever");
     }
   }
 
   static String semesterId(Term term) {
     switch (term.semester()) {
-    case fa:
-      return "NYU_CLS_WRK_NYU_FALL$36$";
-    case ja:
-      return "NYU_CLS_WRK_NYU_WINTER$37$";
-    case sp:
-      return "NYU_CLS_WRK_NYU_SPRING$38$";
-    case su:
-      return "NYU_CLS_WRK_NYU_SUMMER$39$";
+      case fa:
+        return "NYU_CLS_WRK_NYU_FALL$36$";
+      case ja:
+        return "NYU_CLS_WRK_NYU_WINTER$37$";
+      case sp:
+        return "NYU_CLS_WRK_NYU_SPRING$38$";
+      case su:
+        return "NYU_CLS_WRK_NYU_SUMMER$39$";
 
-    default:
-      throw new RuntimeException("whatever");
+      default:
+        throw new RuntimeException("whatever");
     }
   }
 
@@ -196,12 +201,11 @@ public class PSClient {
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:105.0) Gecko/20100101 Firefox/105.0";
 
   static String formEncode(HashMap<String, String> values) {
-    return values.entrySet()
-        .stream()
-        .map(e -> {
-          return e.getKey() + "=" +
-              URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
-        })
+    return values.entrySet().stream()
+        .map(
+            e -> {
+              return e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8);
+            })
         .collect(Collectors.joining("&"));
   }
 

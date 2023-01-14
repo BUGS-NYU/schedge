@@ -53,6 +53,7 @@ public class CoursesTest {
                   "{\"status\":400,\"message\":\"the subject \\\""
                       + subject
                       + "\\\" is invalid for the term Term[semester=sp, year=2021]\"}";
+
               Assert.assertEquals(body.toLowerCase(), expected.toLowerCase());
             }
           }

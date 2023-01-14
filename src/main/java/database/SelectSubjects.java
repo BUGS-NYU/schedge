@@ -8,20 +8,17 @@ import org.slf4j.*;
 import utils.Utils;
 
 public class SelectSubjects {
-  private static Logger logger =
-      LoggerFactory.getLogger("database.SelectSubjects");
+  private static Logger logger = LoggerFactory.getLogger("database.SelectSubjects");
 
-  private static final String SELECT_SCHOOLS =
-      "SELECT id, name, code FROM schools WHERE term = ?";
+  private static final String SELECT_SCHOOLS = "SELECT id, name, code FROM schools WHERE term = ?";
 
   private static final String SELECT_SUBJECTS =
       "SELECT school, code, name FROM subjects WHERE term = ?";
 
-  public static ArrayList<School> selectSchoolsForTerm(Connection conn,
-                                                       Term term)
+  public static ArrayList<School> selectSchoolsForTerm(Connection conn, Term term)
       throws SQLException {
     try (var schoolSel = conn.prepareStatement(SELECT_SCHOOLS);
-         var subjectSel = conn.prepareStatement(SELECT_SUBJECTS)) {
+        var subjectSel = conn.prepareStatement(SELECT_SUBJECTS)) {
       Utils.setArray(schoolSel, term.json());
 
       var schools = new HashMap<Integer, School>();

@@ -12,14 +12,13 @@ final class Migrations {
 
   private static final String SCHEMA_QUERY =
       "SELECT 1 FROM information_schema.tables "
-      + "WHERE table_schema = 'public' AND table_name = 'schedge_meta'";
+          + "WHERE table_schema = 'public' AND table_name = 'schedge_meta'";
 
   private static final String VERSION_QUERY =
       "SELECT value FROM schedge_meta WHERE name = 'version'";
 
   private static final String VERSION_UPDATE =
-      "UPDATE schedge_meta SET updated_at = NOW(), value = ? "
-      + "WHERE name = 'version'";
+      "UPDATE schedge_meta SET updated_at = NOW(), value = ? " + "WHERE name = 'version'";
 
   public static void runMigrations(Connection conn) throws SQLException {
     int version = schemaVersion(conn);
@@ -30,8 +29,7 @@ final class Migrations {
 
     boolean ranMigration = false;
     try (Statement stmt = conn.createStatement();
-         PreparedStatement updateVersionStmt =
-             conn.prepareStatement(VERSION_UPDATE)) {
+        PreparedStatement updateVersionStmt = conn.prepareStatement(VERSION_UPDATE)) {
 
       for (String path : paths) {
         // /migrations/V01_blah_blah.sql
@@ -45,8 +43,7 @@ final class Migrations {
           }
           Utils.setArray(updateVersionStmt, Integer.toString(fileVersion));
           if (updateVersionStmt.executeUpdate() == 0) {
-            throw new RuntimeException("Failed to finish schema update for " +
-                                       path);
+            throw new RuntimeException("Failed to finish schema update for " + path);
           }
 
           conn.commit();
@@ -64,13 +61,12 @@ final class Migrations {
 
   private static int schemaVersion(Connection conn) throws SQLException {
     try (PreparedStatement schemaStmt = conn.prepareStatement(SCHEMA_QUERY);
-         PreparedStatement versionStmt = conn.prepareStatement(VERSION_QUERY)) {
+        PreparedStatement versionStmt = conn.prepareStatement(VERSION_QUERY)) {
       ResultSet rs = schemaStmt.executeQuery();
       boolean hasNext = rs.next();
       rs.close();
 
-      if (!hasNext)
-        return 0;
+      if (!hasNext) return 0;
 
       rs = versionStmt.executeQuery();
       hasNext = rs.next();
@@ -89,51 +85,52 @@ final class Migrations {
     }
   }
 
-  private static ArrayList<String> parseMigration(String path)
-      throws SQLException {
+  private static ArrayList<String> parseMigration(String path) throws SQLException {
     ArrayList<String> statements = new ArrayList<String>();
     StringBuilder builder = new StringBuilder();
 
     for (String line : Utils.asResourceLines(path)) {
       line = line.trim();
-      if (line.startsWith("--"))
-        continue;
+      if (line.startsWith("--")) continue;
 
       boolean shouldAdd = true;
       int begin = 0;
       for (int i = 0; i < line.length(); i++) {
         char c = line.charAt(i);
         switch (c) {
-        case '\'', '"': {
-          for (int j = i + 1; j < line.length(); j++) {
-            if (line.charAt(j) == c) {
-              i = j;
+          case '\'', '"':
+            {
+              for (int j = i + 1; j < line.length(); j++) {
+                if (line.charAt(j) == c) {
+                  i = j;
+                  break;
+                }
+              }
+
               break;
             }
-          }
 
-          break;
-        }
+          case '-':
+            {
+              if (i > 0 && line.charAt(i - 1) == '-') {
+                builder.append(line.substring(begin, i - 1));
+                shouldAdd = false;
+                i = line.length();
+              }
+              break;
+            }
 
-        case '-': {
-          if (i > 0 && line.charAt(i - 1) == '-') {
-            builder.append(line.substring(begin, i - 1));
-            shouldAdd = false;
-            i = line.length();
-          }
-          break;
-        }
+          case ';':
+            {
+              builder.append(line.substring(begin, i));
+              statements.add(builder.toString());
+              builder.setLength(0);
+              begin = i + 1;
+              break;
+            }
 
-        case ';': {
-          builder.append(line.substring(begin, i));
-          statements.add(builder.toString());
-          builder.setLength(0);
-          begin = i + 1;
-          break;
-        }
-
-        default:
-          break;
+          default:
+            break;
         }
       }
 
@@ -144,8 +141,7 @@ final class Migrations {
     }
 
     String s = builder.toString().trim();
-    if (s.length() > 0)
-      statements.add(s);
+    if (s.length() > 0) statements.add(s);
 
     return statements;
   }

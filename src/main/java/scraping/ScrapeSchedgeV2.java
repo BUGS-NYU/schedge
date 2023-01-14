@@ -14,11 +14,9 @@ import org.slf4j.*;
 import utils.*;
 
 public final class ScrapeSchedgeV2 extends TermScrapeResult {
-  private static Logger logger =
-      LoggerFactory.getLogger("scraping.ScrapeSchedge2");
+  private static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
-  private static final String LIST_SCHOOLS =
-      "https://nyu.a1liu.com/api/schools/";
+  private static final String LIST_SCHOOLS = "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
   static final class ScrapeResult {
@@ -26,14 +24,12 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     String subject;
   }
 
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return scrapeFromSchedge(term, null, consumer);
   }
 
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, List<String> inputSubjectList,
-                    Consumer<ScrapeEvent> consumer) {
+  public static TermScrapeResult scrapeFromSchedge(
+      Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
     return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
   }
 
@@ -42,8 +38,8 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
   private final Iterator<String> subjects;
   private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
 
-  private ScrapeSchedgeV2(Term term, List<String> inputSubjectList,
-                          Consumer<ScrapeEvent> consumer) {
+  private ScrapeSchedgeV2(
+      Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
     super(term, consumer, Try.Ctx(logger));
 
     var termString = term.json();
@@ -110,8 +106,7 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     return null;
   }
 
-  private static Future<ScrapeResult> getData(HttpClient client, Term term,
-                                              String subject) {
+  private static Future<ScrapeResult> getData(HttpClient client, Term term, String subject) {
     var uri = URI.create(COURSES + term.json() + "/" + subject);
     var request = HttpRequest.newBuilder().uri(uri).build();
 
@@ -119,24 +114,25 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
     var handler = HttpResponse.BodyHandlers.ofString();
     var fut = client.sendAsync(request, handler);
-    return fut.handleAsync((resp, throwable) -> {
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching subject={} took {} seconds", duration, subject);
+    return fut.handleAsync(
+        (resp, throwable) -> {
+          long end = System.nanoTime();
+          double duration = (end - start) / 1000000000.0;
+          logger.info("Fetching subject={} took {} seconds", duration, subject);
 
-      if (resp == null) {
-        logger.error("Error (subject={}): {}", subject, throwable.getMessage());
+          if (resp == null) {
+            logger.error("Error (subject={}): {}", subject, throwable.getMessage());
 
-        return null;
-      }
+            return null;
+          }
 
-      tcPass(() -> Thread.sleep(500));
+          tcPass(() -> Thread.sleep(500));
 
-      var out = new ScrapeResult();
-      out.text = resp.body();
-      out.subject = subject;
+          var out = new ScrapeResult();
+          out.text = resp.body();
+          out.subject = subject;
 
-      return out;
-    });
+          return out;
+        });
   }
 }

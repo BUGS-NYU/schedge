@@ -12,15 +12,20 @@ import utils.Utils;
 
 public class ParserTest {
   static Logger logger = LoggerFactory.getLogger("test.ParserTest");
+
   @Test
   public void testParserBasic() {
     var html = Utils.readResource("/csci-ua-sp2021.html.snap");
     var ctx = Ctx(logger);
-    PSCoursesParser.parseSubject(ctx, html, "CSCI-UA", e -> {
-      if (e instanceof ScrapeEvent.Warn w) {
-        Assert.fail();
-      }
-    });
+    PSCoursesParser.parseSubject(
+        ctx,
+        html,
+        "CSCI-UA",
+        e -> {
+          if (e instanceof ScrapeEvent.Warn w) {
+            Assert.fail();
+          }
+        });
   }
 
   @Test
@@ -44,11 +49,16 @@ public class ParserTest {
   public void testIssue216() {
     var html = Utils.readResource("/sts-uy-ja2023.html.snap");
     var ctx = Ctx(logger);
-    var output = PSCoursesParser.parseSubject(ctx, html, "STS-UY", e -> {
-      if (e instanceof ScrapeEvent.Warn w) {
-        Assert.fail();
-      }
-    });
+    var output =
+        PSCoursesParser.parseSubject(
+            ctx,
+            html,
+            "STS-UY",
+            e -> {
+              if (e instanceof ScrapeEvent.Warn w) {
+                Assert.fail();
+              }
+            });
 
     var course = ArrayJS.find(output, c -> c.deptCourseId.equals("2144"));
     Assert.assertEquals(course.name, "Ethics and Technology");

@@ -11,8 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Albert Liu
  */
-public final class FutureEngine<Output>
-    implements Iterator<Output>, Iterable<Output> {
+public final class FutureEngine<Output> implements Iterator<Output>, Iterable<Output> {
 
   static final long DEFAULT_TIMEOUT = 10;
 
@@ -42,8 +41,7 @@ public final class FutureEngine<Output>
 
   @Override
   public Output next() {
-    if (this.size.get() <= 0)
-      throw new NoSuchElementException();
+    if (this.size.get() <= 0) throw new NoSuchElementException();
 
     // Just busy-wait for a task
     while (true) {

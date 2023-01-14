@@ -14,3 +14,7 @@
 # JavaScript
 /.next
 /node_modules
+
+# Outputted files in some systems
+/bin
+/build

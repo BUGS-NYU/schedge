@@ -141,7 +141,7 @@ public final class PSClassSearch {
       return parsed;
     }
 
-    public ArrayList<School> getSchools() {
+    public ArrayList<School> schools() {
       return ctx.log(() -> translateSubjects(subjects));
     }
 

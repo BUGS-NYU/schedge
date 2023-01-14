@@ -9,7 +9,7 @@ public class WriteTerm {
     var term = data.term();
     InsertCourses.clearPrevious(conn, term);
 
-    UpdateSchools.updateSchoolsForTerm(conn, term, data.getSchools());
+    UpdateSchools.updateSchoolsForTerm(conn, term, data.schools());
 
     while (data.hasNext()) {
       var coursesBatch = data.next();

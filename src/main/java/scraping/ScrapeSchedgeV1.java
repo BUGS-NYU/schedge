@@ -213,7 +213,7 @@ public final class ScrapeSchedgeV1 implements TermScrapeResult {
   }
 
   @Override
-  public ArrayList<School> getSchools() {
+  public ArrayList<School> schools() {
     return schools;
   }
 

@@ -7,8 +7,7 @@ import utils.Nyu;
 import utils.Utils;
 
 public final class SearchRows {
-  public static ArrayList<Row> searchRows(Connection conn, Nyu.Term term,
-                                          String query, int limit)
+  public static ArrayList<Row> searchRows(Connection conn, Nyu.Term term, String query, int limit)
       throws SQLException {
     query = query.trim();
     if (query.isEmpty()) {
@@ -35,11 +34,16 @@ public final class SearchRows {
      * searching.
      *                        - Albert Liu, Nov 14, 2022 Mon 00:52
      */
-    var stmtText = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
-                   + "SELECT courses.id cid, " + ranking + " rank FROM "
-                   + "q, courses "
-                   + "WHERE term = ? AND ((" + String.join(") OR (", fields) +
-                   ")) ORDER BY rank DESC LIMIT " + limit;
+    var stmtText =
+        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+            + "SELECT courses.id cid, "
+            + ranking
+            + " rank FROM "
+            + "q, courses "
+            + "WHERE term = ? AND (("
+            + String.join(") OR (", fields)
+            + ")) ORDER BY rank DESC LIMIT "
+            + limit;
     var idStmt = conn.prepareStatement(stmtText);
     Utils.setArray(idStmt, query, term.json());
 
@@ -50,27 +54,29 @@ public final class SearchRows {
     }
     idStmt.close();
 
-    var dataSql = "WITH q (query) AS (SELECT plainto_tsquery(?)) "
-                  + "SELECT courses.*, sections.id AS section_id, "
-                  + "sections.registration_number, sections.section_code, "
-                  + "sections.section_type, sections.section_status, "
-                  + "sections.associated_with, sections.waitlist_total, "
-                  + "sections.name section_name, sections.min_units, "
-                  + "sections.max_units, sections.location, "
-                  + "sections.campus, sections.instruction_mode, "
-                  + "sections.grading, sections.notes, "
-                  + "sections.instructors "
-                  + "FROM q, courses LEFT JOIN sections "
-                  + "ON courses.id = sections.course_id "
-                  + "WHERE courses.id = ANY (?) "
-                  + "ORDER BY " + ranking + " DESC";
+    var dataSql =
+        "WITH q (query) AS (SELECT plainto_tsquery(?)) "
+            + "SELECT courses.*, sections.id AS section_id, "
+            + "sections.registration_number, sections.section_code, "
+            + "sections.section_type, sections.section_status, "
+            + "sections.associated_with, sections.waitlist_total, "
+            + "sections.name section_name, sections.min_units, "
+            + "sections.max_units, sections.location, "
+            + "sections.campus, sections.instruction_mode, "
+            + "sections.grading, sections.notes, "
+            + "sections.instructors "
+            + "FROM q, courses LEFT JOIN sections "
+            + "ON courses.id = sections.course_id "
+            + "WHERE courses.id = ANY (?) "
+            + "ORDER BY "
+            + ranking
+            + " DESC";
 
     var rowStmt = conn.prepareStatement(dataSql);
-    Utils.setArray(rowStmt, query,
-                   conn.createArrayOf("INTEGER", result.toArray()));
-    Map<Integer, List<Nyu.Meeting>> meetingsList = SelectRows.selectMeetings(
-        conn, " courses.id = ANY (?) ",
-        conn.createArrayOf("integer", result.toArray()));
+    Utils.setArray(rowStmt, query, conn.createArrayOf("INTEGER", result.toArray()));
+    Map<Integer, List<Nyu.Meeting>> meetingsList =
+        SelectRows.selectMeetings(
+            conn, " courses.id = ANY (?) ", conn.createArrayOf("integer", result.toArray()));
 
     ArrayList<Row> rows = new ArrayList<>();
     rs = rowStmt.executeQuery();

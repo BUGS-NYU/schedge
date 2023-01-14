@@ -33,9 +33,7 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     programs.put("ND", "Non-Credit College of Dentistry");
     programs.put("NY", "Non-Credit Tandon School of Engineering");
     programs.put("NB", "Non-Credit Leonard N. Stern School of Business");
-    programs.put(
-        "NE",
-        "Non-Credit Steinhardt School of Culture, Education, and Human Development");
+    programs.put("NE", "Non-Credit Steinhardt School of Culture, Education, and Human Development");
     programs.put("NH", "Non-Credit NYU Abu Dhabi");
     programs.put("NI", "Non-Credit NYU Shanghai");
 
@@ -101,15 +99,16 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
           schoolName = missingPrograms.get(schoolCode);
         }
 
-        if (schoolName == null)
-          throw new RuntimeException("Code: " + schoolCode);
+        if (schoolName == null) throw new RuntimeException("Code: " + schoolCode);
 
         this.schools.put(schoolCode, schoolName);
       }
     }
   }
 
-  @JsonIgnoreProperties(value = {"subjectCode"}, allowGetters = true)
+  @JsonIgnoreProperties(
+      value = {"subjectCode"},
+      allowGetters = true)
   static class SchedgeV1Course {
     public String name;
     public String deptCourseId;
@@ -149,25 +148,29 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
     consumer.accept(ScrapeEvent.hintChange(-1));
 
-    var schools = run(() -> {
-      var schoolsUri = URI.create(SCHEDGE_URL + "schools");
-      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var resp = tcPass(() -> client.send(request, handler));
-      var data = resp.body();
+    var schools =
+        run(
+            () -> {
+              var schoolsUri = URI.create(SCHEDGE_URL + "schools");
+              var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+              var handler = HttpResponse.BodyHandlers.ofString();
+              var resp = tcPass(() -> client.send(request, handler));
+              var data = resp.body();
 
-      return fromJson(data, Schools.class).schools;
-    });
+              return fromJson(data, Schools.class).schools;
+            });
 
-    var subjectsList = run(() -> {
-      var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
-      var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
-      var handler = HttpResponse.BodyHandlers.ofString();
-      var resp = tcPass(() -> client.send(request, handler));
-      var data = resp.body();
+    var subjectsList =
+        run(
+            () -> {
+              var schoolsUri = URI.create(SCHEDGE_URL + "subjects");
+              var request = HttpRequest.newBuilder().uri(schoolsUri).GET().build();
+              var handler = HttpResponse.BodyHandlers.ofString();
+              var resp = tcPass(() -> client.send(request, handler));
+              var data = resp.body();
 
-      return fromJson(data, Subjects.class).subjects;
-    });
+              return fromJson(data, Subjects.class).subjects;
+            });
 
     consumer.accept(ScrapeEvent.hintChange(subjectsList.size() + 1));
     consumer.accept(ScrapeEvent.progress(1));
@@ -178,16 +181,18 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
 
     for (var subject : subjectsList) {
       subjectsFullCodeList.add(subject.fullCode);
-      var school = schoolsMap.computeIfAbsent(subject.schoolCode, code -> {
-        var name = schools.get(code);
-        if (name == null)
-          throw new RuntimeException("Code: " + code);
+      var school =
+          schoolsMap.computeIfAbsent(
+              subject.schoolCode,
+              code -> {
+                var name = schools.get(code);
+                if (name == null) throw new RuntimeException("Code: " + code);
 
-        var s = new School(name, code);
-        this.schools.add(s);
+                var s = new School(name, code);
+                this.schools.add(s);
 
-        return s;
-      });
+                return s;
+              });
 
       var s = new Subject(subject.fullCode, subject.name);
       school.subjects.add(s);
@@ -219,11 +224,9 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
         engine.add(getData(subjects.next()));
       }
 
-      if (result.text == null)
-        continue;
+      if (result.text == null) continue;
 
-      consumer.accept(
-          ScrapeEvent.message(result.subject, "Fetching " + result.subject));
+      consumer.accept(ScrapeEvent.message(result.subject, "Fetching " + result.subject));
       var courses = JsonMapper.fromJson(result.text, SchedgeV1Course[].class);
       var out = new ArrayList<Course>();
 
@@ -235,13 +238,11 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
         c.subjectCode = result.subject;
         c.sections = new ArrayList<>();
 
-        if (c.description == null)
-          c.description = "";
+        if (c.description == null) c.description = "";
 
         for (var section : course.sections) {
           var s = translateSection(section);
-          if (!s.name.equals(c.name))
-            s.name = null;
+          if (!s.name.equals(c.name)) s.name = null;
 
           c.sections.add(s);
         }
@@ -256,8 +257,7 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     return null;
   }
 
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return new ScrapeSchedgeV1(term, consumer);
   }
 
@@ -281,13 +281,10 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
     var mode = section.instructionMode;
     s.instructionMode = Objects.requireNonNullElse(mode, "In-Person");
 
-    if (s.meetings == null)
-      s.meetings = new ArrayList<>();
+    if (s.meetings == null) s.meetings = new ArrayList<>();
 
-    if (section.prerequisites == null)
-      section.prerequisites = "";
-    if (section.notes == null)
-      section.notes = "";
+    if (section.prerequisites == null) section.prerequisites = "";
+    if (section.notes == null) section.notes = "";
 
     section.prerequisites = section.prerequisites.trim();
 
@@ -314,11 +311,9 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
       school = "SHU";
     }
 
-    var components = new String[] {"" + term.year(), term.semester().toString(),
-                                   school, major};
+    var components = new String[] {"" + term.year(), term.semester().toString(), school, major};
 
-    var uri =
-        URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
+    var uri = URI.create(SCHEDGE_URL + String.join("/", components) + "?full=true");
 
     var request = HttpRequest.newBuilder().uri(uri).build();
 
@@ -326,22 +321,23 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
 
     var handler = HttpResponse.BodyHandlers.ofString();
     var fut = client.sendAsync(request, handler);
-    return fut.handleAsync((resp, throwable) -> {
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching took {} seconds: subject={}", duration, subject);
+    return fut.handleAsync(
+        (resp, throwable) -> {
+          long end = System.nanoTime();
+          double duration = (end - start) / 1000000000.0;
+          logger.info("Fetching took {} seconds: subject={}", duration, subject);
 
-      if (resp == null) {
-        logger.error("Error (subject={}): {}", subject, throwable.getMessage());
+          if (resp == null) {
+            logger.error("Error (subject={}): {}", subject, throwable.getMessage());
 
-        return null;
-      }
+            return null;
+          }
 
-      var result = new ScrapeResult();
-      result.text = resp.body();
-      result.subject = subject;
+          var result = new ScrapeResult();
+          result.text = resp.body();
+          result.subject = subject;
 
-      return result;
-    });
+          return result;
+        });
   }
 }

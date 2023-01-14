@@ -15,19 +15,21 @@ public class CoursesTest {
 
     var testUrl = "/api/courses/sp2021/";
     var app = App.makeApp();
-    JavalinTest.test(app, (server, client) -> {
-      // https://github.com/A1Liu/schedge/issues/181
-      for (var subject : subjects) {
-        try (var resp = client.get(testUrl + subject);
-             var respBody = resp.body()) {
-          var body = respBody.string();
-          var courses = fromJson(body, Course[].class);
+    JavalinTest.test(
+        app,
+        (server, client) -> {
+          // https://github.com/A1Liu/schedge/issues/181
+          for (var subject : subjects) {
+            try (var resp = client.get(testUrl + subject);
+                var respBody = resp.body()) {
+              var body = respBody.string();
+              var courses = fromJson(body, Course[].class);
 
-          for (var course : courses) {
-            Assert.assertTrue(course.subjectCode.equals(subject));
+              for (var course : courses) {
+                Assert.assertTrue(course.subjectCode.equals(subject));
+              }
+            }
           }
-        }
-      }
-    });
+        });
   }
 }

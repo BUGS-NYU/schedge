@@ -9,8 +9,8 @@ import org.slf4j.*;
  *
  *                  - Albert Liu, Nov 27, 2022 Sun 02:32
  */
-public sealed class ScrapeEvent permits ScrapeEvent.Message,
-    ScrapeEvent.Progress, ScrapeEvent.HintChange {
+public sealed class ScrapeEvent
+    permits ScrapeEvent.Message, ScrapeEvent.Progress, ScrapeEvent.HintChange {
   public static sealed class Message extends ScrapeEvent permits Warn {
     public final String message;
 
@@ -28,6 +28,7 @@ public sealed class ScrapeEvent permits ScrapeEvent.Message,
 
   public static final class Progress extends ScrapeEvent {
     public final int progress;
+
     private Progress(int progress) {
       super(null);
       this.progress = progress;
@@ -36,6 +37,7 @@ public sealed class ScrapeEvent permits ScrapeEvent.Message,
 
   public static final class HintChange extends ScrapeEvent {
     public final int newValue;
+
     private HintChange(int newValue) {
       super(null);
       this.newValue = newValue;

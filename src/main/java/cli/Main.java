@@ -10,8 +10,11 @@ import utils.Nyu;
 public class Main implements Runnable {
 
   @Spec private Model.CommandSpec spec;
-  @Option(names = {"-h", "--help"}, usageHelp = true,
-          description = "display a help message")
+
+  @Option(
+      names = {"-h", "--help"},
+      usageHelp = true,
+      description = "display a help message")
   boolean displayHelp;
 
   public static void main(String[] args) {
@@ -22,15 +25,13 @@ public class Main implements Runnable {
             .registerConverter(Nyu.Term.class, new Mixins.TermConverter())
             .execute(args);
 
-    if (exitCode != 0)
-      System.exit(exitCode);
+    if (exitCode != 0) System.exit(exitCode);
   }
 
   @Override
   public void run() {
     throw new ParameterException(
-        spec.commandLine(),
-        "Please provide command query, parse, scrape, or db");
+        spec.commandLine(), "Please provide command query, parse, scrape, or db");
   }
 
   @Command(name = "serve", description = "runs the app\n")

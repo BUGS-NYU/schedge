@@ -8,8 +8,7 @@ import java.util.*;
 import org.jetbrains.annotations.*;
 
 public final class ScheduleSections {
-  private ScheduleSections() {
-  }
+  private ScheduleSections() {}
 
   public static final class Schedule {
     public boolean valid = true;
@@ -24,16 +23,17 @@ public final class ScheduleSections {
     public AugmentedMeeting conflictA;
     public AugmentedMeeting conflictB;
 
-    public Schedule(@JsonProperty("valid") boolean valid,
-                    @JsonProperty("mo") ArrayList<AugmentedMeeting> mo,
-                    @JsonProperty("tu") ArrayList<AugmentedMeeting> tu,
-                    @JsonProperty("we") ArrayList<AugmentedMeeting> we,
-                    @JsonProperty("th") ArrayList<AugmentedMeeting> th,
-                    @JsonProperty("fr") ArrayList<AugmentedMeeting> fr,
-                    @JsonProperty("sa") ArrayList<AugmentedMeeting> sa,
-                    @JsonProperty("su") ArrayList<AugmentedMeeting> su,
-                    @JsonProperty("conflictA") AugmentedMeeting conflictA,
-                    @JsonProperty("conflictB") AugmentedMeeting conflictB) {
+    public Schedule(
+        @JsonProperty("valid") boolean valid,
+        @JsonProperty("mo") ArrayList<AugmentedMeeting> mo,
+        @JsonProperty("tu") ArrayList<AugmentedMeeting> tu,
+        @JsonProperty("we") ArrayList<AugmentedMeeting> we,
+        @JsonProperty("th") ArrayList<AugmentedMeeting> th,
+        @JsonProperty("fr") ArrayList<AugmentedMeeting> fr,
+        @JsonProperty("sa") ArrayList<AugmentedMeeting> sa,
+        @JsonProperty("su") ArrayList<AugmentedMeeting> su,
+        @JsonProperty("conflictA") AugmentedMeeting conflictA,
+        @JsonProperty("conflictB") AugmentedMeeting conflictB) {
       this.valid = valid;
       this.mo = mo;
       this.tu = tu;
@@ -74,32 +74,31 @@ public final class ScheduleSections {
       return size;
     }
 
-    @NotNull
-    public ArrayList<AugmentedMeeting> getMo() {
+    @NotNull public ArrayList<AugmentedMeeting> getMo() {
       return mo;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getTu() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getTu() {
       return tu;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getWe() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getWe() {
       return we;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getTh() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getTh() {
       return th;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getFr() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getFr() {
       return fr;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getSa() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getSa() {
       return sa;
     }
-    @NotNull
-    public ArrayList<AugmentedMeeting> getSu() {
+
+    @NotNull public ArrayList<AugmentedMeeting> getSu() {
       return su;
     }
 
@@ -107,14 +106,14 @@ public final class ScheduleSections {
     public AugmentedMeeting getConflictA() {
       return conflictA;
     }
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public AugmentedMeeting getConflictB() {
       return conflictB;
     }
   }
 
-  public static Schedule
-  generateSchedule(ArrayList<AugmentedMeeting> meetings) {
+  public static Schedule generateSchedule(ArrayList<AugmentedMeeting> meetings) {
     var schedule = new Schedule();
     if (meetings == null) {
       return schedule;
@@ -123,27 +122,27 @@ public final class ScheduleSections {
     meetings.sort(Comparator.comparingInt(AugmentedMeeting::getMinutesInDay));
     for (AugmentedMeeting meeting : meetings) {
       switch (meeting.beginDate.get(ChronoField.DAY_OF_WEEK)) {
-      case 1:
-        schedule.mo.add(meeting);
-        break;
-      case 2:
-        schedule.tu.add(meeting);
-        break;
-      case 3:
-        schedule.we.add(meeting);
-        break;
-      case 4:
-        schedule.th.add(meeting);
-        break;
-      case 5:
-        schedule.fr.add(meeting);
-        break;
-      case 6:
-        schedule.sa.add(meeting);
-        break;
-      case 7:
-        schedule.su.add(meeting);
-        break;
+        case 1:
+          schedule.mo.add(meeting);
+          break;
+        case 2:
+          schedule.tu.add(meeting);
+          break;
+        case 3:
+          schedule.we.add(meeting);
+          break;
+        case 4:
+          schedule.th.add(meeting);
+          break;
+        case 5:
+          schedule.fr.add(meeting);
+          break;
+        case 6:
+          schedule.sa.add(meeting);
+          break;
+        case 7:
+          schedule.su.add(meeting);
+          break;
       }
     }
 
@@ -164,15 +163,12 @@ public final class ScheduleSections {
     return schedule;
   }
 
-  private static boolean meetingsCollide(AugmentedMeeting a,
-                                         AugmentedMeeting b) {
-    if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate))
-      return false;
+  private static boolean meetingsCollide(AugmentedMeeting a, AugmentedMeeting b) {
+    if (a.beginDate.isAfter(b.endDate) || b.beginDate.isAfter(a.endDate)) return false;
 
     int aDay = a.beginDate.get(ChronoField.DAY_OF_WEEK);
     int bDay = b.beginDate.get(ChronoField.DAY_OF_WEEK);
-    if (aDay != bDay)
-      return false;
+    if (aDay != bDay) return false;
 
     var aBeginLocal = a.beginDate.withZoneSameInstant(a.tz).toLocalDateTime();
     var bBeginLocal = b.beginDate.withZoneSameInstant(b.tz).toLocalDateTime();
@@ -180,12 +176,12 @@ public final class ScheduleSections {
     var bEndLocal = b.endDate.withZoneSameInstant(b.tz).toLocalDateTime();
 
     for (LocalDateTime aDate = aBeginLocal, bDate = bBeginLocal;
-         aDate.isBefore(aEndLocal) && bDate.isBefore(bEndLocal);) {
+        aDate.isBefore(aEndLocal) && bDate.isBefore(bEndLocal); ) {
       var aDateEnd = aDate.plus(Duration.ofMinutes(a.minutesDuration));
       var bDateEnd = bDate.plus(Duration.ofMinutes(b.minutesDuration));
 
-      if (bDateEnd.atZone(b.tz).isAfter(aDate.atZone(a.tz)) &&
-          aDateEnd.atZone(a.tz).isAfter(bDate.atZone(b.tz))) {
+      if (bDateEnd.atZone(b.tz).isAfter(aDate.atZone(a.tz))
+          && aDateEnd.atZone(a.tz).isAfter(bDate.atZone(b.tz))) {
         return true;
       }
 

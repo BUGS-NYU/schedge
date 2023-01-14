@@ -6,9 +6,7 @@ import static utils.Utils.*;
 import com.zaxxer.hikari.*;
 import java.sql.*;
 
-/**
- * This class get connection to the SQLite database using JDBC Driver
- */
+/** This class get connection to the SQLite database using JDBC Driver */
 public class GetConnection {
 
   public interface SQLConsumer {
@@ -28,8 +26,7 @@ public class GetConnection {
       HikariConfig config = new HikariConfig();
       config.setUsername(getEnvDefault("DB_USERNAME", "postgres"));
       config.setPassword(getEnvDefault("DB_PASSWORD", "postgres"));
-      config.setJdbcUrl(getEnvDefault(
-          "JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/postgres"));
+      config.setJdbcUrl(getEnvDefault("JDBC_URL", "jdbc:postgresql://127.0.0.1:5432/postgres"));
       config.setMaximumPoolSize(4);
 
       // We retry a few times so that schedge doesn't hard-crash when
@@ -41,19 +38,18 @@ public class GetConnection {
         source = tcIgnore(() -> new HikariDataSource(config));
       }
 
-      if (source == null)
-        source = new HikariDataSource(config);
+      if (source == null) source = new HikariDataSource(config);
 
       dataSource = source;
 
-      withConnectionReturning(conn -> {
-        Migrations.runMigrations(conn);
-        return null;
-      });
+      withConnectionReturning(
+          conn -> {
+            Migrations.runMigrations(conn);
+            return null;
+          });
     }
 
-    public static void forceInit() {
-    }
+    public static void forceInit() {}
 
     public static <T> T withConnectionReturning(SQLFunction<T> f) {
       Connection conn = tcPass(() -> HolderClass.dataSource.getConnection());
@@ -77,19 +73,19 @@ public class GetConnection {
   }
 
   /**
-   * GetConnection's connection pool initializes lazily; this behavior isn't
-   * always desired, so this method allows the user to eagerly initialize the
-   * database connection pool.
+   * GetConnection's connection pool initializes lazily; this behavior isn't always desired, so this
+   * method allows the user to eagerly initialize the database connection pool.
    */
   public static void forceInit() {
     HolderClass.forceInit();
   }
 
   public static void withConnection(SQLConsumer f) {
-    withConnectionReturning(conn -> {
-      f.accept(conn);
-      return null;
-    });
+    withConnectionReturning(
+        conn -> {
+          f.accept(conn);
+          return null;
+        });
   }
 
   public static <T> T withConnectionReturning(SQLFunction<T> f) {

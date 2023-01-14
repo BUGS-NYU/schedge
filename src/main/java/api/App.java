@@ -5,7 +5,6 @@ import database.*;
 import io.javalin.Javalin;
 import io.javalin.http.*;
 import io.javalin.http.staticfiles.Location;
-import io.javalin.openapi.OpenApiInfo;
 import io.javalin.openapi.plugin.*;
 import org.slf4j.*;
 import utils.Utils;
@@ -49,6 +48,7 @@ public class App {
     public ApiError(String message) {
       this(400, message);
     }
+
     public ApiError(int status, String message) {
       this.message = message;
       this.status = status;
@@ -57,13 +57,15 @@ public class App {
     public int getStatus() {
       return status;
     }
+
     public String getMessage() {
       return message;
     }
   }
 
   public static final int PORT = Utils.getEnvDefault("SCHEDGE_PORT", 4358);
-  public static final String DESCR_TEMPLATE = """
+  public static final String DESCR_TEMPLATE =
+      """
     Schedge is an API to NYU's course catalog. Please note that
     <b>this API is a beta build currently under active development
     and is subject to change</b>. <br /><br />
@@ -79,48 +81,61 @@ public class App {
     // Ensure that the connection gets instantiated during startup
     GetConnection.forceInit();
 
-    Javalin app = Javalin.create(config -> {
-      config.plugins.enableCors(cors -> { // It's a public API
-        cors.add(it -> { it.anyHost(); });
-      });
+    Javalin app =
+        Javalin.create(
+            config -> {
+              config.plugins.enableCors(
+                  cors -> { // It's a public API
+                    cors.add(
+                        it -> {
+                          it.anyHost();
+                        });
+                  });
 
-      var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION);
+              var description = String.format(DESCR_TEMPLATE, Health.BUILD_VERSION);
 
-      var openApiConfig = new OpenApiPluginConfiguration();
-      openApiConfig.withDocumentationPath("/api/swagger.json");
-      openApiConfig.withDefinitionConfiguration((version, definition) -> {
-        definition.withOpenApiInfo(info -> {
-          info.setVersion("2.0.0 beta");
-          info.setTitle("Schedge");
-          info.setDescription(description);
+              var openApiConfig = new OpenApiPluginConfiguration();
+              openApiConfig.withDocumentationPath("/api/swagger.json");
+              openApiConfig.withDefinitionConfiguration(
+                  (version, definition) -> {
+                    definition.withOpenApiInfo(
+                        info -> {
+                          info.setVersion("2.0.0 beta");
+                          info.setTitle("Schedge");
+                          info.setDescription(description);
+                        });
+                  });
+
+              config.plugins.register(new OpenApiPlugin(openApiConfig));
+
+              config.staticFiles.add(
+                  staticFiles -> { // NextJS UI
+                    staticFiles.hostedPath = "/";
+                    staticFiles.directory = "/next";
+                    staticFiles.location = Location.CLASSPATH;
+                    staticFiles.precompress = true;
+                  });
+
+              config.staticFiles.add(
+                  staticFiles -> { // ReDoc API Docs
+                    staticFiles.hostedPath = "/";
+                    staticFiles.directory = "/api";
+                    staticFiles.location = Location.CLASSPATH;
+                    staticFiles.precompress = false;
+                  });
+            });
+
+    app.exception(
+        Exception.class,
+        (e, ctx) -> {
+          String stackTrace = Utils.stackTrace(e);
+
+          String message =
+              String.format(
+                  "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
+                  stackTrace, ctx.queryParamMap(), ctx.path());
+          logger.warn(message);
         });
-      });
-
-      config.plugins.register(new OpenApiPlugin(openApiConfig));
-
-      config.staticFiles.add(staticFiles -> { // NextJS UI
-        staticFiles.hostedPath = "/";
-        staticFiles.directory = "/next";
-        staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = true;
-      });
-
-      config.staticFiles.add(staticFiles -> { // ReDoc API Docs
-        staticFiles.hostedPath = "/";
-        staticFiles.directory = "/api";
-        staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = false;
-      });
-    });
-
-    app.exception(Exception.class, (e, ctx) -> {
-      String stackTrace = Utils.stackTrace(e);
-
-      String message = String.format(
-          "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
-          stackTrace, ctx.queryParamMap(), ctx.path());
-      logger.warn(message);
-    });
 
     new SchoolInfoEndpoint().addTo(app);
     new CampusEndpoint().addTo(app);

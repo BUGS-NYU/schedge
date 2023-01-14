@@ -3,6 +3,7 @@ package api.v1;
 import static utils.Nyu.*;
 
 import api.*;
+import api.App.ApiError;
 import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
@@ -53,8 +54,14 @@ public final class CoursesEndpoint extends App.Endpoint {
             conn -> {
               List<String> subjects = Collections.singletonList(subject);
 
-              return SelectCourses.selectCourses(conn, term, subjects);
-            });
+      if (subjects.size() == 0) {
+        ApiError noClasses = new ApiError("Sorry, this class is not available");
+        ctx.json(noClasses);
+        return noClasses;
+      }
+
+      return SelectCourses.selectCourses(conn, term, subjects);
+    });
 
     return output;
   }

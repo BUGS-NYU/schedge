@@ -1,4 +1,5 @@
-name: Scrape Term
+name: >
+  [MANUAL] Scrape Term
 
 on:
   workflow_dispatch:

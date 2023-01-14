@@ -15,7 +15,7 @@ import org.slf4j.*;
 import utils.*;
 
 public final class ScrapeSchedgeV2 {
-  private static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedge2");
+  private static final Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
   private static final String LIST_SCHOOLS = "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
@@ -59,13 +59,14 @@ public final class ScrapeSchedgeV2 {
             .runOn(Schedulers.io())
             .map(subject -> getData(client, term, subject))
             .sequential()
-            .map(result -> Arrays.asList(fromJson(result.text, Course[].class)))
+            .filter(Objects::nonNull)
+            .map(result -> Arrays.asList(fromJson(result, Course[].class)))
             .blockingIterable();
 
-    return new TermScrapeResult.Impl(term, schools, iterable);
+    return new TermScrapeResult(term, schools, iterable);
   }
 
-  private static ScrapeResult getData(HttpClient client, Term term, String subject) {
+  private static String getData(HttpClient client, Term term, String subject) {
     try {
       long start = System.nanoTime();
 
@@ -88,11 +89,9 @@ public final class ScrapeSchedgeV2 {
       // TODO: Optimize the code enough that this isn't necessary anymore
       tcPass(() -> Thread.sleep(250));
 
-      var out = new ScrapeResult();
-      out.text = resp.body();
-      out.subject = subject;
+      var body = resp.body();
 
-      return out;
+      return body;
     } catch (Exception e) {
       logger.error("Error (subject={}): {}", subject, e.getMessage());
       return null;

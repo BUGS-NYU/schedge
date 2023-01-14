@@ -11,8 +11,7 @@ public class WriteTerm {
 
     UpdateSchools.updateSchoolsForTerm(conn, term, data.schools());
 
-    while (data.hasNext()) {
-      var coursesBatch = data.next();
+    for (var coursesBatch : data.courses()) {
       InsertCourses.insertCourses(conn, term, coursesBatch);
     }
   }

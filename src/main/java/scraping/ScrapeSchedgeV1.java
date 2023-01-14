@@ -233,7 +233,7 @@ public final class ScrapeSchedgeV1 {
                 })
             .blockingIterable();
 
-    return new TermScrapeResult.Impl(term, schools, results);
+    return new TermScrapeResult(term, schools, results);
   }
 
   private static Section translateSection(SchedgeV1Section section) {

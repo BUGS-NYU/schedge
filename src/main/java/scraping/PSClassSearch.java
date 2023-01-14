@@ -178,7 +178,7 @@ public final class PSClassSearch {
                   return parsed;
                 });
 
-    return new TermScrapeResult.Impl(term, schools, results.blockingIterable());
+    return new TermScrapeResult(term, schools, results.blockingIterable());
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

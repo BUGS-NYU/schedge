@@ -13,7 +13,7 @@ import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV2 extends TermScrapeResult {
+public final class ScrapeSchedgeV2 implements TermScrapeResult {
   private static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
   private static final String LIST_SCHOOLS = "https://nyu.a1liu.com/api/schools/";
@@ -30,17 +30,17 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
   public static TermScrapeResult scrapeFromSchedge(
       Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
-    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
+    return new ScrapeSchedgeV2(term, inputSubjectList);
   }
 
   private final ArrayList<School> schools;
   private final HttpClient client = HttpClient.newHttpClient();
   private final Iterator<String> subjects;
   private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+  private final Term term;
 
-  private ScrapeSchedgeV2(
-      Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
-    super(term, consumer, Try.Ctx(logger));
+  private ScrapeSchedgeV2(Term term, List<String> inputSubjectList) {
+    this.term = term;
 
     var termString = term.json();
 
@@ -134,5 +134,9 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
 
           return out;
         });
+  }
+
+  public Term term() {
+    return term;
   }
 }

@@ -15,7 +15,7 @@ import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV1 extends TermScrapeResult {
+public final class ScrapeSchedgeV1 implements TermScrapeResult {
   static Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedgeV1");
 
   private static final String SCHEDGE_URL = "https://schedge.a1liu.com/";
@@ -141,9 +141,14 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
   private final HttpClient client = HttpClient.newHttpClient();
   private final Iterator<String> subjects;
   private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
+  private final Try ctx;
+  private final Term term;
+  private final Consumer<ScrapeEvent> consumer;
 
   private ScrapeSchedgeV1(Term term, Consumer<ScrapeEvent> consumer) {
-    super(term, consumer, Try.Ctx(logger));
+    this.term = term;
+    this.ctx = Try.Ctx(logger);
+    this.consumer = consumer;
 
     consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
     consumer.accept(ScrapeEvent.hintChange(-1));
@@ -339,5 +344,9 @@ public final class ScrapeSchedgeV1 extends TermScrapeResult {
 
           return result;
         });
+  }
+
+  public Term term() {
+    return term;
   }
 }

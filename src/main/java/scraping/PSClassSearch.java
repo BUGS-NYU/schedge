@@ -46,14 +46,19 @@ public final class PSClassSearch {
     }
   }
 
-  public static final class CoursesForTerm extends TermScrapeResult {
+  public static final class CoursesForTerm implements TermScrapeResult {
     private final ArrayList<SubjectElem> subjects;
 
     private PSClient ps;
     private int index = 0;
+    private final Try ctx;
+    private final Term term;
+    private final Consumer<ScrapeEvent> consumer;
 
     private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer) {
-      super(term, consumer, Try.Ctx(logger));
+      this.term = term;
+      this.ctx = Try.Ctx(logger);
+      this.consumer = consumer;
 
       this.ps = new PSClient();
 
@@ -138,6 +143,10 @@ public final class PSClassSearch {
 
     public ArrayList<School> getSchools() {
       return ctx.log(() -> translateSubjects(subjects));
+    }
+
+    public Term term() {
+      return term;
     }
   }
 

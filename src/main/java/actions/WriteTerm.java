@@ -6,7 +6,7 @@ import scraping.*;
 
 public class WriteTerm {
   public static void writeTerm(Connection conn, TermScrapeResult data) throws SQLException {
-    var term = data.term;
+    var term = data.term();
     InsertCourses.clearPrevious(conn, term);
 
     UpdateSchools.updateSchoolsForTerm(conn, term, data.getSchools());

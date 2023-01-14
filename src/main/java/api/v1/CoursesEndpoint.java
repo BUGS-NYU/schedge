@@ -54,14 +54,14 @@ public final class CoursesEndpoint extends App.Endpoint {
             conn -> {
               List<String> subjects = Collections.singletonList(subject);
 
-      if (subjects.size() == 0) {
-        ApiError noClasses = new ApiError("Sorry, this class is not available");
-        ctx.json(noClasses);
-        return noClasses;
-      }
+              if (subjects.size() == 0) {
+                ApiError noClasses = new ApiError("Sorry, this class is not available");
+                ctx.json(noClasses);
+                return noClasses;
+              }
 
-      return SelectCourses.selectCourses(conn, term, subjects);
-    });
+              return SelectCourses.selectCourses(conn, term, subjects);
+            });
 
     return output;
   }

@@ -3,11 +3,11 @@ package api.v1;
 import static utils.Nyu.*;
 
 import api.*;
+import api.App.ApiError;
 import database.GetConnection;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
 import java.util.*;
-import api.App.ApiError;
 
 public final class CoursesEndpoint extends App.Endpoint {
   public String getPath() {

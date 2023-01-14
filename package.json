@@ -1,7 +1,7 @@
 {
   "name": "schedge",
   "scripts": {
-    "format": "prettier --no-color --write \"src/{pages/**/,components/**/,}*.{js,jsx,ts,tsx,module.css}\"",
+    "format": "prettier --no-color --write \"src/{pages/**/,components/**/,}*.{js,jsx,ts,tsx,module.css}\" && node src/gradlew.js spotlessApply",
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
     "lint": "next lint",

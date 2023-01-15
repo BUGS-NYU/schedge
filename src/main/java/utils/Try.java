@@ -58,10 +58,10 @@ public final class Try extends HashMap<String, Object> {
 
   public static void tcPass(CallVoid<? extends Exception> supplier) {
     tcPass(
-            () -> {
-              supplier.get();
-              return null;
-            });
+        () -> {
+          supplier.get();
+          return null;
+        });
   }
 
   public static <E> E tcPass(Call<E, ? extends Exception> supplier) {
@@ -83,7 +83,7 @@ public final class Try extends HashMap<String, Object> {
 
   public static <E> Optional<E> tcIgnore(Call<E, ? extends Exception> supplier) {
     try {
-      return Optional.of( supplier.get());
+      return Optional.of(supplier.get());
     } catch (Exception e) {
       return Optional.empty();
     }

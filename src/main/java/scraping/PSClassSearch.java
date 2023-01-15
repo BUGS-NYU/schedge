@@ -62,7 +62,7 @@ public final class PSClassSearch {
 
     ctx.put("term", term);
 
-    return ctx.log(
+    return ctx.run(
         () -> {
           var ps = new PSClient();
           var resp = ps.navigateToTerm(term);
@@ -77,7 +77,7 @@ public final class PSClassSearch {
     ctx.put("term", term);
     ctx.put("subject", subjectCode);
 
-    return ctx.log(
+    return ctx.run(
         () -> {
           var ps = new PSClient();
           var resp = ps.navigateToTerm(term);
@@ -117,13 +117,13 @@ public final class PSClassSearch {
     consumer.accept(ScrapeEvent.hintChange(-1));
 
     var subjects =
-        ctx.log(
+        ctx.run(
             () -> {
               var resp = ps.value.navigateToTerm(term);
               return parseTermPage(resp.body());
             });
 
-    var schools = ctx.log(() -> translateSubjects(subjects));
+    var schools = ctx.run(() -> translateSubjects(subjects));
 
     consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
     consumer.accept(ScrapeEvent.progress(1));
@@ -153,7 +153,7 @@ public final class PSClassSearch {
                       //
                       //                      - Albert Liu, Nov 27, 2022 Sun 00:32
                       throw e;
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                       // Catch other types of exceptions because scraping is nowhere near
                       // stable and likely never will be
 

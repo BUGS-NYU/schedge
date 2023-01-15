@@ -77,6 +77,9 @@ dependencies {
     "info.picocli:picocli:4.7.0",
     "me.tongfei:progressbar:0.9.5",
 
+    // Async utilities
+    "io.reactivex.rxjava3:rxjava:3.1.5",
+
     // JSON
     "com.fasterxml.jackson.core:jackson-annotations:2.7.4",
 

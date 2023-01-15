@@ -4,6 +4,7 @@ import static scraping.PSCoursesParser.*;
 import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 
+import io.reactivex.rxjava3.core.Flowable;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
@@ -46,101 +47,6 @@ public final class PSClassSearch {
     }
   }
 
-  public static final class CoursesForTerm extends TermScrapeResult {
-    private final ArrayList<SubjectElem> subjects;
-
-    private PSClient ps;
-    private int index = 0;
-
-    private CoursesForTerm(Term term, Consumer<ScrapeEvent> consumer) {
-      super(term, consumer, Try.Ctx(logger));
-
-      this.ps = new PSClient();
-
-      consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
-      consumer.accept(ScrapeEvent.hintChange(-1));
-
-      var resp =
-          ctx.log(
-              () -> {
-                ctx.put("term", term);
-
-                return ps.navigateToTerm(term).get();
-              });
-
-      this.subjects = ctx.log(() -> parseTermPage(resp.body()));
-
-      consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
-      consumer.accept(ScrapeEvent.progress(1));
-
-      /*
-      while (!this.subjects.get(this.index).code.contains("FINH")) {
-        this.index += 1;
-      }
-       */
-    }
-
-    @Override
-    public boolean hasNext() {
-      return index < subjects.size();
-    }
-
-    @Override
-    public ArrayList<Course> next() {
-      var subject = subjects.get(index);
-      index += 1;
-
-      ctx.put("subject", subject);
-
-      consumer.accept(ScrapeEvent.subject(subject.code));
-
-      var parsed =
-          Try.tcPass(
-              () -> {
-                for (int i = 0; i < 10; i++) {
-                  try {
-                    var resp = ps.fetchSubject(subject).get();
-                    var body = resp.body();
-
-                    return parseSubject(ctx, body, subject.code, consumer);
-                  } catch (CancellationException e) {
-                    // When this method is cancelled through task cancellation, don't
-                    // keep retrying
-                    //
-                    // God I fucking hate exceptions
-                    //
-                    //                      - Albert Liu, Nov 27, 2022 Sun 00:32
-                    throw e;
-                  } catch (Exception e) {
-                    // Catch other types of exceptions because scraping is nowhere near
-                    // stable and likely never will be
-
-                    consumer.accept(ScrapeEvent.warning(subject.code, "ERROR: " + e.getMessage()));
-                    consumer.accept(ScrapeEvent.warning(subject.code, Utils.stackTrace(e)));
-
-                    Thread.sleep(10_000);
-
-                    ps = new PSClient();
-                    ps.navigateToTerm(term).get();
-                  }
-                }
-
-                var resp = ps.fetchSubject(subject).get();
-                var body = resp.body();
-
-                return parseSubject(ctx, body, subject.code, consumer);
-              });
-
-      consumer.accept(ScrapeEvent.progress(1));
-
-      return parsed;
-    }
-
-    public ArrayList<School> getSchools() {
-      return ctx.log(() -> translateSubjects(subjects));
-    }
-  }
-
   public static final class FormEntry {
     public final String key;
     public final String value;
@@ -159,7 +65,7 @@ public final class PSClassSearch {
     return ctx.log(
         () -> {
           var ps = new PSClient();
-          var resp = ps.navigateToTerm(term).get();
+          var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
           return translateSubjects(subjects);
         });
@@ -174,7 +80,7 @@ public final class PSClassSearch {
     return ctx.log(
         () -> {
           var ps = new PSClient();
-          var resp = ps.navigateToTerm(term).get();
+          var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
 
           var subject = find(subjects, s -> s.code.equals(subjectCode));
@@ -199,10 +105,80 @@ public final class PSClassSearch {
 
   /**
    * @param term The term to scrape
-   * @param bar Nullable progress bar to output progress to
+   * @param consumer Nullable progress bar to output progress to
    */
-  public static CoursesForTerm scrapeTerm(Term term, Consumer<ScrapeEvent> bar) {
-    return new CoursesForTerm(term, bar);
+  public static TermScrapeResult scrapeTerm(Term term, Consumer<ScrapeEvent> consumer) {
+    var ctx = Try.Ctx(logger);
+
+    ctx.put("term", term);
+    var ps = Utils.ref(new PSClient());
+
+    consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
+    consumer.accept(ScrapeEvent.hintChange(-1));
+
+    var subjects =
+        ctx.log(
+            () -> {
+              var resp = ps.value.navigateToTerm(term);
+              return parseTermPage(resp.body());
+            });
+
+    var schools = ctx.log(() -> translateSubjects(subjects));
+
+    consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
+    consumer.accept(ScrapeEvent.progress(1));
+
+    var results =
+        Flowable.fromIterable(subjects)
+            .map(
+                subject -> {
+                  ctx.put("subject", subject);
+                  consumer.accept(ScrapeEvent.subject(subject.code));
+
+                  for (int i = 0; i < 10; i++) {
+                    try {
+                      var resp = ps.value.fetchSubject(subject).get();
+                      var body = resp.body();
+
+                      var parsed = parseSubject(ctx, body, subject.code, consumer);
+
+                      consumer.accept(ScrapeEvent.progress(1));
+
+                      return parsed;
+                    } catch (CancellationException e) {
+                      // When this method is cancelled through task cancellation, don't
+                      // keep retrying
+                      //
+                      // God I fucking hate exceptions
+                      //
+                      //                      - Albert Liu, Nov 27, 2022 Sun 00:32
+                      throw e;
+                    } catch (Exception e) {
+                      // Catch other types of exceptions because scraping is nowhere near
+                      // stable and likely never will be
+
+                      consumer.accept(
+                          ScrapeEvent.warning(subject.code, "ERROR: " + e.getMessage()));
+                      consumer.accept(ScrapeEvent.warning(subject.code, Utils.stackTrace(e)));
+
+                      Thread.sleep(10_000);
+
+                      ps.value = new PSClient();
+                      ps.value.navigateToTerm(term);
+                    }
+                  }
+
+                  var resp = ps.value.fetchSubject(subject).get();
+                  var body = resp.body();
+
+                  List<Course> parsed = parseSubject(ctx, body, subject.code, consumer);
+
+                  consumer.accept(ScrapeEvent.progress(1));
+
+                  return parsed;
+                });
+
+    return new TermScrapeResult(term, schools, results.blockingIterable());
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

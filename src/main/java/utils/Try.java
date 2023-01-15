@@ -1,10 +1,7 @@
 package utils;
 
 import java.util.*;
-import java.util.function.*;
 import org.slf4j.*;
-
-import javax.swing.text.html.Option;
 
 public final class Try extends HashMap<String, Object> {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
@@ -59,20 +56,7 @@ public final class Try extends HashMap<String, Object> {
     }
   }
 
-  public <T, E extends Exception> Optional<T> retryRuntimeErrors(
-      int retryCount, Call<T, E> supplier) throws E {
-    for (int i = 0; i < retryCount; i++) {
-      try {
-        return Optional.of(supplier.get());
-      } catch (RuntimeException e) {
-        this.handle(e);
-      }
-    }
-
-    return Optional.empty();
-  }
-
-  public static void tcPass(CallVoid supplier) {
+  public static void tcPass(CallVoid<? extends Exception> supplier) {
     tcPass(
             () -> {
               supplier.get();
@@ -93,7 +77,7 @@ public final class Try extends HashMap<String, Object> {
   public static void tcIgnore(CallVoid<? extends Exception> supplier) {
     try {
       supplier.get();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
   }
 

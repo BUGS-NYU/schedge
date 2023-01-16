@@ -10,7 +10,8 @@ import java.util.*;
 import java.util.stream.*;
 
 public final class Utils {
-  private static final BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
+  private static final BufferedReader inReader =
+      new BufferedReader(new InputStreamReader(System.in));
 
   public static final class Ref<T> {
     public T value;
@@ -64,10 +65,7 @@ public final class Utils {
       var myPath = Paths.get(uri);
 
       try (var files = Files.walk(myPath)) {
-        return files
-            .filter(Files::isRegularFile)
-            .map(Path::toString)
-            .collect(Collectors.toList());
+        return files.filter(Files::isRegularFile).map(Path::toString).collect(Collectors.toList());
       }
     }
   }

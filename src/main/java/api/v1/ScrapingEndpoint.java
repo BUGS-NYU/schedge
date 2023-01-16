@@ -1,6 +1,5 @@
 package api.v1;
 
-import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
 
@@ -17,6 +16,7 @@ import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
 import scraping.*;
+import utils.ArrayJS;
 import utils.Utils;
 
 /**
@@ -55,7 +55,7 @@ public final class ScrapingEndpoint {
       var term = Term.fromString(ctx.pathParam("term"));
 
       var source =
-          run(
+          ArrayJS.run(
               () -> {
                 var src = ctx.queryParam("source");
                 if (src == null) src = "";
@@ -75,21 +75,17 @@ public final class ScrapingEndpoint {
       var bar = builder.build();
 
       ScrapeJob job =
-          run(
-              () ->
-                  switch (source) {
-                    case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
-                    case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
-                    default -> {
-                      var warning = "Invalid source: " + source;
-                      ctx.send(warning);
-                      logger.warn(warning);
-
-                      yield null;
-                    }
-                  });
+          switch (source) {
+            case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
+            case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
+            default -> null;
+          };
 
       if (job == null) {
+        var warning = "Invalid source: " + source;
+        ctx.send(warning);
+        logger.warn(warning);
+
         return "No job to run!";
       }
 

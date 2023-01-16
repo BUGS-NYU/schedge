@@ -72,8 +72,6 @@ public final class ScrapingEndpoint {
           .setUpdateIntervalMillis(5_000)
           .continuousUpdate();
 
-      var bar = builder.build();
-
       ScrapeJob job =
           switch (source) {
             case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
@@ -89,27 +87,29 @@ public final class ScrapingEndpoint {
         return "No job to run!";
       }
 
-      GetConnection.withConnection(
-          conn -> {
-            var result =
-                job.scrape(
-                    term,
-                    e -> {
-                      if (e instanceof ScrapeEvent.Warn w) {
-                        ctx.send(w.message);
-                        logger.warn(w.message);
-                      } else if (e instanceof ScrapeEvent.Message m) {
-                        bar.setExtraMessage(String.format("%1$-25s", m.message));
-                        logger.info(m.message);
-                      } else if (e instanceof ScrapeEvent.Progress p) {
-                        bar.stepBy(p.progress);
-                      } else if (e instanceof ScrapeEvent.HintChange h) {
-                        bar.maxHint(h.newValue);
-                      }
-                    });
+      try (var bar = builder.build()) {
+        GetConnection.withConnection(
+            conn -> {
+              var result =
+                  job.scrape(
+                      term,
+                      e -> {
+                        if (e instanceof ScrapeEvent.Warn w) {
+                          ctx.send(w.message);
+                          logger.warn(w.message);
+                        } else if (e instanceof ScrapeEvent.Message m) {
+                          bar.setExtraMessage(String.format("%1$-25s", m.message));
+                          logger.info(m.message);
+                        } else if (e instanceof ScrapeEvent.Progress p) {
+                          bar.stepBy(p.progress);
+                        } else if (e instanceof ScrapeEvent.HintChange h) {
+                          bar.maxHint(h.newValue);
+                        }
+                      });
 
-            WriteTerm.writeTerm(conn, result);
-          });
+              WriteTerm.writeTerm(conn, result);
+            });
+      }
 
       return "Done!";
     } catch (Exception e) {

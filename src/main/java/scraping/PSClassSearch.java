@@ -83,8 +83,9 @@ public final class PSClassSearch {
           var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
 
-          var subject = find(subjects, s -> s.code.equals(subjectCode));
-          if (subject == null) throw new RuntimeException("Subject not found: " + subjectCode);
+          var subject =
+              find(subjects, s -> s.code.equals(subjectCode))
+                  .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectCode));
 
           {
             resp = ps.fetchSubject(subject).get();
@@ -107,7 +108,7 @@ public final class PSClassSearch {
    * @param term The term to scrape
    * @param consumer Nullable progress bar to output progress to
    */
-  public static TermScrapeResult scrapeTerm(Term term, Consumer<ScrapeEvent> consumer) {
+  public static ScrapeEvent.Result scrapeTerm(Term term, Consumer<ScrapeEvent> consumer) {
     var ctx = Try.Ctx(logger);
 
     ctx.put("term", term);
@@ -126,7 +127,7 @@ public final class PSClassSearch {
     var schools = ctx.log(() -> translateSubjects(subjects));
 
     consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
-    consumer.accept(ScrapeEvent.progress(1));
+    consumer.accept(ScrapeEvent.progress());
 
     var results =
         Flowable.fromIterable(subjects)
@@ -142,7 +143,7 @@ public final class PSClassSearch {
 
                       var parsed = parseSubject(ctx, body, subject.code, consumer);
 
-                      consumer.accept(ScrapeEvent.progress(1));
+                      consumer.accept(ScrapeEvent.progress());
 
                       return parsed;
                     } catch (CancellationException e) {
@@ -173,12 +174,12 @@ public final class PSClassSearch {
 
                   List<Course> parsed = parseSubject(ctx, body, subject.code, consumer);
 
-                  consumer.accept(ScrapeEvent.progress(1));
+                  consumer.accept(ScrapeEvent.progress());
 
                   return parsed;
                 });
 
-    return new TermScrapeResult(term, schools, results.blockingIterable());
+    return new ScrapeEvent.Result(term, schools, results.blockingIterable());
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

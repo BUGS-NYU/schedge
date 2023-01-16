@@ -4,7 +4,7 @@ import static utils.Nyu.*;
 
 import java.sql.*;
 import java.time.ZoneOffset;
-import java.util.List;
+import java.util.*;
 import org.slf4j.*;
 import utils.Utils;
 
@@ -13,7 +13,7 @@ import utils.Utils;
  * Mobile
  */
 public final class InsertCourses {
-  private static Logger logger = LoggerFactory.getLogger("database.InsertCourses");
+  private static final Logger logger = LoggerFactory.getLogger("database.InsertCourses");
 
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement courses;

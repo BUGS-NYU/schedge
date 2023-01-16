@@ -1,6 +1,5 @@
 package api.v1;
 
-import static utils.ArrayJS.*;
 import static utils.Nyu.*;
 import static utils.Try.*;
 
@@ -17,6 +16,7 @@ import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
 import scraping.*;
+import utils.ArrayJS;
 import utils.Utils;
 
 /**
@@ -47,7 +47,7 @@ public final class ScrapingEndpoint {
   }
 
   interface ScrapeJob {
-    TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+    ScrapeEvent.Result scrape(Term term, Consumer<ScrapeEvent> event);
   }
 
   private static String scrape(WsContext ctx) {
@@ -55,7 +55,7 @@ public final class ScrapingEndpoint {
       var term = Term.fromString(ctx.pathParam("term"));
 
       var source =
-          run(
+          ArrayJS.run(
               () -> {
                 var src = ctx.queryParam("source");
                 if (src == null) src = "";
@@ -72,48 +72,44 @@ public final class ScrapingEndpoint {
           .setUpdateIntervalMillis(5_000)
           .continuousUpdate();
 
-      var bar = builder.build();
-
       ScrapeJob job =
-          run(
-              () ->
-                  switch (source) {
-                    case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
-                    case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
-                    default -> {
-                      var warning = "Invalid source: " + source;
-                      ctx.send(warning);
-                      logger.warn(warning);
-
-                      yield null;
-                    }
-                  });
+          switch (source) {
+            case "schedge-v1" -> ScrapeSchedgeV1::scrapeFromSchedge;
+            case "sis.nyu.edu" -> PSClassSearch::scrapeTerm;
+            default -> null;
+          };
 
       if (job == null) {
+        var warning = "Invalid source: " + source;
+        ctx.send(warning);
+        logger.warn(warning);
+
         return "No job to run!";
       }
 
-      GetConnection.withConnection(
-          conn -> {
-            var result =
-                job.scrape(
-                    term,
-                    e -> {
-                      if (e instanceof ScrapeEvent.Warn w) {
-                        ctx.send(w.message);
-                        logger.warn(w.message);
-                      } else if (e instanceof ScrapeEvent.Message m) {
-                        bar.setExtraMessage(String.format("%1$-25s", m.message));
-                        logger.info(m.message);
-                      } else if (e instanceof ScrapeEvent.Progress p) {
-                        bar.stepBy(p.progress);
-                      } else if (e instanceof ScrapeEvent.HintChange h) {
-                        bar.maxHint(h.newValue);
-                      }
-                    });
+      try (var bar = builder.build()) {
+        GetConnection.withConnection(
+            conn -> {
+              var result =
+                  job.scrape(
+                      term,
+                      e -> {
+                        if (e instanceof ScrapeEvent.Warn w) {
+                          ctx.send(w.message);
+                          logger.warn(w.message);
+                        } else if (e instanceof ScrapeEvent.Message m) {
+                          bar.setExtraMessage(String.format("%1$-25s", m.message));
+                          logger.info(m.message);
+                        } else if (e instanceof ScrapeEvent.Progress p) {
+                          bar.stepBy(p.progress);
+                        } else if (e instanceof ScrapeEvent.HintChange h) {
+                          bar.maxHint(h.newValue);
+                        }
+                      });
 
-            WriteTerm.writeTerm(conn, result);
-          });
+              WriteTerm.writeTerm(conn, result);
+            });
+      }
 
       return "Done!";
     } catch (Exception e) {

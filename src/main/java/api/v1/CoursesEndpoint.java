@@ -60,7 +60,7 @@ public final class CoursesEndpoint extends App.Endpoint {
             var termSubjects = SelectSubjects.selectSubjectsForTerm(conn, term);
             var matchingSubject = ArrayJS.find(termSubjects, sub -> sub.code().equals(subject));
 
-            if (matchingSubject == null) {
+            if (matchingSubject.isEmpty()) {
               return new ApiError(
                   "the subject \"" + subject + "\" is invalid for the term " + term);
             }

@@ -147,12 +147,13 @@ public class Database implements Runnable {
           conn -> {
             var termStart = System.nanoTime();
 
-            var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects, ScrapeEvent.log(logger));
+            var result =
+                ScrapeSchedgeV2.scrapeFromSchedge(
+                    term, Optional.of(subjects), ScrapeEvent.log(logger));
 
             var fetchEnd = System.nanoTime();
             var duration = (fetchEnd - termStart) / 1000000000.0;
             logger.info("Fetching took {} seconds", duration);
-            if (result == null) return;
 
             WriteTerm.writeTerm(conn, result);
             var dbEnd = System.nanoTime();

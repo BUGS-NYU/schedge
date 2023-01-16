@@ -25,12 +25,12 @@ public final class ScrapeSchedgeV2 {
     String subject;
   }
 
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
-    return scrapeFromSchedge(term, null, consumer);
+  public static ScrapeEvent.Result scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return scrapeFromSchedge(term, Optional.empty(), consumer);
   }
 
-  public static TermScrapeResult scrapeFromSchedge(
-      Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
+  public static ScrapeEvent.Result scrapeFromSchedge(
+      Term term, Optional<List<String>> inputSubjectList, Consumer<ScrapeEvent> consumer) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
 
@@ -43,18 +43,25 @@ public final class ScrapeSchedgeV2 {
     var info = fromJson(data, SchoolInfoEndpoint.Info.class);
     var schools = info.schools;
 
-    if (inputSubjectList == null) {
-      inputSubjectList = new ArrayList<>();
+    var subjectList =
+        inputSubjectList.orElseGet(
+            () -> {
+              var list = new ArrayList<String>();
 
-      for (var school : info.schools) {
-        for (var subject : school.subjects) {
-          inputSubjectList.add(subject.code());
-        }
-      }
-    }
+              for (var school : info.schools) {
+                for (var subject : school.subjects) {
+                  list.add(subject.code());
+                }
+              }
+
+              return list;
+            });
+
+    consumer.accept(ScrapeEvent.hintChange(subjectList.size() + 1));
+    consumer.accept(ScrapeEvent.progress());
 
     var iterable =
-        Flowable.fromIterable(inputSubjectList)
+        Flowable.fromIterable(subjectList)
             .parallel(5)
             .runOn(Schedulers.io())
             .map(subject -> getData(client, term, subject))
@@ -63,38 +70,34 @@ public final class ScrapeSchedgeV2 {
             .map(result -> Arrays.asList(fromJson(result, Course[].class)))
             .blockingIterable();
 
-    return new TermScrapeResult(term, schools, iterable);
+    return new ScrapeEvent.Result(term, schools, iterable);
   }
 
   private static String getData(HttpClient client, Term term, String subject) {
-    try {
-      long start = System.nanoTime();
+    long start = System.nanoTime();
 
-      Try ctx = Try.Ctx();
-      ctx.put("term", term);
-      ctx.put("subject", subject);
+    Try ctx = Try.Ctx();
+    ctx.put("term", term);
+    ctx.put("subject", subject);
 
-      var uri = URI.create(COURSES + term.json() + "/" + subject);
-      var request = HttpRequest.newBuilder().uri(uri).build();
-      var handler = HttpResponse.BodyHandlers.ofString();
+    return ctx.log(
+        () -> {
+          var uri = URI.create(COURSES + term.json() + "/" + subject);
+          var request = HttpRequest.newBuilder().uri(uri).build();
+          var handler = HttpResponse.BodyHandlers.ofString();
+          var resp = client.send(request, handler);
 
-      var resp = ctx.log(() -> client.send(request, handler));
+          // This slows down the scrape, which is bad, but gives the production server some
+          // breathing room, so that development doesn't accidentally DDOS the server.
+          // TODO: Optimize the code enough that this isn't necessary anymore
+          tcPass(() -> Thread.sleep(250));
+          var body = resp.body();
 
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching subject={} took {} seconds", duration, subject);
+          long end = System.nanoTime();
+          double duration = (end - start) / 1000000000.0;
+          logger.info("Fetching subject={} took {} seconds", duration, subject);
 
-      // This slows down the scrape, which is bad, but gives the production server some
-      // breathing room, so that development doesn't accidentally DDOS the server.
-      // TODO: Optimize the code enough that this isn't necessary anymore
-      tcPass(() -> Thread.sleep(250));
-
-      var body = resp.body();
-
-      return body;
-    } catch (Exception e) {
-      logger.error("Error (subject={}): {}", subject, e.getMessage());
-      return null;
-    }
+          return body;
+        });
   }
 }

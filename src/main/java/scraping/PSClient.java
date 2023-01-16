@@ -52,8 +52,9 @@ public class PSClient {
       var yearHeader = body.expectFirst("div#win0divACAD_YEAR");
       var links = yearHeader.select("a.ps-link");
 
-      var link = find(links, l -> l.text().equals(yearText));
-      if (link == null) throw new RuntimeException("yearText not found");
+      var link =
+          find(links, l -> l.text().equals(yearText))
+              .orElseThrow(() -> new RuntimeException("yearText not found"));
 
       var id = link.id();
 

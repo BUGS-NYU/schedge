@@ -83,8 +83,9 @@ public final class PSClassSearch {
           var resp = ps.navigateToTerm(term);
           var subjects = parseTermPage(resp.body());
 
-          var subject = find(subjects, s -> s.code.equals(subjectCode));
-          if (subject == null) throw new RuntimeException("Subject not found: " + subjectCode);
+          var subject =
+              find(subjects, s -> s.code.equals(subjectCode))
+                  .orElseThrow(() -> new RuntimeException("Subject not found: " + subjectCode));
 
           {
             resp = ps.fetchSubject(subject).get();

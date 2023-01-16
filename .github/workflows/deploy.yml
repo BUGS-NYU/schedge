@@ -70,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: src/build/docker/Dockerfile
+          file: src/build/Dockerfile
           push: true
           tags: ghcr.io/a1liu/schedge:latest
 

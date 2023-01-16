@@ -22,7 +22,7 @@ public final class ArrayJS {
     return Optional.empty();
   }
 
-  public static <T> T run(Supplier<T> supplier) {
+  public static <T, E extends Exception> T run(Try.Call<T, E> supplier) throws E {
     return supplier.get();
   }
 }

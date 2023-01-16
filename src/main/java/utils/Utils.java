@@ -2,6 +2,7 @@ package utils;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
@@ -9,7 +10,7 @@ import java.util.*;
 import java.util.stream.*;
 
 public final class Utils {
-  private static BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
+  private static final BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
 
   public static final class Ref<T> {
     public T value;
@@ -37,7 +38,7 @@ public final class Utils {
 
     if (resource == null) throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
+    return new Scanner(resource, StandardCharsets.UTF_8).useDelimiter("\\A").next();
   }
 
   // Read entire file and then get it as a list of lines
@@ -46,24 +47,28 @@ public final class Utils {
   }
 
   public static List<String> resourcePaths(String path) throws IOException, URISyntaxException {
-    var uri = Utils.class.getResource(path).toURI();
+    var uri = Objects.requireNonNull(Utils.class.getResource(path)).toURI();
 
     if (uri.getScheme().equals("jar")) {
       try (var fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
         var myPath = fs.getPath(path);
 
-        return Files.walk(myPath)
-            .filter(Files::isRegularFile)
-            .map(p -> p.toString())
-            .collect(Collectors.toList());
+        try (var files = Files.walk(myPath)) {
+          return files
+              .filter(Files::isRegularFile)
+              .map(Path::toString)
+              .collect(Collectors.toList());
+        }
       }
     } else {
       var myPath = Paths.get(uri);
 
-      return Files.walk(myPath)
-          .filter(Files::isRegularFile)
-          .map(p -> p.toUri().toString())
-          .collect(Collectors.toList());
+      try (var files = Files.walk(myPath)) {
+        return files
+            .filter(Files::isRegularFile)
+            .map(Path::toString)
+            .collect(Collectors.toList());
+      }
     }
   }
 
@@ -103,13 +108,6 @@ public final class Utils {
       case "Su", "Sun" -> DayOfWeek.SUNDAY;
       default -> DayOfWeek.valueOf(dayOfWeek);
     };
-  }
-
-  public static boolean deleteFile(File f) {
-    if (f.isDirectory()) {
-      for (File c : f.listFiles()) deleteFile(c);
-    }
-    return f.delete();
   }
 
   public static void setObject(PreparedStatement stmt, int index, Object obj) throws SQLException {
@@ -156,13 +154,12 @@ public final class Utils {
     return new NullWrapper(type, value);
   }
 
-  public static PreparedStatement setArray(PreparedStatement stmt, Object... objs) {
+  public static void setArray(PreparedStatement stmt, Object... objs) {
     int i = 0;
     try {
       for (i = 0; i < objs.length; i++) {
         setObject(stmt, i + 1, objs[i]);
       }
-      return stmt;
     } catch (Exception e) {
       // System.err.println("at index " + i);
       throw new RuntimeException(e);
@@ -173,8 +170,6 @@ public final class Utils {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
-    String stackTrace = sw.toString();
-
-    return stackTrace;
+    return sw.toString();
   }
 }

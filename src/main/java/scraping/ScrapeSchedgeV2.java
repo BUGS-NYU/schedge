@@ -78,7 +78,7 @@ public final class ScrapeSchedgeV2 {
       var request = HttpRequest.newBuilder().uri(uri).build();
       var handler = HttpResponse.BodyHandlers.ofString();
 
-      var resp = ctx.run(() -> client.send(request, handler));
+      var resp = ctx.log(() -> client.send(request, handler));
 
       long end = System.nanoTime();
       double duration = (end - start) / 1000000000.0;

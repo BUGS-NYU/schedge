@@ -6,10 +6,6 @@ import org.slf4j.*;
 public final class Try extends HashMap<String, Object> {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
 
-  public interface Handler {
-    void accept(Exception e);
-  }
-
   public interface Call<T, E extends Exception> {
     T get() throws E;
   }
@@ -19,7 +15,6 @@ public final class Try extends HashMap<String, Object> {
   }
 
   public final Logger logger;
-  public Handler handler;
 
   private Try(Logger logger) {
     super();
@@ -35,23 +30,14 @@ public final class Try extends HashMap<String, Object> {
     return new Try(logger);
   }
 
-  public void handle(Exception e) {
-    if (handler == null) {
-      logger.error("Context: " + this, e);
-      return;
-    }
-
-    handler.accept(e);
-  }
-
-  public <T, E extends Exception> T run(Call<T, E> supplier) {
+  public <T, E extends Exception> T log(Call<T, E> supplier) {
     try {
       return supplier.get();
     } catch (RuntimeException e) {
-      this.handle(e);
+      logger.error("Context: " + this, e);
       throw e;
     } catch (Exception e) {
-      this.handle(e);
+      logger.error("Context: " + this, e);
       throw new RuntimeException(e);
     }
   }

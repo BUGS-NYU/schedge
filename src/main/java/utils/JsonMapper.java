@@ -13,7 +13,7 @@ public class JsonMapper {
     var ctx = Ctx();
     ctx.put("json", json);
 
-    return ctx.run(() -> objMapper.readValue(json, clazz));
+    return ctx.log(() -> objMapper.readValue(json, clazz));
   }
 
   public static String toJson(Object o) {

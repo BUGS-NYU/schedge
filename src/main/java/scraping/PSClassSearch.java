@@ -62,7 +62,7 @@ public final class PSClassSearch {
 
     ctx.put("term", term);
 
-    return ctx.run(
+    return ctx.log(
         () -> {
           var ps = new PSClient();
           var resp = ps.navigateToTerm(term);
@@ -77,7 +77,7 @@ public final class PSClassSearch {
     ctx.put("term", term);
     ctx.put("subject", subjectCode);
 
-    return ctx.run(
+    return ctx.log(
         () -> {
           var ps = new PSClient();
           var resp = ps.navigateToTerm(term);
@@ -117,13 +117,13 @@ public final class PSClassSearch {
     consumer.accept(ScrapeEvent.hintChange(-1));
 
     var subjects =
-        ctx.run(
+        ctx.log(
             () -> {
               var resp = ps.value.navigateToTerm(term);
               return parseTermPage(resp.body());
             });
 
-    var schools = ctx.run(() -> translateSubjects(subjects));
+    var schools = ctx.log(() -> translateSubjects(subjects));
 
     consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
     consumer.accept(ScrapeEvent.progress(1));

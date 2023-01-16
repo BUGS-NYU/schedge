@@ -138,11 +138,8 @@ public final class Utils {
   }
 
   public static int getEnvDefault(String name, int defaultValue) {
-    Integer value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
+    var value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    return value.orElse(defaultValue);
   }
 
   static class NullWrapper {

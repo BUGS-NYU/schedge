@@ -1,6 +1,7 @@
 package scraping;
 
 import static utils.ArrayJS.*;
+import static utils.Nyu.*;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -15,23 +16,23 @@ public class PSCoursesParser {
   static DateTimeFormatter timeParser =
       DateTimeFormatter.ofPattern("MM/dd/yyyy h.mma", Locale.ENGLISH);
 
-  public static ArrayList<Nyu.School> translateSubjects(ArrayList<PSClassSearch.SubjectElem> raw) {
-    var schools = new ArrayList<Nyu.School>();
-    Nyu.School school = null;
+  public static ArrayList<School> translateSubjects(ArrayList<PSClassSearch.SubjectElem> raw) {
+    var schools = new ArrayList<School>();
+    School school = null;
 
     for (var subject : raw) {
       if (school == null || !school.name.equals(subject.schoolName)) {
-        school = new Nyu.School(subject.schoolName, subject.schoolCode);
+        school = new School(subject.schoolName, subject.schoolCode);
         schools.add(school);
       }
 
-      school.subjects.add(new Nyu.Subject(subject.code, subject.name));
+      school.subjects.add(new Subject(subject.code, subject.name));
     }
 
     return schools;
   }
 
-  public static ArrayList<Nyu.Course> parseSubject(
+  public static ArrayList<Course> parseSubject(
       Try ctx, String html, String subjectCode, Consumer<ScrapeEvent> consumer) {
     var doc = Jsoup.parse(html);
 
@@ -66,9 +67,9 @@ public class PSCoursesParser {
     return courses;
   }
 
-  static Nyu.Course parseCourse(
+  static Course parseCourse(
       Try ctx, Element courseHtml, String subjectCode, Consumer<ScrapeEvent> consumer) {
-    var course = new Nyu.Course();
+    var course = new Course();
 
     // This happens to work; nothing else really works as well.
     var sections = courseHtml.select(".ps-htmlarea");

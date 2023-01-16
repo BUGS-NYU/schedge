@@ -32,15 +32,13 @@ public class GetConnection {
       // We retry a few times so that schedge doesn't hard-crash when
       // running in docker-compose
       var source = tcIgnore(() -> new HikariDataSource(config));
-      for (int i = 0; source == null && i < 10; i++) {
+      for (int i = 0; source.isEmpty() && i < 10; i++) {
         tcIgnore(() -> Thread.sleep(3000));
 
         source = tcIgnore(() -> new HikariDataSource(config));
       }
 
-      if (source == null) source = new HikariDataSource(config);
-
-      dataSource = source;
+      dataSource = source.orElseGet(() -> new HikariDataSource(config));
 
       withConnectionReturning(
           conn -> {

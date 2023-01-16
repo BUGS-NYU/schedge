@@ -153,7 +153,7 @@ public final class PSClassSearch {
                       //
                       //                      - Albert Liu, Nov 27, 2022 Sun 00:32
                       throw e;
-                    } catch (Exception e) {
+                    } catch (RuntimeException e) {
                       // Catch other types of exceptions because scraping is nowhere near
                       // stable and likely never will be
 

@@ -47,12 +47,9 @@ public final class Mixins {
 
     public void writeOutput(Object output) {
       var jsonData = Try.tcIgnore(() -> JsonMapper.toJson(output, pretty));
+      var outputText = jsonData.orElseGet(() -> output.toString());
 
-      if (jsonData == null) {
-        jsonData = output.toString();
-      }
-
-      Utils.writeToFileOrStdout(outputFile, jsonData);
+      Utils.writeToFileOrStdout(outputFile, outputText);
     }
   }
 

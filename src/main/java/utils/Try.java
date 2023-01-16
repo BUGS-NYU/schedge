@@ -6,25 +6,12 @@ import org.slf4j.*;
 public final class Try extends HashMap<String, Object> {
   public static Logger DEFAULT_LOGGER = LoggerFactory.getLogger("schedge");
 
-  private final class TryCounter {
-    int value = 0;
-
-    @Override
-    public String toString() {
-      return "" + value;
-    }
-  }
-
-  public interface Call<E> {
-    E get() throws Exception;
-  }
-
-  public interface CallWithExceptionType<T, E extends Exception> {
+  public interface Call<T, E extends Exception> {
     T get() throws E;
   }
 
-  public interface CallVoid {
-    void get() throws Exception;
+  public interface CallVoid<E extends Exception> {
+    void get() throws E;
   }
 
   public final Logger logger;
@@ -43,7 +30,19 @@ public final class Try extends HashMap<String, Object> {
     return new Try(logger);
   }
 
-  public static void tcPass(CallVoid supplier) {
+  public <T, E extends Exception> T log(Call<T, E> supplier) {
+    try {
+      return supplier.get();
+    } catch (RuntimeException e) {
+      logger.error("Context: " + this, e);
+      throw e;
+    } catch (Exception e) {
+      logger.error("Context: " + this, e);
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static void tcPass(CallVoid<? extends Exception> supplier) {
     tcPass(
         () -> {
           supplier.get();
@@ -51,7 +50,7 @@ public final class Try extends HashMap<String, Object> {
         });
   }
 
-  public static <E> E tcPass(Call<E> supplier) {
+  public static <E> E tcPass(Call<E, ? extends Exception> supplier) {
     try {
       return supplier.get();
     } catch (RuntimeException e) {
@@ -61,60 +60,18 @@ public final class Try extends HashMap<String, Object> {
     }
   }
 
-  public static void tcIgnore(CallVoid supplier) {
+  public static void tcIgnore(CallVoid<? extends Exception> supplier) {
     try {
       supplier.get();
-    } catch (Exception e) {
+    } catch (Exception ignored) {
     }
   }
 
-  public static <E> E tcIgnore(Call<E> supplier) {
+  public static <E> Optional<E> tcIgnore(Call<E, ? extends Exception> supplier) {
     try {
-      return supplier.get();
+      return Optional.of(supplier.get());
     } catch (Exception e) {
-      return null;
+      return Optional.empty();
     }
-  }
-
-  public void increment(String name) {
-    increment(name, 1);
-  }
-
-  public void increment(String name, int i) {
-    var counter = (TryCounter) this.computeIfAbsent(name, k -> new TryCounter());
-    counter.value += i;
-  }
-
-  public void log(CallVoid supplier) {
-    log(
-        () -> {
-          supplier.get();
-          return null;
-        });
-  }
-
-  public <E> E log(Call<E> supplier) {
-    try {
-      return supplier.get();
-    } catch (Throwable throwable) {
-      logger.warn("Context: " + this);
-      if (throwable instanceof RuntimeException e) throw e;
-      if (throwable instanceof Error e) throw e;
-      throw new RuntimeException(throwable);
-    }
-  }
-
-  public static <T, E extends Exception> T tcRetryRuntimeExceptions(
-      int retryCount, CallWithExceptionType<T, E> supplier) throws E {
-    RuntimeException error = null;
-    for (int i = 0; i < retryCount; i++) {
-      try {
-        return supplier.get();
-      } catch (RuntimeException e) {
-        error = e;
-      }
-    }
-
-    throw error;
   }
 }

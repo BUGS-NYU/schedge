@@ -1,7 +1,6 @@
 package scraping;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
@@ -65,8 +64,8 @@ public sealed class ScrapeEvent
     return new Message(subject, "Fetching " + subject);
   }
 
-  static ScrapeEvent progress(int progress) {
-    return new Progress(progress);
+  static ScrapeEvent progress() {
+    return new Progress(1);
   }
 
   static ScrapeEvent hintChange(int hint) {

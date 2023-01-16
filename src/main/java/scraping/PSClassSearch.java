@@ -127,7 +127,7 @@ public final class PSClassSearch {
     var schools = ctx.log(() -> translateSubjects(subjects));
 
     consumer.accept(ScrapeEvent.hintChange(subjects.size() + 1));
-    consumer.accept(ScrapeEvent.progress(1));
+    consumer.accept(ScrapeEvent.progress());
 
     var results =
         Flowable.fromIterable(subjects)
@@ -143,7 +143,7 @@ public final class PSClassSearch {
 
                       var parsed = parseSubject(ctx, body, subject.code, consumer);
 
-                      consumer.accept(ScrapeEvent.progress(1));
+                      consumer.accept(ScrapeEvent.progress());
 
                       return parsed;
                     } catch (CancellationException e) {
@@ -174,7 +174,7 @@ public final class PSClassSearch {
 
                   List<Course> parsed = parseSubject(ctx, body, subject.code, consumer);
 
-                  consumer.accept(ScrapeEvent.progress(1));
+                  consumer.accept(ScrapeEvent.progress());
 
                   return parsed;
                 });

@@ -58,7 +58,7 @@ public final class ScrapeSchedgeV2 {
             });
 
     consumer.accept(ScrapeEvent.hintChange(subjectList.size() + 1));
-    consumer.accept(ScrapeEvent.progress(1));
+    consumer.accept(ScrapeEvent.progress());
 
     var iterable =
         Flowable.fromIterable(subjectList)

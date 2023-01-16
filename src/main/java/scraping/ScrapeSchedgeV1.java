@@ -167,7 +167,7 @@ public final class ScrapeSchedgeV1 {
             });
 
     consumer.accept(ScrapeEvent.hintChange(subjectsList.size() + 1));
-    consumer.accept(ScrapeEvent.progress(1));
+    consumer.accept(ScrapeEvent.progress());
 
     var schoolsMap = new HashMap<String, School>();
     var subjectsFullCodeList = new ArrayList<String>();
@@ -228,7 +228,7 @@ public final class ScrapeSchedgeV1 {
                     out.add(c);
                   }
 
-                  consumer.accept(ScrapeEvent.progress(1));
+                  consumer.accept(ScrapeEvent.progress());
                   return out;
                 })
             .blockingIterable();

@@ -107,7 +107,7 @@ public final class PSClassSearch {
    * @param term The term to scrape
    * @param consumer Nullable progress bar to output progress to
    */
-  public static TermScrapeResult scrapeTerm(Term term, Consumer<ScrapeEvent> consumer) {
+  public static ScrapeEvent.Result scrapeTerm(Term term, Consumer<ScrapeEvent> consumer) {
     var ctx = Try.Ctx(logger);
 
     ctx.put("term", term);
@@ -178,7 +178,7 @@ public final class PSClassSearch {
                   return parsed;
                 });
 
-    return new TermScrapeResult(term, schools, results.blockingIterable());
+    return new ScrapeEvent.Result(term, schools, results.blockingIterable());
   }
 
   public static ArrayList<SubjectElem> parseTermPage(String responseBody) {

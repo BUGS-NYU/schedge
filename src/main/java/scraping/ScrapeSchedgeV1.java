@@ -136,7 +136,7 @@ public final class ScrapeSchedgeV1 {
     public String notes;
   }
 
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static ScrapeEvent.Result scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     var client = HttpClient.newHttpClient();
 
     consumer.accept(ScrapeEvent.message(null, "Fetching subject list..."));
@@ -233,7 +233,7 @@ public final class ScrapeSchedgeV1 {
                 })
             .blockingIterable();
 
-    return new TermScrapeResult(term, schools, results);
+    return new ScrapeEvent.Result(term, schools, results);
   }
 
   private static Section translateSection(SchedgeV1Section section) {

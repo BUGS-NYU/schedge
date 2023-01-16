@@ -1,8 +1,11 @@
 package scraping;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
+import utils.Nyu;
 
 /* Real fucking stupid implementation of whatever you desire
  * to call this. Event listening, observer pattern, whatever.
@@ -93,4 +96,7 @@ public sealed class ScrapeEvent
       }
     };
   }
+
+  public record Result(
+      Nyu.Term term, ArrayList<Nyu.School> schools, Iterable<List<Nyu.Course>> courses) {}
 }

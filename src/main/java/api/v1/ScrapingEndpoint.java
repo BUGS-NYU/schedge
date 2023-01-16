@@ -47,7 +47,7 @@ public final class ScrapingEndpoint {
   }
 
   interface ScrapeJob {
-    TermScrapeResult scrape(Term term, Consumer<ScrapeEvent> event);
+    ScrapeEvent.Result scrape(Term term, Consumer<ScrapeEvent> event);
   }
 
   private static String scrape(WsContext ctx) {

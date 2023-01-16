@@ -25,11 +25,11 @@ public final class ScrapeSchedgeV2 {
     String subject;
   }
 
-  public static TermScrapeResult scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+  public static ScrapeEvent.Result scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
     return scrapeFromSchedge(term, null, consumer);
   }
 
-  public static TermScrapeResult scrapeFromSchedge(
+  public static ScrapeEvent.Result scrapeFromSchedge(
       Term term, List<String> inputSubjectList, Consumer<ScrapeEvent> consumer) {
     var client = HttpClient.newHttpClient();
     var termString = term.json();
@@ -63,7 +63,7 @@ public final class ScrapeSchedgeV2 {
             .map(result -> Arrays.asList(fromJson(result, Course[].class)))
             .blockingIterable();
 
-    return new TermScrapeResult(term, schools, iterable);
+    return new ScrapeEvent.Result(term, schools, iterable);
   }
 
   private static String getData(HttpClient client, Term term, String subject) {

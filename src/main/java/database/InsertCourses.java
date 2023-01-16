@@ -13,7 +13,7 @@ import utils.Utils;
  * Mobile
  */
 public final class InsertCourses {
-  private static Logger logger = LoggerFactory.getLogger("database.InsertCourses");
+  private static final Logger logger = LoggerFactory.getLogger("database.InsertCourses");
 
   private static final class Prepared implements AutoCloseable {
     final PreparedStatement courses;

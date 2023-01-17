@@ -79,7 +79,8 @@ public class Database implements Runnable {
           boolean useV1,
       @Option(
               names = {"--v2"},
-              description = "scrape v2")
+              description = "scrape v2",
+              defaultValue = "true")
           boolean useV2) {
     long start = System.nanoTime();
 
@@ -102,44 +103,50 @@ public class Database implements Runnable {
     logger.info("{} seconds", duration);
   }
 
+  private static final HashMap<String, Optional<List<String>>> subjects;
+
+  static {
+    var s = new HashMap<String, Optional<List<String>>>();
+
+    s.put("sp2021", Optional.of(Arrays.asList("CSCI-UA", "SCA-UA_1", "MATH-UA", "DS-UA")));
+
+    s.put("fa2022", Optional.of(Arrays.asList("CSCI-UA")));
+
+    s.put(
+        "sp2023",
+        Optional.of(
+            Arrays.asList(
+                "ITPG-GT",
+                "MASY1-GC",
+                "CSCI-UA",
+                "DM-UY",
+                "CS-UY",
+                "INTG1-GC",
+                "PUBB1-GC",
+                "URPL-GP",
+                "DHSS-GA",
+                "OART-UT",
+                "OART-GT",
+                "COART-UT",
+                "IMNY-UT",
+                "PWRT1-GC")));
+
+    subjects = s;
+  }
+
   @Command(
-      name = "ci-populate",
+      name = "test-populate",
       description =
-          "Populate the database for CI by scraping the existing production "
+          "Populate the database for testing by scraping the existing production "
               + "Schedge instance.\n")
-  public void ciPopulate(@Parameters(paramLabel = "SUBJECT_STRINGS") String[] subjectStrings) {
+  public void testPopulate() {
     var start = System.nanoTime();
 
     GetConnection.forceInit();
 
-    var FULL_TERM = new ArrayList<String>();
-    var map = new HashMap<String, ArrayList<String>>();
-
-    for (var subjectAndTermString : subjectStrings) {
-      var parts = subjectAndTermString.split("/", 2);
-      var termString = parts[0];
-
-      if (parts.length == 1) {
-        map.put(termString, FULL_TERM);
-        logger.debug("Adding full term for {}", termString);
-        continue;
-      }
-
-      var subjectString = parts[1];
-      logger.debug("Adding term={}, subjectString={}", termString, subjectString);
-
-      var subjects = map.computeIfAbsent(termString, k -> new ArrayList<>());
-      if (subjects != FULL_TERM) subjects.add(subjectString);
-    }
-
-    for (var pair : map.entrySet()) {
+    for (var pair : subjects.entrySet()) {
       var term = Term.fromString(pair.getKey());
-      var subjectsValue = pair.getValue();
-      if (subjectsValue == FULL_TERM) {
-        subjectsValue = null;
-      }
-
-      var subjects = subjectsValue;
+      var subjects = pair.getValue();
 
       logger.info("Fetching term={}", term.json());
 
@@ -147,9 +154,7 @@ public class Database implements Runnable {
           conn -> {
             var termStart = System.nanoTime();
 
-            var result =
-                ScrapeSchedgeV2.scrapeFromSchedge(
-                    term, Optional.of(subjects), ScrapeEvent.log(logger));
+            var result = ScrapeSchedgeV2.scrapeFromSchedge(term, subjects, ScrapeEvent.log(logger));
 
             var fetchEnd = System.nanoTime();
             var duration = (fetchEnd - termStart) / 1000000000.0;

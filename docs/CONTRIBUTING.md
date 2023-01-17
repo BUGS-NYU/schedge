@@ -23,8 +23,8 @@ You'll need to install a few applications to contribute to this project:
   The project is written in Java, so you'll probably need to install a Java
   Development Kit (JDK) in order to build and run it.
 
-  **NOTE:** Please use at least version 11 and at most version 18. This project
-  uses Java 11 features, so at least JDK 11 is required, but Gradle doesn't
+  **NOTE:** Please use at least version 17 and at most version 18. This project
+  uses Java 17 features, so at least JDK 17 is required, but Gradle doesn't
   seem to support anything later than 18 right now, so you will not be able
   to build code if you install JDK 19.
 - [NodeJS](https://heynode.com/tutorial/install-nodejs-locally-nvm/) and [Yarn](https://yarnpkg.com/getting-started/install) -
@@ -64,15 +64,9 @@ You'll need to install a few applications to contribute to this project:
   Run `psql` on the local database
 
 ## Testing
-- `yarn test` will test the backend; before running tests, please scrape the
-  following terms:
-
-  - `sp2021`
-  - `fa2022`
-  - `sp2023`
-
-  You can use `yarn schedge db populate INSERT_TERM_HERE` to scrape a specific
-  term from production.
+- `yarn test` will test the backend; before running tests, please run the
+  command `yarn schedge db test-populate` in order to populate the database with
+  the necessary test data.
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

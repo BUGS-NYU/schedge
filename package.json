@@ -12,7 +12,7 @@
     "test": "node src/gradlew.js test",
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",
-    "compile": "node src/gradlew.js check",
+    "compile": "node src/gradlew.js jar",
     "schedge": "docker-compose exec schedge schedge",
     "psql": "docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres"
   },

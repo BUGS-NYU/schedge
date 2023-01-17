@@ -77,12 +77,7 @@ jobs:
       run: >
         java -Xmx1G -Djdk.httpclient.allowRestrictedHeaders=host,connection
         -jar build/libs/schedge.jar
-        db ci-populate
-        sp2021/CSCI-UA sp2021/SCA-UA_1 sp2021/MATH-UA sp2021/DS-UA
-        fa2022/CSCI-UA
-        sp2023/ITPG-GT sp2023/MASY1-GC sp2023/CSCI-UA sp2023/DM-UY sp2023/CS-UY
-        sp2023/INTG1-GC sp2023/PUBB1-GC sp2023/URPL-GP sp2023/DHSS-GA sp2023/OART-UT
-        sp2023/OART-GT sp2023/COART-UT sp2023/IMNY-UT sp2023/PWRT1-GC
+        db test-populate
 
     - name: Test Code
       id: test-code

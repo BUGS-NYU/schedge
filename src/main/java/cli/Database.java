@@ -108,9 +108,9 @@ public class Database implements Runnable {
   static {
     var s = new HashMap<String, Optional<List<String>>>();
 
-    s.put("sp2021", Optional.of(Arrays.asList("csci-ua", "sca-ua_1", "math-ua", "ds-ua")));
+    s.put("sp2021", Optional.of(Arrays.asList("CSCI-UA", "SCA-UA_1", "MATH-UA", "DS-UA")));
 
-    s.put("fa2022", Optional.of(Arrays.asList("csci-ua")));
+    s.put("fa2022", Optional.of(Arrays.asList("CSCI-UA")));
 
     s.put(
         "sp2023",

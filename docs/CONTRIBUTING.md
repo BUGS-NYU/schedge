@@ -64,15 +64,9 @@ You'll need to install a few applications to contribute to this project:
   Run `psql` on the local database
 
 ## Testing
-- `yarn test` will test the backend; before running tests, please scrape the
-  following terms:
-
-  - `sp2021`
-  - `fa2022`
-  - `sp2023`
-
-  You can use `yarn schedge db populate INSERT_TERM_HERE` to scrape a specific
-  term from production.
+- `yarn test` will test the backend; before running tests, please run the
+  command `yarn schedge db test-populate` in order to populate the database with
+  the necessary test data.
 
 ### Comment Annotations
 The codebase uses the following annotations in the comments:

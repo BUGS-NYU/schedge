@@ -31,8 +31,7 @@ Here's a list of apps that use this API:
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )
 - https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )
 
-If your project uses Schedge, please open a PR and add it to this list! If it
-helps other students with their course scheduling, you should also also consider sharing
+If your project uses Schedge, please open a PR and add it to this list! You should also consider sharing
 it with the [CS@NYU Discord](https://discord.com/channels/744646258819596418/744669404373188659).
 
 ## Contributing

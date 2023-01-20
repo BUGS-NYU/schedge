@@ -32,8 +32,8 @@ Here's a list of apps that use this API:
 - https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )
 
 If your project uses Schedge, please open a PR and add it to this list! If it
-helps other students with their course scheduling, you can also consider [sharing
-it with the CS@NYU Discord Community](https://discord.com/channels/744646258819596418/744669404373188659)
+helps other students with their course scheduling, you should also also consider sharing
+it with the [CS@NYU Discord](https://discord.com/channels/744646258819596418/744669404373188659).
 
 ## Contributing
 Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provide

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.*;
 
 public final class Nyu {
   // @Note: order is important here. Order MUST be: ja, sp, su, fa
-  //                            - Albert Liu, Feb 05, 2022 Sat 02:38 EST
+  // - Albert Liu, Feb 05, 2022 Sat 02:38 EST
   public enum Semester {
     ja(2),
     sp(4),
@@ -114,7 +114,7 @@ public final class Nyu {
     // we eventually want to switch to using the `fromCode(String code)` version
     // for the JSON creator. It will happen when we fully move away from
     // scraping from Schedge V1.
-    //                                  - Albert Liu, Feb 03, 2022 Thu 01:02 EST
+    // - Albert Liu, Feb 03, 2022 Thu 01:02 EST
     @JsonCreator
     public static Meeting fromJson(
         @JsonProperty("beginDate") String beginDate,
@@ -437,6 +437,8 @@ public final class Nyu {
             new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
             new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
             new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),
+            new Campus("Singapore", ZoneId.of("Asia/Singapore")),
+            new Campus("Kenya", ZoneId.of("Africa/Nairobi")),
             new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
             new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
             new Campus("Zambia", ZoneId.of("Africa/Lusaka")),
@@ -446,13 +448,19 @@ public final class Nyu {
             new Campus("NYU Los Angeles (Global)", losAngeles),
             new Campus("Colombia", ZoneId.of("America/Bogota")),
             new Campus("Cuba", ZoneId.of("America/Havana")),
+            new Campus("Costa Rica", ZoneId.of("America/Costa_Rica")),
 
             // @Note: Brazil has 3 time zones; I have no idea which one is the
             // right one, but the primary time zone of Brazil is Brazil/East so
             // this is a best-effort choice.
             //
-            //                              - Albert Liu, Nov 10, 2022 Thu 22:09
+            // - Albert Liu, Nov 10, 2022 Thu 22:09
             new Campus("Brazil", ZoneId.of("Brazil/East")),
+
+            // @TODO: IDK what this should be
+            new Campus("Other Study Abroad", nyc),
+
+            // @Note: These are all NYC campuses
             new Campus("Off Campus", nyc),
             new Campus("Online", nyc),
             new Campus("Distance Learning/Asynchronous", nyc),

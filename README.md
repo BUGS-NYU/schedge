@@ -1,4 +1,10 @@
 # Schedge
+
+## PSA: NYU has implemented reCAPTCHA on the current data source for Schedge.
+It is unclear if Schedge will be able to provide up-to-date data past the beginning of Spring 2023.
+Please let me know if you have found a data source other than https://sis.nyu.edu/psc/csprod/EMPLOYEE/SA/c/NYU_SR.NYU_CLS_SRCH.GBL,
+and if so, I can try to rebuild the scraping code to accomodate it.
+
 Schedge is an open source API to NYU's course catalog. Its goal is to help
 NYU students plan their semesters' courses easier and faster.
 

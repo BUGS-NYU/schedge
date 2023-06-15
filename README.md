@@ -31,6 +31,8 @@ a scrape afterwards, Schedge won't pick it up.
 ## Apps that use Schedge
 Here's a list of apps that use this API:
 
+* https://nyu.myschedule.xyz/#/ NYU Course Schedule, support fall 2023 courses.
+
 - https://rate-my-classes-pro.netlify.app | https://apple.co/3AduK8G (repo at https://github.com/zhumingcheng697/Rate-My-Classes-Pro )
 - https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )

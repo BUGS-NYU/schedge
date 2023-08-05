@@ -35,6 +35,7 @@ Here's a list of apps that use this API:
 - https://courses.torchnyu.com (repo at https://github.com/NicholasLYang/courses )
 - https://bobcatsearch.com (repo at https://github.com/EthanPrintz/bobcat-search )
 - https://notalbert.netlify.com (repo at https://github.com/pecansalad/coursecatalog )
+- NYU Course Auto Scheduler (repo at https://github.com/rithkott/NYU-class-scheduler)
 
 If your project uses Schedge, please open a PR and add it to this list! You should also consider sharing
 it with the [CS@NYU Discord](https://discord.com/channels/744646258819596418/744669404373188659).

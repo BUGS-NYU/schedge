@@ -13,7 +13,7 @@ server to deploy changes to the infrastructure of Schedge.
   - `.build` folder for postgres DB (this is created for you)
  
 ## Useful Commands
-All of these are running from `/home/ubuntu/schedge`
+All of these are running from the directory `/home/ubuntu/schedge`
 
 - Spin up the docker environment (also potentially update it if its already running)
   ```

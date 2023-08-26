@@ -1,5 +1,7 @@
 package utils;
 
+import static utils.Try.*;
+
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -10,8 +12,7 @@ import java.util.*;
 import java.util.stream.*;
 
 public final class Utils {
-  private static final BufferedReader inReader =
-      new BufferedReader(new InputStreamReader(System.in));
+  private static final BufferedReader inReader = new BufferedReader(new InputStreamReader(System.in));
 
   public static final class Ref<T> {
     public T value;
@@ -29,17 +30,21 @@ public final class Utils {
     // The profile doesn't actually start automatically, you have to attach
     // a different program to this. The goal is simply to prevent the program
     // from making progress until the profiler is attached correctly.
-    //                              - Albert Liu, Feb 04, 2022 Fri 00:58 EST
-    Scanner scanner = new Scanner(inReader);
-    scanner.nextLine();
+    // - Albert Liu, Feb 04, 2022 Fri 00:58 EST
+    try (Scanner scanner = new Scanner(inReader)) {
+      scanner.nextLine();
+    }
   }
 
   public static String readResource(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
-    if (resource == null) throw new IllegalArgumentException("Resource doesn't exist: " + path);
+    if (resource == null)
+      throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    return new Scanner(resource, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+    try (var scanner = new Scanner(resource, StandardCharsets.UTF_8).useDelimiter("\\A")) {
+      return scanner.next();
+    }
   }
 
   // Read entire file and then get it as a list of lines
@@ -74,8 +79,7 @@ public final class Utils {
     if (file == null) {
       System.out.println(value);
     } else {
-      try {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
         writer.write(value.toString() + "\n");
         writer.flush();
       } catch (IOException e) {
@@ -85,14 +89,10 @@ public final class Utils {
   }
 
   public static String readFromFileOrStdin(String file) {
-    if (file != null) {
-      try {
-        return new Scanner(new FileReader(file)).useDelimiter("\\A").next();
-      } catch (FileNotFoundException e) {
-        throw new RuntimeException(e);
-      }
+    var reader = file != null ? tcPass(() -> new BufferedReader(new FileReader(file))) : inReader;
+    try (var scanner = new Scanner(reader).useDelimiter("\\A")) {
+      return scanner.next();
     }
-    return new Scanner(inReader).useDelimiter("\\A").next();
   }
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
@@ -126,7 +126,7 @@ public final class Utils {
   }
 
   public static String getEnvDefault(String name, String defaultValue) {
-    String value = System.getenv(name);
+    var value = System.getenv(name);
     if (value == null) {
       return defaultValue;
     }
@@ -134,13 +134,13 @@ public final class Utils {
   }
 
   public static int getEnvDefault(String name, int defaultValue) {
-    var value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    var value = tcIgnore(() -> Integer.parseInt(System.getenv(name)));
     return value.orElse(defaultValue);
   }
 
   static class NullWrapper {
-    int type;
-    Object value;
+    final int type;
+    final Object value;
 
     NullWrapper(int type, Object value) {
       this.type = type;
@@ -153,20 +153,16 @@ public final class Utils {
   }
 
   public static void setArray(PreparedStatement stmt, Object... objs) {
-    int i = 0;
-    try {
-      for (i = 0; i < objs.length; i++) {
+    tcPass(() -> {
+      for (int i = 0; i < objs.length; i++) {
         setObject(stmt, i + 1, objs[i]);
       }
-    } catch (Exception e) {
-      // System.err.println("at index " + i);
-      throw new RuntimeException(e);
-    }
+    });
   }
 
   public static String stackTrace(Throwable t) {
-    StringWriter sw = new StringWriter();
-    PrintWriter pw = new PrintWriter(sw);
+    var sw = new StringWriter();
+    var pw = new PrintWriter(sw);
     t.printStackTrace(pw);
     return sw.toString();
   }

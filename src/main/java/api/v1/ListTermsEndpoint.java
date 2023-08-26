@@ -7,7 +7,6 @@ import static utils.Nyu.*;
 import api.*;
 import io.javalin.http.Context;
 import io.javalin.openapi.*;
-import java.util.*;
 
 public final class ListTermsEndpoint extends App.Endpoint {
   public String getPath() {

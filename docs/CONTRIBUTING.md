@@ -23,10 +23,10 @@ You'll need to install a few applications to contribute to this project:
   The project is written in Java, so you'll probably need to install a Java
   Development Kit (JDK) in order to build and run it.
 
-  **NOTE:** Please use at least version 17 and at most version 18. This project
-  uses Java 17 features, so at least JDK 17 is required, but Gradle doesn't
-  seem to support anything later than 18 right now, so you will not be able
-  to build code if you install JDK 19.
+  **NOTE:** Please use at least version 17 and at most version 19. This project
+  uses Java 17 features, so at least JDK 17 is required, but Gradle 7 doesn't
+  support anything later than 19, so you will not be able
+  to build code if you install JDK 20.
 - [NodeJS](https://heynode.com/tutorial/install-nodejs-locally-nvm/) and [Yarn](https://yarnpkg.com/getting-started/install) -
   This project uses Yarn and NodeJS for compiling JavaScript and also for running
   custom build commands.

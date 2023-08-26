@@ -1,7 +1,7 @@
 {
   "name": "schedge",
   "scripts": {
-    "format": "prettier --no-color --write \"src/{pages/**/,components/**/,}*.{js,jsx,ts,tsx,module.css}\"",
+    "format": "prettier --no-color --write \"src/{pages/**/,components/**/,}*.{js,jsx,ts,tsx,module.css}\" && node src/gradlew.js spotlessApply",
     "dev": "next dev -p 9100",
     "export": "next build && next export -o src/main/resources/next",
     "lint": "next lint",
@@ -12,7 +12,7 @@
     "test": "node src/gradlew.js test",
     "start": "node src/gradlew.js composeUp",
     "stop": "docker-compose down",
-    "compile": "node src/gradlew.js check",
+    "compile": "node src/gradlew.js jar",
     "schedge": "docker-compose exec schedge schedge",
     "psql": "docker-compose exec postgres psql --dbname=postgres --host=localhost --port=5432 --username=postgres"
   },
@@ -34,6 +34,7 @@
     "@types/react": "17.0.2",
     "caniuse-lite": "1.0.30001431",
     "eslint": "8.23.1",
+    "clang-format": "1.8.0",
     "eslint-config-next": "12.3.0",
     "eslint-plugin-jsx-a11y": "6.6.1",
     "eslint-plugin-react": "7.31.8",

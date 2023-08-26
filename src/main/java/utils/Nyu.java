@@ -12,7 +12,7 @@ import org.jetbrains.annotations.*;
 
 public final class Nyu {
   // @Note: order is important here. Order MUST be: ja, sp, su, fa
-  //                            - Albert Liu, Feb 05, 2022 Sat 02:38 EST
+  // - Albert Liu, Feb 05, 2022 Sat 02:38 EST
   public enum Semester {
     ja(2),
     sp(4),
@@ -32,9 +32,10 @@ public final class Nyu {
     public final ArrayList<Subject> subjects;
 
     @JsonCreator
-    public School(@JsonProperty("name") String name,
-                  @JsonProperty("code") String code,
-                  @JsonProperty("subjects") ArrayList<Subject> subjects) {
+    public School(
+        @JsonProperty("name") String name,
+        @JsonProperty("code") String code,
+        @JsonProperty("subjects") ArrayList<Subject> subjects) {
       this.name = name;
       this.code = code;
       this.subjects = subjects;
@@ -81,12 +82,15 @@ public final class Nyu {
     public String getDeptCourseId() {
       return deptCourseId;
     }
+
     public String getDescription() {
       return description;
     }
+
     public List<Section> getSections() {
       return sections;
     }
+
     @OpenApiExample(value = "CSCI-UA")
     public String getSubjectCode() {
       return subjectCode;
@@ -97,32 +101,30 @@ public final class Nyu {
     }
   }
 
-  @JsonIgnoreProperties(value = {"endDateLocal", "beginDateLocal"},
-                        allowGetters = true)
+  @JsonIgnoreProperties(
+      value = {"endDateLocal", "beginDateLocal"},
+      allowGetters = true)
   public static final class Meeting {
-    private static DateTimeFormatter formatter =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public ZonedDateTime beginDate; // contains date and time of first event.
-    public int minutesDuration;     // Duration of meeting
-    public ZonedDateTime endDate;   // When the meeting stops repeating
+    public int minutesDuration; // Duration of meeting
+    public ZonedDateTime endDate; // When the meeting stops repeating
 
     // we eventually want to switch to using the `fromCode(String code)` version
     // for the JSON creator. It will happen when we fully move away from
     // scraping from Schedge V1.
-    //                                  - Albert Liu, Feb 03, 2022 Thu 01:02 EST
+    // - Albert Liu, Feb 03, 2022 Thu 01:02 EST
     @JsonCreator
-    public static Meeting
-    fromJson(@JsonProperty("beginDate") String beginDate,
-             @JsonProperty("minutesDuration") int minutesDuration,
-             @JsonProperty("endDate") String endDate) {
+    public static Meeting fromJson(
+        @JsonProperty("beginDate") String beginDate,
+        @JsonProperty("minutesDuration") int minutesDuration,
+        @JsonProperty("endDate") String endDate) {
       var meeting = new Meeting();
       try {
-        meeting.beginDate =
-            LocalDateTime.parse(beginDate, formatter).atZone(ZoneOffset.UTC);
+        meeting.beginDate = LocalDateTime.parse(beginDate, formatter).atZone(ZoneOffset.UTC);
         meeting.minutesDuration = minutesDuration;
-        meeting.endDate =
-            LocalDateTime.parse(endDate, formatter).atZone(ZoneOffset.UTC);
+        meeting.endDate = LocalDateTime.parse(endDate, formatter).atZone(ZoneOffset.UTC);
       } catch (java.time.format.DateTimeParseException e) {
         meeting.beginDate = parseTime(beginDate);
         meeting.minutesDuration = minutesDuration;
@@ -142,13 +144,11 @@ public final class Nyu {
       return minutesDuration;
     }
 
-    @NotNull
-    public String getBeginDate() {
+    @NotNull public String getBeginDate() {
       return DateTimeFormatter.ISO_INSTANT.format(beginDate);
     }
 
-    @NotNull
-    public String getEndDate() {
+    @NotNull public String getEndDate() {
       return DateTimeFormatter.ISO_INSTANT.format(endDate);
     }
   }
@@ -170,24 +170,20 @@ public final class Nyu {
       return minutesDuration;
     }
 
-    @NotNull
-    public String getBeginDate() {
+    @NotNull public String getBeginDate() {
       return DateTimeFormatter.ISO_INSTANT.format(beginDate);
     }
 
-    @NotNull
-    public String getBeginDateLocal() {
+    @NotNull public String getBeginDateLocal() {
       var beginDateLocal = beginDate.withZoneSameInstant(tz);
       return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(beginDateLocal);
     }
 
-    @NotNull
-    public String getEndDate() {
+    @NotNull public String getEndDate() {
       return DateTimeFormatter.ISO_INSTANT.format(endDate);
     }
 
-    @NotNull
-    public String getEndDateLocal() {
+    @NotNull public String getEndDateLocal() {
       var endDateLocal = endDate.withZoneSameInstant(tz);
       return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(endDateLocal);
     }
@@ -242,8 +238,7 @@ public final class Nyu {
       return name;
     }
 
-    @NotNull
-    public String getCode() {
+    @NotNull public String getCode() {
       return code;
     }
 
@@ -251,8 +246,7 @@ public final class Nyu {
       return instructors;
     }
 
-    @NotNull
-    public String getType() {
+    @NotNull public String getType() {
       return type;
     }
 
@@ -280,18 +274,23 @@ public final class Nyu {
     public String getInstructionMode() {
       return instructionMode;
     }
+
     public Double getMinUnits() {
       return minUnits;
     }
+
     public Double getMaxUnits() {
       return maxUnits;
     }
+
     public String getGrading() {
       return grading;
     }
+
     public String getLocation() {
       return location;
     }
+
     public String getNotes() {
       return notes;
     }
@@ -300,6 +299,7 @@ public final class Nyu {
     public List<Section> getRecitations() {
       return recitations;
     }
+
     @JsonInclude(NON_NULL)
     public Integer getWaitlistTotal() {
       return waitlistTotal;
@@ -310,20 +310,16 @@ public final class Nyu {
     }
   }
 
-  /**
-   * Enum class for status of the section based on the availability
-   */
+  /** Enum class for status of the section based on the availability */
   public enum SectionStatus {
-    Open,      // Open
-    Closed,    // Closed
-    WaitList,  // Waitlist
+    Open, // Open
+    Closed, // Closed
+    WaitList, // Waitlist
     Cancelled; // Cancelled
 
     public static SectionStatus parseStatus(String status) {
-      if (status.startsWith("Wait List"))
-        return WaitList;
-      else
-        return valueOf(status);
+      if (status.startsWith("Wait List")) return WaitList;
+      else return valueOf(status);
     }
 
     public boolean isOpen() {
@@ -362,58 +358,33 @@ public final class Nyu {
 
     @JsonValue
     public String getName() {
-      switch (this) {
-      case LEC:
-        return "Lecture";
-      case RCT:
-        return "Recitation";
-      case LAB:
-        return "Lab";
-      case SEM:
-        return "Seminar";
-      case IND:
-        return "Independent Study";
-      case SIM:
-        return "Simulation";
-      case CLI:
-        return "Clinic";
-      case FLD:
-        return "Field Instruction";
-      case WKS:
-        return "Workshop";
-      case STI:
-        return "Independent Instruction";
-      case STU:
-        return "Studio";
-      case STG:
-        return "Group Instruction";
-      case INT:
-        return "Internship";
-      case RSC:
-        return "Research (Tandon)";
-      case CLQ:
-        return "Colloquium";
-      case PRO:
-        return "Project (Tandon)";
-      case GUI:
-        return "Guided Studies (Tandon)";
-      case NCR:
-        return "Non-Credit (Tandon)";
-      case PRP:
-        return "Preparatory";
-      case MAM:
-        return "Maintaining Marticulation";
-      case DLX:
-        return "Distance Learning Hybrid";
-      case PCT:
-        return "Practicum";
-      case LLB:
-        return "Lecture for Lab";
-      case NCL:
-        return "Non-Credit Lab";
-      default:
-        return this.toString();
-      }
+      return switch (this) {
+        case LEC -> "Lecture";
+        case RCT -> "Recitation";
+        case LAB -> "Lab";
+        case SEM -> "Seminar";
+        case IND -> "Independent Study";
+        case SIM -> "Simulation";
+        case CLI -> "Clinic";
+        case FLD -> "Field Instruction";
+        case WKS -> "Workshop";
+        case STI -> "Independent Instruction";
+        case STU -> "Studio";
+        case STG -> "Group Instruction";
+        case INT -> "Internship";
+        case RSC -> "Research (Tandon)";
+        case CLQ -> "Colloquium";
+        case PRO -> "Project (Tandon)";
+        case GUI -> "Guided Studies (Tandon)";
+        case NCR -> "Non-Credit (Tandon)";
+        case PRP -> "Preparatory";
+        case MAM -> "Maintaining Marticulation";
+        case DLX -> "Distance Learning Hybrid";
+        case PCT -> "Practicum";
+        case LLB -> "Lecture for Lab";
+        case NCL -> "Non-Credit Lab";
+        case DLG, NCH, EQV -> this.toString();
+      };
     }
   }
 
@@ -428,8 +399,7 @@ public final class Nyu {
       this.name = name;
       this.timezone = zone;
       this.timezoneId = zone.getId();
-      this.timezoneName =
-          zone.getDisplayName(TextStyle.FULL_STANDALONE, Locale.US);
+      this.timezoneName = zone.getDisplayName(TextStyle.FULL_STANDALONE, Locale.US);
     }
 
     public static final HashMap<String, Campus> campuses;
@@ -443,79 +413,81 @@ public final class Nyu {
       var losAngeles = ZoneId.of("America/Los_Angeles");
       var dubai = ZoneId.of("Asia/Dubai");
 
-      var campusList = new Campus[] {
-          new Campus("Dublin", ZoneId.of("Europe/Dublin")),
-          new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
-          new Campus("London", ZoneId.of("Europe/London")),
-          new Campus("Ireland", ZoneId.of("Europe/Dublin")),
-          new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
-          new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
-          new Campus("NYU Berlin (Global)", berlin),
-          new Campus("Berlin", berlin),
-          new Campus("Germany", berlin),
-          new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
-          new Campus("Madrid", ZoneId.of("Europe/Madrid")),
-          new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
-          new Campus("Prague", ZoneId.of("Europe/Prague")),
-          new Campus("Athens", ZoneId.of("Europe/Athens")),
-          new Campus("Greece", ZoneId.of("Europe/Athens")),
-          new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
+      var campusList =
+          new Campus[] {
+            new Campus("Dublin", ZoneId.of("Europe/Dublin")),
+            new Campus("NYU London (Global)", ZoneId.of("Europe/London")),
+            new Campus("London", ZoneId.of("Europe/London")),
+            new Campus("Ireland", ZoneId.of("Europe/Dublin")),
+            new Campus("NYU Paris (Global)", ZoneId.of("Europe/Paris")),
+            new Campus("NYU Florence (Global)", ZoneId.of("Europe/Rome")),
+            new Campus("NYU Berlin (Global)", berlin),
+            new Campus("Berlin", berlin),
+            new Campus("Germany", berlin),
+            new Campus("NYU Madrid (Global)", ZoneId.of("Europe/Madrid")),
+            new Campus("Madrid", ZoneId.of("Europe/Madrid")),
+            new Campus("NYU Prague (Global)", ZoneId.of("Europe/Prague")),
+            new Campus("Prague", ZoneId.of("Europe/Prague")),
+            new Campus("Athens", ZoneId.of("Europe/Athens")),
+            new Campus("Greece", ZoneId.of("Europe/Athens")),
+            new Campus("Sweden", ZoneId.of("Europe/Stockholm")),
+            new Campus("NYU Abu Dhabi (Global)", dubai),
+            new Campus("Abu Dhabi", dubai),
+            new Campus("Abu Dhabi - Other", dubai),
+            new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
+            new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
+            new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),
+            new Campus("Singapore", ZoneId.of("Asia/Singapore")),
+            new Campus("Kenya", ZoneId.of("Africa/Nairobi")),
+            new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
+            new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
+            new Campus("Zambia", ZoneId.of("Africa/Lusaka")),
+            new Campus("NYU Buenos Aires (Global)", buenosAires),
+            new Campus("Buenos Aires", buenosAires),
+            new Campus("Dominican Republic", ZoneId.of("America/Santo_Domingo")),
+            new Campus("NYU Los Angeles (Global)", losAngeles),
+            new Campus("Colombia", ZoneId.of("America/Bogota")),
+            new Campus("Cuba", ZoneId.of("America/Havana")),
+            new Campus("Costa Rica", ZoneId.of("America/Costa_Rica")),
 
-          new Campus("NYU Abu Dhabi (Global)", dubai),
-          new Campus("Abu Dhabi", dubai),
-          new Campus("Abu Dhabi - Other", dubai),
-          new Campus("NYU Tel Aviv (Global)", ZoneId.of("Asia/Tel_Aviv")),
-          new Campus("NYU Shanghai (Global)", ZoneId.of("Asia/Shanghai")),
-          new Campus("Shanghai", ZoneId.of("Asia/Shanghai")),
+            // @Note: Brazil has 3 time zones; I have no idea which one is the
+            // right one, but the primary time zone of Brazil is Brazil/East so
+            // this is a best-effort choice.
+            //
+            // - Albert Liu, Nov 10, 2022 Thu 22:09
+            new Campus("Brazil", ZoneId.of("Brazil/East")),
 
-          new Campus("NYU Sydney (Global)", ZoneId.of("Australia/Sydney")),
+            // @TODO: IDK what this should be
+            new Campus("Other Study Abroad", nyc),
 
-          new Campus("NYU Accra (Global)", ZoneId.of("Africa/Accra")),
-          new Campus("Zambia", ZoneId.of("Africa/Lusaka")),
-
-          new Campus("NYU Buenos Aires (Global)", buenosAires),
-          new Campus("Buenos Aires", buenosAires),
-          new Campus("Dominican Republic", ZoneId.of("America/Santo_Domingo")),
-          new Campus("NYU Los Angeles (Global)", losAngeles),
-          new Campus("Colombia", ZoneId.of("America/Bogota")),
-          new Campus("Cuba", ZoneId.of("America/Havana")),
-
-          // @Note: Brazil has 3 time zones; I have no idea which one is the
-          // right one, but the primary time zone of Brazil is Brazil/East so
-          // this is a best-effort choice.
-          //
-          //                              - Albert Liu, Nov 10, 2022 Thu 22:09
-          new Campus("Brazil", ZoneId.of("Brazil/East")),
-
-          new Campus("Off Campus", nyc),
-          new Campus("Online", nyc),
-          new Campus("Distance Learning/Asynchronous", nyc),
-          new Campus("Distance Learning / Blended", nyc),
-          new Campus("Distance Learning/Synchronous", nyc),
-          new Campus("Distance Ed (Learning Space)", nyc),
-          new Campus("Distance Education", nyc),
-
-          new Campus("St. Thomas Aquinas College", nyc),
-          new Campus("Sarah Lawrence", nyc),
-          new Campus("ePoly", nyc),
-          new Campus("Medical Center Long Island", nyc),
-          new Campus("NYU New York (Global)", nyc),
-          new Campus("Wallkill Correctional Facility", nyc),
-          new Campus("Mount Sinai Hospital", nyc),
-
-          new Campus("Woolworth Bldg.-15 Barclay St", nyc),
-          new Campus("Grad Stern at Purchase", nyc),
-          new Campus("Dental Center", nyc),
-          new Campus("Midtown Center", nyc),
-          new Campus("Hosp. for Joint Diseases", nyc),
-          new Campus("2 Broadway, Manhattan", nyc),
-          new Campus("Inst. of Fine Arts", nyc),
-          new Campus("Medical Center", nyc),
-          new Campus("NYU Washington DC (Global)", nyc),
-          new Campus("Washington, DC", nyc),
-          new Campus("Brooklyn Campus", nyc),
-          new Campus("Washington Square", nyc),
-      };
+            // @Note: These are all NYC campuses
+            new Campus("Off Campus", nyc),
+            new Campus("Online", nyc),
+            new Campus("Distance Learning/Asynchronous", nyc),
+            new Campus("Distance Learning / Blended", nyc),
+            new Campus("Distance Learning/Synchronous", nyc),
+            new Campus("Distance Ed (Learning Space)", nyc),
+            new Campus("Distance Education", nyc),
+            new Campus("St. Thomas Aquinas College", nyc),
+            new Campus("Sarah Lawrence", nyc),
+            new Campus("ePoly", nyc),
+            new Campus("Medical Center Long Island", nyc),
+            new Campus("NYU New York (Global)", nyc),
+            new Campus("Wallkill Correctional Facility", nyc),
+            new Campus("Mount Sinai Hospital", nyc),
+            new Campus("Woolworth Bldg.-15 Barclay St", nyc),
+            new Campus("Grad Stern at Purchase", nyc),
+            new Campus("Dental Center", nyc),
+            new Campus("Midtown Center", nyc),
+            new Campus("Hosp. for Joint Diseases", nyc),
+            new Campus("2 Broadway, Manhattan", nyc),
+            new Campus("Inst. of Fine Arts", nyc),
+            new Campus("Medical Center", nyc),
+            new Campus("NYU Washington DC (Global)", nyc),
+            new Campus("Washington, DC", nyc),
+            new Campus("Brooklyn Campus", nyc),
+            new Campus("Washington Square", nyc),
+          };
 
       for (var campus : campusList) {
         map.put(campus.name, campus);
@@ -535,20 +507,17 @@ public final class Nyu {
       return campus.timezone;
     }
 
-    @NotNull
-    @OpenApiExample(value = "NYU Accra (Global)")
+    @NotNull @OpenApiExample(value = "NYU Accra (Global)")
     public String getName() {
       return name;
     }
 
-    @NotNull
-    @OpenApiExample(value = "Africa/Accra")
+    @NotNull @OpenApiExample(value = "Africa/Accra")
     public String getTimezoneId() {
       return timezoneId;
     }
 
-    @NotNull
-    @OpenApiExample(value = "Ghana Mean Time")
+    @NotNull @OpenApiExample(value = "Ghana Mean Time")
     public String getTimezoneName() {
       return timezoneName;
     }
@@ -560,8 +529,7 @@ public final class Nyu {
     }
 
     public Term {
-      if (year < 1900)
-        throw new IllegalArgumentException("Year was invalid: " + year);
+      if (year < 1900) throw new IllegalArgumentException("Year was invalid: " + year);
     }
 
     public static Term fromId(int id) {
@@ -603,25 +571,18 @@ public final class Nyu {
     }
 
     public static Semester semesterFromStringNullable(String sem) {
-      switch (sem.toLowerCase()) {
-        case "ja", "january":
-          return Semester.ja;
-        case "sp", "spring":
-          return Semester.sp;
-        case "su", "summer":
-          return Semester.su;
-        case "fa", "fall":
-          return Semester.fa;
-
-        default:
-          return null;
-        }
+      return switch (sem.toLowerCase()) {
+        case "ja", "january" -> Semester.ja;
+        case "sp", "spring" -> Semester.sp;
+        case "su", "summer" -> Semester.su;
+        case "fa", "fall" -> Semester.fa;
+        default -> null;
+      };
     }
 
     public static Semester semesterFromString(String sem) {
       var semCode = semesterFromStringNullable(sem);
-      if (semCode == null)
-        throw new IllegalArgumentException("Invalid semester string: " + sem);
+      if (semCode == null) throw new IllegalArgumentException("Invalid semester string: " + sem);
 
       return semCode;
     }
@@ -656,8 +617,7 @@ public final class Nyu {
 
   public record Subject(String code, String name) {
     @JsonCreator
-    public Subject(@JsonProperty("code") String code,
-                   @JsonProperty("name") String name) {
+    public Subject(@JsonProperty("code") String code, @JsonProperty("name") String name) {
       this.code = code;
       this.name = name;
     }

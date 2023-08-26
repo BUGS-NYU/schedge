@@ -6,7 +6,6 @@
 
 # Schedge-specific
 /.letsencrypt
-/.build
 /src/main/resources/next/*
 !/src/main/resources/next/.gitkeep
 *.log
@@ -14,3 +13,7 @@
 # JavaScript
 /.next
 /node_modules
+
+# Outputted files in some systems
+/bin
+/build

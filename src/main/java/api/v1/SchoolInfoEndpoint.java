@@ -14,50 +14,50 @@ public final class SchoolInfoEndpoint extends App.Endpoint {
     return "/schools/{term}";
   }
 
-  public final static class Info {
+  public static final class Info {
     public Term term;
     public ArrayList<School> schools;
   }
 
   public static final String TERM_PARAM_DESCRIPTION =
       "Must be a valid term code, either 'current', 'next', or something "
-      + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
-      + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
+          + "like sp2021 for Spring 2021. Use 'su' for Summer, 'sp' "
+          + "for Spring, 'fa' for Fall, and 'ja' for January/JTerm";
 
   @OpenApi(
-      path = "/api/schools/{term}", methods = HttpMethod.GET,
+      path = "/api/schools/{term}",
+      methods = HttpMethod.GET,
       summary = "School Info",
-      description =
-          "This endpoint provides general information on the subjects in a term",
-      pathParams =
-      {
-        @OpenApiParam(name = "term",
-                      description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
-                      example = "fa2022", required = true)
+      description = "This endpoint provides general information on the subjects in a term",
+      pathParams = {
+        @OpenApiParam(
+            name = "term",
+            description = SchoolInfoEndpoint.TERM_PARAM_DESCRIPTION,
+            example = "fa2022",
+            required = true)
       },
-      responses =
-      {
-        @OpenApiResponse(status = "200", description = "School information",
-                         content = @OpenApiContent(from = Info.class))
-        ,
-            @OpenApiResponse(status = "400",
-                             description = "One of the values in the path "
-                                           + "parameter was "
-                                           + "not valid.",
-                             content =
-                                 @OpenApiContent(from = App.ApiError.class))
+      responses = {
+        @OpenApiResponse(
+            status = "200",
+            description = "School information",
+            content = @OpenApiContent(from = Info.class)),
+        @OpenApiResponse(
+            status = "400",
+            description = "One of the values in the path " + "parameter was " + "not valid.",
+            content = @OpenApiContent(from = App.ApiError.class))
       })
-  public Object
-  handleEndpoint(Context ctx) {
+  public Object handleEndpoint(Context ctx) {
     Term term = Term.fromString(ctx.pathParam("term"));
 
     Info info = new Info();
     info.term = term;
-    info.schools = withConnectionReturning(conn -> {
-      ArrayList<School> schools = selectSchoolsForTerm(conn, term);
+    info.schools =
+        withConnectionReturning(
+            conn -> {
+              ArrayList<School> schools = selectSchoolsForTerm(conn, term);
 
-      return schools;
-    });
+              return schools;
+            });
 
     return info;
   }

@@ -2,13 +2,9 @@ package utils;
 
 import static utils.Try.*;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 public class JsonMapper {
   private static ObjectMapper objMapper = new ObjectMapper();
@@ -30,23 +26,17 @@ public class JsonMapper {
 
   public static String toJson(Object o, boolean prettyPrint) {
     try {
-      if (prettyPrint)
-        return objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
-      else
-        return objMapper.writeValueAsString(o);
+      if (prettyPrint) return objMapper.writerWithDefaultPrettyPrinter().writeValueAsString(o);
+      else return objMapper.writeValueAsString(o);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
-  public static void toJsonFile(String fileName, Object o,
-                                boolean prettyPrint) {
+  public static void toJsonFile(String fileName, Object o, boolean prettyPrint) {
     try {
-      if (prettyPrint)
-        objMapper.writerWithDefaultPrettyPrinter().writeValue(
-            new File(fileName), o);
-      else
-        objMapper.writeValue(new File(fileName), o);
+      if (prettyPrint) objMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), o);
+      else objMapper.writeValue(new File(fileName), o);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

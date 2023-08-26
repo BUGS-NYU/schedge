@@ -1,6 +1,0 @@
----
-BasedOnStyle: LLVM
----
-Language: Java
-
-AllowShortFunctionsOnASingleLine: None

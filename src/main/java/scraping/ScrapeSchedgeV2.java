@@ -5,20 +5,19 @@ import static utils.Nyu.*;
 import static utils.Try.*;
 
 import api.v1.*;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import java.net.*;
 import java.net.http.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.function.*;
 import org.slf4j.*;
 import utils.*;
 
-public final class ScrapeSchedgeV2 extends TermScrapeResult {
-  private static Logger logger =
-      LoggerFactory.getLogger("scraping.ScrapeSchedge2");
+public final class ScrapeSchedgeV2 {
+  private static final Logger logger = LoggerFactory.getLogger("scraping.ScrapeSchedge2");
 
-  private static final String LIST_SCHOOLS =
-      "https://nyu.a1liu.com/api/schools/";
+  private static final String LIST_SCHOOLS = "https://nyu.a1liu.com/api/schools/";
   private static final String COURSES = "https://nyu.a1liu.com/api/courses/";
 
   static final class ScrapeResult {
@@ -26,26 +25,13 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     String subject;
   }
 
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
-    return scrapeFromSchedge(term, null, consumer);
+  public static ScrapeEvent.Result scrapeFromSchedge(Term term, Consumer<ScrapeEvent> consumer) {
+    return scrapeFromSchedge(term, Optional.empty(), consumer);
   }
 
-  public static TermScrapeResult
-  scrapeFromSchedge(Term term, List<String> inputSubjectList,
-                    Consumer<ScrapeEvent> consumer) {
-    return new ScrapeSchedgeV2(term, inputSubjectList, consumer);
-  }
-
-  private final ArrayList<School> schools;
-  private final HttpClient client = HttpClient.newHttpClient();
-  private final Iterator<String> subjects;
-  private final FutureEngine<ScrapeResult> engine = new FutureEngine<>();
-
-  private ScrapeSchedgeV2(Term term, List<String> inputSubjectList,
-                          Consumer<ScrapeEvent> consumer) {
-    super(term, consumer, Try.Ctx(logger));
-
+  public static ScrapeEvent.Result scrapeFromSchedge(
+      Term term, Optional<List<String>> inputSubjectList, Consumer<ScrapeEvent> consumer) {
+    var client = HttpClient.newHttpClient();
     var termString = term.json();
 
     var schoolsUri = URI.create(LIST_SCHOOLS + termString);
@@ -55,86 +41,63 @@ public final class ScrapeSchedgeV2 extends TermScrapeResult {
     var data = resp.body();
 
     var info = fromJson(data, SchoolInfoEndpoint.Info.class);
-    this.schools = info.schools;
+    var schools = info.schools;
 
-    if (inputSubjectList == null) {
-      inputSubjectList = new ArrayList<>();
+    var subjectList =
+        inputSubjectList.orElseGet(
+            () -> {
+              var list = new ArrayList<String>();
 
-      for (var school : info.schools) {
-        for (var subject : school.subjects) {
-          inputSubjectList.add(subject.code());
-        }
-      }
-    }
+              for (var school : info.schools) {
+                for (var subject : school.subjects) {
+                  list.add(subject.code());
+                }
+              }
 
-    subjects = inputSubjectList.iterator();
+              return list;
+            });
 
-    for (int i = 0; i < 20; i++) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
-      }
-    }
+    consumer.accept(ScrapeEvent.hintChange(subjectList.size() + 1));
+    consumer.accept(ScrapeEvent.progress());
+
+    var iterable =
+        Flowable.fromIterable(subjectList)
+            .parallel(5)
+            .runOn(Schedulers.io())
+            .map(subject -> getData(client, term, subject))
+            .sequential()
+            .filter(Objects::nonNull)
+            .map(result -> Arrays.asList(fromJson(result, Course[].class)))
+            .blockingIterable();
+
+    return new ScrapeEvent.Result(term, schools, iterable);
   }
 
-  @Override
-  public ArrayList<School> getSchools() {
-    return this.schools;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return this.engine.hasNext();
-  }
-
-  @Override
-  public ArrayList<Course> next() {
-    var out = new ArrayList<Course>();
-    for (var result : engine) {
-      if (subjects.hasNext()) {
-        engine.add(getData(client, term, subjects.next()));
-      }
-
-      if (result == null) {
-        continue;
-      }
-
-      var courses = fromJson(result.text, Course[].class);
-      out.ensureCapacity(out.size() + courses.length);
-      for (var course : courses) {
-        out.add(course);
-      }
-
-      return out;
-    }
-
-    return null;
-  }
-
-  private static Future<ScrapeResult> getData(HttpClient client, Term term,
-                                              String subject) {
-    var uri = URI.create(COURSES + term.json() + "/" + subject);
-    var request = HttpRequest.newBuilder().uri(uri).build();
-
+  private static String getData(HttpClient client, Term term, String subject) {
     long start = System.nanoTime();
 
-    var handler = HttpResponse.BodyHandlers.ofString();
-    var fut = client.sendAsync(request, handler);
-    return fut.handleAsync((resp, throwable) -> {
-      long end = System.nanoTime();
-      double duration = (end - start) / 1000000000.0;
-      logger.info("Fetching took {} seconds: subject={}", duration, subject);
+    Try ctx = Try.Ctx();
+    ctx.put("term", term);
+    ctx.put("subject", subject);
 
-      if (resp == null) {
-        logger.error("Error (subject={}): {}", subject, throwable.getMessage());
+    return ctx.log(
+        () -> {
+          var uri = URI.create(COURSES + term.json() + "/" + subject);
+          var request = HttpRequest.newBuilder().uri(uri).build();
+          var handler = HttpResponse.BodyHandlers.ofString();
+          var resp = client.send(request, handler);
 
-        return null;
-      }
+          // This slows down the scrape, which is bad, but gives the production server some
+          // breathing room, so that development doesn't accidentally DDOS the server.
+          // TODO: Optimize the code enough that this isn't necessary anymore
+          tcPass(() -> Thread.sleep(250));
+          var body = resp.body();
 
-      var out = new ScrapeResult();
-      out.text = resp.body();
-      out.subject = subject;
+          long end = System.nanoTime();
+          double duration = (end - start) / 1000000000.0;
+          logger.info("Fetching subject={} took {} seconds", duration, subject);
 
-      return out;
-    });
+          return body;
+        });
   }
 }

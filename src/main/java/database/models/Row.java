@@ -49,7 +49,7 @@ public class Row {
     Array instructorArray = rs.getArray("instructors");
     String[] instructors = null;
     if (instructorArray != null) {
-      instructors = (String[])instructorArray.getArray();
+      instructors = (String[]) instructorArray.getArray();
     }
 
     if (instructors == null || instructors.length == 0) {
@@ -59,8 +59,7 @@ public class Row {
     this.instructors = instructors;
 
     this.sectionType = rs.getString("section_type");
-    this.sectionStatus =
-        Nyu.SectionStatus.valueOf(rs.getString("section_status"));
+    this.sectionStatus = Nyu.SectionStatus.valueOf(rs.getString("section_status"));
 
     int associatedWith = rs.getInt("associated_with");
     this.associatedWith = rs.wasNull() ? null : associatedWith;

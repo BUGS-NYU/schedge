@@ -16,31 +16,33 @@ public class Scrape implements Runnable {
   @Spec private CommandLine.Model.CommandSpec spec;
 
   private static Logger logger = LoggerFactory.getLogger("cli.Scrape");
-  @Option(names = {"-h", "--help"}, usageHelp = true,
-          description = "display a help message")
+
+  @Option(
+      names = {"-h", "--help"},
+      usageHelp = true,
+      description = "display a help message")
   boolean displayHelp;
 
   @Override
   public void run() {
-    throw new CommandLine.ParameterException(spec.commandLine(),
-                                             "\nMissing required subcommand.");
+    throw new CommandLine.ParameterException(spec.commandLine(), "\nMissing required subcommand.");
   }
 
-  @Command(name = "term", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Scrape the PeopleSoft Class Search",
-           description = "Scrape the PeopleSoft Class Search for a term")
-  public void
-  term(@Mixin Mixins.TermOption termMixin,
-       @Mixin Mixins.OutputFile outputFileMixin) {
+  @Command(
+      name = "term",
+      sortOptions = false,
+      headerHeading = "Command: ",
+      descriptionHeading = "%nDescription:%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n",
+      header = "Scrape the PeopleSoft Class Search",
+      description = "Scrape the PeopleSoft Class Search for a term")
+  public void term(@Mixin Mixins.TermOption termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;
     try (ProgressBar bar = new ProgressBar("Scrape", -1)) {
-      var courses =
-          PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
+      var courses = PSClassSearch.scrapeTerm(term, ScrapeEvent.cli(logger, bar));
       outputFileMixin.writeOutput(courses);
     }
 
@@ -49,17 +51,19 @@ public class Scrape implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @Command(name = "subject", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Scrape the PeopleSoft Class Search",
-           description = "Scrape the PeopleSoft Class Search for a term")
-  public void
-  subject(@Mixin Mixins.TermOption termMixin,
-          @Mixin Mixins.OutputFile outputFileMixin,
-          @Parameters(index = "0", paramLabel = "SUBJECT",
-                      description = "A subject code like MATH-UA")
+  @Command(
+      name = "subject",
+      sortOptions = false,
+      headerHeading = "Command: ",
+      descriptionHeading = "%nDescription:%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n",
+      header = "Scrape the PeopleSoft Class Search",
+      description = "Scrape the PeopleSoft Class Search for a term")
+  public void subject(
+      @Mixin Mixins.TermOption termMixin,
+      @Mixin Mixins.OutputFile outputFileMixin,
+      @Parameters(index = "0", paramLabel = "SUBJECT", description = "A subject code like MATH-UA")
           String subject) {
     long start = System.nanoTime();
 
@@ -72,15 +76,17 @@ public class Scrape implements Runnable {
     logger.info(duration + " seconds");
   }
 
-  @Command(name = "schools", sortOptions = false,
-           headerHeading = "Command: ", descriptionHeading = "%nDescription:%n",
-           parameterListHeading = "%nParameters:%n",
-           optionListHeading = "%nOptions:%n",
-           header = "Scrape the PeopleSoft Class Search",
-           description = "Scrape the PeopleSoft Class Search for a term")
-  public void
-  schools(@Mixin Mixins.TermOption termMixin,
-          @Mixin Mixins.OutputFile outputFileMixin) {
+  @Command(
+      name = "schools",
+      sortOptions = false,
+      headerHeading = "Command: ",
+      descriptionHeading = "%nDescription:%n",
+      parameterListHeading = "%nParameters:%n",
+      optionListHeading = "%nOptions:%n",
+      header = "Scrape the PeopleSoft Class Search",
+      description = "Scrape the PeopleSoft Class Search for a term")
+  public void schools(
+      @Mixin Mixins.TermOption termMixin, @Mixin Mixins.OutputFile outputFileMixin) {
     long start = System.nanoTime();
 
     Nyu.Term term = termMixin.term;

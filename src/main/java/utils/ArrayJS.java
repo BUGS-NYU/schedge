@@ -1,38 +1,28 @@
 package utils;
 
+import java.util.*;
 import java.util.function.*;
 
 public final class ArrayJS {
-  public interface ArrayFunc2<T> {
-    boolean run(T obj, int index);
-  }
-
-  public interface ArrayFunc<T> extends ArrayFunc2<T> {
+  public interface ArrayFunc<T> {
     boolean run(T obj);
-
-    default boolean run(T obj, int index) {
-      return this.run(obj);
-    }
   }
 
-  public static <T> T find(Iterable<T> iterable, ArrayFunc<T> func) {
-    return find(iterable, (ArrayFunc2<T>)func);
+  public static <T> Optional<T> find(Iterable<T> iterable, ArrayFunc<T> func) {
+    return findImpl(iterable, func);
   }
 
-  public static <T> T find(Iterable<T> iterable, ArrayFunc2<T> func) {
-    int i = 0;
+  private static <T> Optional<T> findImpl(Iterable<T> iterable, ArrayFunc<T> func) {
     for (var t : iterable) {
-      if (func.run(t, i)) {
-        return t;
+      if (func.run(t)) {
+        return Optional.of(t);
       }
-
-      i++;
     }
 
-    return null;
+    return Optional.empty();
   }
 
-  public static <T> T run(Supplier<T> supplier) {
+  public static <T, E extends Exception> T run(Try.Call<T, E> supplier) throws E {
     return supplier.get();
   }
 }

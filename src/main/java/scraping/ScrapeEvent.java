@@ -1,91 +1,101 @@
 package scraping;
 
+import java.util.*;
 import java.util.function.*;
 import me.tongfei.progressbar.*;
 import org.slf4j.*;
+import utils.Nyu;
 
 /* Real fucking stupid implementation of whatever you desire
  * to call this. Event listening, observer pattern, whatever.
  *
  *                  - Albert Liu, Nov 27, 2022 Sun 02:32
  */
-public final class ScrapeEvent {
-  public enum Kind {
-    WARNING,
-    MESSAGE,
-    SUBJECT_START,
-    PROGRESS,
-    HINT_CHANGE;
+public sealed class ScrapeEvent
+    permits ScrapeEvent.Message, ScrapeEvent.Progress, ScrapeEvent.HintChange {
+  public static sealed class Message extends ScrapeEvent permits Warn {
+    public final String message;
+
+    private Message(String currentSubject, String message) {
+      super(currentSubject);
+      this.message = message;
+    }
   }
 
-  public final Kind kind;
-  public final String currentSubject;
-  public final String message;
-  public final int value;
+  public static final class Warn extends Message {
+    private Warn(String currentSubject, String message) {
+      super(currentSubject, message);
+    }
+  }
 
-  private ScrapeEvent(Kind kind, String currentSubject, String message,
-                      int value) {
-    this.kind = kind;
+  public static final class Progress extends ScrapeEvent {
+    public final int progress;
+
+    private Progress(int progress) {
+      super(null);
+      this.progress = progress;
+    }
+  }
+
+  public static final class HintChange extends ScrapeEvent {
+    public final int newValue;
+
+    private HintChange(int newValue) {
+      super(null);
+      this.newValue = newValue;
+    }
+  }
+
+  public final String currentSubject;
+
+  private ScrapeEvent(String currentSubject) {
     this.currentSubject = currentSubject;
-    this.message = message;
-    this.value = value;
   }
 
   static ScrapeEvent warning(String subject, String message) {
-    return new ScrapeEvent(Kind.WARNING, subject, message, 0);
+    return new Warn(subject, message);
   }
 
   static ScrapeEvent message(String subject, String message) {
-    return new ScrapeEvent(Kind.MESSAGE, subject, message, 0);
+    return new Message(subject, message);
   }
 
   static ScrapeEvent subject(String subject) {
-    return new ScrapeEvent(Kind.SUBJECT_START, subject, "Fetching " + subject,
-                           0);
+    return new Message(subject, "Fetching " + subject);
   }
 
-  static ScrapeEvent progress(int progress) {
-    return new ScrapeEvent(Kind.PROGRESS, null, null, progress);
+  static ScrapeEvent progress() {
+    return new Progress(1);
   }
 
   static ScrapeEvent hintChange(int hint) {
-    return new ScrapeEvent(Kind.HINT_CHANGE, null, null, hint);
+    return new HintChange(hint);
   }
 
   public static Consumer<ScrapeEvent> cli(Logger logger, ProgressBar bar) {
     return e -> {
-      switch (e.kind) {
-      case MESSAGE:
-      case SUBJECT_START:
-        bar.setExtraMessage(e.message);
-        break;
-      case WARNING:
-        logger.warn(e.message);
-        break;
-      case PROGRESS:
-        bar.stepBy(e.value);
-        break;
-      case HINT_CHANGE:
-        bar.maxHint(e.value);
-        break;
+      if (e instanceof Warn w) {
+        logger.warn(w.message);
+      } else if (e instanceof Message m) {
+        bar.setExtraMessage(m.message);
+      } else if (e instanceof Progress p) {
+        bar.stepBy(p.progress);
+      } else if (e instanceof HintChange h) {
+        bar.maxHint(h.newValue);
       }
     };
   }
 
   public static Consumer<ScrapeEvent> log(Logger logger) {
     return e -> {
-      switch (e.kind) {
-      case MESSAGE:
-      case SUBJECT_START:
-        logger.info(e.message);
-        break;
-      case WARNING:
-        logger.warn(e.message);
-        break;
-      case PROGRESS:
-      case HINT_CHANGE:
-        break;
+      if (e instanceof Warn w) {
+        logger.warn(w.message);
+      } else if (e instanceof Message m) {
+        logger.info(m.message);
       }
     };
   }
+
+  public record Result(
+      Nyu.Term term, ArrayList<Nyu.School> schools, Iterable<List<Nyu.Course>> courses) {}
 }

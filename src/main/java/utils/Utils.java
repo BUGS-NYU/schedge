@@ -2,6 +2,7 @@ package utils;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.sql.*;
 import java.time.*;
@@ -9,8 +10,18 @@ import java.util.*;
 import java.util.stream.*;
 
 public final class Utils {
-  private static BufferedReader inReader =
+  private static final BufferedReader inReader =
       new BufferedReader(new InputStreamReader(System.in));
+
+  public static final class Ref<T> {
+    public T value;
+  }
+
+  public static <T> Ref<T> ref(T t) {
+    var ref = new Ref<T>();
+    ref.value = t;
+    return ref;
+  }
 
   public static void profileWait() {
     System.err.print("Press Enter to start the profile.");
@@ -26,10 +37,9 @@ public final class Utils {
   public static String readResource(String path) {
     InputStream resource = Utils.class.getResourceAsStream(path);
 
-    if (resource == null)
-      throw new IllegalArgumentException("Resource doesn't exist: " + path);
+    if (resource == null) throw new IllegalArgumentException("Resource doesn't exist: " + path);
 
-    return new Scanner(resource, "UTF-8").useDelimiter("\\A").next();
+    return new Scanner(resource, StandardCharsets.UTF_8).useDelimiter("\\A").next();
   }
 
   // Read entire file and then get it as a list of lines
@@ -37,27 +47,26 @@ public final class Utils {
     return Arrays.asList(readResource(path).split("\\n"));
   }
 
-  public static List<String> resourcePaths(String path)
-      throws IOException, URISyntaxException {
-    URI uri = Utils.class.getResource(path).toURI();
+  public static List<String> resourcePaths(String path) throws IOException, URISyntaxException {
+    var uri = Objects.requireNonNull(Utils.class.getResource(path)).toURI();
 
     if (uri.getScheme().equals("jar")) {
-      try (FileSystem fileSystem = FileSystems.newFileSystem(
-               uri, Collections.<String, Object>emptyMap())) {
-        var myPath = fileSystem.getPath(path);
+      try (var fs = FileSystems.newFileSystem(uri, Collections.emptyMap())) {
+        var myPath = fs.getPath(path);
 
-        return Files.walk(myPath)
-            .filter(Files::isRegularFile)
-            .map(p -> p.toString())
-            .collect(Collectors.toList());
+        try (var files = Files.walk(myPath)) {
+          return files
+              .filter(Files::isRegularFile)
+              .map(Path::toString)
+              .collect(Collectors.toList());
+        }
       }
     } else {
       var myPath = Paths.get(uri);
 
-      return Files.walk(myPath)
-          .filter(Files::isRegularFile)
-          .map(p -> p.toUri().toString())
-          .collect(Collectors.toList());
+      try (var files = Files.walk(myPath)) {
+        return files.filter(Files::isRegularFile).map(Path::toString).collect(Collectors.toList());
+      }
     }
   }
 
@@ -87,46 +96,21 @@ public final class Utils {
   }
 
   public static DayOfWeek parseDayOfWeek(String dayOfWeek) {
-    switch (dayOfWeek) {
-    case "Mo":
-    case "Mon":
-      return DayOfWeek.MONDAY;
-    case "Tu":
-    case "Tue":
-      return DayOfWeek.TUESDAY;
-    case "We":
-    case "Wed":
-      return DayOfWeek.WEDNESDAY;
-    case "Th":
-    case "Thu":
-      return DayOfWeek.THURSDAY;
-    case "Fr":
-    case "Fri":
-      return DayOfWeek.FRIDAY;
-    case "Sa":
-    case "Sat":
-      return DayOfWeek.SATURDAY;
-    case "Su":
-    case "Sun":
-      return DayOfWeek.SUNDAY;
-    default:
-      return DayOfWeek.valueOf(dayOfWeek);
-    }
+    return switch (dayOfWeek) {
+      case "Mo", "Mon" -> DayOfWeek.MONDAY;
+      case "Tu", "Tue" -> DayOfWeek.TUESDAY;
+      case "We", "Wed" -> DayOfWeek.WEDNESDAY;
+      case "Th", "Thu" -> DayOfWeek.THURSDAY;
+      case "Fr", "Fri" -> DayOfWeek.FRIDAY;
+      case "Sa", "Sat" -> DayOfWeek.SATURDAY;
+      case "Su", "Sun" -> DayOfWeek.SUNDAY;
+      default -> DayOfWeek.valueOf(dayOfWeek);
+    };
   }
 
-  public static boolean deleteFile(File f) {
-    if (f.isDirectory()) {
-      for (File c : f.listFiles())
-        deleteFile(c);
-    }
-    return f.delete();
-  }
-
-  public static void setObject(PreparedStatement stmt, int index, Object obj)
-      throws SQLException {
+  public static void setObject(PreparedStatement stmt, int index, Object obj) throws SQLException {
     if (obj == null) {
-      throw new IllegalArgumentException("object at index " + index +
-                                         " is null");
+      throw new IllegalArgumentException("object at index " + index + " is null");
     }
 
     if (obj instanceof NullWrapper nullable) {
@@ -150,11 +134,8 @@ public final class Utils {
   }
 
   public static int getEnvDefault(String name, int defaultValue) {
-    Integer value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
+    var value = Try.tcIgnore(() -> Integer.parseInt(System.getenv(name)));
+    return value.orElse(defaultValue);
   }
 
   static class NullWrapper {
@@ -171,14 +152,12 @@ public final class Utils {
     return new NullWrapper(type, value);
   }
 
-  public static PreparedStatement setArray(PreparedStatement stmt,
-                                           Object... objs) {
+  public static void setArray(PreparedStatement stmt, Object... objs) {
     int i = 0;
     try {
       for (i = 0; i < objs.length; i++) {
         setObject(stmt, i + 1, objs[i]);
       }
-      return stmt;
     } catch (Exception e) {
       // System.err.println("at index " + i);
       throw new RuntimeException(e);
@@ -189,8 +168,6 @@ public final class Utils {
     StringWriter sw = new StringWriter();
     PrintWriter pw = new PrintWriter(sw);
     t.printStackTrace(pw);
-    String stackTrace = sw.toString();
-
-    return stackTrace;
+    return sw.toString();
   }
 }

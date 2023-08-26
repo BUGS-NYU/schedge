@@ -6,7 +6,6 @@ import java.sql.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
-import java.util.*;
 import org.jetbrains.annotations.NotNull;
 import utils.Nyu;
 
@@ -31,9 +30,6 @@ public class AugmentedMeeting {
   @JsonIgnore public final ZoneId tz;
   public final ZonedDateTime endDate;
 
-  public static DateTimeFormatter formatter =
-      DateTimeFormatter.ofPattern("YYYY-MM-dd HH:mm:ss", Locale.US);
-
   public AugmentedMeeting(ResultSet rs) throws SQLException {
     subject = rs.getString("subject_code");
     deptCourseId = rs.getString("dept_course_id");
@@ -44,10 +40,8 @@ public class AugmentedMeeting {
     campus = rs.getString("campus");
     location = rs.getString("location");
     instructionMode = rs.getString("instruction_mode");
-    beginDate =
-        rs.getTimestamp("begin_date").toLocalDateTime().atZone(ZoneOffset.UTC);
-    endDate =
-        rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
+    beginDate = rs.getTimestamp("begin_date").toLocalDateTime().atZone(ZoneOffset.UTC);
+    endDate = rs.getTimestamp("end_date").toLocalDateTime().atZone(ZoneOffset.UTC);
     minutesDuration = rs.getInt("duration");
 
     tz = Nyu.Campus.timezoneForCampus(campus);
@@ -87,9 +81,11 @@ public class AugmentedMeeting {
   public String getSubject() {
     return subject;
   }
+
   public String getDeptCourseId() {
     return deptCourseId;
   }
+
   public String getCampus() {
     return campus;
   }
@@ -97,9 +93,11 @@ public class AugmentedMeeting {
   public String getSectionCode() {
     return sectionCode;
   }
+
   public int getRegistrationNumber() {
     return registrationNumber;
   }
+
   public String getSectionType() {
     return sectionType;
   }
@@ -108,33 +106,29 @@ public class AugmentedMeeting {
   public Nyu.SectionStatus getSectionStatus() {
     return sectionStatus;
   }
+
   public String getInstructionMode() {
     return instructionMode;
   }
+
   public String getLocation() {
     return location;
   }
 
-  @NotNull
-  public String getBeginDate() {
+  @NotNull public String getBeginDate() {
     return DateTimeFormatter.ISO_INSTANT.format(beginDate);
   }
 
-  @NotNull
-  public String getEndDate() {
+  @NotNull public String getEndDate() {
     return DateTimeFormatter.ISO_INSTANT.format(endDate);
   }
 
-  @NotNull
-  public String getBeginDateLocal() {
-    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
-        beginDate.withZoneSameInstant(tz));
+  @NotNull public String getBeginDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(beginDate.withZoneSameInstant(tz));
   }
 
-  @NotNull
-  public String getEndDateLocal() {
-    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(
-        endDate.withZoneSameInstant(tz));
+  @NotNull public String getEndDateLocal() {
+    return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(endDate.withZoneSameInstant(tz));
   }
 
   public int getMinutesDuration() {
@@ -148,12 +142,32 @@ public class AugmentedMeeting {
   @Override
   public String toString() {
     return "AugmentedMeeting{"
-        + "subject=" + subject + ", deptCourseId='" + deptCourseId + '\'' +
-        ", sectionCode='" + sectionCode + '\'' +
-        ", registrationNumber=" + registrationNumber +
-        ", sectionType=" + sectionType + ", sectionStatus=" + sectionStatus +
-        ", instructionMode='" + instructionMode + '\'' + ", location='" +
-        location + '\'' + ", beginDate=" + beginDate +
-        ", minutesDuration=" + minutesDuration + ", endDate=" + endDate + '}';
+        + "subject="
+        + subject
+        + ", deptCourseId='"
+        + deptCourseId
+        + '\''
+        + ", sectionCode='"
+        + sectionCode
+        + '\''
+        + ", registrationNumber="
+        + registrationNumber
+        + ", sectionType="
+        + sectionType
+        + ", sectionStatus="
+        + sectionStatus
+        + ", instructionMode='"
+        + instructionMode
+        + '\''
+        + ", location='"
+        + location
+        + '\''
+        + ", beginDate="
+        + beginDate
+        + ", minutesDuration="
+        + minutesDuration
+        + ", endDate="
+        + endDate
+        + '}';
   }
 }

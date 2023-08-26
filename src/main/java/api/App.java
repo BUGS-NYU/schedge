@@ -120,7 +120,7 @@ public class App {
 
               config.staticFiles.add(
                   staticFiles -> { // ReDoc API Docs
-                    staticFiles.hostedPath = "/api/";
+                    staticFiles.hostedPath = "/api";
                     staticFiles.directory = "/api/";
                     staticFiles.location = Location.CLASSPATH;
                     staticFiles.precompress = false;

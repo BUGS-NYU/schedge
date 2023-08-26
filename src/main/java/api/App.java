@@ -115,13 +115,13 @@ public class App {
                     staticFiles.hostedPath = "/";
                     staticFiles.directory = "/next";
                     staticFiles.location = Location.CLASSPATH;
-                    staticFiles.precompress = true;
+                    staticFiles.precompress = false;
                   });
 
               config.staticFiles.add(
                   staticFiles -> { // ReDoc API Docs
-                    staticFiles.hostedPath = "/";
-                    staticFiles.directory = "/api";
+                    staticFiles.hostedPath = "/api/";
+                    staticFiles.directory = "/api/";
                     staticFiles.location = Location.CLASSPATH;
                     staticFiles.precompress = false;
                   });

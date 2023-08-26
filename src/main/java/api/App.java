@@ -115,13 +115,13 @@ public class App {
                     staticFiles.hostedPath = "/";
                     staticFiles.directory = "/next";
                     staticFiles.location = Location.CLASSPATH;
-                    staticFiles.precompress = true;
+                    staticFiles.precompress = false;
                   });
 
               config.staticFiles.add(
                   staticFiles -> { // ReDoc API Docs
-                    staticFiles.hostedPath = "/";
-                    staticFiles.directory = "/api";
+                    staticFiles.hostedPath = "/api";
+                    staticFiles.directory = "/api/";
                     staticFiles.location = Location.CLASSPATH;
                     staticFiles.precompress = false;
                   });
@@ -137,6 +137,19 @@ public class App {
                   "Uncaught Exception: %s\nQuery Parameters are: %s\nPath: %s\n",
                   stackTrace, ctx.queryParamMap(), ctx.path());
           logger.warn(message);
+        });
+
+    app.before(
+        "/api",
+        ctx -> {
+          // @Note: Javalin doesn't recognize "/api" as a path which can be served by
+          // the API docs index.html file, for probably valid but also very annoying
+          // and pedantic reasons.
+          //
+          // This checks for the "/api" path, but since for some reason the string
+          // "/api" will also match to "/api/" in the router, I need to manually
+          // check that it's matched only the trailing slash version first.
+          if (!ctx.path().endsWith("/")) ctx.redirect("/api/", HttpStatus.PERMANENT_REDIRECT);
         });
 
     new SchoolInfoEndpoint().addTo(app);

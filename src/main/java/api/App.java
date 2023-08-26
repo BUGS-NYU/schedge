@@ -67,8 +67,10 @@ public class App {
   public static final String DESCR_TEMPLATE =
       """
     Schedge is an API to NYU's course catalog. Please note that
-    <b>this API is a beta build currently under active development
-    and is subject to change</b>. <br /><br />
+    <b>this API is a beta build currently under development</b>.
+    This means that changes to the API are possible, but practically
+    speaking, the API surface has been stable for over a year now.
+    <br /><br />
     If you'd like to contribute,
     <a href="https://github.com/A1Liu/schedge">check out the repository</a>.
     <br /> <br />

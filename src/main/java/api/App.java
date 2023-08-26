@@ -139,6 +139,19 @@ public class App {
           logger.warn(message);
         });
 
+    app.before(
+        "/api",
+        ctx -> {
+          // @Note: Javalin doesn't recognize "/api" as a path which can be served by
+          // the API docs index.html file, for probably valid but also very annoying
+          // and pedantic reasons.
+          //
+          // This checks for the "/api" path, but since for some reason the string
+          // "/api" will also match to "/api/" in the router, I need to manually
+          // check that it's matched only the trailing slash version first.
+          if (!ctx.path().endsWith("/")) ctx.redirect("/api/", HttpStatus.PERMANENT_REDIRECT);
+        });
+
     new SchoolInfoEndpoint().addTo(app);
     new CampusEndpoint().addTo(app);
     new ListTermsEndpoint().addTo(app);

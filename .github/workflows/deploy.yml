@@ -73,7 +73,7 @@ jobs:
           context: .
           file: src/build/Dockerfile
           push: true
-          tags: ghcr.io/a1liu/schedge:latest
+          tags: ghcr.io/bugs-nyu/schedge:latest
 
       - name: Wait for Server to update
         shell: bash

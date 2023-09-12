@@ -1,6 +1,32 @@
 version: '3.3'
 
 services:
+  reverse-proxy:
+    # The official v2.1 Traefik docker image
+    image: traefik:v2.1
+    restart: always
+
+    command:
+      # You need to actively say traefik.enable=true
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+
+      - "--certificatesresolvers.mytlschallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.mytlschallenge.acme.email=albertymliu@gmail.com"
+      - "--certificatesresolvers.mytlschallenge.acme.storage=/.letsencrypt/acme.json"
+
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/home/ubuntu/schedge/.letsencrypt:/.letsencrypt"
+
   postgres:
     image: postgres:14.1-alpine
     restart: always
@@ -11,36 +37,52 @@ services:
       options:
         max-size: 10m
         max-file: "3"
-    ports: # database port is exposed in development, but closed off in production
-      - "5432:5432"
+    expose:
+      - "5432"
+
+    # NOTE Using absolute paths because relative didn't work. IDK why. Either way,
+    # the production environment is stable so absolute paths work fine here.
+    #
+    # You might then ask, why does this project use Docker? Honestly, its just
+    # to make development and deployment easier. Doesn't really provide much in
+    # terms of product improvement, but at least setup involves less steps.
+    #                                   - Albert Liu, Jan 27, 2022 Thu 22:32 EST
     volumes:
-      - "./build/postgres:/var/lib/postgresql/data"
+      - "/home/ubuntu/schedge/.build/postgres:/var/lib/postgresql/data"
 
   schedge:
-    platform: linux/amd64
-    build:
-      context: .
-      dockerfile: ./src/build/Dockerfile
-    restart: "no"
+    image: ghcr.io/bugs-nyu/schedge:latest
+    restart: always
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
-      - SCHEDGE_ADMIN_PASSWORD=schedge:admin
+      - SCHEDGE_ADMIN_PASSWORD=$SCHEDGE_ADMIN_PASSWORD
       - JDBC_URL=jdbc:postgresql://postgres/postgres
 
-    ports:
-      - "4358:4358"
-
-    volumes:
-      - "./:/home/user"
+    expose:
+      - "4358"
 
     labels:
+      - "traefik.enable=true"
       - "com.centurylinklabs.watchtower.enable=true"
       - "com.centurylinklabs.watchtower.stop-signal=SIGKILL"
+
+      - "traefik.http.services.schedge.loadbalancer.server.port=4358"
+
+        # HTTPS
+      - "traefik.http.routers.schedge-https.rule=Host(`nyu.a1liu.com`)"
+      - "traefik.http.routers.schedge-https.service=schedge"
+      - "traefik.http.routers.schedge-https.entrypoints=websecure"
+      - "traefik.http.routers.schedge-https.tls.certresolver=mytlschallenge"
+
+        # HTTP
+      - "traefik.http.routers.schedge-http.rule=Host(`nyu.a1liu.com`)"
+      - "traefik.http.routers.schedge-http.service=schedge"
+      - "traefik.http.routers.schedge-http.entrypoints=web"
 
   watchtower:
     image: containrrr/watchtower:1.4.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 1 --cleanup --label-enable --no-pull
+    command: --interval 300 --cleanup --label-enable
     restart: unless-stopped

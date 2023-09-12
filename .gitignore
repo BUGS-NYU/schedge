@@ -1,19 +1,5 @@
-# Java stuffs
-/.gradle
-/.idea
-/.classpath
-/.project
-
-# Schedge-specific
-/.letsencrypt
-/src/main/resources/next/*
-!/src/main/resources/next/.gitkeep
-*.log
-
-# JavaScript
-/.next
-/node_modules
-
-# Outputted files in some systems
-/bin
 /build
+/letsencrypt
+/.build
+/.letsencrypt
+/.env

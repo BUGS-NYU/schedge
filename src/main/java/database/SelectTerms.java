@@ -1,10 +1,7 @@
 package database;
 
-import static utils.Nyu.*;
-
 import java.sql.*;
 import java.util.*;
-import org.slf4j.*;
 
 public final class SelectTerms {
   static final String SELECT_TERMS = "SELECT DISTINCT term from schools ORDER BY term";

@@ -1,6 +1,5 @@
 package test;
 
-import static actions.CopyTermFromProduction.*;
 import static utils.JsonMapper.*;
 import static utils.Nyu.*;
 
@@ -11,7 +10,7 @@ import org.junit.*;
 public class CoursesTest {
   @Test
   public void testFeature182() {
-    var subjects = new String[] {"CSCI-UA", "SCA-UA_1", "MATH-UA"};
+    var subjects = new String[] { "CSCI-UA", "SCA-UA_1", "MATH-UA" };
 
     var testUrl = "/api/courses/sp2021/";
     var app = App.makeApp();
@@ -35,7 +34,7 @@ public class CoursesTest {
 
   @Test
   public void testCoursesInvalidSubject() {
-    var subjects = new String[] {"CSCI-UAd", "CSCI-d", "mEdew"};
+    var subjects = new String[] { "CSCI-UAd", "CSCI-d", "mEdew" };
 
     var testUrl = "/api/courses/sp2021/";
     var app = App.makeApp();
@@ -49,10 +48,9 @@ public class CoursesTest {
               Assert.assertEquals(resp.code(), 400);
 
               var body = respBody.string();
-              var expected =
-                  "{\"status\":400,\"message\":\"the subject \\\""
-                      + subject
-                      + "\\\" is invalid for the term Term[semester=sp, year=2021]\"}";
+              var expected = "{\"status\":400,\"message\":\"the subject \\\""
+                  + subject
+                  + "\\\" is invalid for the term Term[semester=sp, year=2021]\"}";
 
               Assert.assertEquals(body.toLowerCase(), expected.toLowerCase());
             }

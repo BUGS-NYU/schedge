@@ -1,7 +1,6 @@
 package utils;
 
 import java.util.*;
-import java.util.function.*;
 
 public final class ArrayJS {
   public interface ArrayFunc<T> {

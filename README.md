@@ -43,3 +43,10 @@ it with the [CS@NYU Discord](https://discord.com/channels/744646258819596418/744
 ## Contributing
 Please take a look at [contributing guide](docs/CONTRIBUTING.md). It will provide
 you a general overview of the project and how to contribute.
+
+We value your feedback! If you encounter any issues or have suggestions for improving Schedge, please don't hesitate to reach out to us. Your input helps us enhance the quality and reliability of the data provided by Schedge.
+
+Stay updated on the latest changes to Schedge! You can subscribe to notifications or check for announcements on our website to receive alerts about updates to the data source and any improvements to Schedge.
+
+We extend our gratitude to all contributors who have helped enhance Schedge and provide valuable feedback. Your contributions are invaluable in making Schedge a more reliable and efficient tool for NYU students.
+
